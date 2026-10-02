@@ -1,0 +1,122 @@
+<script lang="ts">
+	import type { Snippet } from 'svelte';
+
+	interface Props {
+		name?: string;
+		src?: string;
+		size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+		shape?: 'circle' | 'square';
+		alt?: string;
+		status?: 'online' | 'offline' | 'busy' | 'away';
+		children?: Snippet;
+	}
+
+	let { name = '', src, size = 'md', shape = 'circle', alt, status, children }: Props = $props();
+
+	function initials(n: string): string {
+		const parts = n.trim().split(/\s+/);
+		if (parts.length === 0) return '?';
+		if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
+		return (parts[0]![0]! + parts[parts.length - 1]![0]!).toUpperCase();
+	}
+
+	const initialsText = $derived(initials(name));
+	const altText = $derived(alt ?? (name ? `Avatar de ${name}` : 'Avatar'));
+</script>
+
+<span class="avatar avatar--{size} avatar--{shape}" role="img" aria-label={altText}>
+	{#if src}
+		<img {src} alt="" class="avatar__img" />
+	{:else if children}
+		{@render children()}
+	{:else}
+		<span class="avatar__initials" aria-hidden="true">{initialsText}</span>
+	{/if}
+	{#if status}<span class="avatar__status avatar__status--{status}" aria-label={status}></span>{/if}
+</span>
+
+<style>
+	.avatar {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background-color: var(--brand-100);
+		color: var(--brand-700);
+		font-family: var(--font-sans);
+		font-weight: var(--weight-semibold);
+		overflow: hidden;
+		user-select: none;
+		flex-shrink: 0;
+	}
+
+	.avatar--circle {
+		border-radius: 50%;
+	}
+
+	.avatar--square {
+		border-radius: var(--radius-3);
+	}
+
+	.avatar--xs {
+		width: 24px;
+		height: 24px;
+		font-size: 10px;
+	}
+	.avatar--sm {
+		width: 32px;
+		height: 32px;
+		font-size: var(--text-xs);
+	}
+	.avatar--md {
+		width: 40px;
+		height: 40px;
+		font-size: var(--text-sm);
+	}
+	.avatar--lg {
+		width: 56px;
+		height: 56px;
+		font-size: var(--text-base);
+	}
+	.avatar--xl {
+		width: 80px;
+		height: 80px;
+		font-size: var(--text-lg);
+	}
+
+	.avatar__img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	.avatar__initials {
+		text-transform: uppercase;
+	}
+
+	.avatar__status {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		width: 25%;
+		height: 25%;
+		min-width: 8px;
+		min-height: 8px;
+		border-radius: 50%;
+		border: 2px solid var(--surface-1);
+	}
+
+	.avatar__status--online {
+		background-color: var(--success-500);
+	}
+	.avatar__status--offline {
+		background-color: var(--fg-tertiary);
+	}
+	.avatar__status--busy {
+		background-color: var(--danger-500);
+	}
+	.avatar__status--away {
+		background-color: var(--warning-500);
+	}
+</style>
