@@ -2,13 +2,21 @@
 	"extends": "$app/tsconfig",
 	"compilerOptions": {
 		"strict": true,
+		"checkJs": false,
+		"allowJs": false,
 		"types": ["$app/types", "@cloudflare/workers-types", "./worker-configuration.d.ts"]
 	},
 	"include": [
 		"src/**/*.ts",
-		"src/**/*.js",
 		"src/**/*.svelte",
 		"vite.config.ts",
 		"drizzle.config.ts"
+	],
+	"exclude": [
+		"node_modules",
+		".svelte-kit",
+		"build",
+		".wrangler",
+		"drizzle"
 	]
 }
