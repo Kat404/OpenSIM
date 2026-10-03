@@ -147,27 +147,52 @@ export const studentProgress = sqliteTable(
 );
 
 // 9. Oferta de Grupos
-export const courseGroups = sqliteTable('course_groups', {
-	id: text('id').primaryKey(),
-	subjectCanonicalId: text('subject_canonical_id')
-		.notNull()
-		.references(() => subjects.canonicalId),
-	groupCode: text('group_code').notNull(),
-	teacherName: text('teacher_name').notNull(),
-	hasLab: integer('has_lab', { mode: 'boolean' }).notNull().default(false)
-});
+export const courseGroups = sqliteTable(
+	'course_groups',
+	{
+		id: text('id').primaryKey(),
+		subjectCanonicalId: text('subject_canonical_id')
+			.notNull()
+			.references(() => subjects.canonicalId),
+		groupCode: text('group_code').notNull(),
+		teacherName: text('teacher_name').notNull(),
+		hasLab: integer('has_lab', { mode: 'boolean' }).notNull().default(false)
+	},
+	(table) => ({
+		// Hot path: the enrollment helper joins course_groups on
+		// subjectCanonicalId for the student's enrolled set. Without
+		// this index the join is a full table scan (audit M2, Round 4).
+		subjectCanonicalIdx: index('idx_course_groups_subject_canonical').on(
+			table.subjectCanonicalId
+		)
+	})
+);
 
 // 10. Bloques de Horario
-export const courseScheduleBlocks = sqliteTable('course_schedule_blocks', {
-	id: integer('id').primaryKey({ autoIncrement: true }),
-	groupId: text('group_id')
-		.notNull()
-		.references(() => courseGroups.id),
-	day: text('day').notNull(),
-	startTime: text('start_time').notNull(),
-	endTime: text('end_time').notNull(),
-	classroom: text('classroom').notNull()
-});
+export const courseScheduleBlocks = sqliteTable(
+	'course_schedule_blocks',
+	{
+		id: integer('id').primaryKey({ autoIncrement: true }),
+		groupId: text('group_id')
+			.notNull()
+			.references(() => courseGroups.id),
+		day: text('day').notNull(),
+		startTime: text('start_time').notNull(),
+		endTime: text('end_time').notNull(),
+		classroom: text('classroom').notNull()
+	},
+	(table) => ({
+		// Hot path: the enrollment helper fetches blocks for the
+		// student's groups (`inArray(groupId, ...)`); this index
+		// turns that into a single index range scan instead of a
+		// full table scan (audit M2, Round 4).
+		groupIdx: index('idx_course_schedule_blocks_group').on(table.groupId),
+		// Day-letter filter is the secondary predicate; an index
+		// here keeps \"classes for today\" cheap even as the schedule
+		// grows across careers.
+		dayIdx: index('idx_course_schedule_blocks_day').on(table.day)
+	})
+);
 
 // 11. Credenciales de Acceso (PBKDF2 / SHA-256 via Web Crypto API)
 //
