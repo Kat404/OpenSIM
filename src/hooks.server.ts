@@ -7,6 +7,10 @@
  *   2. Populates `event.locals.user` with the student profile (or
  *      `null` if no valid session).
  *   3. Clears stale cookies + best-effort prunes the row in D1.
+ *   4. Sets standard security headers (CSP, X-Frame-Options, nosniff,
+ *      Referrer-Policy, Permissions-Policy, COOP, CORP) on every
+ *      response. Clickjacking + PII exposure protection on an
+ *      authenticated app is non-negotiable; see audit P0-2.
  *
  * Auth-gating is no longer in this file: the `(protected)` route
  * group owns it via `src/routes/(protected)/+layout.server.ts`.
@@ -19,6 +23,46 @@
  * env (D1, etc.) is accessed via the `cloudflare:workers` virtual
  * module, not `event.platform`.
  */
+
+/**
+ * Security headers applied to every response. CSP notes:
+ *   - `script-src` includes the SHA-256 of the app.html theme bootstrap
+ *     (the only static inline script in the document) PLUS 'unsafe-inline'
+ *     because SvelteKit's body hydration script is also inline and its
+ *     content varies per build (no stable hash). Follow-up: migrate to
+ *     SvelteKit's `kit.csp.mode: 'nonce'` for per-request nonces and
+ *     drop 'unsafe-inline'.
+ *   - `style-src 'unsafe-inline'` — Svelte 5 dev mode injects inline
+ *     <style data-sveltekit> blocks; production externalises to
+ *     /_app/immutable/assets/*.css, so 'self' would suffice there.
+ *     'unsafe-inline' keeps dev working without per-request nonces.
+ *   - `frame-ancestors 'none'` is the modern equivalent of
+ *     `X-Frame-Options: DENY`; both are set for legacy-client coverage.
+ */
+const SECURITY_HEADERS: Readonly<Record<string, string>> = Object.freeze({
+	'X-Frame-Options': 'DENY',
+	'X-Content-Type-Options': 'nosniff',
+	'Referrer-Policy': 'strict-origin-when-cross-origin',
+	'Permissions-Policy': 'interest-cohort=(), document-domain=()',
+	'Content-Security-Policy': [
+		"default-src 'self'",
+		// Inline scripts: bootstrap (head) is hashed; body hydration is
+		// SvelteKit's per-build inline start() shim. Replace 'unsafe-inline'
+		// with a nonce when migrating to kit.csp.mode:'nonce'.
+		"script-src 'self' 'sha256-uRamoX8SrAH+C1i4O7qcN2EyAkHyTeutWXw/moQFDIY=' 'unsafe-inline'",
+		// Inline styles allowed for Svelte 5 dev mode (data-sveltekit
+		// <style> blocks). Production externalises CSS.
+		"style-src 'self' 'unsafe-inline'",
+		"img-src 'self' data: https:",
+		"font-src 'self' data:",
+		"connect-src 'self'",
+		"frame-ancestors 'none'",
+		"base-uri 'self'",
+		"form-action 'self'"
+	].join('; '),
+	'Cross-Origin-Opener-Policy': 'same-site',
+	'Cross-Origin-Resource-Policy': 'same-site'
+});
 
 import type { Handle } from '@sveltejs/kit/hooks';
 // `cloudflare:workers` is a URI-style specifier that the adapter's
@@ -59,5 +103,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	return resolve(event);
+	const response = await resolve(event);
+	// Set security headers last so they overwrite any headers a
+	// +server.ts or downstream middleware might have added without
+	// these protections (e.g. a permissive Cache-Control must not
+	// strip a strict CSP).
+	for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+		response.headers.set(name, value);
+	}
+	return response;
 };
