@@ -10,6 +10,7 @@
 	import type { Snippet } from 'svelte';
 	import { Table, Badge } from '#lib/components/ui';
 	import type { EvaluationType, StudentProgressStatus } from '#lib/server/db/schema';
+	import { isPassing } from '#lib/utils/academic';
 
 	export interface KardexEntry {
 		code: string;
@@ -67,7 +68,7 @@
 
 	function gradeBadgeVariant(grade: number | null, status: StudentProgressStatus) {
 		if (status === 'ENROLLED' || grade == null) return 'warning' as const;
-		if (grade >= 70) return 'success' as const;
+		if (isPassing(grade)) return 'success' as const;
 		return 'danger' as const;
 	}
 
