@@ -4,6 +4,9 @@
   Header plus either the TimeGridSchedule or an EmptyState when the
   student has no real enrollment. No synthetic data is ever served
   (audit H2): the page renders empty when the enrollment is empty.
+  Phase 4 N6: the page surfaces the current period string returned
+  by the loader so the user can see "Periodo actual: ..." in the
+  header.
 -->
 <script lang="ts">
 	import type { PageData } from './$types';
@@ -23,6 +26,9 @@
 	<header class="horario__header">
 		<p class="horario__eyebrow">Horario</p>
 		<h1 class="horario__title">Horario Semanal</h1>
+		{#if data.period}
+			<p class="horario__period">Periodo actual: <strong>{data.period}</strong></p>
+		{/if}
 		<p class="horario__sub">
 			Cada bloque representa una clase con duración proporcional al tiempo real (60px por hora).
 		</p>
@@ -32,7 +38,7 @@
 		{#if data.schedule.length === 0}
 			<EmptyState
 				title="No tienes horario activo"
-				description="No tienes horario activo este semestre. La reinscripción está disponible en /reinscripcion (próximamente)."
+				description="No tienes horario activo este periodo. La reinscripción está disponible en /reinscripcion (próximamente)."
 				icon={CalendarX}
 			/>
 		{:else}
@@ -65,6 +71,17 @@
 	.horario__title {
 		margin: 0;
 		font-size: var(--text-2xl);
+		font-weight: var(--weight-semibold);
+		color: var(--fg-primary);
+	}
+
+	.horario__period {
+		margin: 0;
+		font-size: var(--text-sm);
+		color: var(--fg-secondary);
+	}
+
+	.horario__period strong {
 		font-weight: var(--weight-semibold);
 		color: var(--fg-primary);
 	}

@@ -38,6 +38,9 @@
 		<p class="dashboard__eyebrow">Dashboard</p>
 		<h1 class="dashboard__greeting">Bienvenido, {data.firstName}</h1>
 		<p class="dashboard__sub">Sistema Integral Modular — TecNM Morelia</p>
+		{#if data.period}
+			<p class="dashboard__period">Periodo actual: <strong>{data.period}</strong></p>
+		{/if}
 	</header>
 
 	{#if page.url.searchParams.get('reason') === 'logged-out'}
@@ -146,6 +149,17 @@
 		margin: 0;
 		font-size: var(--text-sm);
 		color: var(--fg-tertiary);
+	}
+
+	.dashboard__period {
+		margin: 0;
+		font-size: var(--text-sm);
+		color: var(--fg-secondary);
+	}
+
+	.dashboard__period strong {
+		font-weight: var(--weight-semibold);
+		color: var(--fg-primary);
 	}
 
 	.dashboard__notice {

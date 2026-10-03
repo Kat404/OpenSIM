@@ -1,5 +1,5 @@
 /**
- * OpenSIM — Dashboard data loader (Phase 3 Tarea 3.2).
+ * OpenSIM — Dashboard data loader (Phase 3 Tarea 3.2; Phase 4 N6).
  *
  * Loads the four headline KPIs plus the today's-classes widget data
  * in two batched round trips to D1. Per audit NEW-1, every query
@@ -14,8 +14,11 @@
  * rows (audit M1), which made a fully-approved student with no
  * current enrollment look enrolled.
  *
- * See: odd/tasks/opensim.md (Phase 3 dashboard + horario); audit
- * H2 + M1 (Round 4).
+ * Phase 4 N6: the helper now returns the resolved period so the
+ * page can render "Periodo actual: {period}" without re-querying.
+ *
+ * See: odd/tasks/opensim.md (Phase 3 dashboard + horario; Phase 4.1 N6);
+ * audit H2 + M1 (Round 4).
  */
 
 import { eq, inArray } from 'drizzle-orm';
@@ -24,7 +27,7 @@ import type { OpenSimWorkerEnv } from '../../../cloudflare-workers';
 import type { PageServerLoad } from './$types';
 import { getDb } from '#lib/server/db';
 import { studentProfiles, subjects } from '#lib/server/db/schema';
-import { getCurrentEnrollment } from '#lib/server/enrollment';
+import { getCurrentEnrollment, getCurrentPeriod } from '#lib/server/enrollment';
 import { getTodayDayLetter } from '#lib/utils/time';
 
 const env = workerEnv as OpenSimWorkerEnv;
@@ -56,11 +59,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 				classroom: string;
 			}[],
 			hasEnrollment: false,
-			dayLabel: 'hoy'
+			dayLabel: 'hoy',
+			period: null
 		};
 	}
 
 	const db = getDb(env.DB);
+
+	// Phase 4 N6: resolve the current period once, then pass it
+	// explicitly to the enrollment helper. The two queries can run
+	// in parallel; the period is also surfaced to the page so the
+	// header can render "Periodo actual: {period}".
+	const currentPeriod = await getCurrentPeriod(db, controlNumber);
 
 	const [profileRows, enrollment] = await Promise.all([
 		db
@@ -77,7 +87,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.from(studentProfiles)
 			.where(eq(studentProfiles.controlNumber, controlNumber))
 			.limit(1),
-		getCurrentEnrollment(db, controlNumber)
+		getCurrentEnrollment(db, controlNumber, currentPeriod ?? undefined)
 	]);
 
 	const profile = profileRows[0] ?? {
@@ -145,6 +155,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// 'ENROLLED'); see `getCurrentEnrollment` for the single
 		// source of truth.
 		hasEnrollment: enrollment.groups.length > 0,
-		dayLabel: 'hoy'
+		dayLabel: 'hoy',
+		period: enrollment.period
 	};
 };

@@ -1,11 +1,16 @@
 #!/usr/bin/env node
 /**
- * OpenSIM — Curriculum seed script.
+ * OpenSIM — Curriculum + enrollment seed script.
  *
- * Reads `src/lib/server/db/data/curriculum-isic-2010-224.json` and emits a
- * SQL file (`src/lib/server/db/seed.sql`) containing idempotent INSERT OR
- * IGNORE batches for: careers, specialties, subjects, subject_aliases,
- * subject_prerequisites.
+ * Reads two JSON fixtures and emits a SQL file
+ * (`src/lib/server/db/seed.sql`) containing idempotent INSERT OR IGNORE
+ * batches for:
+ *   1. Academic catalog (careers, specialties, subjects,
+ *      subject_aliases, subject_prerequisites) from
+ *      `data/curriculum-isic-2010-224.json`.
+ *   2. Test-student enrollment (student_profiles, student_progress,
+ *      course_groups, course_schedule_blocks) from
+ *      `data/enrollment-fixture.json`.
  *
  * The generated SQL is applied via:
  *   pnpm db:seed     -> generates + executes wrangler d1 execute --local
@@ -14,6 +19,9 @@
  * Idempotency strategy:
  *   - Every table insert uses INSERT OR IGNORE (relying on the unique /
  *     primary-key constraints declared in schema.ts).
+ *   - For mutable rows (the test student profile) we use INSERT OR
+ *     REPLACE so a fresh `db:seed` overwrites previous test data and
+ *     the smoke test stays deterministic.
  *   - Alias uniqueness is also enforced at the SQL level.
  *   - FK ordering: parents first, then children.
  *
@@ -63,10 +71,67 @@ interface Dataset {
 	subjects: SubjectDataset[];
 }
 
+// ---------- Types matching the enrollment fixture JSON ----------
+
+interface StudentProfileFixture {
+	controlNumber: string;
+	fullName: string;
+	curp: string;
+	birthState: string;
+	careerCode: string;
+	specialtyCode: string | null;
+	currentSemester: number;
+	certifiedAverage: number;
+	arithmeticAverage: number;
+	passedAverage: number;
+	approvedCredits: number;
+	remainingCredits: number;
+	completedCredits: number;
+	inProgressCredits: number;
+	advancePercentage: number;
+	status: string;
+	healthService: string;
+	enrollmentPeriod: string;
+}
+
+interface StudentProgressFixture {
+	subjectCanonicalId: string;
+	status: 'APPROVED' | 'ENROLLED' | 'AVAILABLE' | 'LOCKED';
+	grade: number | null;
+	evaluationType: 'ORDINARIO' | 'REPETICION' | 'ESPECIAL' | null;
+	period: string;
+}
+
+interface CourseGroupFixture {
+	id: string;
+	subjectCanonicalId: string;
+	groupCode: string;
+	teacherName: string;
+	hasLab: boolean;
+}
+
+interface CourseScheduleBlockFixture {
+	groupId: string;
+	day: string;
+	startTime: string;
+	endTime: string;
+	classroom: string;
+}
+
+interface EnrollmentFixture {
+	version: string;
+	controlNumber: string;
+	student_profile: StudentProfileFixture;
+	student_progress: StudentProgressFixture[];
+	course_groups: CourseGroupFixture[];
+	course_schedule_blocks: CourseScheduleBlockFixture[];
+}
+
 // ---------- Path helpers (ESM-safe) ----------
 
 const here = dirname(fileURLToPath(import.meta.url));
 const DATA_PATH = resolve(here, 'data/curriculum-isic-2010-224.json');
+const ENROLLMENT_FIXTURE_PATH = resolve(here, 'data/enrollment-fixture.json');
 const SEED_SQL_PATH = resolve(here, 'seed.sql');
 
 // ---------- SQL escaping (single-quoted string literal) ----------
@@ -79,8 +144,16 @@ function sqlNum(n: number): string {
 	return Number.isFinite(n) ? String(n) : 'NULL';
 }
 
-function sqlNullableStr(v: string | undefined): string {
-	return v === undefined || v === '' ? 'NULL' : sqlStr(v);
+function sqlNullableStr(v: string | undefined | null): string {
+	return v === undefined || v === null || v === '' ? 'NULL' : sqlStr(v);
+}
+
+function sqlBool(b: boolean): number {
+	return b ? 1 : 0;
+}
+
+function sqlNullableNum(n: number | null | undefined): string {
+	return n === null || n === undefined || !Number.isFinite(n) ? 'NULL' : String(n);
 }
 
 // ---------- SQL builders ----------
@@ -138,8 +211,64 @@ function insertFooter(): string {
 		'SELECT COUNT(*) AS aliases FROM subject_aliases;',
 		'--> statement-breakpoint',
 		'SELECT COUNT(*) AS prerequisites FROM subject_prerequisites;',
+		'--> statement-breakpoint',
+		'SELECT COUNT(*) AS progress_rows FROM student_progress;',
+		'--> statement-breakpoint',
+		'SELECT COUNT(*) AS groups_offered FROM course_groups;',
+		'--> statement-breakpoint',
+		'SELECT COUNT(*) AS schedule_blocks FROM course_schedule_blocks;',
 		''
 	].join('\n');
+}
+
+// ---------- Enrollment fixture SQL builders ----------
+
+/**
+ * INSERT OR REPLACE for the test student profile so a fresh
+ * `db:seed` always lands the same row regardless of what was
+ * already there. The credential row is *not* touched here — it is
+ * managed by `seed-password.ts` (PBKDF2 hash + salt require the
+ * Node crypto module which is not available at SQL-emit time).
+ */
+function insertStudentProfile(p: StudentProfileFixture): string {
+	const lines: string[] = ['-- student_profiles (test student)'];
+	lines.push(
+		`INSERT OR REPLACE INTO student_profiles (control_number, full_name, curp, birth_state, career_code, specialty_code, current_semester, certified_average, arithmetic_average, passed_average, approved_credits, remaining_credits, completed_credits, in_progress_credits, advance_percentage, status, health_service, enrollment_period) VALUES (${sqlStr(p.controlNumber)}, ${sqlStr(p.fullName)}, ${sqlStr(p.curp)}, ${sqlStr(p.birthState)}, ${sqlStr(p.careerCode)}, ${sqlNullableStr(p.specialtyCode)}, ${sqlNum(p.currentSemester)}, ${sqlNum(p.certifiedAverage)}, ${sqlNum(p.arithmeticAverage)}, ${sqlNum(p.passedAverage)}, ${sqlNum(p.approvedCredits)}, ${sqlNum(p.remainingCredits)}, ${sqlNum(p.completedCredits)}, ${sqlNum(p.inProgressCredits)}, ${sqlNum(p.advancePercentage)}, ${sqlStr(p.status)}, ${sqlStr(p.healthService)}, ${sqlStr(p.enrollmentPeriod)});`
+	);
+	return lines.join('\n');
+}
+
+function insertStudentProgress(controlNumber: string, rows: StudentProgressFixture[]): string {
+	const lines: string[] = [`-- student_progress (${rows.length} rows for ${controlNumber})`];
+	for (const r of rows) {
+		lines.push(
+			`INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES (${sqlStr(controlNumber)}, ${sqlStr(r.subjectCanonicalId)}, ${sqlStr(r.status)}, ${sqlNullableNum(r.grade)}, ${sqlNullableStr(r.evaluationType)}, ${sqlStr(r.period)});`
+		);
+		lines.push('--> statement-breakpoint');
+	}
+	return lines.join('\n');
+}
+
+function insertCourseGroups(groups: CourseGroupFixture[]): string {
+	const lines: string[] = [`-- course_groups (${groups.length} groups)`];
+	for (const g of groups) {
+		lines.push(
+			`INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab) VALUES (${sqlStr(g.id)}, ${sqlStr(g.subjectCanonicalId)}, ${sqlStr(g.groupCode)}, ${sqlStr(g.teacherName)}, ${sqlBool(g.hasLab)});`
+		);
+		lines.push('--> statement-breakpoint');
+	}
+	return lines.join('\n');
+}
+
+function insertScheduleBlocks(blocks: CourseScheduleBlockFixture[]): string {
+	const lines: string[] = [`-- course_schedule_blocks (${blocks.length} blocks)`];
+	for (const b of blocks) {
+		lines.push(
+			`INSERT OR REPLACE INTO course_schedule_blocks (group_id, day, start_time, end_time, classroom) VALUES (${sqlStr(b.groupId)}, ${sqlStr(b.day)}, ${sqlStr(b.startTime)}, ${sqlStr(b.endTime)}, ${sqlStr(b.classroom)});`
+		);
+		lines.push('--> statement-breakpoint');
+	}
+	return lines.join('\n');
 }
 
 // ---------- Main ----------
@@ -180,17 +309,83 @@ function main(): void {
 		}
 	}
 
+	// --- Enrollment fixture (optional) --------------------------------
+	// If `enrollment-fixture.json` is present, load it and emit SQL for
+	// the test student profile, progress, course groups, and schedule
+	// blocks. INSERT OR REPLACE keeps the seed idempotent so a fresh
+	// `db:seed` always lands the same fixture.
+	let enrollment: EnrollmentFixture | null = null;
+	try {
+		enrollment = JSON.parse(readFileSync(ENROLLMENT_FIXTURE_PATH, 'utf8')) as EnrollmentFixture;
+	} catch (err) {
+		// File missing is acceptable; any other error (JSON parse) is
+		// not — a malformed fixture is the kind of silent regression
+		// that fails the smoke test in production.
+		if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+			throw err;
+		}
+	}
+
+	if (enrollment) {
+		// Cross-validate the fixture against the curriculum before we
+		// emit anything. A typo in the JSON (canonicalId that does not
+		// exist in `subjects`) would otherwise crash the FK constraint
+		// at apply time with a generic SQLITE_CONSTRAINT error.
+		const validIds = new Set(seenIds);
+		for (const r of enrollment.student_progress) {
+			if (!validIds.has(r.subjectCanonicalId)) {
+				throw new Error(
+					`enrollment-fixture.json references unknown subject "${r.subjectCanonicalId}" in student_progress`
+				);
+			}
+		}
+		for (const g of enrollment.course_groups) {
+			if (!validIds.has(g.subjectCanonicalId)) {
+				throw new Error(
+					`enrollment-fixture.json references unknown subject "${g.subjectCanonicalId}" in course_groups`
+				);
+			}
+		}
+		const groupIds = new Set(enrollment.course_groups.map((g) => g.id));
+		for (const b of enrollment.course_schedule_blocks) {
+			if (!groupIds.has(b.groupId)) {
+				throw new Error(
+					`enrollment-fixture.json references unknown group "${b.groupId}" in course_schedule_blocks`
+				);
+			}
+		}
+	}
+
 	const header = [
-		'-- OpenSIM curriculum seed (auto-generated by src/lib/server/db/seed.ts).',
+		'-- OpenSIM seed (auto-generated by src/lib/server/db/seed.ts).',
 		`-- Program: ${dataset.program}`,
 		`-- Plan: ${dataset.version}`,
 		`-- Total subjects: ${dataset.subjects.length}`,
 		`-- Total credits (target): ${dataset.totalCredits}`,
-		'-- Idempotent: every INSERT uses OR IGNORE on the unique/PK constraints.',
+		'-- Idempotent: catalog INSERTs use OR IGNORE; test-student',
+		'-- rows use OR REPLACE so the fixture is deterministic on rerun.',
 		''
 	].join('\n');
 
-	const sql = header + '\n' + insertCareers(dataset.careers) + '\n' + insertSubjects(dataset.subjects) + '\n' + insertFooter();
+	const sections: string[] = [
+		header,
+		insertCareers(dataset.careers),
+		insertSubjects(dataset.subjects)
+	];
+	if (enrollment) {
+		sections.push(
+			'--> statement-breakpoint',
+			insertStudentProfile(enrollment.student_profile),
+			'--> statement-breakpoint',
+			insertStudentProgress(enrollment.controlNumber, enrollment.student_progress),
+			'--> statement-breakpoint',
+			insertCourseGroups(enrollment.course_groups),
+			'--> statement-breakpoint',
+			insertScheduleBlocks(enrollment.course_schedule_blocks)
+		);
+	}
+	sections.push(insertFooter());
+	const sql = sections.join('\n');
 
 	mkdirSync(dirname(SEED_SQL_PATH), { recursive: true });
 	writeFileSync(SEED_SQL_PATH, sql, 'utf8');
@@ -200,7 +395,21 @@ function main(): void {
 	const prereqCount = dataset.subjects.reduce((a, s) => a + (s.prerequisites?.length ?? 0), 0);
 	const specialtyCount = dataset.careers.reduce((a, c) => a + c.specialties.length, 0);
 
-	console.log(`seed.sql generated (${subjectCount} subjects, ${aliasCount} aliases, ${prereqCount} prerequisites, ${specialtyCount} specialties).`);
+	const counts = [
+		`${subjectCount} subjects`,
+		`${aliasCount} aliases`,
+		`${prereqCount} prerequisites`,
+		`${specialtyCount} specialties`
+	];
+	if (enrollment) {
+		counts.push(
+			`${enrollment.student_progress.length} progress rows`,
+			`${enrollment.course_groups.length} groups`,
+			`${enrollment.course_schedule_blocks.length} schedule blocks`
+		);
+	}
+
+	console.log(`seed.sql generated (${counts.join(', ')}).`);
 	console.log(`Path: ${SEED_SQL_PATH}`);
 }
 

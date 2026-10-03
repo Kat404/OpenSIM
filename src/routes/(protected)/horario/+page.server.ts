@@ -1,5 +1,5 @@
 /**
- * OpenSIM — Horario semanal loader (Phase 3 Tarea 3.3).
+ * OpenSIM — Horario semanal loader (Phase 3 Tarea 3.3; Phase 4 N6).
  *
  * Resolves the current student's enrolled subjects through
  * `getCurrentEnrollment` (shared with the dashboard) and joins them
@@ -12,6 +12,10 @@
  * page *always* show invented data. The unified enrollment helper
  * makes that branch impossible.
  *
+ * Phase 4 N6: the loader passes an explicit period to the helper
+ * (resolved by `getCurrentPeriod` first) and surfaces the period
+ * to the page so the header can render "Periodo actual: {period}".
+ *
  * The visual contract of the page (height = end - start in 60px/hour
  * pixels, color from theme-aware HSL hash) is satisfied by the
  * ScheduleDay-letter array; the data shape is what the grid expects.
@@ -23,7 +27,7 @@ import type { OpenSimWorkerEnv } from '../../../cloudflare-workers';
 import type { PageServerLoad } from './$types';
 import { getDb } from '#lib/server/db';
 import { subjects } from '#lib/server/db/schema';
-import { getCurrentEnrollment } from '#lib/server/enrollment';
+import { getCurrentEnrollment, getCurrentPeriod } from '#lib/server/enrollment';
 
 const env = workerEnv as OpenSimWorkerEnv;
 
@@ -40,14 +44,15 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const u = locals.user!;
 
 	if (!env.DB) {
-		return { schedule: [] as ScheduledClassItem[] };
+		return { schedule: [] as ScheduledClassItem[], period: null };
 	}
 
 	const db = getDb(env.DB);
-	const enrollment = await getCurrentEnrollment(db, u.controlNumber);
+	const currentPeriod = await getCurrentPeriod(db, u.controlNumber);
+	const enrollment = await getCurrentEnrollment(db, u.controlNumber, currentPeriod ?? undefined);
 
 	if (enrollment.schedule.length === 0) {
-		return { schedule: [] as ScheduledClassItem[] };
+		return { schedule: [] as ScheduledClassItem[], period: enrollment.period };
 	}
 
 	// Subjects catalog for the enrolled set. `groupToCanonical` maps
@@ -94,5 +99,5 @@ export const load: PageServerLoad = async ({ locals }) => {
 		return a.block.startTime.localeCompare(b.block.startTime);
 	});
 
-	return { schedule };
+	return { schedule, period: enrollment.period };
 };
