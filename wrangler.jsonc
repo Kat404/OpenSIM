@@ -9,7 +9,14 @@
 		"directory": ".svelte-kit/cloudflare"
 	},
 	"workers_dev": true,
-	"preview_urls": true,
+	// preview_urls disabled: each `wrangler deploy` previously published
+	// a public *.workers.dev preview URL that routed to the same code as
+	// production. That URL is unauthenticated-by-default, un-audited,
+	// and ships PII (cookie sessions, request logs) to anyone who knows
+	// the slug. Production traffic is the only deploy that should be
+	// exposed; the deploy script in package.json promotes via
+	// `wrangler deploy` directly to the production route.
+	"preview_urls": false,
 	// Cron trigger for the `scheduled` handler exported by
 	// src/lib/server/auth.ts (P0-4 / audit R8-8). Every 6 hours the
 	// worker invokes auth.scheduled, which bulk-DELETEs expired
