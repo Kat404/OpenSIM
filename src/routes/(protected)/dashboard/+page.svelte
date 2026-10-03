@@ -1,161 +1,235 @@
+<!--
+  OpenSIM — Student dashboard (Phase 3 Tarea 3.2).
+
+  Replaces the Phase 2 placeholder with four KPI cards, a today's
+  classes widget, and a CTA card that links to the retícula. The
+  page consumes typed `data` from `+page.server.ts` and keeps all
+  presentation logic local — no per-keystroke work, no client-side
+  data fetching.
+-->
 <script lang="ts">
 	import { page } from '$app/state';
 	import type { PageData } from './$types';
+	import KpiCard from '#lib/components/dashboard/KpiCard.svelte';
+	import TodayClasses from '#lib/components/dashboard/TodayClasses.svelte';
+	import { Card, EmptyState } from '#lib/components/ui';
+	import { ArrowRight } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 
-	// Split the full name for the greeting. We take the first two
-	// words as given/family — enough for a friendly "Hola, {name}"
-	// without a brittle parser. The full name remains available in
-	// `data.fullName` for the body.
-	const firstName = $derived(data.fullName.split(/\s+/)[0] ?? data.fullName);
+	function fmtCredits(value: number): string {
+		return value.toString();
+	}
+	function fmtPercent(value: number): string {
+		return `${value.toFixed(1)}%`;
+	}
+	function fmtAverage(value: number): string {
+		return value.toFixed(2);
+	}
 </script>
 
 <svelte:head>
-	<title>Dashboard — OpenSIM</title>
-	<meta name="description" content="Panel principal del estudiante OpenSIM." />
+	<title>Panel — OpenSIM</title>
+	<meta name="description" content="Resumen académico del estudiante OpenSIM." />
 </svelte:head>
 
 <section class="dashboard">
 	<header class="dashboard__header">
 		<p class="dashboard__eyebrow">Dashboard</p>
-		<h1 class="dashboard__greeting">Bienvenido, {firstName}</h1>
+		<h1 class="dashboard__greeting">Bienvenido, {data.firstName}</h1>
 		<p class="dashboard__sub">Sistema Integral Modular — TecNM Morelia</p>
 	</header>
 
-	<div class="dashboard__card">
-		<h2 class="dashboard__h2">Tu perfil académico</h2>
-		<dl class="dashboard__list">
-			<div class="dashboard__row">
-				<dt>Nombre completo</dt>
-				<dd>{data.fullName}</dd>
-			</div>
-			<div class="dashboard__row">
-				<dt>Número de control</dt>
-				<dd>{data.controlNumber}</dd>
-			</div>
-			<div class="dashboard__row">
-				<dt>Semestre actual</dt>
-				<dd>{data.currentSemester}</dd>
-			</div>
-			<div class="dashboard__row">
-				<dt>Promedio certificado</dt>
-				<dd>{data.certifiedAverage.toFixed(2)}</dd>
-			</div>
-			<div class="dashboard__row">
-				<dt>Créditos completados</dt>
-				<dd>{data.completedCredits} / {data.completedCredits + data.remainingCredits}</dd>
-			</div>
-			<div class="dashboard__row">
-				<dt>Avance de carrera</dt>
-				<dd>{data.advancePercentage.toFixed(1)}%</dd>
-			</div>
-			<div class="dashboard__row">
-				<dt>Estado</dt>
-				<dd>{data.status}</dd>
-			</div>
-		</dl>
+	{#if page.url.searchParams.get('reason') === 'logged-out'}
+		<p class="dashboard__notice" role="status">Sesión cerrada correctamente.</p>
+	{/if}
+
+	<div class="dashboard__kpis" role="list">
+		<div role="listitem" class="dashboard__kpi-col">
+			<KpiCard
+				label="Promedio certificado"
+				value={fmtAverage(data.kpis.certifiedAverage)}
+				sublabel="Promedio oficial registrado"
+				accent="brand"
+			/>
+		</div>
+		<div role="listitem" class="dashboard__kpi-col">
+			<KpiCard
+				label="Promedio aritmético"
+				value={fmtAverage(data.kpis.arithmeticAverage)}
+				sublabel="Promedio simple sobre tus calificaciones"
+				accent="info"
+			/>
+		</div>
+		<div role="listitem" class="dashboard__kpi-col">
+			<KpiCard
+				label="Créditos aprobados"
+				value={`${fmtCredits(data.kpis.approvedCredits)} / ${fmtCredits(data.kpis.totalCredits)}`}
+				sublabel="Acumulados en tu historial académico"
+				accent="success"
+			/>
+		</div>
+		<div role="listitem" class="dashboard__kpi-col">
+			<KpiCard
+				label="% Avance"
+				value={fmtPercent(data.kpis.advancePercentage)}
+				sublabel="Porcentaje de la carrera cubierto"
+				accent="neutral"
+			/>
+		</div>
 	</div>
 
-	<aside class="dashboard__phase-note" role="status">
-		<h2 class="dashboard__h2">Fase 3 en desarrollo</h2>
-		<p>
-			Este panel es un placeholder. La <strong>Tarea 3.2</strong> lo reemplazará
-			con tarjetas de KPIs, clases del día, kardex resumido, próximos
-			trámites y accesos rápidos a horario, retícula y reinscripción.
-		</p>
-		{#if page.url.searchParams.get('reason') === 'logged-out'}
-			<p class="dashboard__note">Sesión cerrada correctamente.</p>
-		{/if}
-	</aside>
+	<div class="dashboard__grid">
+		<div class="dashboard__today">
+			<TodayClasses classes={data.todayClasses} dayLabel={data.dayLabel} />
+		</div>
+
+		<div class="dashboard__cta">
+			<Card padding="lg">
+				{#snippet header()}
+						<h2 class="dashboard__cta-title">Continuar con la retícula</h2>
+					{/snippet}
+				<p class="dashboard__cta-text">
+					Explora las 42 asignaturas del plan ISIC-2010-224, revisa los
+					prerrequisitos en forma de grafo y conoce el camino que te falta
+					por recorrer para titularte.
+				</p>
+				{#snippet footer()}
+						<a class="dashboard__cta-link" href="/reticula">
+							Ver retícula académica
+							<ArrowRight size={16} strokeWidth={1.75} aria-hidden="true" />
+						</a>
+					{/snippet}
+			</Card>
+
+			{#if !data.hasEnrollment}
+				<div class="dashboard__enroll-hint">
+					<EmptyState
+						title="Aún no tienes inscripción activa"
+						description="Cuando completes tu proceso de reinscripción, aquí verás tus clases del día en vivo."
+					/>
+				</div>
+			{/if}
+		</div>
+	</div>
 </section>
 
 <style>
 	.dashboard {
-		max-width: 720px;
-		margin: 0 auto;
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-6, 1.5rem);
+		gap: var(--space-6);
 	}
 
 	.dashboard__header {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-1, 0.25rem);
+		gap: var(--space-1);
 	}
 
 	.dashboard__eyebrow {
 		margin: 0;
-		font-size: var(--text-xs, 0.75rem);
+		font-size: var(--text-xs);
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
-		color: var(--fg-tertiary, #666);
+		color: var(--fg-tertiary);
 	}
 
 	.dashboard__greeting {
 		margin: 0;
-		font-size: var(--text-2xl, 1.5rem);
-		font-weight: var(--weight-semibold, 600);
-		color: var(--fg-primary, #111);
+		font-size: var(--text-2xl);
+		font-weight: var(--weight-semibold);
+		color: var(--fg-primary);
 	}
 
 	.dashboard__sub {
 		margin: 0;
-		font-size: var(--text-sm, 0.875rem);
-		color: var(--fg-tertiary, #666);
+		font-size: var(--text-sm);
+		color: var(--fg-tertiary);
 	}
 
-	.dashboard__card,
-	.dashboard__phase-note {
-		padding: var(--space-5, 1.25rem);
-		background-color: var(--surface-1, #fff);
-		border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
-		border-radius: var(--radius-3, 0.5rem);
-	}
-
-	.dashboard__h2 {
-		margin: 0 0 var(--space-3, 0.75rem);
-		font-size: var(--text-md, 1rem);
-		font-weight: var(--weight-semibold, 600);
-		color: var(--fg-primary, #111);
-	}
-
-	.dashboard__list {
+	.dashboard__notice {
 		margin: 0;
+		padding: var(--space-2) var(--space-3);
+		background-color: var(--success-50);
+		border: 1px solid color-mix(in srgb, var(--success-500) 20%, transparent);
+		border-radius: var(--radius-2);
+		color: var(--success-700);
+		font-size: var(--text-sm);
+	}
+
+	.dashboard__kpis {
 		display: grid;
-		grid-template-columns: 1fr;
-		gap: var(--space-2, 0.5rem);
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: var(--space-4);
 	}
 
-	.dashboard__row {
+	.dashboard__kpi-col {
+		min-width: 0;
+	}
+
+	.dashboard__grid {
 		display: grid;
-		grid-template-columns: minmax(140px, 0.5fr) 1fr;
-		gap: var(--space-3, 0.75rem);
-		font-size: var(--text-sm, 0.875rem);
+		grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+		gap: var(--space-4);
 	}
 
-	.dashboard__row dt {
-		color: var(--fg-tertiary, #666);
+	.dashboard__today {
+		min-width: 0;
 	}
 
-	.dashboard__row dd {
+	.dashboard__cta {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
+		min-width: 0;
+	}
+
+	.dashboard__cta-title {
 		margin: 0;
-		color: var(--fg-primary, #111);
+		font-size: var(--text-md);
+		font-weight: var(--weight-semibold);
+		color: var(--fg-primary);
 	}
 
-	.dashboard__phase-note p {
+	.dashboard__cta-text {
 		margin: 0;
-		font-size: var(--text-sm, 0.875rem);
-		color: var(--fg-secondary, #444);
-		line-height: 1.5;
+		font-size: var(--text-sm);
+		color: var(--fg-secondary);
+		line-height: var(--leading-normal);
 	}
 
-	.dashboard__phase-note p + p {
-		margin-top: var(--space-3, 0.75rem);
+	.dashboard__cta-link {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-2);
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
+		color: var(--brand-700);
+		text-decoration: none;
 	}
 
-	.dashboard__note {
-		color: var(--success-700, #15803d);
+	.dashboard__cta-link:hover {
+		color: var(--brand-600);
+		text-decoration: underline;
+	}
+
+	.dashboard__enroll-hint {
+		min-width: 0;
+	}
+
+	@media (max-width: 960px) {
+		.dashboard__kpis {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+		.dashboard__grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.dashboard__kpis {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>
