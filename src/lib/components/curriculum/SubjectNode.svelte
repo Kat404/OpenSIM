@@ -9,6 +9,7 @@
 -->
 <script lang="ts">
 	import type { StudentProgressStatus } from '#lib/server/db/schema';
+	import { STATUS_LABEL } from '#lib/utils/status-labels';
 
 	export interface SubjectViewModel {
 		canonicalId: string;
@@ -46,13 +47,6 @@
 		onActivate
 	}: Props = $props();
 
-	const STATUS_LABEL: Record<StudentProgressStatus, string> = {
-		APPROVED: 'Aprobada',
-		ENROLLED: 'Cursando',
-		AVAILABLE: 'Disponible',
-		LOCKED: 'Bloqueada'
-	};
-
 	// Highlighted nodes get the saturated brand color; everything else
 	// uses the HSL-hash pastel. Locked subjects overlay a diagonal
 	// hatch by reducing opacity (rendered as <pattern> would be nicer
@@ -69,6 +63,7 @@
 	class:node--highlighted={isHighlighted}
 	class:node--dimmed={isDimmed}
 	opacity={opacity}
+	id={subject.canonicalId}
 	data-canonical-id={subject.canonicalId}
 	role="button"
 	tabindex="0"

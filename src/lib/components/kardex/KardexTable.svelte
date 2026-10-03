@@ -1,16 +1,21 @@
 <!--
   OpenSIM — Kardex unificado.
 
-  Wraps the existing Table atom with a local sort-by-any-column state
-  and an evaluationType filter pill row. Grade badges use semantic
-  colors per the spec — APPROVED green, FAILED red, IN_PROGRESS amber.
-  Sort + filter state live here (local) so the page stays dumb.
+  Filter pills (Todos / Ordinario / Repetición / Especial) + the
+  Table atom. The atom owns the column sort UI; this component owns
+  the evaluation-type filter. Grade badges use semantic colors per
+  the spec — APPROVED green, FAILED red, IN_PROGRESS amber — driven
+  by `isPassing` from `#lib/utils/academic` so the 6.0 threshold
+  cannot drift.
+
+  Status labels and grades share the same source of truth as the
+  retícula (`STATUS_LABEL`).
 -->
 <script lang="ts">
-	import type { Snippet } from 'svelte';
 	import { Table, Badge } from '#lib/components/ui';
 	import type { EvaluationType, StudentProgressStatus } from '#lib/server/db/schema';
 	import { isPassing } from '#lib/utils/academic';
+	import { STATUS_LABEL } from '#lib/utils/status-labels';
 
 	export interface KardexEntry {
 		code: string;
@@ -28,43 +33,13 @@
 
 	let { entries }: Props = $props();
 
-	// Sort + filter state live locally. The page does not need to
-	// know about either: the parent passes the raw `entries`, we
-	// return the rendered rows via the Table atom.
-	let sortKey = $state<string | null>(null);
-	let sortDir = $state<'asc' | 'desc' | null>(null);
+	// Filter state lives locally; the page does not need to know
+	// about it. The Table atom owns the sort UI internally.
 	let filter = $state<'ALL' | EvaluationType>('ALL');
 
 	const filtered = $derived(
 		filter === 'ALL' ? entries : entries.filter((e) => e.evaluationType === filter)
 	);
-
-	const sorted = $derived.by(() => {
-		if (!sortKey || !sortDir) return filtered;
-		const copy = [...filtered];
-		copy.sort((a, b) => {
-			const av = (a as unknown as Record<string, unknown>)[sortKey!];
-			const bv = (b as unknown as Record<string, unknown>)[sortKey!];
-			if (av === bv) return 0;
-			if (av == null) return 1;
-			if (bv == null) return -1;
-			const cmp = av > bv ? 1 : -1;
-			return sortDir === 'asc' ? cmp : -cmp;
-		});
-		return copy;
-	});
-
-	function toggleSort(key: string) {
-		if (sortKey !== key) {
-			sortKey = key;
-			sortDir = 'asc';
-		} else if (sortDir === 'asc') {
-			sortDir = 'desc';
-		} else {
-			sortKey = null;
-			sortDir = null;
-		}
-	}
 
 	function gradeBadgeVariant(grade: number | null, status: StudentProgressStatus) {
 		if (status === 'ENROLLED' || grade == null) return 'warning' as const;
@@ -82,15 +57,6 @@
 		if (status === 'ENROLLED') return 'brand' as const;
 		if (status === 'LOCKED') return 'danger' as const;
 		return 'neutral' as const;
-	}
-
-	function statusLabel(status: StudentProgressStatus): string {
-		return {
-			APPROVED: 'Aprobada',
-			ENROLLED: 'Cursando',
-			AVAILABLE: 'Disponible',
-			LOCKED: 'Bloqueada'
-		}[status];
 	}
 
 	function evalLabel(t: EvaluationType | null): string {
@@ -117,7 +83,7 @@
 
 {#snippet statusCell(e: KardexEntry)}
 	<Badge variant={statusBadgeVariant(e.status)} size="sm">
-		{statusLabel(e.status)}
+		{STATUS_LABEL[e.status]}
 	</Badge>
 {/snippet}
 
@@ -143,7 +109,7 @@
 
 	{#if entries.length === 0}
 		<p class="kardex__empty">Aún no tienes asignaturas registradas en tu kardex.</p>
-	{:else if sorted.length === 0}
+	{:else if filtered.length === 0}
 		<p class="kardex__empty">Sin resultados con el filtro seleccionado.</p>
 	{:else}
 		{@const columns = [
@@ -166,7 +132,7 @@
 			},
 			{ key: 'status', label: 'Estado', sortable: true, render: statusCell }
 		]}
-		<Table {columns} rows={sorted} sortable />
+		<Table {columns} rows={filtered} sortable />
 	{/if}
 </section>
 

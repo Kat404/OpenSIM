@@ -1,10 +1,7 @@
 <script lang="ts">
-	import type { Component, Snippet } from 'svelte';
+	import type { Snippet } from 'svelte';
 	import { Inbox } from 'lucide-svelte';
-
-	// Lucide icon props shape — bindings must be keyof Props or ''.
-	type IconProps = { size?: number; strokeWidth?: number };
-	type IconComponent = Component<IconProps, Record<string, unknown>, keyof IconProps | ''>;
+	import type { IconComponent } from '#lib/utils/icon';
 
 	interface Props {
 		title: string;
@@ -13,7 +10,7 @@
 		action?: Snippet;
 	}
 
-	let { title, description, icon: Icon = Inbox as unknown as IconComponent, action }: Props = $props();
+	let { title, description, icon: Icon = Inbox, action }: Props = $props();
 </script>
 
 <div class="empty">

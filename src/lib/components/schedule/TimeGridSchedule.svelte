@@ -82,13 +82,13 @@
 <div
 	class="grid"
 	style:--total-height="{totalHeight}px"
-	role="grid"
+	role="presentation"
 	aria-label="Horario semanal"
 >
 	<div class="grid__header-spacer" aria-hidden="true"></div>
-	{#each DAY_LETTERS as letter, i (letter)}
-		<div class="grid__day-header" role="columnheader">
-			<span class="col-msg">{letter}</span>
+	{#each DAY_LETTERS as letter (letter)}
+		<div class="grid__day-header">
+			<span class="col-msg" aria-label="Día {letter}">{letter}</span>
 		</div>
 	{/each}
 
@@ -101,7 +101,7 @@
 	</div>
 
 	{#each DAY_LETTERS as letter (letter)}
-		<div class="grid__day" role="gridcell">
+		<div class="grid__day">
 			{#each HOURS as hour (hour)}
 				<div
 					class="grid__row-line"

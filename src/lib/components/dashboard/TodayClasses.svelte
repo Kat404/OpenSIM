@@ -40,7 +40,7 @@
 		<EmptyState
 			title="Sin clases hoy"
 			description="No tienes clases programadas para este día."
-			icon={CalendarX as never}
+			icon={CalendarX}
 		/>
 	{:else}
 		<ul class="today__list">

@@ -7,16 +7,27 @@
   ancestors and descendants; everything else is dimmed.
 
   Performance contract (audit watchpoints):
-    - `hoveredSubjectId` is the ONLY piece of reactive state.
+    - `hoveredSubjectId` is the ONLY piece of reactive state for
+      hover-driven highlight changes.
     - Adjacency map is built once in a $derived (not on every hover).
     - Ancestors / descendants for the hovered id are computed once
       per id-change and cached as Sets in a $derived. We do NOT
       re-traverse on `mouseenter` of every node.
+
+  Deep-link contract (audit M6):
+    - The parent passes `focusedCanonicalId`; when it changes
+      (e.g. via a `#subject` hash from the Cmd+K palette), this
+      component sets the hover to that id and scrolls the matching
+      `<g id={canonicalId}>` into view. The `<g>` carries both
+      `id` and `data-canonical-id` so the native fragment scroll
+      works even before the $effect fires.
 -->
 <script lang="ts">
 	import { buildAdjacency, getAncestorsFromMap, getDescendantsFromMap } from '#lib/utils/dag';
 	import { getSubjectColor } from '#lib/utils/color';
 	import { getTheme } from '#lib/utils/theme.svelte';
+	import { EmptyState } from '#lib/components/ui';
+	import { BookOpen } from 'lucide-svelte';
 	import type { StudentProgressStatus } from '#lib/server/db/schema';
 	import SubjectNode, { type SubjectViewModel } from './SubjectNode.svelte';
 
@@ -29,16 +40,24 @@
 		subjects: SubjectViewModel[];
 		edges: EdgeInput[];
 		statusByCanonicalId: Record<string, StudentProgressStatus>;
+		/**
+		 * Canonical id of the subject the parent wants the DAG to
+		 * focus (e.g. from `#${canonicalId}` in the URL). When this
+		 * value changes, the DAG highlights that node and scrolls
+		 * it into view. Pass `null` to clear.
+		 */
+		focusedCanonicalId?: string | null;
 	}
 
-	let { subjects, edges, statusByCanonicalId }: Props = $props();
+	let { subjects, edges, statusByCanonicalId, focusedCanonicalId = null }: Props = $props();
 
-	const SUBJECTS_PER_COLUMN = 6;
+	const MAX_SEMESTER = 9;
+	const ROW_HEIGHT = 76; // matches NODE_HEIGHT
+	const ROW_GAP = 16;
 	const COLUMN_COUNT = 9;
 	const NODE_WIDTH = 168;
 	const NODE_HEIGHT = 76;
 	const COLUMN_GAP = 28;
-	const ROW_GAP = 16;
 	const MARGIN_X = 32;
 	const MARGIN_Y = 56;
 
@@ -50,10 +69,20 @@
 	const adjacency = $derived(buildAdjacency(edges));
 
 	// Group subjects by semester so we can compute positions and only
-	// iterate over the columns that actually exist.
+	// iterate over the columns that actually exist. Subjects with
+	// `semester` outside 1..MAX_SEMESTER are logged to the console
+	// and dropped from the visible grid (audit M7, Round 4) — they
+	// were silently missing before, so a typo in the seed would
+	// not surface.
 	const subjectsBySemester = $derived.by(() => {
 		const map = new Map<number, SubjectViewModel[]>();
 		for (const s of subjects) {
+			if (s.semester < 1 || s.semester > MAX_SEMESTER) {
+				console.warn(
+					`[ReticulaDag] Subject ${s.canonicalId} (${s.code}) has semester ${s.semester}, outside 1..${MAX_SEMESTER}; not rendered.`
+				);
+				continue;
+			}
 			const arr = map.get(s.semester) ?? [];
 			arr.push(s);
 			map.set(s.semester, arr);
@@ -80,11 +109,22 @@
 		return map;
 	});
 
+	// Width is fixed (9 columns of fixed-width nodes). Height adapts
+	// to the tallest column, so a semester with 7+ subjects no longer
+	// clips (audit M7, Round 4).
+	const maxRowsPerColumn = $derived.by(() => {
+		let max = 0;
+		for (const arr of subjectsBySemester.values()) {
+			if (arr.length > max) max = arr.length;
+		}
+		return max;
+	});
+
 	const svgWidth = $derived(
 		MARGIN_X * 2 + COLUMN_COUNT * NODE_WIDTH + (COLUMN_COUNT - 1) * COLUMN_GAP
 	);
 	const svgHeight = $derived(
-		MARGIN_Y * 2 + SUBJECTS_PER_COLUMN * NODE_HEIGHT + (SUBJECTS_PER_COLUMN - 1) * ROW_GAP
+		MARGIN_Y * 2 + maxRowsPerColumn * ROW_HEIGHT + Math.max(0, maxRowsPerColumn - 1) * ROW_GAP
 	);
 
 	// Highlight sets computed in $derived so a hover only triggers one
@@ -118,8 +158,8 @@
 	});
 
 	// Connector paths. Computed once in $derived per (edges, position)
-	// change; the result is an array of static strings so we never
-	// re-build them on hover.
+	// change; the dim flag is recomputed per hovered id so a hover
+	// does not re-allocate the path string.
 	const connectors = $derived.by(() => {
 		const paths: { d: string; dim: boolean }[] = [];
 		for (const { from, to } of edges) {
@@ -141,6 +181,26 @@
 		return paths;
 	});
 
+	// Deep-link: when the parent hands us a new `focusedCanonicalId`
+	// (e.g. Cmd+K palette navigation reads `#subject` from the URL),
+	// set the hover to that id and scroll the corresponding node into
+	// view. We track the last-applied id so repeated renders with the
+	// same focus do not re-scroll.
+	let lastFocused: string | null = null;
+	$effect(() => {
+		if (!focusedCanonicalId) {
+			lastFocused = null;
+			return;
+		}
+		if (focusedCanonicalId === lastFocused) return;
+		lastFocused = focusedCanonicalId;
+		hoveredSubjectId = focusedCanonicalId;
+		if (typeof document !== 'undefined') {
+			const el = document.getElementById(focusedCanonicalId);
+			el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		}
+	});
+
 	function setHover(id: string | null) {
 		hoveredSubjectId = id;
 	}
@@ -148,61 +208,72 @@
 	function activate(id: string) {
 		// Surface activation through the URL hash so Cmd+K palette
 		// links land on a focused subject node without a full
-		// navigation.
+		// navigation. The parent reads the hash and re-feeds it via
+		// `focusedCanonicalId`.
 		if (typeof window !== 'undefined') {
 			window.history.replaceState(null, '', `#${id}`);
 		}
 	}
 </script>
 
-<div class="dag" role="figure" aria-label="Retícula académica interactiva">
-	<svg
-		class="dag__svg"
-		viewBox="0 0 {svgWidth} {svgHeight}"
-		width={svgWidth}
-		height={svgHeight}
-		xmlns="http://www.w3.org/2000/svg"
-	>
-		{#each Array.from({ length: COLUMN_COUNT }, (_, i) => i + 1) as sem (sem)}
-			<text
-				x={MARGIN_X + (sem - 1) * (NODE_WIDTH + COLUMN_GAP) + NODE_WIDTH / 2}
-				y={MARGIN_Y - 16}
-				class="dag__sem-label"
-				text-anchor="middle"
-			>Sem {sem}</text>
-		{/each}
+{#if subjects.length === 0}
+	<div class="dag dag--empty">
+		<EmptyState
+			title="Retícula no disponible"
+			description="No hay asignaturas en el catálogo para mostrar. La retícula se carga desde la base de datos curricular."
+			icon={BookOpen}
+		/>
+	</div>
+{:else}
+	<div class="dag" role="figure" aria-label="Retícula académica interactiva">
+		<svg
+			class="dag__svg"
+			viewBox="0 0 {svgWidth} {svgHeight}"
+			width={svgWidth}
+			height={svgHeight}
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			{#each Array.from({ length: COLUMN_COUNT }, (_, i) => i + 1) as sem (sem)}
+				<text
+					x={MARGIN_X + (sem - 1) * (NODE_WIDTH + COLUMN_GAP) + NODE_WIDTH / 2}
+					y={MARGIN_Y - 16}
+					class="dag__sem-label"
+					text-anchor="middle"
+				>Sem {sem}</text>
+			{/each}
 
-		{#each connectors as c, i (i)}
-			<path
-				d={c.d}
-				class="dag__edge"
-				class:dag__edge--dim={c.dim}
-				fill="none"
-				stroke-width="1.5"
-			/>
-		{/each}
-
-		{#each subjects as s (s.canonicalId)}
-			{@const pos = positionByCanonical.get(s.canonicalId)}
-			{#if pos}
-				{@const status = statusByCanonicalId[s.canonicalId] ?? 'AVAILABLE'}
-				<SubjectNode
-					subject={s}
-					{status}
-					isHighlighted={highlight.highlighted.has(s.canonicalId)}
-					isDimmed={highlight.dimmed.has(s.canonicalId)}
-					x={pos.x}
-					y={pos.y}
-					width={NODE_WIDTH}
-					height={NODE_HEIGHT}
-					colorHsl={getSubjectColor(s.code, getTheme())}
-					onHover={setHover}
-					onActivate={activate}
+			{#each connectors as c, i (i)}
+				<path
+					d={c.d}
+					class="dag__edge"
+					class:dag__edge--dim={c.dim}
+					fill="none"
+					stroke-width="1.5"
 				/>
-			{/if}
-		{/each}
-	</svg>
-</div>
+			{/each}
+
+			{#each subjects as s (s.canonicalId)}
+				{@const pos = positionByCanonical.get(s.canonicalId)}
+				{#if pos}
+					{@const status = statusByCanonicalId[s.canonicalId] ?? 'AVAILABLE'}
+					<SubjectNode
+						subject={s}
+						{status}
+						isHighlighted={highlight.highlighted.has(s.canonicalId)}
+						isDimmed={highlight.dimmed.has(s.canonicalId)}
+						x={pos.x}
+						y={pos.y}
+						width={NODE_WIDTH}
+						height={NODE_HEIGHT}
+						colorHsl={getSubjectColor(s.code, getTheme())}
+						onHover={setHover}
+						onActivate={activate}
+					/>
+				{/if}
+			{/each}
+		</svg>
+	</div>
+{/if}
 
 <style>
 	.dag {
@@ -212,6 +283,10 @@
 		padding: var(--space-3);
 		overflow-x: auto;
 		font-family: var(--font-sans);
+	}
+
+	.dag--empty {
+		padding: var(--space-6);
 	}
 
 	.dag__svg {

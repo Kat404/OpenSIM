@@ -8,10 +8,11 @@
  *   4. Redirects to /login?reason=logged-out so the login page can
  *      optionally surface a confirmation.
  *
- * Defined as a +server.ts endpoint (not a form action) because the
- * action lives in src/routes/(protected)/dashboard/+page.svelte and
- * the form is the simpler cross-cutting primitive. SvelteKit blocks
- * cross-origin POSTs by default, so the logout form on the dashboard
+ * The logout form is rendered by `LayoutHeader` (see
+ * `src/lib/components/layout/LayoutHeader.svelte`); the endpoint is
+ * defined as a `+server.ts` route rather than a form action because
+ * the form is a cross-cutting primitive shared by every protected
+ * page. SvelteKit blocks cross-origin POSTs by default, so the form
  * is safe without an extra CSRF token.
  *
  * See: odd/tasks/opensim.md §16 (audit A1).

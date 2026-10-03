@@ -6,6 +6,30 @@
 		<meta name="description" content="OpenSIM — Sistema Integral Modular. TecNM Morelia." />
 		<meta name="theme-color" content="#0b0f17" />
 		<meta name="color-scheme" content="light dark" />
+		<script>
+			// Read the user's saved theme from localStorage and apply
+			// it to <html data-theme> synchronously, before any CSS
+			// from tokens.css paints. Without this the first frame
+			// is always light mode regardless of the user's choice
+			// (audit M8, Round 4 — FOUC).
+			(function () {
+				try {
+					var stored = localStorage.getItem('opensim-theme');
+					if (stored !== 'light' && stored !== 'dark') {
+						stored =
+							window.matchMedia &&
+							window.matchMedia('(prefers-color-scheme: dark)').matches
+								? 'dark'
+								: 'light';
+					}
+					document.documentElement.setAttribute('data-theme', stored);
+				} catch (_) {
+					// localStorage can be unavailable in private mode;
+					// tokens.css's `prefers-color-scheme` block covers
+					// the no-JS case.
+				}
+			})();
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

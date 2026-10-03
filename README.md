@@ -17,7 +17,7 @@ just db-set-password     # provision test student credential (controlNumber <NUM
 just dev                  # SvelteKit + local D1 via wrangler
 ```
 
-Visit `http://localhost:5173`, log in with the test credentials above, and the `/dashboard` placeholder will confirm auth works.
+Visit `http://localhost:5173`, log in with the test credentials above, and `/dashboard` will load the student's KPIs and the today's classes widget.
 
 ## Scripts
 

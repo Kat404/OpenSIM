@@ -391,11 +391,11 @@ export function getSubjectColorHSL(subjectCode: string): string {
 
 ### Phase 3: Layout & Interactive Modules
 
-- [ ] **Task 3.1:** `<LayoutSidebar/>` colapsable + `<LayoutHeader/>` con buscador modal `Cmd+K`.
-- [ ] **Task 3.2:** Dashboard estudiante (`/dashboard`) con KPIs de créditos y widget de clases del día.
-- [ ] **Task 3.3:** `<TimeGridSchedule/>` con alturas proporcionales al tiempo real.
-- [ ] **Task 3.4:** `<ReticulaDag/>` SVG interactivo con Bézier y hover highlighting.
-- [ ] **Task 3.5:** Kardex (`/academico/kardex`) con tabla unificada, sort y badges de evaluación.
+- [x] **Task 3.1:** `<LayoutSidebar/>` colapsable + `<LayoutHeader/>` con buscador modal `Cmd+K`.
+- [x] **Task 3.2:** Dashboard estudiante (`/dashboard`) con KPIs de créditos y widget de clases del día.
+- [x] **Task 3.3:** `<TimeGridSchedule/>` con alturas proporcionales al tiempo real.
+- [x] **Task 3.4:** `<ReticulaDag/>` SVG interactivo con Bézier y hover highlighting.
+- [x] **Task 3.5:** Kardex (`/academico/kardex`) con tabla unificada, sort y badges de evaluación.
 
 ### Phase 4: Enrolment Simulator, Procedures & PDF Export
 

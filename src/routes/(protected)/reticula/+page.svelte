@@ -3,20 +3,30 @@
 
   Hosts the ReticulaDag SVG component. The status legend is rendered
   here so the DAG itself stays focused on the layout + hover logic.
+  Reads `#subject-canonical-id` from the URL and hands it to the DAG
+  as `focusedCanonicalId` (audit M6, Round 4) so Cmd+K palette
+  deep-links scroll into view.
 -->
 <script lang="ts">
+	import { page } from '$app/state';
 	import type { PageData } from './$types';
 	import ReticulaDag from '#lib/components/curriculum/ReticulaDag.svelte';
+	import { STATUS_COLOR_VAR, STATUS_LABEL } from '#lib/utils/status-labels';
 	import type { StudentProgressStatus } from '#lib/server/db/schema';
 
 	let { data }: { data: PageData } = $props();
 
-	const LEGEND: { status: StudentProgressStatus; label: string }[] = [
-		{ status: 'APPROVED', label: 'Aprobada' },
-		{ status: 'ENROLLED', label: 'Cursando' },
-		{ status: 'AVAILABLE', label: 'Disponible' },
-		{ status: 'LOCKED', label: 'Bloqueada' }
-	];
+	let focusedCanonicalId = $state<string | null>(null);
+
+	// Deep-link from Cmd+K palette: `#calculo-diferencial` etc.
+	// The DAG handles the actual scroll; we just pipe the hash into
+	// a reactive prop so it works under client-side navigation.
+	$effect(() => {
+		const hash = page.url.hash;
+		focusedCanonicalId = hash ? hash.slice(1) : null;
+	});
+
+	const legend: StudentProgressStatus[] = ['APPROVED', 'ENROLLED', 'AVAILABLE', 'LOCKED'];
 </script>
 
 <svelte:head>
@@ -34,13 +44,15 @@
 	</header>
 
 	<div class="reticula__legend" role="list">
-		{#each LEGEND as item (item.status)}
+		{#each legend as status (status)}
 			<span class="reticula__legend-item" role="listitem">
 				<span
-					class="reticula__legend-swatch reticula__legend-swatch--{item.status.toLowerCase()}"
+					class="reticula__legend-swatch reticula__legend-swatch--{status.toLowerCase()}"
+					style:background-color="var({STATUS_COLOR_VAR[status].surface})"
+					style:border-color="var({STATUS_COLOR_VAR[status].border})"
 					aria-hidden="true"
 				></span>
-				{item.label}
+				{STATUS_LABEL[status]}
 			</span>
 		{/each}
 	</div>
@@ -49,6 +61,7 @@
 		subjects={data.subjects}
 		edges={data.edges}
 		statusByCanonicalId={data.statusByCanonicalId}
+		{focusedCanonicalId}
 	/>
 </section>
 
@@ -110,22 +123,5 @@
 		height: 14px;
 		border-radius: var(--radius-2);
 		border: 1px solid var(--border-default);
-	}
-
-	.reticula__legend-swatch--approved {
-		background-color: var(--success-50);
-		border-color: var(--success-500);
-	}
-	.reticula__legend-swatch--enrolled {
-		background-color: var(--brand-50);
-		border-color: var(--brand-500);
-	}
-	.reticula__legend-swatch--available {
-		background-color: var(--surface-3);
-		border-color: var(--border-default);
-	}
-	.reticula__legend-swatch--locked {
-		background-color: var(--danger-50);
-		border-color: var(--danger-500);
 	}
 </style>

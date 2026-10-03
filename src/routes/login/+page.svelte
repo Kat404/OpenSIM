@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
+	import { Sun, Moon } from 'lucide-svelte';
 	import { Button, Card, Input } from '#lib/components/ui';
 
 	// `form` is the SvelteKit action result. It is `null` on first
@@ -12,6 +14,28 @@
 	const notice = $derived(page.url.searchParams.get('reason') === 'logged-out'
 		? 'Sesión cerrada correctamente.'
 		: null);
+
+	// Minimal theme toggle for the unauthenticated login surface
+	// (audit M8, Round 4). The inline script in `app.html` already
+	// applies the saved theme before the first paint; this button
+	// just lets the user flip the choice before they sign in.
+	type Theme = 'light' | 'dark';
+	let theme = $state<Theme>('light');
+
+	onMount(() => {
+		const current = document.documentElement.getAttribute('data-theme');
+		theme = current === 'dark' ? 'dark' : 'light';
+	});
+
+	function toggleTheme() {
+		theme = theme === 'light' ? 'dark' : 'light';
+		document.documentElement.setAttribute('data-theme', theme);
+		try {
+			localStorage.setItem('opensim-theme', theme);
+		} catch {
+			/* localStorage unavailable in private mode; still applies for this session */
+		}
+	}
 </script>
 
 <svelte:head>
@@ -20,6 +44,20 @@
 </svelte:head>
 
 <main class="login">
+	<button
+		type="button"
+		class="login__theme"
+		onclick={toggleTheme}
+		aria-label={theme === 'light' ? 'Cambiar a tema oscuro' : 'Cambiar a tema claro'}
+		title="Tema claro / oscuro"
+	>
+		{#if theme === 'light'}
+			<Moon size={18} strokeWidth={1.75} />
+		{:else}
+			<Sun size={18} strokeWidth={1.75} />
+		{/if}
+	</button>
+
 	<div class="login__card">
 		<Card padding="lg">
 			<header class="login__header">
@@ -64,12 +102,37 @@
 
 <style>
 	.login {
+		position: relative;
 		min-height: 100dvh;
 		display: grid;
 		place-items: center;
 		padding: var(--space-6) var(--space-4);
 		background-color: var(--surface-0);
 		font-family: var(--font-sans);
+	}
+
+	.login__theme {
+		position: absolute;
+		top: var(--space-4);
+		right: var(--space-4);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		border-radius: var(--radius-2);
+		background-color: transparent;
+		color: var(--fg-secondary);
+		border: 1px solid transparent;
+		cursor: pointer;
+		transition:
+			background-color var(--motion-duration-fast) var(--motion-ease-standard),
+			color var(--motion-duration-fast) var(--motion-ease-standard);
+	}
+
+	.login__theme:hover {
+		background-color: var(--surface-2);
+		color: var(--fg-primary);
 	}
 
 	.login__card {
@@ -117,9 +180,9 @@
 		margin: 0;
 		padding: var(--space-2) var(--space-3);
 		font-size: var(--text-sm);
-		color: var(--success-700, #15803d);
-		background-color: var(--success-50, #f0fdf4);
-		border: 1px solid var(--success-500, #22c55e);
+		color: var(--success-700);
+		background-color: var(--success-50);
+		border: 1px solid var(--success-500);
 		border-radius: var(--radius-2);
 	}
 

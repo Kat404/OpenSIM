@@ -7,11 +7,24 @@
   the props passed in; keystrokes only filter the in-memory list, so
   no D1 traffic per character.
 
+  ARIA (audit M4, Round 4):
+    - The input is the combobox; it owns `aria-controls`,
+      `aria-expanded`, and `aria-activedescendant` so screen
+      readers can announce the current option without leaving the
+      input.
+    - The list is a `<ul role="listbox">`; each option is a
+      `<li role="option">` with a stable `id` and `tabindex="-1"`
+      so the focus stays on the input while the user arrows
+      through results.
+    - The keyboard handler lives on the input wrapper, not the
+      options, so the arrows keep working no matter which element
+      has DOM focus.
+
   Keyboard:
     - Cmd/Ctrl+K (handled by LayoutHeader) opens the palette.
     - ArrowDown / ArrowUp navigate the result list.
     - Enter navigates to the highlighted result.
-    - Escape closes.
+    - Escape closes (via the Modal atom).
     - Clicking outside closes.
 -->
 <script lang="ts">
@@ -74,6 +87,13 @@
 			.slice(0, 12);
 	});
 
+	// Stable id for the highlighted option so `aria-activedescendant`
+	// always points somewhere real (audit M4, Round 4).
+	const activeOptionId = $derived.by(() => {
+		const target = results[highlight];
+		return target ? `palette-option-${target.key}` : '';
+	});
+
 	$effect(() => {
 		if (open) {
 			query = '';
@@ -95,13 +115,14 @@
 
 	function commit(href: string) {
 		// Hash links (#subject) are not full routes — SvelteKit's
-		// router will navigate and the retícula page can read the
-		// hash via `$page.url.hash` if it wants to focus a node.
+		// router will navigate and the retícula page reads the
+		// hash via `$page.url.hash` and pipes it to the DAG as
+		// `focusedCanonicalId`.
 		goto(href).catch(() => {});
 		close();
 	}
 
-	function onKeydown(e: KeyboardEvent) {
+	function handleKey(e: KeyboardEvent) {
 		if (e.key === 'ArrowDown') {
 			e.preventDefault();
 			highlight = (highlight + 1) % Math.max(results.length, 1);
@@ -128,7 +149,7 @@
 	size="md"
 	onclose={close}
 >
-	<div class="palette">
+	<div class="palette" role="presentation" onkeydown={handleKey}>
 		<div class="palette__field">
 			<Search size={16} strokeWidth={1.75} aria-hidden="true" />
 			<input
@@ -138,19 +159,22 @@
 				class="palette__input"
 				placeholder="Buscar asignaturas, secciones…"
 				aria-label="Buscar"
-				onkeydown={onKeydown}
+				role="combobox"
+				aria-controls="palette-list"
+				aria-expanded={open}
+				aria-autocomplete="list"
+				aria-activedescendant={activeOptionId}
 			/>
 		</div>
 
-		<ul class="palette__list" role="listbox" aria-label="Resultados">
+		<ul id="palette-list" class="palette__list" role="listbox" aria-label="Resultados">
 			{#each results as r, i (r.key)}
-				<li>
+				{@const optionId = `palette-option-${r.key}`}
+				<li role="option" id={optionId} aria-selected={i === highlight} tabindex="-1">
 					<button
 						type="button"
 						class="palette__item"
 						class:palette__item--active={i === highlight}
-						role="option"
-						aria-selected={i === highlight}
 						onmouseenter={() => (highlight = i)}
 						onclick={() => commit(r.href)}
 					>

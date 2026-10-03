@@ -33,7 +33,7 @@
 			<EmptyState
 				title="No tienes horario activo"
 				description="No tienes horario activo este semestre. La reinscripción está disponible en /reinscripcion (próximamente)."
-				icon={CalendarX as never}
+				icon={CalendarX}
 			/>
 		{:else}
 			<TimeGridSchedule schedule={data.schedule} />
