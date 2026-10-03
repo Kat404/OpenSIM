@@ -41,6 +41,27 @@ export interface AxeScanResult {
 }
 
 export async function scanForA11y(page: Page, testInfo: TestInfo): Promise<AxeScanResult> {
+	// Wait for SvelteKit hydration so JS-applied attributes (e.g.
+	// `data-theme` from src/lib/utils/theme.svelte.ts:61 and the
+	// preload-data attributes from app.html) are present on
+	// documentElement before axe scans. Without this, the dark theme
+	// project scans the pre-hydration CSS state — `[data-theme='dark']`
+	// never matches even when the project is `chromium-data-theme-dark`,
+	// and the OS-colorScheme path is dead code on 5 of 8 routes (audit
+	// R9 NUEVO-1). The 200 ms fallback covers pages whose modules don't
+	// set the preload-data attribute (e.g. /login).
+	await page
+		.waitForFunction(
+			() =>
+				document.documentElement.hasAttribute('data-sveltekit-preload-code') ||
+				document.documentElement.hasAttribute('data-sveltekit-preload-data'),
+			{ timeout: 5_000 }
+		)
+		.catch(() => {
+			/* preload attributes absent — rely on the timeout fallback below */
+		});
+	await page.waitForTimeout(200);
+
 	const results = await new AxeBuilder({ page }).withTags([...TAGS]).analyze();
 
 	await testInfo.attach('axe-report.json', {
