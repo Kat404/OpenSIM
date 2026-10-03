@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, Card, Input } from '$lib/components/ui';
+	import { Button, Card, Input } from '#lib/components/ui';
 
 	// `form` is the SvelteKit action result. It is `null` on first
 	// render and becomes the failure payload (from +page.server.ts)

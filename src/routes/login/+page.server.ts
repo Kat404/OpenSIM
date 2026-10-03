@@ -28,8 +28,8 @@ import {
 	hashIp,
 	sessionCookieOptions,
 	verifyPassword
-} from '$lib/server/auth';
-import { getDb } from '$lib/server/db';
+} from '#lib/server/auth';
+import { getDb } from '#lib/server/db';
 
 const env = workerEnv as OpenSimWorkerEnv;
 

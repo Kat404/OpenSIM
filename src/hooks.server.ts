@@ -31,8 +31,8 @@ import {
 	SESSION_COOKIE_NAME,
 	getUserFromSessionToken,
 	invalidateSession
-} from '$lib/server/auth';
-import { getDb } from '$lib/server/db';
+} from '#lib/server/auth';
+import { getDb } from '#lib/server/db';
 
 const env = workerEnv as OpenSimWorkerEnv;
 

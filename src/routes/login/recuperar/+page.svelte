@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Card } from '$lib/components/ui';
+	import { Card } from '#lib/components/ui';
 </script>
 
 <svelte:head>

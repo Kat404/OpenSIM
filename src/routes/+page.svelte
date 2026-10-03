@@ -16,7 +16,7 @@
 		Tabs,
 		Tooltip,
 		pushToast
-	} from '$lib/components/ui';
+	} from '#lib/components/ui';
 	import { Search, Save, Trash2 } from 'lucide-svelte';
 
 	const tabItems = [
