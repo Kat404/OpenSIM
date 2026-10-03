@@ -29,7 +29,12 @@ export default defineConfig({
 	testDir: './tests/e2e',
 	fullyParallel: false,
 	workers: 1, // D1 local is single-writer; serial avoids flake
-	retries: 0,
+	// CI gets one retry to absorb transient network/timing flake; local
+	// dev is single-shot for fast feedback. `trace: 'retain-on-failure'`
+	// (Task 5 fix) records the trace on every failure, not only on the
+	// retry — the previous `on-first-retry` was contradictory with
+	// `retries: 0` and never produced traces.
+	retries: process.env.CI ? 1 : 0,
 	reporter: [
 		['list'],
 		['json', { outputFile: 'tests/e2e/reports/results.json' }],
@@ -37,7 +42,7 @@ export default defineConfig({
 	],
 	use: {
 		baseURL: BASE_URL,
-		trace: 'on-first-retry',
+		trace: 'retain-on-failure',
 		headless: true,
 		launchOptions: {
 			// System Chromium — no Playwright bundled browser.
