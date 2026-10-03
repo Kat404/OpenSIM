@@ -1,9 +1,9 @@
-# OpenSIM — Open Source - Sistema Integral Modular (v2.1)
+# OpenSIM — Open Source - Sistema Integral Modular (v2.2)
 
 **Proyecto:** OpenSIM (Open Source — Sistema Integral Modular)
 **Target Architecture:** SvelteKit `3.0.0` + Svelte `5.57.1` (Runes) + Cloudflare D1/Workers + Drizzle ORM `0.45.3` + Valibot `1.5.0` + `pdf-lib 1.17.1`
 **Programa Académico:** Ingeniería en Sistemas Computacionales (Plan `ISIC-2010-224`, Instituto Tecnológico de Morelia)
-**Versión:** 2.1 (CF-3 cerrado: auth single-file nativa; Tarea 2.5 agregada)
+**Versión:** 2.2 (audit fixes: spec self-consistency, token hashing, route group, drizzle doc rewrite)
 **Fecha:** 2026-10-02
 
 ---
@@ -29,7 +29,16 @@
 - **CF-3 cerrado**: Auth nativa single-file vía `crypto.subtle` PBKDF2/SHA-256, 0 deps npm auth, 0 servicios externos de email.
 - **Schema extendido**: nuevas tablas `student_credentials` (PBKDF2 hash + salt + iterations) y `auth_sessions` (token + expiry + metadata).
 - **Tarea 2.5 agregada**: Implementar `src/lib/server/auth.ts` + middleware en `src/hooks.server.ts` + rutas `/login` + `/login/recuperar` + seed CLI.
-- **Phase 2 status**: Tareas 2.1 y 2.2 marcadas como completadas; Tareas 2.3, 2.4, 2.5 pendientes.
+- **Phase 2 status**: Tareas 2.1 y 2.2 marcadas como completadas; Tareas 2.3, 2.4, 2.5 marcadas como completadas en el cuerpo de §8 (esta sección del header es histórica — el estado actual de cada tarea es la fuente de verdad en §8).
+
+### Cambios v2.1 → v2.2 (Oct 2026, audit fixes)
+
+- **Token hashing en `auth_sessions`**: el PK `id` ahora almacena `sha256(token)`, no el token plano. La cookie sigue llevando el token; el hash es de un solo sentido. (Audit A3.)
+- **Route group `(protected)`**: la guardia de rutas protegidas migra de prefijo URL a un `(protected)/+layout.server.ts` (ver Tarea 4.1). Cubre `/dashboard`, `/reinscripcion`, `/tramites` y futuros hijos del grupo. (Audit C5.)
+- **ON DELETE CASCADE**: FKs de `student_credentials` y `auth_sessions` hacia `student_profiles` ahora son `ON DELETE CASCADE`, así un egreso o corrección de número de control limpia la cadena completa. (Audit A6.)
+- **Índice en `auth_sessions.expires_at`**: agregado para soportar prune oportunista sin full table scan por request. (Audit A2.)
+- **Logout endpoint**: nuevo `POST /login/logout` invoca `invalidateSession` y borra la cookie. (Audit A1.)
+- **Doc de Drizzle reescrita**: `docs/drizzle-raw-sql-workaround.md` reemplazada por `docs/drizzle-migrations-and-data.md` (flujo canónico positivo, sin opciones A/B/C). (Audit C1/C2/C3.)
 
 ### Stack pin — LATEST versions (Oct 2026)
 
@@ -44,7 +53,7 @@
 | `vitest` | `5.0.3` |
 | `@playwright/test` | `1.63.0` |
 | `@axe-core/playwright` | `4.13.0` |
-| `typescript` | `7.0.2` |
+| `typescript` | `6.0.3` |
 | `vite` | `8.3.2` |
 | `lucide-svelte` | `1.0.1` |
 | `wrangler` | `4.147.0` |
@@ -130,7 +139,7 @@ Custom Properties en `:root`, CSS Nesting nativo, scoped styles de Svelte. Token
 
 **Stack:** `drizzle-orm 0.45.3` + Cloudflare D1 (SQLite at edge)
 
-### 5.1 Tablas (10 entidades normalizadas)
+### 5.1 Tablas (12 entidades normalizadas)
 
 ```typescript
 // src/lib/server/db/schema.ts
@@ -360,9 +369,13 @@ export function getSubjectColorHSL(subjectCode: string): string {
 
 ### Phase 1: Database Schema & Full Seeding Pipeline
 
-- [ ] **Task 1.1:** Crear `src/lib/server/db/schema.ts` con 10 tablas Drizzle (careers, specialties, subjects, subjectAliases, subjectPrerequisites, subjectUnits, studentProfiles, studentProgress, courseGroups, courseScheduleBlocks). Incluir FIXES v2.0.
-- [ ] **Task 1.2:** Guardar dataset completo de 42 asignaturas en `src/lib/server/db/data/curriculum-isic-2010-224.json`.
-- [ ] **Task 1.3:** Crear seed script (`src/lib/server/db/seed.ts`) que popula D1 con canonicalIds, prerrequisitos y aliases (manejando `ACF-0901` vs `ACF-2301`).
+- [x] **Task 1.1:** Crear `src/lib/server/db/schema.ts` con 10 tablas Drizzle (careers, specialties, subjects, subjectAliases, subjectPrerequisites, subjectUnits, studentProfiles, studentProgress, courseGroups, courseScheduleBlocks). Incluir FIXES v2.0.
+- [x] **Task 1.2:** Guardar dataset completo de 42 asignaturas en `src/lib/server/db/data/curriculum-isic-2010-224.json`.
+- [x] **Task 1.3:** Crear seed script (`src/lib/server/db/seed.ts`) que popula D1 con canonicalIds, prerrequisitos y aliases (manejando `ACF-0901` vs `ACF-2301`).
+
+### Pending Phase 1 Tasks
+
+- [ ] **Task 1.4:** Seed CLI para provisionar credenciales del estudiante de prueba. Implementado ad-hoc en `src/lib/server/db/seed-password.ts` (alcanzable vía `pnpm run db:set-password`); no expuesto como recipe `just` todavía. Marcado pendiente para documentar formalmente la receta `just db-set-password` (Fase 3 / Tarea de tooling).
 
 ### Phase 2: Core Algorithmic Layer & Design System
 
@@ -403,7 +416,7 @@ export function getSubjectColorHSL(subjectCode: string): string {
 |---|---|---|
 | CF-1 | SubjectNode dual identity | `canonicalId` slug + tabla `subjectAliases` |
 | CF-2 | Backend: Cloudflare D1 + Drizzle ORM | SQLite edge, type-safe, FOSS-friendly |
-| **CF-3** | **Auth nativa single-file** | **`crypto.subtle` PBKDF2/SHA-256, sesiones en `auth_sessions`, cookies HttpOnly+Secure+SameSite=Lax, `/login/recuperar` informativo. 0 paquetes npm auth, 0 servicios externos.** |
+| **CF-3** | **Auth nativa single-file** | **`crypto.subtle` PBKDF2/SHA-256, tablas `student_credentials` (hash+salt+iter) + `auth_sessions` (token hasheado SHA-256, expiry, metadata), cookies HttpOnly+Secure+SameSite=Lax, `/login/recuperar` informativo. 0 paquetes npm auth, 0 servicios externos.** |
 | CF-4 | Performance budgets | Implícito via edge SSR; budgets explícitos §12 |
 | AG-3 | 18 componentes atómicos | Listado completo en Fase 2 Tarea 2.2 |
 | AG-4 | HSL color hash | FNV-style hash, hsl(60%, 88%) pastel |
@@ -564,13 +577,30 @@ pnpm run deploy         # wrangler pages deploy
 
 ---
 
-## Anexo B. CF-3 Auth (TBD)
+## 16. Audit Fixes (v2.2)
 
-**Estado**: Diferido. Tarea 1.4 queda con mock-auth.
+Cambios aplicados tras la auditoría M3.1-Flash-Preview (max effort, 2026-10-02). Cuatro bloques, cada uno resuelto con un commit de unidad de trabajo.
 
-**Opciones pendientes**:
-- Lucia/oslo (`@oslojs/crypto` + custom session) — minimal, FOSS-aligned
-- Auth.js (SvelteKitAuth) — más providers out-of-the-box
-- Custom (token table + `oslo/oauth2`) — control total
+### 16.1 C5 — Route group `(protected)` (refactor de routing)
 
-**Decisión**: al cerrar Fase 1 (cuando schema esté estable).
+- **Antes:** `src/hooks.server.ts` validaba contra `pathname.startsWith('/academico/')`. Cubre el prefijo, no el mapa de rutas planificado (`/dashboard`, `/reinscripcion`, `/tramites`).
+- **Después:** la protección vive en `src/routes/(protected)/+layout.server.ts` y se aplica a cualquier hijo del grupo. `hooks.server.ts` se simplifica a "leer cookie → hidratar `locals.user`" sin tocar la URL.
+- **Impacto:** el guard pasa de cubrir una convención de URL a un límite de layout. Nuevas rutas protegidas se agregan bajo `(protected)/` y heredan el gate sin tocar middleware.
+
+### 16.2 A3 — Token hashing en `auth_sessions`
+
+- **Antes:** `createSession` insertaba el token plano como PK. Cualquier dump de D1 entregaba tokens usables durante 30 días.
+- **Después:** el PK `id` de `auth_sessions` es `sha256(token)` (base64url). `validateSessionToken` e `invalidateSession` hashean la entrada antes de consultar/borrar. La cookie sigue llevando el token; solo la base lo hashea.
+- **Coste:** una llamada `crypto.subtle.digest` por request autenticado. Test suite sigue verde (el cambio es transparente al consumidor del API).
+
+### 16.3 A5 — Spec self-consistency (Anexo B, contador, pin de TS)
+
+- **Antes:** el spec v2.1 se contradecía: `typescript 7.0.2` en §3 vs `6.0.3` en `package.json`; §5.1 decía "10 entidades" listando 12; §8 dejaba Phase 1 sin marcar pese a estar completa; Anexo B declaraba "CF-3 (TBD)" aunque el header lo marcaba cerrado.
+- **Después:** pin de TS alineado a `6.0.3`, §5.1 dice "12 entidades", Phase 1 marcada `[x]`, Anexo B eliminado, Anexo A preservado, y nueva sección §16 (esta) documenta los fixes.
+- **Impacto:** el spec vuelve a ser el artefacto canónico confiable. La contradicción más peligrosa — Anexo B invitando a reintroducir mock-auth — se eliminó por completo.
+
+### 16.4 Doc rewrite — Flujo canónico de Drizzle + D1
+
+- **Antes:** `docs/drizzle-raw-sql-workaround.md` documentaba la divergencia local/prod como inevitable y proponía 3 opciones (A/B/C) con comandos que mezclaban flags inexistentes (`--file` en `migrations apply`).
+- **Después:** `docs/drizzle-migrations-and-data.md` describe el flujo canónico positivo en una sola dirección: schema → `drizzle-kit generate` → `wrangler d1 migrations apply` (local) → `wrangler d1 execute --file` solo para datos → `wrangler d1 migrations apply --remote`. `drizzle-kit migrate` se documenta como camino muerto y no se usa.
+- **Regla de cabecera:** `wrangler d1 execute --file` es exclusivamente para DATOS; DDL siempre va por el migration runner.
