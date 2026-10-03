@@ -56,6 +56,7 @@
 	--brand-900: #164e63;
 	--brand-fg: #ffffff; /* foreground for solid brand backgrounds */
 	--fg-on-danger: #ffffff; /* N13: danger-700 (#b91c1c) + white = 7.95:1, AA in light */
+	--fg-on-success: #ffffff; /* P1-2: success-500 (#10b981) + white = 2.54:1 fails AA — see Stepper */
 
 	/* Semantic status (light variants — WCAG AA on --surface-1) */
 	--success-50: #ecfdf5;
@@ -162,6 +163,7 @@
 	--fg-disabled: #475569;
 	--fg-inverse: #0b0f17;
 	--fg-on-danger: #0b0f17; /* R9 NUEVO-2: missing here caused 7.95:1 -> ??? on Button danger in dark */
+	--fg-on-success: #0b0f17; /* P1-2: dark --success-500 is #34d399 (lighter); dark text on it = ~9:1 */
 
 	--brand-50: #164e63;
 	--brand-100: #155e75;
@@ -253,6 +255,7 @@
 		--danger-700: #fca5a5;
 		--info-700: #93c5fd;
 		--fg-on-danger: #0b0f17;
+		--fg-on-success: #0b0f17;
 
 		--border-subtle: #1f2937;
 		--border-default: #334155;

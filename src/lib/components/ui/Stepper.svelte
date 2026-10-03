@@ -123,7 +123,7 @@
 	.stepper__item--complete .stepper__indicator {
 		background-color: var(--success-500);
 		border-color: var(--success-500);
-		color: #ffffff;
+		color: var(--fg-on-success);
 	}
 
 	.stepper__item--current .stepper__indicator {
