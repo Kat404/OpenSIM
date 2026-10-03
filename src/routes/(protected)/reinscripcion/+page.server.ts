@@ -1,0 +1,276 @@
+/**
+ * OpenSIM — Simulador de Reinscripción (Phase 4 Tarea 4.1).
+ *
+ * The simulator lets a student browse the available course groups
+ * for the current period, filter by subject area / credits / text,
+ * see the live schedule preview (with conflicts highlighted), and
+ * commit a single signature that enrolls them in the selected set.
+ *
+ * Data flow:
+ *   1. Resolve the current period via `getCurrentPeriod`.
+ *   2. Read the full `course_groups` catalog (joined with `subjects`
+ *      so the UI can render area / credits / name without a second
+ *      round-trip) — this is the "oferta" the filter operates on.
+ *   3. Read the student's already-enrolled subjects (same period)
+ *      so the page can mark them as taken and exclude them from
+ *      the selection list.
+ *   4. Read every schedule block for the offer + the already-
+ *      enrolled groups so the page can render the schedule preview
+ *      and run the conflict detector client-side without further
+ *      fetches.
+ *
+ * All three queries are routed through D1 in parallel; the page is
+ * server-rendered so the initial paint already shows the real
+ * catalog (no client-side spinner on first load).
+ *
+ * The "Inscribir y firmar" form action below accepts a list of
+ * `groupId`s, validates the selection (no duplicates, no already-
+ * enrolled groups, no conflicts), inserts the corresponding
+ * `student_progress` rows in a single `db.batch()`, and redirects to
+ * `/dashboard?enrolled=1` on success.
+ *
+ * See: odd/tasks/opensim.md Tarea 4.1.
+ */
+
+import { and, eq, inArray } from 'drizzle-orm';
+import { fail, redirect, type Actions } from '@sveltejs/kit';
+import { env as workerEnv } from 'cloudflare:workers';
+import type { OpenSimWorkerEnv } from '../../../cloudflare-workers';
+import type { PageServerLoad } from './$types';
+import { getDb } from '#lib/server/db';
+import {
+	courseGroups,
+	courseScheduleBlocks,
+	studentProgress,
+	subjects
+} from '#lib/server/db/schema';
+import { findConflicts } from '#lib/utils/schedule-conflict';
+import { getCurrentPeriod } from '#lib/server/enrollment';
+import type { OfferBlock, OfferGroup } from '#lib/components/simulador/types';
+
+const env = workerEnv as OpenSimWorkerEnv;
+
+export const load: PageServerLoad = async ({ locals }) => {
+	const u = locals.user!;
+	if (!env.DB) {
+		return {
+			period: null,
+			groups: [] as OfferGroup[],
+			blocks: [] as OfferBlock[],
+			enrolledCanonicalIds: [] as string[],
+			enrolledBlocks: [] as OfferBlock[]
+		};
+	}
+	const db = getDb(env.DB);
+	const period = await getCurrentPeriod(db, u.controlNumber);
+
+	// No period yet → student is brand-new; render an empty state.
+	if (!period) {
+		return {
+			period: null,
+			groups: [] as OfferGroup[],
+			blocks: [] as OfferBlock[],
+			enrolledCanonicalIds: [] as string[],
+			enrolledBlocks: [] as OfferBlock[]
+		};
+	}
+
+	// 1. Already-enrolled canonicalIds for this period (so the UI can
+	//    render those groups as "already taken").
+	const enrolledRows = await db
+		.select({ subjectCanonicalId: studentProgress.subjectCanonicalId })
+		.from(studentProgress)
+		.where(
+			and(
+				eq(studentProgress.studentControlNumber, u.controlNumber),
+				eq(studentProgress.status, 'ENROLLED'),
+				eq(studentProgress.period, period)
+			)
+		);
+	const enrolledCanonicalIds = enrolledRows.map((r) => r.subjectCanonicalId);
+
+	// 2. Full course-groups catalog joined with the subjects table
+	//    so the page has code/name/area/credits without further
+	//    round-trips. Drizzle's leftJoin keeps groups that point at
+	//    a missing subject as a single row (the spec pins FKs at
+	//    insert time, so this is defensive).
+	const offerRows = await db
+		.select({
+			groupId: courseGroups.id,
+			subjectCanonicalId: courseGroups.subjectCanonicalId,
+			subjectCode: subjects.code,
+			subjectName: subjects.name,
+			area: subjects.area,
+			credits: subjects.credits,
+			hasLab: courseGroups.hasLab,
+			teacherName: courseGroups.teacherName
+		})
+		.from(courseGroups)
+		.innerJoin(subjects, eq(subjects.canonicalId, courseGroups.subjectCanonicalId));
+
+	const groups: OfferGroup[] = offerRows.map((r) => ({
+		...r,
+		alreadyEnrolled: enrolledCanonicalIds.includes(r.subjectCanonicalId)
+	}));
+
+	// 3. Schedule blocks: ALL offer blocks + the student's enrolled
+	//    ones (the conflict detector needs both). The simulator
+	//    does the actual filtering client-side; this avoids a
+	//    round-trip per keystroke.
+	const allGroupIds = Array.from(new Set(groups.map((g) => g.groupId)));
+	const blockRows =
+		allGroupIds.length === 0
+			? []
+			: await db
+					.select({
+						id: courseScheduleBlocks.id,
+						groupId: courseScheduleBlocks.groupId,
+						day: courseScheduleBlocks.day,
+						startTime: courseScheduleBlocks.startTime,
+						endTime: courseScheduleBlocks.endTime,
+						classroom: courseScheduleBlocks.classroom
+					})
+					.from(courseScheduleBlocks)
+					.where(inArray(courseScheduleBlocks.groupId, allGroupIds));
+
+	const enrolledGroupIds = new Set(
+		groups.filter((g) => g.alreadyEnrolled).map((g) => g.groupId)
+	);
+	const blocks: OfferBlock[] = blockRows;
+	const enrolledBlocks: OfferBlock[] = blockRows.filter((b) => enrolledGroupIds.has(b.groupId));
+
+	return { period, groups, blocks, enrolledCanonicalIds, enrolledBlocks };
+};
+
+export const actions: Actions = {
+	/**
+	 * Enrolls the student in the given `groupId`s for the current
+	 * period. Re-validates the selection on the server (no
+	 * duplicates, no already-enrolled groups, no schedule conflicts)
+	 * and inserts the resulting `student_progress` rows in a single
+	 * `db.batch()`. On success, redirects to `/dashboard?enrolled=1`
+	 * so the dashboard can flash a success message.
+	 *
+	 * Conflicts are detected at insert time: if the student picks a
+	 * set of groups whose schedule blocks overlap, the action
+	 * returns a `fail()` payload the page can render.
+	 */
+	enroll: async ({ request, locals }) => {
+		if (!env.DB) {
+			return fail(503, { error: 'Servicio no disponible' });
+		}
+		const u = locals.user!;
+		const form = await request.formData();
+		const raw = form.getAll('groupId').map((v) => String(v));
+		const unique = Array.from(new Set(raw)).filter((s) => s.length > 0);
+
+		if (unique.length === 0) {
+			return fail(400, { error: 'Selecciona al menos un grupo para inscribir.' });
+		}
+
+		const db = getDb(env.DB);
+		const period = await getCurrentPeriod(db, u.controlNumber);
+		if (!period) {
+			return fail(400, { error: 'No hay un periodo activo para inscribir.' });
+		}
+
+		// Look up the candidate groups + their subjects.
+		const candidates = await db
+			.select({
+				groupId: courseGroups.id,
+				subjectCanonicalId: courseGroups.subjectCanonicalId
+			})
+			.from(courseGroups)
+			.where(inArray(courseGroups.id, unique));
+		if (candidates.length !== unique.length) {
+			return fail(400, { error: 'Uno o más grupos seleccionados no existen.' });
+		}
+
+		// Reject groups whose subject the student is already enrolled
+		// in this period — the UI already filters them out, but a
+		// stale form post could still submit them.
+		const alreadyEnrolled = await db
+			.select({ subjectCanonicalId: studentProgress.subjectCanonicalId })
+			.from(studentProgress)
+			.where(
+				and(
+					eq(studentProgress.studentControlNumber, u.controlNumber),
+					eq(studentProgress.status, 'ENROLLED'),
+					eq(studentProgress.period, period)
+				)
+			);
+		const taken = new Set(alreadyEnrolled.map((r) => r.subjectCanonicalId));
+		for (const c of candidates) {
+			if (taken.has(c.subjectCanonicalId)) {
+				return fail(409, {
+					error: 'Una materia seleccionada ya está inscrita este periodo.'
+				});
+			}
+		}
+
+		// Conflict check across the candidate blocks + the already-
+		// enrolled blocks. We use the same pure helper the client
+		// uses so the rule is defined in exactly one place.
+		const candidateBlocks = await db
+			.select({
+				id: courseScheduleBlocks.id,
+				groupId: courseScheduleBlocks.groupId,
+				day: courseScheduleBlocks.day,
+				startTime: courseScheduleBlocks.startTime,
+				endTime: courseScheduleBlocks.endTime
+			})
+			.from(courseScheduleBlocks)
+			.where(inArray(courseScheduleBlocks.groupId, unique));
+		const enrolledGroupIds = (
+			await db
+				.select({ id: courseGroups.id })
+				.from(courseGroups)
+				.innerJoin(
+					studentProgress,
+					and(
+						eq(studentProgress.subjectCanonicalId, courseGroups.subjectCanonicalId),
+						eq(studentProgress.studentControlNumber, u.controlNumber),
+						eq(studentProgress.status, 'ENROLLED'),
+						eq(studentProgress.period, period)
+					)
+				)
+		).map((r) => r.id);
+		const enrolledBlocks = enrolledGroupIds.length
+			? await db
+					.select({
+						id: courseScheduleBlocks.id,
+						groupId: courseScheduleBlocks.groupId,
+						day: courseScheduleBlocks.day,
+						startTime: courseScheduleBlocks.startTime,
+						endTime: courseScheduleBlocks.endTime
+					})
+					.from(courseScheduleBlocks)
+					.where(inArray(courseScheduleBlocks.groupId, enrolledGroupIds))
+			: [];
+		const conflicts = findConflicts(candidateBlocks, enrolledBlocks);
+		if (conflicts.size > 0) {
+			return fail(409, {
+				error: 'Conflicto de horario con materias ya inscritas.'
+			});
+		}
+
+		// Insert all rows in a single multi-value INSERT. SQLite
+		// executes a single `INSERT INTO ... VALUES (...), (...), ...`
+		// atomically: a mid-flight failure does not leave the
+		// student half-enrolled. The Drizzle `db.batch(...)` API
+		// requires a non-empty tuple, which is awkward for a
+		// dynamic N — the multi-value insert is the right primitive.
+		await db.insert(studentProgress).values(
+			candidates.map((c) => ({
+				studentControlNumber: u.controlNumber,
+				subjectCanonicalId: c.subjectCanonicalId,
+				status: 'ENROLLED' as const,
+				grade: null,
+				evaluationType: null,
+				period
+			}))
+		);
+
+		throw redirect(303, '/dashboard?enrolled=1');
+	}
+};

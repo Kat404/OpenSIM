@@ -43,13 +43,21 @@ export interface CurrentEnrollment {
 }
 
 /**
- * Returns the period string the student is enrolled in "right now",
- * defined as the most recent `student_progress.period` value for the
- * given control number. The result drives both the dashboard and the
- * horario page so a student with mixed-semester history always sees
- * the latest semester's classes (audit M1 fix).
+ * Returns the period string the student is *actively enrolled* in
+ * "right now", defined as the most recent `student_progress.period`
+ * value with `status = 'ENROLLED'` for the given control number.
  *
- * Returns `null` when the student has no progress rows at all — pages
+ * The filter is intentional: a future LOCKED row (the student has a
+ * placeholder for next year's Servicio Social, say) has a period
+ * string that sorts *after* the current ENROLLED period, so a
+ * "max(period)" query would jump to next year. Pinning the lookup
+ * to `status = 'ENROLLED'` is what makes "current" mean current.
+ *
+ * The result drives both the dashboard and the horario page so a
+ * student with mixed-semester history always sees the latest
+ * semester's classes (audit M1 fix).
+ *
+ * Returns `null` when the student has no ENROLLED rows — pages
  * branch on the null and render the EmptyState.
  */
 export async function getCurrentPeriod(
@@ -59,7 +67,12 @@ export async function getCurrentPeriod(
 	const rows = await db
 		.select({ period: studentProgress.period })
 		.from(studentProgress)
-		.where(eq(studentProgress.studentControlNumber, controlNumber))
+		.where(
+			and(
+				eq(studentProgress.studentControlNumber, controlNumber),
+				eq(studentProgress.status, 'ENROLLED')
+			)
+		)
 		.orderBy(desc(studentProgress.period))
 		.limit(1);
 	return rows[0]?.period ?? null;

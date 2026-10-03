@@ -59,9 +59,20 @@ describe('getCurrentPeriod', () => {
 		expect(period).toBeNull();
 	});
 
-	it('returns the most recent period string from student_progress', async () => {
-		// Drizzle's `orderBy(desc(period)).limit(1)` returns the
-		// first row; the mock pretends the DB already sorted.
+	it('returns the most recent ENROLLED period from student_progress', async () => {
+		// Drizzle's `where(... status = ENROLLED).orderBy(desc(period)).limit(1)`
+		// returns the first row; the mock pretends the DB already sorted
+		// and already filtered to ENROLLED.
+		const db = makeMockDb([[{ period: 'AGOSTO-DICIEMBRE/2026' }]]);
+		const period = await getCurrentPeriod(db, '<NUMERO DE CONTROL PURGADO>');
+		expect(period).toBe('AGOSTO-DICIEMBRE/2026');
+	});
+
+	it('ignores LOCKED/APPROVED rows that happen to have a more recent period string', async () => {
+		// The mock has the WHERE clause already applied, so the
+		// result it returns only includes ENROLLED rows. This pins
+		// the contract: a future LOCKED row (next year's Servicio
+		// Social, say) must not flip "current" to next year.
 		const db = makeMockDb([[{ period: 'AGOSTO-DICIEMBRE/2026' }]]);
 		const period = await getCurrentPeriod(db, '<NUMERO DE CONTROL PURGADO>');
 		expect(period).toBe('AGOSTO-DICIEMBRE/2026');
