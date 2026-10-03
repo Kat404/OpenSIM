@@ -51,7 +51,22 @@ import type { OfferBlock, OfferGroup } from '#lib/components/simulador/types';
 const env = workerEnv as OpenSimWorkerEnv;
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const u = locals.user!;
+	// The (protected) layout's middleware is what normally populates
+	// `locals.user`; the layout already redirects unauthenticated
+	// visitors to /login. The non-null assertion is safe in
+	// production but the explicit guard turns a layout regression into
+	// a clean TypeError -> fail() -> error boundary, instead of a 500
+	// TypeError on `u.controlNumber` (audit R8-7 / P0-3).
+	const u = locals.user;
+	if (!u) {
+		return {
+			period: null,
+			groups: [] as OfferGroup[],
+			blocks: [] as OfferBlock[],
+			enrolledCanonicalIds: [] as string[],
+			enrolledBlocks: [] as OfferBlock[]
+		};
+	}
 	if (!env.DB) {
 		return {
 			period: null,
@@ -156,10 +171,18 @@ export const actions: Actions = {
 	 * returns a `fail()` payload the page can render.
 	 */
 	enroll: async ({ request, locals }) => {
+		// Explicit guard — SvelteKit 3's action lifecycle runs
+		// before any layout `load`, so the layout middleware does
+		// NOT cover form actions. An anonymous POST to
+		// `/reinscripcion?/enroll` would otherwise reach this body
+		// and TypeError on `u.controlNumber` (audit R8-7 / P0-3).
+		const u = locals.user;
+		if (!u) {
+			return fail(401, { error: 'No autenticado. Inicia sesión.' });
+		}
 		if (!env.DB) {
 			return fail(503, { error: 'Servicio no disponible' });
 		}
-		const u = locals.user!;
 		const form = await request.formData();
 		const raw = form.getAll('groupId').map((v) => String(v));
 		const unique = Array.from(new Set(raw)).filter((s) => s.length > 0);

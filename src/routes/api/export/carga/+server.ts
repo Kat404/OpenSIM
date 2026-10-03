@@ -17,8 +17,14 @@
  *   The endpoint reads `locals.user`; the (protected) layout's
  *   middleware does NOT run for `/api/*` routes, so we re-check
  *   here. A missing user returns 401 without loading pdf-lib.
+ *   Note: form actions in page +page.server.ts have the same gap —
+ *   SvelteKit 3's runtime (page/index.js:63-82) runs the action
+ *   BEFORE any layout `load`, so a missing guard means a TypeError
+ *   → 500, not a redirect to /login. Every page that owns a
+ *   form action must guard `locals.user` explicitly.
  *
- * See: odd/tasks/opensim.md Tarea 4.3; CF-4 (perf budgets).
+ * See: odd/tasks/opensim.md Tarea 4.3; CF-4 (perf budgets); audit
+ * R8-7 / R9 (round 9 task 11).
  */
 
 import { and, eq, inArray } from 'drizzle-orm';

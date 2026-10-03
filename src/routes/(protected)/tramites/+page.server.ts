@@ -35,7 +35,55 @@ const TOTAL_CREDITS = 260;
 const SOCIAL_SERVICE_CANONICAL_ID = 'servicio-social';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const u = locals.user!;
+	// Explicit guard mirrors reinscripcion/+page.server.ts (audit R8-7 /
+	// P0-3). The (protected) layout normally populates `locals.user`
+	// before we get here; the non-null assertion is safe in production
+	// but the guard turns a layout regression into a clean stub render
+	// rather than a 500 on `u.approvedCredits`.
+	const u = locals.user;
+
+	if (!u) {
+		return {
+			approvedCredits: 0,
+			totalCredits: TOTAL_CREDITS,
+			socialServiceDone: false,
+			procedures: [
+				{
+					id: 'servicio-social' as const,
+					label: 'Servicio Social',
+					description: '500 horas de práctica profesional en dependencias públicas o privadas.',
+					creditsRequired: 182,
+					creditsHave: 0,
+					creditsRemaining: 182,
+					percentage: 0,
+					unlocked: false,
+					blockedReason: 'No autenticado. Inicia sesión.'
+				},
+				{
+					id: 'residencia' as const,
+					label: 'Residencia Profesional',
+					description: 'Proyecto terminal con duración de 4 a 6 meses en una organización.',
+					creditsRequired: 208,
+					creditsHave: 0,
+					creditsRemaining: 208,
+					percentage: 0,
+					unlocked: false,
+					blockedReason: 'No autenticado. Inicia sesión.'
+				},
+				{
+					id: 'titulacion' as const,
+					label: 'Titulación',
+					description: 'Acto protocolario para obtener el título de Ingeniero en Sistemas Computacionales.',
+					creditsRequired: 260,
+					creditsHave: 0,
+					creditsRemaining: 260,
+					percentage: 0,
+					unlocked: false,
+					blockedReason: 'No autenticado. Inicia sesión.'
+				}
+			]
+		};
+	}
 
 	if (!env.DB) {
 		// Without DB we cannot evaluate thresholds; surface a
@@ -151,7 +199,17 @@ export const actions: Actions = {
 	 * server-side check is intentional: the spec promises a
 	 * form-action surface so the forms are not just decoration.
 	 */
-	default: async ({ request }) => {
+	default: async ({ request, locals }) => {
+		// Explicit guard (audit R8-7 / P0-3): SvelteKit 3's action
+		// lifecycle runs before any layout `load`, so the layout
+		// middleware does NOT cover this action. An anonymous POST
+		// would otherwise reach this body — the stub doesn't read
+		// `locals.user`, but defending the surface here prevents a
+		// future change from accidentally leaking data through this
+		// path.
+		if (!locals.user) {
+			return fail(401, { error: 'No autenticado. Inicia sesión.' });
+		}
 		const form = await request.formData();
 		const procedure = String(form.get('procedure') ?? '');
 		if (
