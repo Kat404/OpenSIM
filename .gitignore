@@ -24,3 +24,7 @@ vite.config.ts.timestamp-*
 
 # Dev artifacts (contain PBKDF2 hash + salt for the test student)
 /src/lib/server/db/seed-password.sql
+
+# Playwright run output (transient; the kept artefact lives in tests/e2e/reports/)
+/test-results/
+/playwright/.auth/storage.json
