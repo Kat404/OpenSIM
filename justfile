@@ -16,6 +16,12 @@ default:
 install:
     pnpm install --frozen-lockfile
 
+# Sync local main to both GitHub and Codeberg (origin has 2 push URLs).
+# Run after every PR merge or when you want Codeberg to catch up.
+# See docs/mirror.md for the full dual-push contract and caveats.
+push-mirror:
+    git push origin main
+
 # Update dependencies within semver ranges
 update:
     pnpm update
