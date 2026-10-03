@@ -7,22 +7,24 @@
 		<meta name="theme-color" content="#0b0f17" />
 		<meta name="color-scheme" content="light dark" />
 		<script>
-			// Read the user's saved theme from localStorage and apply
-			// it to <html data-theme> synchronously, before any CSS
-			// from tokens.css paints. Without this the first frame
-			// is always light mode regardless of the user's choice
-			// (audit M8, Round 4 — FOUC).
+			// Theme bootstrap. Runs synchronously before any CSS from
+			// tokens.css paints. The contract (audit N2, Round 6):
+			//   - If the user has a stored override, apply it as
+			//     <html data-theme="light|dark"> and let tokens.css
+			//     paint the right theme immediately.
+			//   - If there is NO stored override, leave the attribute
+			//     unset so tokens.css's `@media (prefers-color-scheme)`
+			//     block owns the initial paint from the OS preference.
+			//     `theme.svelte.ts` then mirrors the OS preference via
+			//     matchMedia for live changes (audit N4, Round 6).
+			// Symmetric: JS overrides CSS only when the user has
+			// explicitly chosen a theme; CSS owns the no-choice case.
 			(function () {
 				try {
 					var stored = localStorage.getItem('opensim-theme');
-					if (stored !== 'light' && stored !== 'dark') {
-						stored =
-							window.matchMedia &&
-							window.matchMedia('(prefers-color-scheme: dark)').matches
-								? 'dark'
-								: 'light';
+					if (stored === 'light' || stored === 'dark') {
+						document.documentElement.setAttribute('data-theme', stored);
 					}
-					document.documentElement.setAttribute('data-theme', stored);
 				} catch (_) {
 					// localStorage can be unavailable in private mode;
 					// tokens.css's `prefers-color-scheme` block covers

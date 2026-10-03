@@ -8,13 +8,20 @@
  * `MutationObserver` so components that import `getTheme()` re-render
  * automatically when the user toggles the theme.
  *
- * During SSR `browser` is false, so the rune stays at the default
- * `'light'`. The companion inline script in `app.html` sets
- * `data-theme` synchronously from `localStorage` before the first
- * paint, so on hydration the observer picks up the user's choice
- * before any component re-renders.
+ * During SSR the rune stays at the default `'light'`. The companion
+ * inline script in `app.html` sets `data-theme` synchronously from
+ * `localStorage` before the first paint (only when a stored override
+ * exists — otherwise tokens.css's `@media (prefers-color-scheme)`
+ * block owns the first frame; audit N2, Round 6), so on hydration
+ * the observer picks up the right value before any component
+ * re-renders.
  *
- * See: odd/tasks/opensim.md §7.2; audit M8 (Round 4).
+ * When the user has NO stored override we also follow the OS theme
+ * at runtime via `matchMedia` (audit N4, Round 6). As soon as the
+ * user clicks the toggle we write to `localStorage`, which makes
+ * the next OS-change a no-op.
+ *
+ * See: odd/tasks/opensim.md §7.2; audit M8 (Round 4) + N2/N4 (Round 6).
  */
 
 import type { Theme } from './color';
@@ -36,6 +43,26 @@ if (typeof document !== 'undefined' && typeof MutationObserver !== 'undefined') 
 		attributes: true,
 		attributeFilter: ['data-theme']
 	});
+
+	// OS theme reactivity (audit N4, Round 6). Only mirrors the OS
+	// preference to <html data-theme> when the user has NOT stored an
+	// explicit choice. The MutationObserver above then propagates the
+	// change into the rune.
+	if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+		const mq = window.matchMedia('(prefers-color-scheme: dark)');
+		const followOs = (e: MediaQueryListEvent | MediaQueryList) => {
+			let stored: string | null = null;
+			try {
+				stored = localStorage.getItem('opensim-theme');
+			} catch {
+				// localStorage unavailable; fall through and follow the OS.
+			}
+			if (stored === 'light' || stored === 'dark') return; // user override wins
+			document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+		};
+		followOs(mq); // sync on boot in case app.html didn't set the attribute
+		mq.addEventListener('change', followOs);
+	}
 }
 
 /**

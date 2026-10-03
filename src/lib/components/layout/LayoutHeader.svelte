@@ -32,14 +32,14 @@
 	let theme = $state<Theme>('light');
 
 	onMount(() => {
-		const stored = localStorage.getItem('opensim-theme');
-		if (stored === 'light' || stored === 'dark') {
-			theme = stored;
-		} else {
-			theme =
-				window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-		}
-		applyTheme(theme);
+		// Trust the data-theme attribute that app.html (or
+		// theme.svelte.ts's matchMedia listener) already set; do NOT
+		// re-read localStorage here. The previous version did, and
+		// would re-apply a theme during hydration even when the
+		// attribute was already correct, causing an SSR/CSR FOUC
+		// flash (audit N3, Round 6). This single-line sync is
+		// enough to seed the rune for aria-label + button state.
+		theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
 	});
 
 	function applyTheme(t: Theme) {
@@ -92,13 +92,14 @@
 		class="header__theme"
 		onclick={toggleTheme}
 		aria-label={theme === 'light' ? 'Cambiar a tema oscuro' : 'Cambiar a tema claro'}
-		title={theme === 'light' ? 'Tema claro/oscuro' : 'Tema claro/oscuro'}
+		title="Tema claro/oscuro"
 	>
-		{#if theme === 'light'}
-			<Moon size={18} strokeWidth={1.75} />
-		{:else}
-			<Sun size={18} strokeWidth={1.75} />
-		{/if}
+		<span class="header__theme-icon header__theme-icon--to-light">
+			<Sun size={18} strokeWidth={1.75} aria-hidden="true" />
+		</span>
+		<span class="header__theme-icon header__theme-icon--to-dark">
+			<Moon size={18} strokeWidth={1.75} aria-hidden="true" />
+		</span>
 	</button>
 
 	<div class="header__user">
@@ -213,6 +214,22 @@
 	.header__theme:hover {
 		background-color: var(--surface-2);
 		color: var(--fg-primary);
+	}
+
+	/* Icon swap driven by <html data-theme> (set synchronously by
+	   app.html) so SSR and the first client frame agree — no
+	   flash of the wrong glyph (audit N5, Round 6). */
+	.header__theme-icon--to-light {
+		display: none;
+	}
+	.header__theme-icon--to-dark {
+		display: inline-flex;
+	}
+	:global([data-theme='dark']) .header__theme-icon--to-light {
+		display: inline-flex;
+	}
+	:global([data-theme='dark']) .header__theme-icon--to-dark {
+		display: none;
 	}
 
 	.header__user {
