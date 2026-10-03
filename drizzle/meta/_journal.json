@@ -15,6 +15,13 @@
       "when": 1790996606282,
       "tag": "0001_many_human_fly",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1790999222868,
+      "tag": "0002_unusual_radioactive_man",
+      "breakpoints": true
     }
   ]
 }

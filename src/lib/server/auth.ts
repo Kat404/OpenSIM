@@ -1,10 +1,15 @@
 /**
  * OpenSIM — Native single-file authentication.
  *
- * Implements the CF-3 decision (v2.1 spec §5.1, §9, Tarea 2.5):
+ * Implements the CF-3 decision (v2.2 spec §5.1, §9, §16, Tarea 2.5):
  *   - PBKDF2-HMAC-SHA-256 password hashing via `crypto.subtle`
  *   - 100,000 iterations, 16-byte salt, 32-byte derived key
  *   - 32-byte session tokens (base64url, no padding)
+ *   - **The DB stores `sha256(token)`, not the raw token** (audit A3).
+ *     The HttpOnly cookie still carries the raw token so the user
+ *     retains a value that matches what we issued; only the database
+ *     has the one-way digest, so a D1 dump does not yield usable
+ *     session tokens.
  *   - 30-day session lifetime, D1-backed session table
  *   - HttpOnly + Secure + SameSite=Lax cookies (set by the caller)
  *   - Constant-time password comparison
@@ -12,7 +17,7 @@
  * Zero npm dependencies for auth; the entire surface is Web Crypto
  * plus the Drizzle-typed D1 binding.
  *
- * See: odd/tasks/opensim.md §5.1 (schema) and §9 (CF-3 decision).
+ * See: odd/tasks/opensim.md §5.1 (schema), §9 (CF-3), §16.2 (A3 fix).
  */
 
 import { eq, lt } from 'drizzle-orm';
@@ -165,6 +170,12 @@ async function pbkdf2(
 // ---------- Session management ----------
 
 export interface SessionRecord {
+	/**
+	 * The raw session token (base64url, 32 random bytes). The caller
+	 * MUST set this as the HttpOnly cookie value so the user retains
+	 * the value. The database stores only `sha256(token)` — see
+	 * `hashToken` and the schema comment for `authSessions`.
+	 */
 	id: string;
 	expiresAt: Date;
 }
@@ -175,9 +186,21 @@ export interface SessionValidation {
 }
 
 /**
+ * Returns the SHA-256 (base64url, no padding) of the raw session
+ * token. The same function is used at insert, lookup, and delete
+ * time, so callers only ever see the hash on the database side.
+ */
+export async function hashToken(token: string): Promise<string> {
+	const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
+	return bytesToBase64Url(new Uint8Array(digest));
+}
+
+/**
  * Creates a new session row for the given student and returns the
- * token id and expiry date. The caller is responsible for setting the
- * HttpOnly cookie (see `setSessionCookie`).
+ * raw token plus the expiry date. The caller is responsible for
+ * setting the HttpOnly cookie with the raw token; this function
+ * stores `sha256(rawToken)` as the row PK so the database never
+ * holds a usable session secret.
  */
 export async function createSession(
 	db: Database,
@@ -185,7 +208,8 @@ export async function createSession(
 	userAgent: string,
 	ipHash: string
 ): Promise<SessionRecord> {
-	const id = bytesToBase64Url(randomBytes(SESSION_TOKEN_BYTES));
+	const rawToken = bytesToBase64Url(randomBytes(SESSION_TOKEN_BYTES));
+	const id = await hashToken(rawToken);
 	const expiresAt = new Date(Date.now() + SESSION_LIFETIME_MS);
 	await db.insert(authSessions).values({
 		id,
@@ -194,18 +218,21 @@ export async function createSession(
 		userAgent,
 		ipHash
 	});
-	return { id, expiresAt };
+	return { id: rawToken, expiresAt };
 }
 
 /**
- * Looks up a session by token id. Returns `null` if the session does
- * not exist, has expired, or the student profile has been deleted.
- * Lazy-prunes expired rows so the table does not grow unbounded.
+ * Looks up a session by hashing the provided token and matching the
+ * resulting digest against the `auth_sessions.id` PK. Returns `null`
+ * if the session does not exist, has expired, or the student profile
+ * has been deleted. Lazy-prunes expired rows so the table does not
+ * grow unbounded.
  */
 export async function validateSessionToken(
 	db: Database,
 	token: string
 ): Promise<SessionValidation | null> {
+	const id = await hashToken(token);
 	const now = new Date();
 	// Lazy cleanup of expired sessions (best-effort, swallow errors).
 	try {
@@ -217,14 +244,14 @@ export async function validateSessionToken(
 	const rows = await db
 		.select()
 		.from(authSessions)
-		.where(eq(authSessions.id, token))
+		.where(eq(authSessions.id, id))
 		.limit(1);
 	const row = rows[0];
 	if (!row) return null;
 	if (row.expiresAt.getTime() <= now.getTime()) {
 		// Expired exactly now — clean up and refuse.
 		try {
-			await db.delete(authSessions).where(eq(authSessions.id, token));
+			await db.delete(authSessions).where(eq(authSessions.id, id));
 		} catch {
 			// intentionally ignored
 		}
@@ -236,9 +263,10 @@ export async function validateSessionToken(
 	};
 }
 
-/** Deletes a session row by token id (logout). */
+/** Deletes a session row by hashing the provided token (logout). */
 export async function invalidateSession(db: Database, token: string): Promise<void> {
-	await db.delete(authSessions).where(eq(authSessions.id, token));
+	const id = await hashToken(token);
+	await db.delete(authSessions).where(eq(authSessions.id, id));
 }
 
 // ---------- User lookup ----------
