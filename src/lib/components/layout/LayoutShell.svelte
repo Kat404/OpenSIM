@@ -30,9 +30,15 @@
 
 	let { user, paletteRoutes, paletteSubjects, children }: Props = $props();
 
-	// Default open on >= 1024px, collapsed on smaller. The query is
-	// narrow on purpose: it only fires once on mount.
-	let collapsed = $state(true);
+	// Default expanded on >= 1024px (audit axe-core, Round 7): when
+	// collapsed on first paint the sidebar nav links have no visible
+	// label and the lucide icons are aria-hidden, so screen readers
+	// (and axe-core) see them as focusable-without-name. Starting
+	// expanded means the SSR/initial-hydration state is correct for
+	// the common case; the matchMedia callback collapses on narrow
+	// viewports, and the sidebar itself adds aria-label on its links
+	// when collapsed so the focusable-name is preserved.
+	let collapsed = $state(false);
 	let paletteOpen = $state(false);
 
 	$effect(() => {

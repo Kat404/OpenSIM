@@ -65,6 +65,7 @@
 						<span
 							class="sidebar__link sidebar__link--disabled"
 							aria-disabled="true"
+							aria-label={collapsed ? item.label : undefined}
 							title="Disponible próximamente"
 						>
 							<span class="sidebar__icon" aria-hidden="true">
@@ -77,6 +78,7 @@
 							class="sidebar__link"
 							class:sidebar__link--active={active}
 							href={item.href}
+							aria-label={collapsed ? item.label : undefined}
 							aria-current={active ? 'page' : undefined}
 						>
 							<span class="sidebar__icon" aria-hidden="true">

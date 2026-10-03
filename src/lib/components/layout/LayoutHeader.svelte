@@ -160,7 +160,11 @@
 		background-color: var(--surface-2);
 		border: 1px solid var(--border-subtle);
 		border-radius: var(--radius-2);
-		color: var(--fg-tertiary);
+		/* fg-secondary (body text) over fg-tertiary (helper): the search
+		   trigger is interactive body copy, not meta/helper text, and
+		   fg-tertiary (#6b7280) only reaches 4.27:1 on surface-2 — just
+		   below the 4.5:1 WCAG AA threshold flagged by axe-core. */
+		color: var(--fg-secondary);
 		font: inherit;
 		font-size: var(--text-sm);
 		cursor: pointer;

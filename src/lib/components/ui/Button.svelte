@@ -92,13 +92,19 @@
 	}
 
 	.btn--primary {
-		background-color: var(--brand-500);
+		/* brand-700 (5.44:1 vs white) rather than brand-500 (2.42:1):
+		   the primary CTA needs AA contrast for its label. brand-500
+		   stays available for accents that don't carry text. The hover
+		   state uses brand-900 to keep the visual progression darker
+		   rather than lighter — preserves the dark-on-light identity
+		   (audit axe-core, Round 7). */
+		background-color: var(--brand-700);
 		color: var(--brand-fg);
-		border-color: var(--brand-500);
+		border-color: var(--brand-700);
 	}
 	.btn--primary:hover:not(:disabled) {
-		background-color: var(--brand-600);
-		border-color: var(--brand-600);
+		background-color: var(--brand-900);
+		border-color: var(--brand-900);
 	}
 
 	.btn--secondary {
