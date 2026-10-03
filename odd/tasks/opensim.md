@@ -416,7 +416,7 @@ export function getSubjectColorHSL(subjectCode: string): string {
 ### Phase 5: Audit, Accessibility & Edge Deployment
 
 - [x] **Task 5.1 — `8f06369` (closes Round 7 mcode audit):** Auditoría WCAG 2.1 AA con `@axe-core/playwright 4.13`. 14/14 specs verde (7 rutas × 2 temas de color) contra serious/critical. Findings cerradas: N9-N11 (sweep inicial), N12-N19 + N21-N22 (mcode M3.1-Flash-Preview round 7). 3 follow-ups menores documentados (N18 dev server reuse, N20 mobile sidebar flash, N23 results.json). Metodología y rutas en `docs/a11y-audit.md`.
-- [ ] **Task 5.2:** Deploy a Cloudflare Pages/Workers con `@sveltejs/adapter-cloudflare 8.0.0`.
+- [ ] **Task 5.2 — en progreso:** Deploy a Cloudflare Workers con `@sveltejs/adapter-cloudflare 8.0.0`. `wrangler.jsonc` auditado, `db-seed-remote` y `deploy-worker` recipes agregadas, `docs/deploy.md` con el procedimiento completo (auth, `wrangler d1 create`, `wrangler d1 migrations apply --remote`, `pnpm build`, `wrangler deploy`). Pendiente: el operador corre los pasos interactivos con sus credenciales Cloudflare; URL activa + smoke test + axe sweep contra prod.
 
 **Convención:** marcar items solo después de GREEN status via Vitest/Playwright tests.
 

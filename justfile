@@ -97,6 +97,10 @@ db-migrate:
 db-migrate-remote:
     wrangler d1 migrations apply opensim --remote
 
+# Seed remote D1 with the catalog only (NO test student — that's dev only)
+db-seed-remote:
+    wrangler d1 execute opensim --remote --file=./src/lib/server/db/seed.sql
+
 # Seed local D1 (regenerates seed.sql + applies)
 db-seed:
     pnpm run db:seed
@@ -121,6 +125,14 @@ db-reset:
 # Deploy to Cloudflare Pages
 deploy:
     wrangler pages deploy
+
+# Deploy to Cloudflare Workers (Tarea 5.2)
+# See docs/deploy.md for the full procedure (auth, D1 create, migrations, seed, deploy).
+# Requires wrangler login (or CLOUDFLARE_API_TOKEN env var) and the production
+# database_id set in wrangler.jsonc.
+deploy-worker:
+    pnpm build
+    wrangler deploy
 
 # Tail Cloudflare Worker logs (live)
 logs:
