@@ -29,6 +29,7 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { tick } from 'svelte';
 	import { Modal } from '#lib/components/ui';
 	import { Search } from 'lucide-svelte';
 
@@ -98,8 +99,13 @@
 		if (open) {
 			query = '';
 			highlight = 0;
-			// Defer focus until the <dialog> is mounted by the browser.
-			queueMicrotask(() => inputEl?.focus());
+			// Defer focus until Svelte has flushed the DOM and the
+			// <dialog> the Modal wraps is mounted. `tick()` awaits
+			// the next DOM-update microtask; on slow browsers the
+			// dialog may need a frame, so we re-focus on the next
+			// animation frame as a safety net (audit M4, Round 6).
+			tick().then(() => inputEl?.focus());
+			requestAnimationFrame(() => inputEl?.focus());
 		}
 	});
 

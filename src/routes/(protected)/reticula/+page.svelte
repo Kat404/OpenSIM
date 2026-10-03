@@ -21,9 +21,24 @@
 	// Deep-link from Cmd+K palette: `#calculo-diferencial` etc.
 	// The DAG handles the actual scroll; we just pipe the hash into
 	// a reactive prop so it works under client-side navigation.
-	$effect(() => {
-		const hash = page.url.hash;
+	//
+	// Two sources of truth, intentionally:
+	//   1. `$effect` on `page.url.hash` — fires for SvelteKit
+	//      navigations that update the page store (pathname or hash).
+	//   2. A `hashchange` listener — fires for hash-only updates that
+	//      SvelteKit treats as a shallow nav and may or may not
+	//      propagate through the reactive store (audit M6, Round 6).
+	// Belt + suspenders keeps Cmd+K round-trips robust.
+	function syncFromHash() {
+		const hash = page.url.hash || (typeof window !== 'undefined' ? window.location.hash : '');
 		focusedCanonicalId = hash ? hash.slice(1) : null;
+	}
+	$effect(() => {
+		syncFromHash();
+		if (typeof window !== 'undefined') {
+			window.addEventListener('hashchange', syncFromHash);
+			return () => window.removeEventListener('hashchange', syncFromHash);
+		}
 	});
 
 	const legend: StudentProgressStatus[] = ['APPROVED', 'ENROLLED', 'AVAILABLE', 'LOCKED'];
