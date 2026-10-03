@@ -12,8 +12,8 @@
 	import type { PageData } from './$types';
 	import KpiCard from '#lib/components/dashboard/KpiCard.svelte';
 	import TodayClasses from '#lib/components/dashboard/TodayClasses.svelte';
-	import { Card, EmptyState } from '#lib/components/ui';
-	import { ArrowRight } from 'lucide-svelte';
+	import { Button, Card, EmptyState } from '#lib/components/ui';
+	import { ArrowRight, FileDown } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -45,6 +45,9 @@
 
 	{#if page.url.searchParams.get('reason') === 'logged-out'}
 		<p class="dashboard__notice" role="status">Sesión cerrada correctamente.</p>
+	{/if}
+	{#if page.url.searchParams.get('enrolled') === '1'}
+		<p class="dashboard__notice" role="status">Inscripción registrada correctamente.</p>
 	{/if}
 
 	<div class="dashboard__kpis" role="list">
@@ -104,6 +107,26 @@
 						</a>
 					{/snippet}
 			</Card>
+
+			{#if data.hasEnrollment && data.period}
+				<Card padding="lg">
+					{#snippet header()}
+						<h2 class="dashboard__cta-title">Carga académica</h2>
+					{/snippet}
+					<p class="dashboard__cta-text">
+						Descarga tu carga académica en formato PDF vectorial. El archivo
+						incluye tu horario semanal con los bloques del periodo actual.
+					</p>
+					{#snippet footer()}
+						<form method="POST" action="/api/export/carga">
+							<Button type="submit" variant="secondary" size="md">
+								{#snippet startIcon()}<FileDown size={16} strokeWidth={1.75} aria-hidden="true" />{/snippet}
+								Descargar Carga Académica (PDF)
+							</Button>
+						</form>
+					{/snippet}
+				</Card>
+			{/if}
 
 			{#if !data.hasEnrollment}
 				<div class="dashboard__enroll-hint">
