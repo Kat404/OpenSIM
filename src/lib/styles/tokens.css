@@ -48,6 +48,7 @@
 	--brand-700: #0e7490;
 	--brand-900: #164e63;
 	--brand-fg: #ffffff; /* foreground for solid brand backgrounds */
+	--fg-on-danger: #ffffff; /* N13: danger-700 (#b91c1c) + white = 7.95:1, AA in light */
 
 	/* Semantic status (light variants — WCAG AA on --surface-1) */
 	--success-50: #ecfdf5;
