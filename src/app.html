@@ -6,6 +6,32 @@
 		<meta name="description" content="OpenSIM — Sistema Integral Modular. TecNM Morelia." />
 		<meta name="theme-color" content="#0b0f17" />
 		<meta name="color-scheme" content="light dark" />
+		<script>
+			// Theme bootstrap. Runs synchronously before any CSS from
+			// tokens.css paints. The contract (audit N2, Round 6):
+			//   - If the user has a stored override, apply it as
+			//     <html data-theme="light|dark"> and let tokens.css
+			//     paint the right theme immediately.
+			//   - If there is NO stored override, leave the attribute
+			//     unset so tokens.css's `@media (prefers-color-scheme)`
+			//     block owns the initial paint from the OS preference.
+			//     `theme.svelte.ts` then mirrors the OS preference via
+			//     matchMedia for live changes (audit N4, Round 6).
+			// Symmetric: JS overrides CSS only when the user has
+			// explicitly chosen a theme; CSS owns the no-choice case.
+			(function () {
+				try {
+					var stored = localStorage.getItem('opensim-theme');
+					if (stored === 'light' || stored === 'dark') {
+						document.documentElement.setAttribute('data-theme', stored);
+					}
+				} catch (_) {
+					// localStorage can be unavailable in private mode;
+					// tokens.css's `prefers-color-scheme` block covers
+					// the no-JS case.
+				}
+			})();
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

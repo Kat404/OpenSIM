@@ -1,0 +1,352 @@
+/*
+ * OpenSIM — Design Tokens (CSS Custom Properties)
+ *
+ * Authoritative source for color, typography, spacing, radius, and shadow
+ * tokens. All Svelte components MUST consume these via var(--token-name);
+ * no hex/rgb literals are allowed in component styles.
+ *
+ * Two theme variants: light (default) and dark via [data-theme="dark"] on
+ * <html>. The OS preference is honored on first paint via the
+ * `prefers-color-scheme` @media block below when no explicit data-theme
+ * has been set; once the user picks a theme via the toggle it is
+ * stored in localStorage and applied on every subsequent load.
+ *
+ * Color scale uses a "pure neutral" graphite base (no chromatic tint in
+ * neutral surfaces) plus a single brand accent (teal-cyan, WCAG-AA against
+ * both light and dark surfaces). Semantic status tokens (success, warning,
+ * danger, info) use HSL gradients tuned for ≥4.5:1 contrast on body text
+ * and ≥3:1 on large text / non-text UI per WCAG 2.1 AA.
+ *
+ * Conventions:
+ *  - Token categories prefixed (--surface-*, --font-*, --space-*, etc.)
+ *  - Numbers (1-12) describe visual progression, not arbitrary units.
+ *  - D1 binding: DB / assets binding: ASSETS — design tokens do not
+ *    depend on JS at runtime; they are loaded synchronously by CSS.
+ */
+
+:root {
+	/* ───────────── Surface / Backgrounds (light mode) ───────────── */
+	--surface-0: #ffffff; /* page background */
+	--surface-1: #f7f8fa; /* primary surface (cards, sections) */
+	--surface-2: #eef0f4; /* secondary surface (nested cards, inputs bg) */
+	--surface-3: #e3e6ec; /* tertiary surface (hover, dividers in lists) */
+	--surface-inverse: #0b0f17; /* dark surfaces (toasts, tooltips) */
+
+	/* Foreground (text) */
+	--fg-primary: #0b0f17; /* highest contrast text — headings */
+	--fg-secondary: #3d4654; /* body text */
+	--fg-tertiary: #6b7280; /* meta text, helper */
+	--fg-disabled: #9ca3af; /* disabled controls */
+	--fg-inverse: #ffffff; /* text on inverse surface */
+
+	/* Brand accent (teal-cyan, AA on both light & dark surfaces) */
+	--brand-50: #ecfeff;
+	--brand-100: #cffafe;
+	--brand-300: #67e8f9;
+	--brand-500: #06b6d4;
+	--brand-600: #0891b2;
+	--brand-700: #0e7490;
+	--brand-900: #164e63;
+	--brand-fg: #ffffff; /* foreground for solid brand backgrounds */
+
+	/* Semantic status (light variants — WCAG AA on --surface-1) */
+	--success-50: #ecfdf5;
+	--success-500: #10b981;
+	--success-700: #047857;
+	--warning-50: #fffbeb;
+	--warning-500: #f59e0b;
+	--warning-700: #b45309;
+	--danger-50: #fef2f2;
+	--danger-500: #ef4444;
+	--danger-700: #b91c1c;
+	--info-50: #eff6ff;
+	--info-500: #3b82f6;
+	--info-700: #1d4ed8;
+
+	/* Borders / dividers */
+	--border-subtle: #e5e7eb;
+	--border-default: #d1d5db;
+	--border-strong: #9ca3af;
+	--border-focus: var(--brand-500);
+
+	/* Radius scale (1-6) */
+	--radius-1: 2px; /* tag, badge inner */
+	--radius-2: 4px; /* buttons, inputs */
+	--radius-3: 6px; /* cards */
+	--radius-4: 8px; /* modals, large cards */
+	--radius-5: 12px; /* sheets */
+	--radius-pill: 9999px; /* avatars, pill buttons */
+
+	/* Shadow scale (elevation) */
+	--shadow-0: none;
+	--shadow-1: 0 1px 2px rgba(11, 15, 23, 0.06), 0 1px 1px rgba(11, 15, 23, 0.04);
+	--shadow-2: 0 2px 4px rgba(11, 15, 23, 0.06), 0 1px 2px rgba(11, 15, 23, 0.04);
+	--shadow-3: 0 4px 8px rgba(11, 15, 23, 0.08), 0 2px 4px rgba(11, 15, 23, 0.04);
+	--shadow-4: 0 12px 24px rgba(11, 15, 23, 0.12), 0 4px 8px rgba(11, 15, 23, 0.06);
+	--shadow-focus: 0 0 0 3px rgba(6, 182, 212, 0.35);
+
+	/* Typography */
+	--font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Inter var', 'Inter', sans-serif;
+	--font-mono: ui-monospace, 'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace;
+	--font-display: var(--font-sans);
+
+	--text-xs: 0.75rem; /* 12px */
+	--text-sm: 0.8125rem; /* 13px */
+	--text-base: 0.9375rem; /* 15px — primary body */
+	--text-md: 1rem; /* 16px */
+	--text-lg: 1.125rem; /* 18px */
+	--text-xl: 1.375rem; /* 22px */
+	--text-2xl: 1.75rem; /* 28px */
+	--text-3xl: 2.25rem; /* 36px */
+
+	--leading-tight: 1.2;
+	--leading-normal: 1.45;
+	--leading-loose: 1.7;
+
+	--weight-regular: 400;
+	--weight-medium: 500;
+	--weight-semibold: 600;
+	--weight-bold: 700;
+
+	/* Spacing (4px scale, 0-12) */
+	--space-0: 0;
+	--space-1: 4px;
+	--space-2: 8px;
+	--space-3: 12px;
+	--space-4: 16px;
+	--space-5: 20px;
+	--space-6: 24px;
+	--space-8: 32px;
+	--space-10: 40px;
+	--space-12: 48px;
+
+	/* Z-index scale */
+	--z-base: 0;
+	--z-elevated: 10;
+	--z-sticky: 100;
+	--z-overlay: 500;
+	--z-modal: 1000;
+	--z-toast: 1500;
+	--z-tooltip: 2000;
+
+	/* Motion (subtle — respect prefers-reduced-motion) */
+	--motion-duration-fast: 120ms;
+	--motion-duration-base: 200ms;
+	--motion-duration-slow: 320ms;
+	--motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+	--motion-ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
+
+	color-scheme: light;
+}
+
+/* ───────────────────── Dark theme override ───────────────────── */
+
+[data-theme='dark'],
+:root[data-theme='dark'] {
+	--surface-0: #0b0f17;
+	--surface-1: #131825;
+	--surface-2: #1c2333;
+	--surface-3: #2a3245;
+	--surface-inverse: #ffffff;
+
+	--fg-primary: #f7f8fa;
+	--fg-secondary: #cbd5e1;
+	--fg-tertiary: #94a3b8;
+	--fg-disabled: #475569;
+	--fg-inverse: #0b0f17;
+
+	--brand-50: #164e63;
+	--brand-100: #155e75;
+	--brand-300: #22d3ee;
+	--brand-500: #06b6d4;
+	--brand-600: #22d3ee;
+	--brand-700: #67e8f9;
+	--brand-900: #cffafe;
+	--brand-fg: #0b0f17;
+
+	/* Status -50 surfaces tuned for AA on dark fg (~5% L so dark text
+	 * never lands here; light fg-* does, at 4.5:1+). */
+	--success-50: #052e1a;
+	--success-500: #34d399;
+	--success-700: #6ee7b7;
+	--warning-50: #1f1300;
+	--warning-500: #fbbf24;
+	--warning-700: #fcd34d;
+	--danger-50: #2a0a0e;
+	--danger-500: #f87171;
+	--danger-700: #fca5a5;
+	--info-50: #082f49;
+	--info-500: #60a5fa;
+	--info-700: #93c5fd;
+
+	--border-subtle: #1f2937;
+	--border-default: #334155;
+	--border-strong: #475569;
+	--border-focus: var(--brand-500);
+
+	--shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 1px rgba(0, 0, 0, 0.3);
+	--shadow-2: 0 2px 4px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.3);
+	--shadow-3: 0 4px 8px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+	--shadow-4: 0 12px 24px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.4);
+	--shadow-focus: 0 0 0 3px rgba(34, 211, 238, 0.45);
+
+	color-scheme: dark;
+}
+
+/* OS preference path. Fires ONLY when <html data-theme> is unset,
+ * which is exactly the "no stored override" case (audit L1, Round 6):
+ *   - On first paint, app.html sets data-theme only when localStorage
+ *     has a stored value; otherwise it leaves the attribute unset and
+ *     this @media block owns the initial paint.
+ *   - Once the user clicks the toggle, the choice lands in localStorage
+ *     and app.html sets data-theme on every subsequent load; this
+ *     block never matches again for that user.
+ *   - The matchMedia listener in src/lib/utils/theme.svelte.ts mirrors
+ *     live OS-theme changes into <html data-theme> when no manual
+ *     override exists, so the "no choice" case still follows the OS
+ *     even after first paint. */
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme]) {
+		--surface-0: #0b0f17;
+		--surface-1: #131825;
+		--surface-2: #1c2333;
+		--surface-3: #2a3245;
+		--surface-inverse: #ffffff;
+
+		--fg-primary: #f7f8fa;
+		--fg-secondary: #cbd5e1;
+		--fg-tertiary: #94a3b8;
+		--fg-disabled: #475569;
+		--fg-inverse: #0b0f17;
+
+		--brand-300: #67e8f9;
+		--brand-500: #06b6d4;
+		--brand-600: #22d3ee;
+		--brand-700: #67e8f9;
+		--brand-900: #cffafe;
+		--brand-fg: #0b0f17;
+
+		/* Status -50 surfaces tuned for AA on dark fg (same palette
+		 * as the [data-theme='dark'] block above). */
+		--success-50: #052e1a;
+		--warning-50: #1f1300;
+		--danger-50: #2a0a0e;
+		--info-50: #082f49;
+
+		--success-500: #34d399;
+		--warning-500: #fbbf24;
+		--danger-500: #f87171;
+		--info-500: #60a5fa;
+
+		--success-700: #6ee7b7;
+		--warning-700: #fcd34d;
+		--danger-700: #fca5a5;
+		--info-700: #93c5fd;
+		--fg-on-danger: #0b0f17;
+
+		--border-subtle: #1f2937;
+		--border-default: #334155;
+		--border-strong: #475569;
+
+		color-scheme: dark;
+	}
+}
+
+/* ───────────────────── Reduced motion ───────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--motion-duration-fast: 0ms;
+		--motion-duration-base: 0ms;
+		--motion-duration-slow: 0ms;
+	}
+}
+
+/* ───────────────────── Reset & globals ───────────────────── */
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	font-family: var(--font-sans);
+	font-size: 16px;
+	line-height: var(--leading-normal);
+	color: var(--fg-secondary);
+	background-color: var(--surface-0);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+}
+
+body {
+	margin: 0;
+	min-height: 100vh;
+	background-color: var(--surface-0);
+	color: var(--fg-secondary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin: 0;
+	color: var(--fg-primary);
+	font-family: var(--font-display);
+	font-weight: var(--weight-semibold);
+	line-height: var(--leading-tight);
+}
+
+h1 { font-size: var(--text-3xl); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-xl); }
+h4 { font-size: var(--text-lg); }
+h5 { font-size: var(--text-md); }
+h6 { font-size: var(--text-base); }
+
+p {
+	margin: 0;
+	line-height: var(--leading-normal);
+}
+
+a {
+	color: var(--brand-600);
+	text-decoration: none;
+	transition: color var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+a:hover {
+	color: var(--brand-700);
+	text-decoration: underline;
+}
+
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+	/* SC 1.4.11 (Non-text contrast): the outline is the actual
+	 * focus indicator at 3:1 vs adjacent backgrounds. --brand-700
+	 * resolves to dark cyan in light (#0e7490 on white ≈ 8:1) and
+	 * bright cyan in dark (#67e8f9 on #0b0f17 ≈ 9:1). The
+	 * box-shadow remains as a decorative outer ring (audit axe-core
+	 * N14, Round 7). */
+	outline: 2px solid var(--brand-700);
+	outline-offset: 2px;
+	box-shadow: var(--shadow-focus);
+	border-radius: var(--radius-2);
+}
+
+::selection {
+	background-color: var(--brand-100);
+	color: var(--brand-900);
+}
+
+/* ───────────────────── Utility shortcuts (rare, opt-in) ───────────────────── */
+/* Components should still prefer semantic class names + tokens; these are
+ * only meant for one-off layout in route components. */
+
+.opensim-stack { display: flex; flex-direction: column; gap: var(--space-4); }
+.opensim-row { display: flex; flex-direction: row; align-items: center; gap: var(--space-3); }
+.opensim-grid { display: grid; gap: var(--space-4); }
+.opensim-divider { border: 0; border-top: 1px solid var(--border-subtle); margin: var(--space-4) 0; }
