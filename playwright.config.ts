@@ -58,7 +58,23 @@ export default defineConfig({
 		},
 		{
 			name: 'chromium',
-			use: { ...devices['Desktop Chrome'] },
+			use: {
+				...devices['Desktop Chrome'],
+				colorScheme: 'light'
+			},
+			dependencies: ['setup']
+		},
+		{
+			// mcode round-7 N16: the previous sweep only ran in light.
+			// Dark mode inverts the brand scale (--brand-700 becomes
+			// #67e8f9 in dark) and the previous "10/10 verde" was
+			// lucky. Re-run every spec against a dark color scheme to
+			// catch the cases that only fail in dark.
+			name: 'chromium-dark',
+			use: {
+				...devices['Desktop Chrome'],
+				colorScheme: 'dark'
+			},
 			dependencies: ['setup']
 		}
 	],

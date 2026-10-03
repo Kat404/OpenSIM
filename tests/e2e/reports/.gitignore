@@ -2,3 +2,4 @@
 # The committed JSON findings (axe-findings.json) lives in this dir.
 html/
 test-results/
+results.json

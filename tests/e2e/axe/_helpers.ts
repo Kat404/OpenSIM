@@ -10,13 +10,30 @@
  * Reused by every per-route spec to keep the threshold and tag set
  * in one place. If we ever need to expand the ruleset (e.g. best
  * practices, experimental), this is the only file to touch.
+ *
+ * Each run also writes the consolidated findings to
+ * `tests/e2e/reports/axe-findings.json` (audit N15, Round 7): the
+ * per-test `testInfo.attach` only persists inside Playwright's own
+ * blob store, not in the working tree, so a follow-up audit
+ * couldn't read the moderate/minor findings without re-running.
  */
 import AxeBuilder from '@axe-core/playwright';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 import type { Page, TestInfo } from '@playwright/test';
 import { expect } from '@playwright/test';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21aa'] as const;
 const FAILING_IMPACTS = new Set(['serious', 'critical']);
+
+const FINDINGS_PATH = 'tests/e2e/reports/axe-findings.json';
+
+interface PersistedFinding {
+	testTitle: string;
+	url: string;
+	timestamp: string;
+	violations: Awaited<ReturnType<AxeBuilder['analyze']>>['violations'];
+}
 
 export interface AxeScanResult {
 	url: string;
@@ -26,8 +43,6 @@ export interface AxeScanResult {
 export async function scanForA11y(page: Page, testInfo: TestInfo): Promise<AxeScanResult> {
 	const results = await new AxeBuilder({ page }).withTags([...TAGS]).analyze();
 
-	// Attach the full report so `tests/e2e/reports/axe-findings.json`
-	// is always populated, even on green runs.
 	await testInfo.attach('axe-report.json', {
 		body: JSON.stringify(results, null, 2),
 		contentType: 'application/json'
@@ -43,6 +58,19 @@ export async function scanForA11y(page: Page, testInfo: TestInfo): Promise<AxeSc
 			nonBlocking.map((v) => `${v.id} (${v.impact ?? 'unknown'})`)
 		);
 	}
+
+	// Persist the full findings (blocking + non-blocking) so a future
+	// audit can review the moderate/minor backlog without rerunning.
+	const existing: PersistedFinding[] = existsSync(FINDINGS_PATH)
+		? (JSON.parse(readFileSync(FINDINGS_PATH, 'utf-8')) as PersistedFinding[])
+		: [];
+	existing.push({
+		testTitle: testInfo.title,
+		url: page.url(),
+		timestamp: new Date().toISOString(),
+		violations: results.violations
+	});
+	writeFileSync(join(process.cwd(), FINDINGS_PATH), JSON.stringify(existing, null, 2));
 
 	expect(
 		blocking,
