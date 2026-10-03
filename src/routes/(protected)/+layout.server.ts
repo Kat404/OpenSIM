@@ -24,5 +24,16 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 		const redirectTo = url.pathname + url.search;
 		throw redirect(303, `/login?redirectTo=${encodeURIComponent(redirectTo)}`);
 	}
-	return { user: locals.user };
+	// PII trim (audit NEW-1): only safe fields are serialized into the
+	// page payload. Sensitive columns (curp, birth_state, etc.) stay on
+	// the server and are loaded per-page when needed.
+	return {
+		user: locals.user
+			? {
+					controlNumber: locals.user.controlNumber,
+					fullName: locals.user.fullName,
+					status: locals.user.status
+				}
+			: null
+	};
 };
