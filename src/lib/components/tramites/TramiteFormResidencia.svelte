@@ -7,6 +7,7 @@
 -->
 <script lang="ts">
 	import { Input, Select, Button, Badge, Card } from '#lib/components/ui';
+	import { PROCEDURE_STATE_LABEL } from '#lib/utils/procedure-labels';
 
 	interface Props {
 		unlocked: boolean;
@@ -27,7 +28,7 @@
 		<div class="form__header">
 			<h3 class="form__title">Datos de la Residencia Profesional</h3>
 			<Badge variant={unlocked ? 'success' : 'neutral'} size="sm" dot>
-				{unlocked ? 'Disponible' : 'Bloqueado'}
+				{PROCEDURE_STATE_LABEL[unlocked ? 'AVAILABLE' : 'LOCKED']}
 			</Badge>
 		</div>
 	{/snippet}

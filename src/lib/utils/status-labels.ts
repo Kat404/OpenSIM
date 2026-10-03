@@ -12,9 +12,17 @@
  * `STATUS_COLOR_VAR` mirrors the CSS custom properties on
  * `tokens.css` so the retícula legend swatches can be rendered
  * with `var(...)` lookups instead of hard-coded hex.
+ *
+ * The audit (L3, Round 6) additionally required that evaluation-type
+ * labels (Ordinario / Repetición / Especial) live next to
+ * `STATUS_LABEL` so the kardex's cell renderer and filter pills can
+ * never drift apart.
  */
 
-import type { StudentProgressStatus } from '#lib/server/db/schema';
+import type {
+	EvaluationType,
+	StudentProgressStatus
+} from '#lib/server/db/schema';
 
 export const STATUS_LABEL: Record<StudentProgressStatus, string> = {
 	APPROVED: 'Aprobada',
@@ -36,4 +44,15 @@ export const STATUS_COLOR_VAR: Record<
 	ENROLLED: { surface: '--brand-50', border: '--brand-500' },
 	AVAILABLE: { surface: '--surface-3', border: '--border-default' },
 	LOCKED: { surface: '--danger-50', border: '--danger-500' }
+};
+
+/**
+ * Single source of truth for the three evaluation types. Used by
+ * `KardexTable.svelte` both for the cell renderer and the filter
+ * pill labels so the two never drift (audit L3, Round 6).
+ */
+export const EVALUATION_LABEL: Record<EvaluationType, string> = {
+	ORDINARIO: 'Ordinario',
+	REPETICION: 'Repetición',
+	ESPECIAL: 'Especial'
 };

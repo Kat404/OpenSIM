@@ -21,6 +21,7 @@
 	import TramiteFormTitulacion from './TramiteFormTitulacion.svelte';
 	import { CheckCircle2, Lock } from 'lucide-svelte';
 	import type { ProcedureStatus } from './types';
+	import { PROCEDURE_STATE_LABEL } from '#lib/utils/procedure-labels';
 
 	interface Props {
 		procedures: ProcedureStatus[];
@@ -64,12 +65,12 @@
 					{#if active.unlocked}
 						<Badge variant="success" size="md" dot>
 							<CheckCircle2 size={12} strokeWidth={2} aria-hidden="true" />
-							Disponible
+							{PROCEDURE_STATE_LABEL.AVAILABLE}
 						</Badge>
 					{:else}
 						<Badge variant="neutral" size="md" dot>
 							<Lock size={12} strokeWidth={2} aria-hidden="true" />
-							Bloqueado
+							{PROCEDURE_STATE_LABEL.LOCKED}
 						</Badge>
 					{/if}
 				</div>

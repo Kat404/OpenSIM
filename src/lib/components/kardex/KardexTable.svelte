@@ -13,9 +13,9 @@
 -->
 <script lang="ts">
 	import { Table, Badge } from '#lib/components/ui';
-	import type { EvaluationType, StudentProgressStatus } from '#lib/server/db/schema';
+	import { EVALUATION_TYPES, type EvaluationType, type StudentProgressStatus } from '#lib/server/db/schema';
 	import { isPassing } from '#lib/utils/academic';
-	import { STATUS_LABEL } from '#lib/utils/status-labels';
+	import { EVALUATION_LABEL, STATUS_LABEL } from '#lib/utils/status-labels';
 
 	export interface KardexEntry {
 		code: string;
@@ -36,6 +36,13 @@
 	// Filter state lives locally; the page does not need to know
 	// about it. The Table atom owns the sort UI internally.
 	let filter = $state<'ALL' | EvaluationType>('ALL');
+
+	// Filter pills share their labels with the cell renderer through
+	// EVALUATION_LABEL so they can never drift (audit L3, Round 6).
+	const filterOptions: { key: 'ALL' | EvaluationType; label: string }[] = [
+		{ key: 'ALL', label: 'Todos' },
+		...EVALUATION_TYPES.map((t) => ({ key: t, label: EVALUATION_LABEL[t] }))
+	];
 
 	const filtered = $derived(
 		filter === 'ALL' ? entries : entries.filter((e) => e.evaluationType === filter)
@@ -60,12 +67,7 @@
 	}
 
 	function evalLabel(t: EvaluationType | null): string {
-		if (!t) return '—';
-		return {
-			ORDINARIO: 'Ordinario',
-			REPETICION: 'Repetición',
-			ESPECIAL: 'Especial'
-		}[t];
+		return t ? EVALUATION_LABEL[t] : '—';
 	}
 </script>
 
@@ -89,18 +91,13 @@
 
 <section class="kardex">
 	<div class="kardex__filters" role="group" aria-label="Filtros de evaluación">
-		{#each [
-			{ key: 'ALL', label: 'Todos' },
-			{ key: 'ORDINARIO', label: 'Ordinario' },
-			{ key: 'REPETICION', label: 'Repetición' },
-			{ key: 'ESPECIAL', label: 'Especial' }
-		] as opt (opt.key)}
+		{#each filterOptions as opt (opt.key)}
 			<button
 				type="button"
 				class="kardex__filter"
 				class:kardex__filter--active={filter === opt.key}
 				aria-pressed={filter === opt.key}
-				onclick={() => (filter = opt.key as 'ALL' | EvaluationType)}
+				onclick={() => (filter = opt.key)}
 			>
 				{opt.label}
 			</button>

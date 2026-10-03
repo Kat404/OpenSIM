@@ -10,7 +10,6 @@
 -->
 <script lang="ts">
 	export interface ScheduleBlock {
-		day: string;
 		startTime: string;
 		endTime: string;
 		classroom: string;

@@ -19,9 +19,15 @@
 	import { getSubjectColor } from '#lib/utils/color';
 	import { getTheme } from '#lib/utils/theme.svelte';
 
+	// The loader tags each block with a day-letter so we can group
+	// here; ClassBlock's `ScheduleBlock` doesn't carry `day` because
+	// the block doesn't need to know which column it lives in
+	// (audit N7, Round 6).
+	export type DayLetter = 'L' | 'M' | 'X' | 'J' | 'V' | 'S' | 'D';
+
 	export interface ScheduledClass {
 		subject: ScheduleSubject;
-		block: ScheduleBlock;
+		block: ScheduleBlock & { day: DayLetter };
 	}
 
 	interface Props {
@@ -33,7 +39,6 @@
 	let { schedule, startHour = 7, endHour = 22 }: Props = $props();
 
 	const DAY_LETTERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'] as const;
-	type DayLetter = (typeof DAY_LETTERS)[number];
 	const DAY_INDEX: Record<string, DayLetter> = {
 		L: 'L',
 		M: 'M',
