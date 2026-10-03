@@ -22,6 +22,13 @@
       "when": 1790999222868,
       "tag": "0002_unusual_radioactive_man",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1791000330371,
+      "tag": "0003_rainy_rumiko_fujikawa",
+      "breakpoints": true
     }
   ]
 }

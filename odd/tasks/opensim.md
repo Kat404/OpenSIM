@@ -369,7 +369,7 @@ export function getSubjectColorHSL(subjectCode: string): string {
 
 ### Phase 1: Database Schema & Full Seeding Pipeline
 
-- [x] **Task 1.1:** Crear `src/lib/server/db/schema.ts` con 10 tablas Drizzle (careers, specialties, subjects, subjectAliases, subjectPrerequisites, subjectUnits, studentProfiles, studentProgress, courseGroups, courseScheduleBlocks). Incluir FIXES v2.0.
+- [x] **Task 1.1:** Crear `src/lib/server/db/schema.ts` con 12 tablas Drizzle (careers, specialties, subjects, subjectAliases, subjectPrerequisites, subjectUnits, studentProfiles, studentProgress, courseGroups, courseScheduleBlocks, studentCredentials, authSessions). Incluir FIXES v2.0.
 - [x] **Task 1.2:** Guardar dataset completo de 42 asignaturas en `src/lib/server/db/data/curriculum-isic-2010-224.json`.
 - [x] **Task 1.3:** Crear seed script (`src/lib/server/db/seed.ts`) que popula D1 con canonicalIds, prerrequisitos y aliases (manejando `ACF-0901` vs `ACF-2301`).
 
@@ -604,3 +604,15 @@ Cambios aplicados tras la auditoría M3.1-Flash-Preview (max effort, 2026-10-02)
 - **Antes:** `docs/drizzle-raw-sql-workaround.md` documentaba la divergencia local/prod como inevitable y proponía 3 opciones (A/B/C) con comandos que mezclaban flags inexistentes (`--file` en `migrations apply`).
 - **Después:** `docs/drizzle-migrations-and-data.md` describe el flujo canónico positivo en una sola dirección: schema → `drizzle-kit generate` → `wrangler d1 migrations apply` (local) → `wrangler d1 execute --file` solo para datos → `wrangler d1 migrations apply --remote`. `drizzle-kit migrate` se documenta como camino muerto y no se usa.
 - **Regla de cabecera:** `wrangler d1 execute --file` es exclusivamente para DATOS; DDL siempre va por el migration runner.
+
+### 16.5 Phase 2.5 — Endurecimiento de Frontera (Oct 2026)
+
+Segunda ronda de auditoría M3.1-Flash-Preview aplicada con cinco commits de unidad de trabajo. Todos los cambios cierran vectores de fuga de PII, de open-redirect y de cadena de limpieza incompleta en el grafo `student_profiles`.
+
+- **PII trim (audit NEW-1)**: `src/routes/(protected)/+layout.server.ts` ahora devuelve solo `controlNumber`, `fullName`, `status`. Páginas que necesiten más campos (CURP, `birth_state`, promedios, créditos) los cargan en su propio `+page.server.ts` con selección explícita de columnas.
+- **redirectTo endurecido (audit NEW-2)**: nuevo helper `safeInternalRedirect` en `src/lib/utils/redirect.ts` rechaza protocol-relative (`//`) y backslash-protocol-relative (`/\`, `\\`). Usado en `/login` form action y en `load`. El helper parsea contra un origin centinela (`https://internal.invalid`) para confirmar same-origin sin depender del request actual.
+- **`db:set-password` recipe (audit NEW-3)**: añadido a `justfile` (entre `db-seed` y `db-studio`) y referenciado desde Tarea 1.4. Resuelve el gap entre el script `pnpm run db:set-password` (que ya existía) y la receta `just` descubrible.
+- **Tests añadidos (audit NEW-5/N6)**: `hashToken` (deterministic, base64url 43 chars, empty + Unicode) en `tests/unit/auth.test.ts` y `safeInternalRedirect` (null/undefined/empty, protocol-relative, backslash, absolute URL, valid path, query string, custom fallback, hash drop) en `tests/unit/redirect.test.ts`. Total: 50 tests pasando (35 baseline + 15 nuevos).
+- **Cascade completo (audit A5/A6)**: `student_credentials.controlNumber` ahora también `ON DELETE CASCADE` (migración 0003). Limpieza de cadena completa en egreso o corrección de número de control: `student_profiles → student_credentials`, `auth_sessions`. Las migraciones 0002 (auth_sessions cascade + índices) y 0003 (student_credentials cascade) cierran la dependencia.
+- **D1 local alineado**: `just db-reset` ejecutado antes del commit 1; las migraciones 0000/0001/0002/0003 están aplicadas; `auth_sessions` y `student_credentials` tienen CASCADE + los índices `idx_auth_sessions_expires_at` y `idx_auth_sessions_student` en el D1 local.
+- **Spec accuracy**: `src/lib/server/db/schema.ts` corrige el header de "10 normalized tables" a "12"; §8 Task 1.1 corrige "10 tablas" a "12 tablas". El contador de §16.3 ("10 entidades" en v2.1) se preserva verbatim porque documenta el bug histórico resuelto en v2.2.

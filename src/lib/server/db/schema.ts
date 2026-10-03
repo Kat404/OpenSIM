@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm';
 import { sqliteTable, text, integer, real, primaryKey, index } from 'drizzle-orm/sqlite-core';
 
 /**
- * OpenSIM — Drizzle ORM Schema (10 normalized tables)
+ * OpenSIM — Drizzle ORM Schema (12 normalized tables)
  *
  * Program: ISIC-2010-224 (Ingenieria en Sistemas Computacionales, TecNM Morelia)
  * See: odd/tasks/opensim.md §5.1 for canonical spec.
@@ -174,11 +174,14 @@ export const courseScheduleBlocks = sqliteTable('course_schedule_blocks', {
 // Stores the PBKDF2-derived key, salt, and iteration count for each
 // student. Hash and salt are base64url-encoded. passwordUpdatedAt is
 // nullable (set on rotation). No email/username column: the control
-// number is the credential identifier.
+// number is the credential identifier. The FK to `student_profiles`
+// is `ON DELETE CASCADE` (audit A5/A6, Phase 2.5): when a student
+// profile is removed (egreso, control-number correction), the
+// credential row goes with it.
 export const studentCredentials = sqliteTable('student_credentials', {
 	controlNumber: text('control_number')
 		.primaryKey()
-		.references(() => studentProfiles.controlNumber),
+		.references(() => studentProfiles.controlNumber, { onDelete: 'cascade' }),
 	passwordHash: text('password_hash').notNull(),
 	passwordSalt: text('password_salt').notNull(),
 	passwordIterations: integer('password_iterations').notNull().default(100000),
