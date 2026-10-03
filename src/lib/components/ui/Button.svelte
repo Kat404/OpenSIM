@@ -157,6 +157,18 @@
 		animation: btn-spin 0.7s linear infinite;
 	}
 
+	/* Phase 6 U4: make the icon span a self-centering flex container so
+	 * the SVG's optical center aligns with the text x-height, not with
+	 * the SVG viewBox top. Without this, lucide icons (stroke-width 2)
+	 * sit ~1-2 px above the label baseline because their viewBox is
+	 * tighter than the text's. */
+	.btn__icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
 	@keyframes btn-spin {
 		to {
 			transform: rotate(360deg);
