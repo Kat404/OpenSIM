@@ -76,6 +76,22 @@ export default defineConfig({
 				colorScheme: 'dark'
 			},
 			dependencies: ['setup']
+		},
+		{
+			// Audit R8-4 + R9 NUEVO-1: `chromium-dark` only sets the
+			// OS colorScheme — `[data-theme='dark']` (the path the
+			// toggle button actually takes) is structurally unreachable
+			// in tests. This project exercises that path by injecting
+			// `data-theme="dark"` synchronously before any module runs,
+			// on top of a LIGHT OS so the script alone sets the theme.
+			// Without it, every token added only to the
+			// `[data-theme='dark']` block is invisible to CI.
+			name: 'chromium-data-theme-dark',
+			use: {
+				...devices['Desktop Chrome'],
+				colorScheme: 'light'
+			},
+			dependencies: ['setup']
 		}
 	],
 	webServer: {

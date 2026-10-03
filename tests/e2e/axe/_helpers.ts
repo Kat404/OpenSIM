@@ -41,6 +41,17 @@ export interface AxeScanResult {
 }
 
 export async function scanForA11y(page: Page, testInfo: TestInfo): Promise<AxeScanResult> {
+	// `chromium-data-theme-dark` exercises the `[data-theme='dark']`
+	// path (audit R8-4 / R9 NUEVO-1). Inject the attribute synchronously
+	// before navigation so it lands before tokens.css paints, then reload
+	// to re-run the document so axe observes the themed DOM.
+	if (testInfo.project.name === 'chromium-data-theme-dark') {
+		await page.addInitScript(() => {
+			document.documentElement.setAttribute('data-theme', 'dark');
+		});
+		await page.reload();
+	}
+
 	// Wait for SvelteKit hydration so JS-applied attributes (e.g.
 	// `data-theme` from src/lib/utils/theme.svelte.ts:61 and the
 	// preload-data attributes from app.html) are present on
