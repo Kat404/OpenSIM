@@ -238,6 +238,12 @@
 		--danger-500: #f87171;
 		--info-500: #60a5fa;
 
+		--success-700: #6ee7b7;
+		--warning-700: #fcd34d;
+		--danger-700: #fca5a5;
+		--info-700: #93c5fd;
+		--fg-on-danger: #0b0f17;
+
 		--border-subtle: #1f2937;
 		--border-default: #334155;
 		--border-strong: #475569;
@@ -319,7 +325,14 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-	outline: none;
+	/* SC 1.4.11 (Non-text contrast): the outline is the actual
+	 * focus indicator at 3:1 vs adjacent backgrounds. --brand-700
+	 * resolves to dark cyan in light (#0e7490 on white ≈ 8:1) and
+	 * bright cyan in dark (#67e8f9 on #0b0f17 ≈ 9:1). The
+	 * box-shadow remains as a decorative outer ring (audit axe-core
+	 * N14, Round 7). */
+	outline: 2px solid var(--brand-700);
+	outline-offset: 2px;
 	box-shadow: var(--shadow-focus);
 	border-radius: var(--radius-2);
 }

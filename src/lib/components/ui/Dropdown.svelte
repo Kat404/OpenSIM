@@ -141,13 +141,16 @@
 	}
 
 	.dropdown__trigger--primary {
-		background-color: var(--brand-500);
+		/* Same brand-700 / brand-900 progression as the primary Button
+		 * (audit axe-core N12, Round 7): brand-500 vs white = 2.42:1
+		 * fails AA; brand-700 = 5.44:1 passes. */
+		background-color: var(--brand-700);
 		color: var(--brand-fg);
-		border-color: var(--brand-500);
+		border-color: var(--brand-700);
 	}
 	.dropdown__trigger--primary:hover {
-		background-color: var(--brand-600);
-		border-color: var(--brand-600);
+		background-color: var(--brand-900);
+		border-color: var(--brand-900);
 	}
 	.dropdown__trigger--secondary:hover {
 		background-color: var(--surface-2);

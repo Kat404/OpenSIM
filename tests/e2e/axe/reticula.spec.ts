@@ -5,7 +5,7 @@
  * (URL hash), since the round-6 audit (M6) flagged the deep-link
  * path as a separate flow. Both should pass.
  */
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { scanForA11y } from './_helpers';
 
 test.use({ storageState: 'playwright/.auth/storage.json' });
@@ -20,6 +20,12 @@ test('reticula with deep-link hash has no serious/critical WCAG 2.1 AA violation
 }, testInfo) => {
 	// canonicalId for Cálculo Diferencial per the curriculum fixture.
 	await page.goto('/reticula#calculo-diferencial');
-	await page.waitForTimeout(250); // let the DAG's hover/focus settle on the target
+	// Assert the deep-link actually focused the target node before
+	// scanning — otherwise a hash-routing regression would scan the
+	// same page as the base case and pass silently (audit N22, Round 7).
+	// SubjectNode.svelte applies `class:node--highlighted={isHighlighted}`
+	// when the deep-link lands; we assert that class is present.
+	await expect(page.locator('[data-canonical-id="calculo-diferencial"]'))
+		.toHaveClass(/node--highlighted/, { timeout: 5_000 });
 	await scanForA11y(page, testInfo);
 });

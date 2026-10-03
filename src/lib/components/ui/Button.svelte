@@ -127,13 +127,17 @@
 	}
 
 	.btn--danger {
-		background-color: var(--danger-500);
-		color: #ffffff;
-		border-color: var(--danger-500);
+		/* danger-500 + hardcoded #fff = 3.82:1 in light, 2.77:1 in dark.
+		 * Move to danger-700 (7.95:1 light) and use --fg-on-danger
+		 * which is white in light and dark-near-black in dark (6.5:1),
+		 * so both themes pass AA. Audit axe-core N13, Round 7. */
+		background-color: var(--danger-700);
+		color: var(--fg-on-danger);
+		border-color: var(--danger-700);
 	}
 	.btn--danger:hover:not(:disabled) {
-		background-color: var(--danger-700);
-		border-color: var(--danger-700);
+		background-color: var(--danger-500);
+		border-color: var(--danger-500);
 	}
 
 	.btn--full {
