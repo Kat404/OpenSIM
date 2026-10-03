@@ -5,6 +5,7 @@
  *   - hashPassword: determinism, base64url output shape, salt uniqueness
  *   - verifyPassword: positive, negative, wrong iterations
  *   - hashIp: hex output, determinism, IP-vs-other-input distinction
+ *   - hashToken: SHA-256 determinism, base64url output shape, Unicode
  *
  * The D1-backed helpers (createSession, validateSessionToken,
  * invalidateSession, getUserFromSessionToken) are not exercised here
@@ -13,7 +14,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { hashPassword, verifyPassword, hashIp } from '../../src/lib/server/auth';
+import { hashPassword, verifyPassword, hashIp, hashToken } from '../../src/lib/server/auth';
 
 describe('hashPassword', () => {
 	it('returns a base64url hash and salt with no "+", "/" or "=" characters', async () => {
@@ -107,5 +108,32 @@ describe('hashIp', () => {
 	it('handles the empty string without throwing', async () => {
 		const out = await hashIp('');
 		expect(out).toMatch(/^[0-9a-f]{64}$/);
+	});
+});
+
+describe('hashToken', () => {
+	it('is deterministic — same input → same output', async () => {
+		const a = await hashToken('test-token-123');
+		const b = await hashToken('test-token-123');
+		expect(a).toBe(b);
+	});
+
+	it('produces different output for different inputs', async () => {
+		const a = await hashToken('token-A');
+		const b = await hashToken('token-B');
+		expect(a).not.toBe(b);
+	});
+
+	it('output is base64url without padding (43 chars for SHA-256 32 bytes)', async () => {
+		const result = await hashToken('any-token');
+		expect(result).toMatch(/^[A-Za-z0-9_-]{43}$/);
+	});
+
+	it('handles empty string without throwing', async () => {
+		await expect(hashToken('')).resolves.toBeTruthy();
+	});
+
+	it('handles Unicode input without throwing', async () => {
+		await expect(hashToken('ñoño-token-é-é')).resolves.toBeTruthy();
 	});
 });
