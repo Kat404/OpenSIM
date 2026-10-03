@@ -1,9 +1,9 @@
-# OpenSIM — Open Source - Sistema Integral Modular (v2.0)
+# OpenSIM — Open Source - Sistema Integral Modular (v2.1)
 
 **Proyecto:** OpenSIM (Open Source — Sistema Integral Modular)
 **Target Architecture:** SvelteKit `3.0.0` + Svelte `5.57.1` (Runes) + Cloudflare D1/Workers + Drizzle ORM `0.45.3` + Valibot `1.5.0` + `pdf-lib 1.17.1`
 **Programa Académico:** Ingeniería en Sistemas Computacionales (Plan `ISIC-2010-224`, Instituto Tecnológico de Morelia)
-**Versión:** 2.0 (integrada post-audit, latest versions Oct 2026)
+**Versión:** 2.1 (CF-3 cerrado: auth single-file nativa; Tarea 2.5 agregada)
 **Fecha:** 2026-10-02
 
 ---
@@ -15,7 +15,7 @@
 - **CF-1 SubjectNode dual identity ✓** — `canonicalId` (slug semántico) como PK + `subjectAliases` table para legacy codes.
 - **CF-2 Backend ✓** — Cloudflare D1 (SQLite at edge) + Drizzle ORM (más ambicioso que mock JSON propuesto en v1.1).
 - **CF-4 Performance budgets IMPLÍCITO** — Cloudflare edge SSR + D1 cumple LCP/INP/CLS sin config adicional; budgets explícitos en §12.
-- **CF-3 Auth library STILL TBD** — Magic Link no implementado; Tarea 1.4 queda con mock-auth hasta resolver.
+- **CF-3 Auth library ✓ (CERRADO v2.1)** — Single-file pattern nativo en `src/lib/server/auth.ts`. Web Crypto API PBKDF2/SHA-256, sesiones en `auth_sessions`, cookies HttpOnly+Secure+SameSite=Lax. 0 paquetes npm auth, 0 servicios externos (Resend cancelado). `/login/recuperar` es vista informativa apuntando a `soporte.ds@morelia.tecnm.mx` y Coordinadores de Carrera.
 
 ### 4 Fixes aplicados al v2 entregado
 
@@ -23,6 +23,13 @@
 2. **Campos agregados** a `studentProfiles`: `passedAverage`, `inProgressCredits`, `enrollmentPeriod`.
 3. **Status enum** corregido: agregado `'LOCKED'` (original spec tenía 4 estados, v2 entregado traía 3).
 4. **Naming decision** documentada: `socialService` → `healthService` (IMSS es seguro médico, semánticamente más correcto).
+
+### Cambios v2.0 → v2.1 (Oct 2026)
+
+- **CF-3 cerrado**: Auth nativa single-file vía `crypto.subtle` PBKDF2/SHA-256, 0 deps npm auth, 0 servicios externos de email.
+- **Schema extendido**: nuevas tablas `student_credentials` (PBKDF2 hash + salt + iterations) y `auth_sessions` (token + expiry + metadata).
+- **Tarea 2.5 agregada**: Implementar `src/lib/server/auth.ts` + middleware en `src/hooks.server.ts` + rutas `/login` + `/login/recuperar` + seed CLI.
+- **Phase 2 status**: Tareas 2.1 y 2.2 marcadas como completadas; Tareas 2.3, 2.4, 2.5 pendientes.
 
 ### Stack pin — LATEST versions (Oct 2026)
 
@@ -233,6 +240,25 @@ export const courseScheduleBlocks = sqliteTable('course_schedule_blocks', {
   endTime: text('end_time').notNull(),
   classroom: text('classroom').notNull(),
 });
+
+// 11. Credenciales de Acceso (PBKDF2/SHA-256 vía Web Crypto API)
+export const studentCredentials = sqliteTable('student_credentials', {
+  controlNumber: text('control_number').primaryKey().references(() => studentProfiles.controlNumber),
+  passwordHash: text('password_hash').notNull(),         // base64url
+  passwordSalt: text('password_salt').notNull(),         // base64url
+  passwordIterations: integer('password_iterations').notNull().default(100000),
+  passwordUpdatedAt: integer('password_updated_at', { mode: 'timestamp' }),
+});
+
+// 12. Sesiones de Autenticación (cookie token)
+export const authSessions = sqliteTable('auth_sessions', {
+  id: text('id').primaryKey(),                              // session token (random 32 bytes base64url)
+  studentControlNumber: text('student_control_number').notNull().references(() => studentProfiles.controlNumber),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  userAgent: text('user_agent'),
+  ipHash: text('ip_hash'),                                   // hashed for privacy
+});
 ```
 
 ### 5.2 Diagrama Relacional (texto)
@@ -240,6 +266,8 @@ export const courseScheduleBlocks = sqliteTable('course_schedule_blocks', {
 ```
 careers (1) ──┬── (n) specialties
               └── (n) student_profiles
+                          ├── (1) student_credentials     (auth, 1:1)
+                          ├── (n) auth_sessions            (auth, 1:n)
                           └── (n) student_progress
                                        └── (n) subjects
                                                    ├── (n) subject_aliases
@@ -338,10 +366,11 @@ export function getSubjectColorHSL(subjectCode: string): string {
 
 ### Phase 2: Core Algorithmic Layer & Design System
 
-- [ ] **Task 2.1:** `src/lib/styles/tokens.css` con CSS Custom Properties light/dark.
-- [ ] **Task 2.2:** Implementar 18 componentes UI atómicos en `src/lib/components/ui/`: Button, Input, Select, Badge, Card, Modal, Drawer, Table, Tooltip, Toast, ProgressBar, Skeleton, Avatar, Kbd, Stepper, EmptyState, Dropdown, Tabs.
+- [x] **Task 2.1:** `src/lib/styles/tokens.css` con CSS Custom Properties light/dark.
+- [x] **Task 2.2:** Implementar 18 componentes UI atómicos en `src/lib/components/ui/`: Button, Input, Select, Badge, Card, Modal, Drawer, Table, Tooltip, Toast, ProgressBar, Skeleton, Avatar, Kbd, Stepper, EmptyState, Dropdown, Tabs.
 - [ ] **Task 2.3:** Implementar `src/lib/utils/dag.ts` con `getAncestors`, `getDescendants`, `evaluateCreditThresholds`. Tests en `tests/unit/dag.test.ts`.
 - [ ] **Task 2.4:** Implementar `src/lib/utils/color.ts` con `getSubjectColorHSL`. Tests en `tests/unit/color.test.ts`.
+- [ ] **Task 2.5:** Auth nativa single-file. Crear `src/lib/server/auth.ts` (`createSession`, `validateSessionToken`, `invalidateSession`, `hashPassword`, `verifyPassword` vía Web Crypto API PBKDF2/SHA-256), middleware en `src/hooks.server.ts` para rutas `/academico/*`, y rutas de UI `/login` (form action) + `/login/recuperar` (vista informativa de soporte). Agregar tablas `student_credentials` y `auth_sessions` al schema. Seed CLI para asignar contraseña inicial al estudiante de prueba.
 
 ### Phase 3: Layout & Interactive Modules
 
@@ -374,6 +403,7 @@ export function getSubjectColorHSL(subjectCode: string): string {
 |---|---|---|
 | CF-1 | SubjectNode dual identity | `canonicalId` slug + tabla `subjectAliases` |
 | CF-2 | Backend: Cloudflare D1 + Drizzle ORM | SQLite edge, type-safe, FOSS-friendly |
+| **CF-3** | **Auth nativa single-file** | **`crypto.subtle` PBKDF2/SHA-256, sesiones en `auth_sessions`, cookies HttpOnly+Secure+SameSite=Lax, `/login/recuperar` informativo. 0 paquetes npm auth, 0 servicios externos.** |
 | CF-4 | Performance budgets | Implícito via edge SSR; budgets explícitos §12 |
 | AG-3 | 18 componentes atómicos | Listado completo en Fase 2 Tarea 2.2 |
 | AG-4 | HSL color hash | FNV-style hash, hsl(60%, 88%) pastel |
@@ -389,7 +419,6 @@ export function getSubjectColorHSL(subjectCode: string): string {
 
 | ID | Decisión | Bloquea |
 |---|---|---|
-| CF-3 | Auth library (Magic Link) | Tarea 1.4 (mock-auth mientras) |
 | AG-14 | Browser target (sugerido Baseline 2024+) | Cross-cutting |
 | AG-15 | Multi-user roles | Cross-cutting |
 | AG-16 | i18n (Spanish-only explícito) | Cross-cutting |
