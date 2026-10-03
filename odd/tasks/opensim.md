@@ -397,11 +397,21 @@ export function getSubjectColorHSL(subjectCode: string): string {
 - [x] **Task 3.4:** `<ReticulaDag/>` SVG interactivo con Bézier y hover highlighting.
 - [x] **Task 3.5:** Kardex (`/academico/kardex`) con tabla unificada, sort y badges de evaluación.
 
+### Phase 4.0: Pre-Phase-4 hardening (7 corrections, audit M3.1 round 5)
+
+- [x] **Task 4.0.1 — `67c813d`** fix(a11y): dark-mode tokens + theme-aware HSL (WCAG AA on both surfaces).
+- [x] **Task 4.0.2 — `00a1bc7`** fix(kardex): use named `MIN_PASSING_GRADE=6.0` constant per TecNM 0-10 scale.
+- [x] **Task 4.0.3 — `b48273c`** fix(dashboard,schedule): unified enrollment helper, no synthetic fallback.
+- [x] **Task 4.0.4 — `92e3278`** fix(dashboard): timezone-aware 'today' using `Intl.DateTimeFormat('America/Mexico_City')`.
+- [x] **Task 4.0.5 — `2edc138`** perf(db): 3 indexes on `course_groups` / `schedule_blocks`.
+- [x] **Task 4.0.6 — `e0ca303`** test(dag): coverage for `buildAdjacency`, `*FromMap`, and cycle contract.
+- [x] **Task 4.0.7 — `e8a95da`** fix(phase3-polish): dead sort code, ARIA combobox, deep-link, empty state, FOUC, status label dedup, spec marks.
+
 ### Phase 4: Enrolment Simulator, Procedures & PDF Export
 
-- [ ] **Task 4.1:** Simulator de Reinscripción (`/reinscripcion`) con split view y firma global.
-- [ ] **Task 4.2:** Procedure Stepper (`/tramites`) con checks de umbrales de créditos.
-- [ ] **Task 4.3:** Generador PDF con `pdf-lib 1.17.1` para Carga Académica vectorial.
+- [x] **Task 4.1 — `add8afd` (builds on `b69c7ac` N1 fix):** Simulator de Reinscripción (`/reinscripcion`) con split view, conflict detection, y firma global. `b69c7ac` ships the enrollment seed fixture (38 `student_progress` rows for test student <NUMERO DE CONTROL PURGADO> + `getCurrentEnrollment` period-filtered query) and was the critical N1 audit fix.
+- [x] **Task 4.2 — `b4799f7`:** Procedure Stepper (`/tramites`) con checks de umbrales de créditos (182/208) y validación por trámite.
+- [x] **Task 4.3 — `d15cacb`:** Generador PDF con `pdf-lib 1.17.1` para Carga Académica vectorial. Importado vía `import()` dinámico para mantener el bundle cliente en 78.7 KB gz.
 
 ### Phase 5: Audit, Accessibility & Edge Deployment
 
