@@ -95,7 +95,7 @@
 	}
 
 	.modal::backdrop {
-		background-color: rgba(11, 15, 23, 0.5);
+		background-color: var(--scrim);
 		backdrop-filter: blur(4px);
 	}
 
