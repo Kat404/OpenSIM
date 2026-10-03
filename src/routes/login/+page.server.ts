@@ -24,9 +24,12 @@ import * as v from 'valibot';
 import {
 	SESSION_COOKIE_NAME,
 	SESSION_MAX_AGE_SECONDS,
+	clearRateLimit,
 	createSession,
 	getCredential,
 	hashIp,
+	isRateLimited,
+	recordFailedAttempt,
 	sessionCookieOptions,
 	verifyPassword
 } from '#lib/server/auth';
@@ -51,6 +54,8 @@ const LoginSchema = v.object({
 type LoginFormFailure = { error: string };
 
 const GENERIC_AUTH_ERROR = 'Número de control o contraseña incorrectos';
+const RATE_LIMITED_ERROR = (sec: number) =>
+	`Demasiados intentos. Espera ${sec} segundos antes de volver a intentar.`;
 
 export const load: ServerLoad = async ({ locals, url }) => {
 	// If the visitor already has a valid session, do not let them
@@ -87,10 +92,37 @@ export const actions: Actions = {
 			return fail<LoginFormFailure>(500, { error: 'Servicio no disponible' });
 		}
 		const db = getDb(env.DB);
+		const clientIp = event.getClientAddress();
+		const ipHash = await hashIp(clientIp);
+		const controlKey = `control:${controlNumber}`;
+		const ipKey = `ip:${ipHash}`;
+
+		// Rate limit (audit R8-9 / P0-2). Both keys are checked; deny
+		// if EITHER is over the 5/15min threshold. The IP check protects
+		// against spraying across many control numbers from one network;
+		// the control check protects against hammering one account from
+		// many networks.
+		const [controlLimit, ipLimit] = await Promise.all([
+			isRateLimited(db, controlKey),
+			isRateLimited(db, ipKey)
+		]);
+		const blocked = controlLimit.limited ? controlLimit : ipLimit.limited ? ipLimit : null;
+		if (blocked) {
+			return fail<LoginFormFailure>(429, { error: RATE_LIMITED_ERROR(blocked.retryAfterSec) });
+		}
+
 		const credential = await getCredential(db, controlNumber);
 		if (!credential) {
 			// Run a dummy verify to keep timing similar across branches.
 			await verifyPassword(password, 'AAAA', 'AAAA', 100_000).catch(() => false);
+			// Count against BOTH keys so an attacker can't enumerate by
+			// trying many control numbers (control: miss) without
+			// tripping their own IP cap, and a legitimate user mistyping
+			// doesn't fill the bucket uncontested.
+			await Promise.all([
+				recordFailedAttempt(db, controlKey),
+				recordFailedAttempt(db, ipKey)
+			]);
 			return fail<LoginFormFailure>(401, { error: GENERIC_AUTH_ERROR });
 		}
 
@@ -101,12 +133,19 @@ export const actions: Actions = {
 			credential.passwordIterations
 		);
 		if (!ok) {
+			await Promise.all([
+				recordFailedAttempt(db, controlKey),
+				recordFailedAttempt(db, ipKey)
+			]);
 			return fail<LoginFormFailure>(401, { error: GENERIC_AUTH_ERROR });
 		}
 
+		// Successful login: clear counters for this account + IP so a
+		// legitimate user who finally remembered the password doesn't
+		// hit the wall on the next attempt from the same place.
+		await Promise.all([clearRateLimit(db, controlKey), clearRateLimit(db, ipKey)]);
+
 		const userAgent = event.request.headers.get('user-agent') ?? '';
-		const clientIp = event.getClientAddress();
-		const ipHash = await hashIp(clientIp);
 
 		const session = await createSession(db, controlNumber, userAgent, ipHash);
 

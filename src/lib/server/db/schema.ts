@@ -248,6 +248,44 @@ export const authSessions = sqliteTable(
 	})
 );
 
+// 13. Auth Attempts (login rate limiting).
+//
+// Counters for failed login attempts, scoped by `attempt_key`. Keys are
+// two flavors — `control:<8-digit-control>` for per-account throttling
+// and `ip:<sha256(ip)>` for per-network throttling — both shapes make
+// enumeration of the 8-digit controlNumber enumerable-but-costly. The
+// window is a sliding 15-minute look-back at check time (see
+// src/lib/server/auth.ts `isRateLimited`).
+//
+// Rows are written via `recordFailedAttempt` and cleared on a
+// successful login (or by the daily scheduled prune). `window_start`
+// is a unix timestamp aligned to the bucket; `attempt_count` is the
+// running counter for that bucket.
+//
+// ponytail: per-bucket row count is unbounded by design — a single
+// account with a long history of failed attempts will accumulate one
+// row per 15-min window. At 5 attempts/window, a single attacker
+// produces ~4 rows/day, ~1.5k rows/year. Within D1 free-tier budget
+// for the next decade; revisit when adding a janitor.
+export const authAttempts = sqliteTable(
+	'auth_attempts',
+	{
+		id: integer('id').primaryKey({ autoIncrement: true }),
+		attemptKey: text('attempt_key').notNull(),
+		windowStart: integer('window_start', { mode: 'timestamp' }).notNull(),
+		attemptCount: integer('attempt_count').notNull().default(1)
+	},
+	(table) => ({
+		// Hot path for `isRateLimited`: WHERE attempt_key = ? AND
+		// window_start >= now() - 15min. The composite index collapses
+		// that into a single range scan per lookup.
+		attemptKeyWindowIdx: index('idx_auth_attempts_key_window').on(
+			table.attemptKey,
+			table.windowStart
+		)
+	})
+);
+
 // ---- Type exports for app layer ----
 
 export type Career = typeof careers.$inferSelect;

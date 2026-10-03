@@ -20,9 +20,15 @@
  * See: odd/tasks/opensim.md §5.1 (schema), §9 (CF-3), §16.2 (A3 fix).
  */
 
-import { eq, lt } from 'drizzle-orm';
+import { and, eq, gte, lt, sql } from 'drizzle-orm';
 import { getDb, type Database } from './db';
-import { authSessions, studentCredentials, studentProfiles, type StudentProfile } from './db/schema';
+import {
+	authAttempts,
+	authSessions,
+	studentCredentials,
+	studentProfiles,
+	type StudentProfile
+} from './db/schema';
 
 // ---------- Constants ----------
 
@@ -32,6 +38,157 @@ const DERIVED_KEY_BITS = 256; // 32 bytes
 const SESSION_TOKEN_BYTES = 32;
 const SESSION_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const COOKIE_NAME = 'opensim_session';
+
+// ---------- Rate limiting (audit R8-9 / P0-2) ----------
+//
+// Sliding 15-minute window. 5+ failed attempts on the same key
+// (`control:<control>` or `ip:<sha256>`) within the window means the
+// next call returns `limited: true`. The threshold is conservative —
+// a student who fat-fingers their password twice will not trigger
+// it, but a credential-stuffing attempt on the enumerable 8-digit
+// controlNumber hits the wall after 5 control: keys.
+//
+// ponytail: this counter is GLOBAL to the system (single-table, no
+// per-IP sharding). At adequate traffic this is the right shape;
+// split per-edge-region when the limit becomes a contention point.
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+const RATE_LIMIT_MAX_ATTEMPTS = 5;
+
+export type RateLimitResult = { limited: false } | { limited: true; retryAfterSec: number };
+
+/**
+ * Returns whether the given attempt key is currently rate-limited and,
+ * if so, how many seconds the caller must wait before retrying. The
+ * lookup walks the `auth_attempts` table for buckets in the trailing
+ * 15 minutes and sums their `attempt_count`; threshold is 5.
+ *
+ * `key` is opaque to this function — callers pass either
+ * `control:<digits>` or `ip:<hash>`. The two flavors are looked up
+ * independently and the caller decides how to combine them (the login
+ * form action denies if EITHER is limited, audit R8-9).
+ */
+export async function isRateLimited(db: Database, key: string): Promise<RateLimitResult> {
+	const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+	const rows = await db
+		.select({ sum: sql<number>`COALESCE(SUM(${authAttempts.attemptCount}), 0)` })
+		.from(authAttempts)
+		.where(and(eq(authAttempts.attemptKey, key), gte(authAttempts.windowStart, windowStart)));
+	const total = rows[0]?.sum ?? 0;
+	if (total < RATE_LIMIT_MAX_ATTEMPTS) return { limited: false };
+
+	// Find the oldest bucket that's still in the window — the caller
+	// can retry once that bucket ages out. Walk the buckets in window
+	// in ascending order, take the first one whose `windowStart +
+	// 15min` is in the future.
+	const buckets = await db
+		.select({ windowStart: authAttempts.windowStart })
+		.from(authAttempts)
+		.where(and(eq(authAttempts.attemptKey, key), gte(authAttempts.windowStart, windowStart)))
+		.orderBy(authAttempts.windowStart);
+	const oldest = buckets[0]?.windowStart;
+	const retryAfterSec = oldest
+		? Math.max(
+				1,
+				Math.ceil((oldest.getTime() + RATE_LIMIT_WINDOW_MS - Date.now()) / 1000)
+			)
+		: RATE_LIMIT_WINDOW_MS / 1000;
+	return { limited: true, retryAfterSec };
+}
+
+/**
+ * Records a failed login attempt for the given key. Inserts a new
+ * bucket row if no bucket exists for the current minute; otherwise
+ * increments the existing bucket's counter. Best-effort: errors are
+ * swallowed because failing to record a failed attempt should never
+ * prevent the user from seeing the auth error.
+ *
+ * ponytail: the bucket key is the timestamp truncated to a 1-minute
+ * boundary, so a sustained attack on one key produces ~15 rows / 15
+ * minutes instead of one row per attempt. Smaller table, same math.
+ */
+export async function recordFailedAttempt(db: Database, key: string): Promise<void> {
+	try {
+		const windowStart = new Date(Math.floor(Date.now() / 60_000) * 60_000);
+		// INSERT ... ON CONFLICT (attempt_key, window_start) DO UPDATE.
+		// Drizzle doesn't expose ON CONFLICT for sqlite directly here
+		// (we don't have a unique constraint on the pair), so we do a
+		// SELECT + INSERT or UPDATE in one round-trip via Drizzle's
+		// `insert(...).onConflictDoUpdate(...)`. We need an actual
+		// unique constraint for the upsert to fire, so we rely on a
+		// transactional pattern: read-then-write is fine here because
+		// rate limiting tolerates ~1-row skew at the minute boundary.
+		await db.transaction(async (tx) => {
+			const existing = await tx
+				.select({ id: authAttempts.id })
+				.from(authAttempts)
+				.where(
+					and(
+						eq(authAttempts.attemptKey, key),
+						eq(authAttempts.windowStart, windowStart)
+					)
+				)
+				.limit(1);
+			if (existing[0]) {
+				await tx
+					.update(authAttempts)
+					.set({ attemptCount: sql`${authAttempts.attemptCount} + 1` })
+					.where(eq(authAttempts.id, existing[0].id));
+			} else {
+				await tx.insert(authAttempts).values({
+					attemptKey: key,
+					windowStart,
+					attemptCount: 1
+				});
+			}
+		});
+	} catch {
+		// intentionally ignored — see header
+	}
+}
+
+/**
+ * Clears all rate-limit counters for the given key. Called after a
+ * successful login so the legitimate user isn't punished for a
+ * prior bad run (a stuck student who finally remembered the password
+ * shouldn't see a 429 on the next attempt).
+ */
+export async function clearRateLimit(db: Database, key: string): Promise<void> {
+	try {
+		await db.delete(authAttempts).where(eq(authAttempts.attemptKey, key));
+	} catch {
+		/* intentionally ignored */
+	}
+}
+
+/**
+ * Bulk prune of expired attempt counters. Called by the cron handler
+ * (auth.ts `scheduled`); can also be called manually. Keeps the table
+ * from growing unboundedly.
+ */
+export async function pruneExpiredAttempts(db: Database): Promise<number> {
+	const cutoff = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+	const result = await db
+		.delete(authAttempts)
+		.where(lt(authAttempts.windowStart, cutoff));
+	return extractAffectedRows(result);
+}
+
+/**
+ * Returns the number of rows the last Drizzle delete affected. D1
+ * exposes the count on `result.meta.rows_written`; node:sqlite (and
+ * the local test backend) puts it on `result.changes`. This helper
+ * normalises both shapes so the same code reads correctly in tests
+ * and production.
+ */
+function extractAffectedRows(result: unknown): number {
+	if (!result || typeof result !== 'object') return 0;
+	const r = result as Record<string, unknown>;
+	if (typeof r.rowsWritten === 'number') return r.rowsWritten;
+	const meta = r.meta as Record<string, unknown> | undefined;
+	if (meta && typeof meta.rows_written === 'number') return meta.rows_written;
+	if (typeof r.changes === 'number') return r.changes;
+	return 0;
+}
 
 // ---------- Crypto helpers ----------
 
@@ -225,8 +382,9 @@ export async function createSession(
  * Looks up a session by hashing the provided token and matching the
  * resulting digest against the `auth_sessions.id` PK. Returns `null`
  * if the session does not exist, has expired, or the student profile
- * has been deleted. Lazy-prunes expired rows so the table does not
- * grow unbounded.
+ * has been deleted. Expired rows are pruned by the cron handler
+ * (see `scheduled` below) so this function does not pay a per-request
+ * DELETE cost (audit R8-8 / P0-4).
  */
 export async function validateSessionToken(
 	db: Database,
@@ -234,12 +392,6 @@ export async function validateSessionToken(
 ): Promise<SessionValidation | null> {
 	const id = await hashToken(token);
 	const now = new Date();
-	// Lazy cleanup of expired sessions (best-effort, swallow errors).
-	try {
-		await db.delete(authSessions).where(lt(authSessions.expiresAt, now));
-	} catch {
-		// intentionally ignored
-	}
 
 	const rows = await db
 		.select()
@@ -249,18 +401,58 @@ export async function validateSessionToken(
 	const row = rows[0];
 	if (!row) return null;
 	if (row.expiresAt.getTime() <= now.getTime()) {
-		// Expired exactly now — clean up and refuse.
-		try {
-			await db.delete(authSessions).where(eq(authSessions.id, id));
-		} catch {
-			// intentionally ignored
-		}
+		// Expired exactly now — refuse. The bulk prune will sweep it
+		// on the next cron tick.
 		return null;
 	}
 	return {
 		controlNumber: row.studentControlNumber,
 		expiresAt: row.expiresAt
 	};
+}
+
+/**
+ * Cloudflare Workers scheduled handler. Invoked by the
+ * `0 [slash]6 * * *` cron (every 6 hours, see wrangler.jsonc
+ * `triggers.crons`). The `@sveltejs/adapter-cloudflare` 8 worker
+ * entry only ships a `fetch` handler by default; this function is
+ * wired onto the worker's default export by
+ * `scripts/inject-scheduled-handler.mjs`, which
+ * runs after `vite build` (see package.json `build` script).
+ *
+ * What it does:
+ *  - Bulk DELETE expired sessions (audit R8-8 / P0-4).
+ *  - Bulk DELETE expired rate-limit buckets (audit R8-9 follow-up).
+ *
+ * Local dev: `wrangler dev` does NOT auto-fire crons. To exercise
+ * this handler locally, hit the wrangler dev `/cdn-cgi/handler/scheduled`
+ * endpoint with the cron expression, or call `pruneSessions` /
+ * `pruneExpiredAttempts` directly from a test.
+ */
+export async function scheduled(
+	event: { cron: string; scheduledTime: number | Date },
+	env: { DB: D1Database }
+): Promise<void> {
+	const db = getDb(env.DB);
+	const [prunedSessions, prunedAttempts] = await Promise.all([
+		pruneExpiredSessions(db),
+		pruneExpiredAttempts(db)
+	]);
+	// eslint-disable-next-line no-console
+	console.log(
+		`[scheduled] cron=${event.cron} prunedSessions=${prunedSessions} prunedAttempts=${prunedAttempts}`
+	);
+}
+
+/**
+ * Bulk prune of expired sessions. Called by `scheduled` above.
+ * Returned count is best-effort (D1 SQLite doesn't always surface
+ * `changes_affected`); callers should log and move on.
+ */
+export async function pruneExpiredSessions(db: Database): Promise<number> {
+	const now = new Date();
+	const result = await db.delete(authSessions).where(lt(authSessions.expiresAt, now));
+	return extractAffectedRows(result);
 }
 
 /** Deletes a session row by hashing the provided token (logout). */
