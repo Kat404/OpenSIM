@@ -11,6 +11,13 @@
  * has been set; once the user picks a theme via the toggle it is
  * stored in localStorage and applied on every subsequent load.
  *
+ * DUAL-BLOCK ARCHITECTURE — both blocks below MUST stay in sync. Every
+ * token declared under [data-theme='dark'] MUST also appear under the
+ * `@media (prefers-color-scheme: dark) :root:not([data-theme])` block
+ * with the same value. When you add or change a token, update BOTH
+ * blocks in the same commit (audit R8-2 / Round 9 — drift here is what
+ * produces the 1.29:1 brand-50/100 white-on-salmon violations in dark).
+ *
  * Color scale uses a "pure neutral" graphite base (no chromatic tint in
  * neutral surfaces) plus a single brand accent (teal-cyan, WCAG-AA against
  * both light and dark surfaces). Semantic status tokens (success, warning,
@@ -142,8 +149,7 @@
 
 /* ───────────────────── Dark theme override ───────────────────── */
 
-[data-theme='dark'],
-:root[data-theme='dark'] {
+[data-theme='dark'] {
 	--surface-0: #0b0f17;
 	--surface-1: #131825;
 	--surface-2: #1c2333;
@@ -155,6 +161,7 @@
 	--fg-tertiary: #94a3b8;
 	--fg-disabled: #475569;
 	--fg-inverse: #0b0f17;
+	--fg-on-danger: #0b0f17; /* R9 NUEVO-2: missing here caused 7.95:1 -> ??? on Button danger in dark */
 
 	--brand-50: #164e63;
 	--brand-100: #155e75;
@@ -220,6 +227,8 @@
 		--fg-disabled: #475569;
 		--fg-inverse: #0b0f17;
 
+		--brand-50: #164e63;
+		--brand-100: #155e75;
 		--brand-300: #67e8f9;
 		--brand-500: #06b6d4;
 		--brand-600: #22d3ee;
@@ -248,6 +257,12 @@
 		--border-subtle: #1f2937;
 		--border-default: #334155;
 		--border-strong: #475569;
+
+		--shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
+		--shadow-2: 0 2px 4px rgba(0, 0, 0, 0.3);
+		--shadow-3: 0 4px 8px rgba(0, 0, 0, 0.4);
+		--shadow-4: 0 12px 24px rgba(0, 0, 0, 0.5);
+		--shadow-focus: 0 0 0 3px rgba(34, 211, 238, 0.45);
 
 		color-scheme: dark;
 	}
