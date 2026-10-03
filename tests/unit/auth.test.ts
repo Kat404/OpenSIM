@@ -190,11 +190,11 @@ function makeSqliteDb(): {
 	// internally — the test surface is the same SQL the production
 	// path issues.
 	const bind = (p: unknown): unknown => (p instanceof Date ? Math.floor(p.getTime() / 1000) : p);
-	const callback = (
+	const callback = async (
 		sql: string,
 		params: unknown[],
 		method: 'run' | 'all' | 'values' | 'get'
-	): { rows: unknown[]; meta?: Record<string, unknown> } => {
+	): Promise<{ rows: any[]; meta?: Record<string, unknown> }> => {
 		try {
 			const stmt = raw.prepare(sql);
 			const bound = params.map(bind) as number[];

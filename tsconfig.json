@@ -4,7 +4,12 @@
 		"strict": true,
 		"checkJs": false,
 		"allowJs": false,
-		"types": ["$app/types", "@cloudflare/workers-types", "./worker-configuration.d.ts"],
+		"types": [
+			"$app/types",
+			"@cloudflare/workers-types",
+			"./worker-configuration.d.ts",
+			"@playwright/test"
+		],
 		"paths": {
 			"#lib": ["./src/lib/index.ts"],
 			"#lib/*": ["./src/lib/*"],
@@ -16,7 +21,9 @@
 		"src/**/*.ts",
 		"src/**/*.svelte",
 		"vite.config.ts",
-		"drizzle.config.ts"
+		"drizzle.config.ts",
+		"playwright.config.ts",
+		"tests/**/*.ts"
 	],
 	"exclude": [
 		"node_modules",

@@ -11,7 +11,7 @@
  *
  * The `/` route is public; the 404 spec doesn't need auth.
  */
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { scanForA11y } from './_helpers';
 
 test('component gallery at / has no serious/critical WCAG 2.1 AA violations', async ({
