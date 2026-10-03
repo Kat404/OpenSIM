@@ -45,7 +45,7 @@ describe('hashPassword', () => {
 
 	it('returns the configured iteration count', async () => {
 		const { iterations } = await hashPassword('whatever');
-		expect(iterations).toBe(100_000);
+		expect(iterations).toBe(10_000);
 	});
 
 	it('handles short passwords without throwing', async () => {
@@ -88,7 +88,7 @@ describe('verifyPassword', () => {
 	});
 
 	it('returns false for malformed (non-base64url) inputs without throwing', async () => {
-		const ok = await verifyPassword('original', 'not-base64url!@#', 'also!@#', 100_000);
+		const ok = await verifyPassword('original', 'not-base64url!@#', 'also!@#', 10_000);
 		expect(ok).toBe(false);
 	});
 

@@ -209,7 +209,7 @@ export const studentCredentials = sqliteTable('student_credentials', {
 		.references(() => studentProfiles.controlNumber, { onDelete: 'cascade' }),
 	passwordHash: text('password_hash').notNull(),
 	passwordSalt: text('password_salt').notNull(),
-	passwordIterations: integer('password_iterations').notNull().default(100000),
+	passwordIterations: integer('password_iterations').notNull().default(10000),
 	passwordUpdatedAt: integer('password_updated_at', { mode: 'timestamp' })
 });
 

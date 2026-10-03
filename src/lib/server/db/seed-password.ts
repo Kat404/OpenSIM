@@ -4,7 +4,7 @@
  *
  * Idempotent CLI that:
  *   1. Computes a PBKDF2-HMAC-SHA-256 hash of the configured password
- *      using the same parameters as src/lib/server/auth.ts (100,000
+ *      using the same parameters as src/lib/server/auth.ts (10,000
  *      iterations, 16-byte salt, 32-byte derived key).
  *   2. Ensures the test student_profile row exists (INSERT OR IGNORE).
  *   3. Upserts the credential row (INSERT OR REPLACE).
@@ -38,7 +38,7 @@ import { pbkdf2Sync, randomBytes } from 'node:crypto';
 const here = dirname(fileURLToPath(import.meta.url));
 const SEED_SQL_PATH = resolve(here, 'seed-password.sql');
 
-const PBKDF2_ITERATIONS = 100_000;
+const PBKDF2_ITERATIONS = 10_000;
 const SALT_BYTES = 16;
 // node:crypto.pbkdf2Sync's `keylen` is in BYTES (unlike Web Crypto's
 // `crypto.subtle.deriveBits` which takes bits). 32 bytes matches the
