@@ -3,7 +3,7 @@
 **Feature:** `phase-6-ui-polish`
 **Branch:** `feat/phase-1-foundation` (continuing — same default as Phase 5)
 **Goal:** Resolve 4 UI/UX issues observed by el maintainer on the live production deployment (`https://opensim.jose-luis-rs.workers.dev`) on 2026-10-03. All 4 are **non-blocking** but visibly degrade the first-impression polish.
-**Status:** Draft — awaiting sign-off.
+**Status:** In progress — U1 closed via P0-1.1 (token parity), U2 and U4 implemented. U3 deferred pending spec rewrite (M3.1 round 8 found that the original U3 spec would introduce a serious ARIA violation and a redundant prop that already exists).
 
 ---
 
@@ -144,3 +144,21 @@
 - Screenshots before/after for each fix.
 - axe-core re-run output.
 - Bundle size delta (target: < +1 KB gz).
+
+---
+
+## Progress (2026-10-03)
+
+- **U1 ✓** — closed via `1294c91 fix(theme): unify dark token parity` (P0-1.1 of last round). The "white badge" symptom was the missing `--brand-50/100` in the `@media prefers-color-scheme: dark` block. The fix added both tokens and a `--fg-on-danger` token. The "fix the Badge" approach in the original spec would have been a no-op; the real fix was in `tokens.css`.
+- **U2 ✓** — `5d7ac9c fix(ui): smooth ProgressBar transition (700ms cubic-bezier, U2 Phase 6)`. 1 file, 1 line changed. The global `@media (prefers-reduced-motion)` override at the top of `tokens.css` zeros the duration for users who request reduced motion.
+- **U3 ⏸ DEFERRED** — needs spec rewrite per M3.1 round 8 finding: the original spec (a) tries to add a `status` prop that already exists in `Avatar.svelte`, (b) suggests `aria-label="Estado: en línea"` on a `<span>` without a role, which is exactly the `aria-prohibited-attr` serious violation already logged in `axe-findings.json`, and (c) proposes a dot that would be clipped by the existing `overflow: hidden` on `.avatar`. Re-spec → implement in a follow-up round.
+- **U4 ✓** — `e7facd3 fix(ui): align icon to text x-height via .btn__icon flex wrapper (U4 Phase 6)`. 1 file, added `.btn__icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0 }` so the existing `<span class="btn__icon">` wrapper becomes a self-centering flex container. The SVG now centers within its own box, and the box centers within the button — no more 1-2px vertical offset.
+
+**Verification after U2 + U4:**
+
+- `pnpm run check` 0/0
+- `pnpm test` 122/122 (no new tests; visual-only fixes)
+- `pnpm run build` clean
+- Both commits pushed to `origin` (GitHub + Codeberg mirror)
+
+**Open for a future round:** re-spec U3 → implement.
