@@ -72,12 +72,15 @@ test:
 test-watch:
     pnpm run test:unit
 
-# End-to-end tests (Playwright)
-test-e2e:
+# End-to-end tests (Playwright + axe-core).
+# Full pipeline: reset D1, provision the test student credential,
+# then run the suite. The Playwright `webServer` block auto-spawns
+# `pnpm dev` for the test and tears it down on exit.
+test-e2e: db-reset db-set-password
     pnpm exec playwright test
 
-# Run E2E with UI mode (interactive)
-test-e2e-ui:
+# Run E2E with UI mode (interactive; assumes DB is ready)
+test-e2e-ui: db-set-password
     pnpm exec playwright test --ui
 
 # ===== Database (D1 / Drizzle) =====
