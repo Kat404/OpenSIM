@@ -368,9 +368,9 @@ export function getSubjectColorHSL(subjectCode: string): string {
 
 - [x] **Task 2.1:** `src/lib/styles/tokens.css` con CSS Custom Properties light/dark.
 - [x] **Task 2.2:** Implementar 18 componentes UI atómicos en `src/lib/components/ui/`: Button, Input, Select, Badge, Card, Modal, Drawer, Table, Tooltip, Toast, ProgressBar, Skeleton, Avatar, Kbd, Stepper, EmptyState, Dropdown, Tabs.
-- [ ] **Task 2.3:** Implementar `src/lib/utils/dag.ts` con `getAncestors`, `getDescendants`, `evaluateCreditThresholds`. Tests en `tests/unit/dag.test.ts`.
-- [ ] **Task 2.4:** Implementar `src/lib/utils/color.ts` con `getSubjectColorHSL`. Tests en `tests/unit/color.test.ts`.
-- [ ] **Task 2.5:** Auth nativa single-file. Crear `src/lib/server/auth.ts` (`createSession`, `validateSessionToken`, `invalidateSession`, `hashPassword`, `verifyPassword` vía Web Crypto API PBKDF2/SHA-256), middleware en `src/hooks.server.ts` para rutas `/academico/*`, y rutas de UI `/login` (form action) + `/login/recuperar` (vista informativa de soporte). Agregar tablas `student_credentials` y `auth_sessions` al schema. Seed CLI para asignar contraseña inicial al estudiante de prueba.
+- [x] **Task 2.3:** Implementar `src/lib/utils/dag.ts` con `getAncestors`, `getDescendants`, `evaluateCreditThresholds`. Tests en `tests/unit/dag.test.ts`.
+- [x] **Task 2.4:** Implementar `src/lib/utils/color.ts` con `getSubjectColorHSL`. Tests en `tests/unit/color.test.ts`.
+- [x] **Task 2.5:** Auth nativa single-file. Crear `src/lib/server/auth.ts` (`createSession`, `validateSessionToken`, `invalidateSession`, `hashPassword`, `verifyPassword` vía Web Crypto API PBKDF2/SHA-256), middleware en `src/hooks.server.ts` para rutas `/academico/*`, y rutas de UI `/login` (form action) + `/login/recuperar` (vista informativa de soporte). Agregar tablas `student_credentials` y `auth_sessions` al schema. Seed CLI para asignar contraseña inicial al estudiante de prueba.
 
 ### Phase 3: Layout & Interactive Modules
 
