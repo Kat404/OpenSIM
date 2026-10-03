@@ -81,6 +81,11 @@ export function getAncestors(targetId: string, edges: Edge[]): Set<string> {
 	function traverse(currentId: string): void {
 		const directParents = edges.filter((e) => e.to === currentId).map((e) => e.from);
 		for (const parentId of directParents) {
+			// Self-exclusion: a cyclic input would otherwise land
+			// `targetId` in its own ancestor set via the visited-
+			// pre-add path. The contract is "excluding `targetId`
+			// itself" in all cases.
+			if (parentId === targetId) continue;
 			if (!ancestors.has(parentId)) {
 				ancestors.add(parentId);
 				traverse(parentId);
@@ -103,6 +108,7 @@ export function getDescendants(targetId: string, edges: Edge[]): Set<string> {
 	function traverse(currentId: string): void {
 		const directChildren = edges.filter((e) => e.from === currentId).map((e) => e.to);
 		for (const childId of directChildren) {
+			if (childId === targetId) continue;
 			if (!descendants.has(childId)) {
 				descendants.add(childId);
 				traverse(childId);
@@ -125,6 +131,7 @@ export function getAncestorsFromMap(targetId: string, map: ParentMap): Set<strin
 		const directParents = map.parents.get(currentId);
 		if (!directParents) return;
 		for (const parentId of directParents) {
+			if (parentId === targetId) continue;
 			if (!ancestors.has(parentId)) {
 				ancestors.add(parentId);
 				traverse(parentId);
@@ -145,6 +152,7 @@ export function getDescendantsFromMap(targetId: string, map: ParentMap): Set<str
 		const directChildren = map.children.get(currentId);
 		if (!directChildren) return;
 		for (const childId of directChildren) {
+			if (childId === targetId) continue;
 			if (!descendants.has(childId)) {
 				descendants.add(childId);
 				traverse(childId);
