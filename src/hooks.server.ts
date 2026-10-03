@@ -6,20 +6,20 @@
  *      against the D1 sessions table.
  *   2. Populates `event.locals.user` with the student profile (or
  *      `null` if no valid session).
- *   3. Enforces the /academico/* route protection — unauthenticated
- *      requests are redirected to /login with a `redirectTo` query
- *      parameter.
- *   4. Sends already-authenticated users away from /login to
- *      /dashboard.
+ *   3. Clears stale cookies + best-effort prunes the row in D1.
  *
- * See: odd/tasks/opensim.md §9 (CF-3), Tarea 2.5.
+ * Auth-gating is no longer in this file: the `(protected)` route
+ * group owns it via `src/routes/(protected)/+layout.server.ts`.
+ * Adding a new protected page is a matter of putting it under
+ * `(protected)/` — no edits to hooks required.
+ *
+ * See: odd/tasks/opensim.md §9 (CF-3), §16.1 (C5 route group).
  *
  * Note: in SvelteKit 3 + @sveltejs/adapter-cloudflare 8, the worker's
  * env (D1, etc.) is accessed via the `cloudflare:workers` virtual
  * module, not `event.platform`.
  */
 
-import { redirect } from '@sveltejs/kit';
 import type { Handle } from '@sveltejs/kit/hooks';
 // `cloudflare:workers` is a URI-style specifier that the adapter's
 // Vite plugin resolves at runtime. tsc can't resolve it as a regular
@@ -36,12 +36,10 @@ import { getDb } from '#lib/server/db';
 
 const env = workerEnv as OpenSimWorkerEnv;
 
-const PROTECTED_PREFIX = '/academico';
-const LOGIN_PATH = '/login';
-const DASHBOARD_PATH = '/dashboard';
-
 export const handle: Handle = async ({ event, resolve }) => {
-	// Default to unauthenticated; route loaders must check this.
+	// Default to unauthenticated; the (protected) layout's load
+	// function is responsible for redirecting when a guarded route
+	// is hit without a valid session.
 	event.locals.user = null;
 
 	const token = event.cookies.get(SESSION_COOKIE_NAME);
@@ -59,19 +57,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 				/* swallow — invalidation is a tidy-up, not a critical path */
 			});
 		}
-	}
-
-	const pathname = event.url.pathname;
-
-	// Gate /academico/* — redirect to /login with the intended URL.
-	if (pathname.startsWith(`${PROTECTED_PREFIX}/`) && !event.locals.user) {
-		const redirectTo = encodeURIComponent(pathname + event.url.search);
-		throw redirect(303, `${LOGIN_PATH}?redirectTo=${redirectTo}`);
-	}
-
-	// If already authenticated, do not let the user land on /login.
-	if (pathname === LOGIN_PATH && event.locals.user) {
-		throw redirect(303, DASHBOARD_PATH);
 	}
 
 	return resolve(event);

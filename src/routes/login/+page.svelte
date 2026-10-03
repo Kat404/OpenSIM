@@ -1,10 +1,17 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { Button, Card, Input } from '#lib/components/ui';
 
 	// `form` is the SvelteKit action result. It is `null` on first
 	// render and becomes the failure payload (from +page.server.ts)
 	// when the form action returns `fail(...)`.
 	let { form }: { form: { error?: string } | null } = $props();
+
+	// `?reason=logged-out` lands here after POST /login/logout; show
+	// a confirmation toast-style line. Anything else is ignored.
+	const notice = $derived(page.url.searchParams.get('reason') === 'logged-out'
+		? 'Sesión cerrada correctamente.'
+		: null);
 </script>
 
 <svelte:head>
@@ -21,6 +28,9 @@
 			</header>
 
 			<form method="POST" class="login__form" novalidate>
+				{#if notice}
+					<p class="login__notice" role="status">{notice}</p>
+				{/if}
 				<Input
 					name="controlNumber"
 					label="Número de control"
@@ -100,6 +110,16 @@
 		color: var(--danger-700);
 		background-color: var(--danger-50);
 		border: 1px solid var(--danger-500);
+		border-radius: var(--radius-2);
+	}
+
+	.login__notice {
+		margin: 0;
+		padding: var(--space-2) var(--space-3);
+		font-size: var(--text-sm);
+		color: var(--success-700, #15803d);
+		background-color: var(--success-50, #f0fdf4);
+		border: 1px solid var(--success-500, #22c55e);
 		border-radius: var(--radius-2);
 	}
 

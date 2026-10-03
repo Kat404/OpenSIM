@@ -7,12 +7,13 @@
  * redirecting to /dashboard (or to the `redirectTo` query param if
  * the user was bounced here from a protected route).
  *
- * Note: /dashboard is a Phase 3 route. Until it exists the redirect
- * will 404 — the auth flow itself is still correct and verifiable
- * via the `opensim_session` cookie set in the response.
+ * Also exposes a `load` function: an already-authenticated user
+ * landing on /login is bounced to /dashboard (this is the old
+ * `hooks.server.ts` behavior, now owned by the login page itself
+ * since hooks no longer knows about route paths).
  */
 
-import { fail, redirect, type Actions } from '@sveltejs/kit';
+import { fail, redirect, type Actions, type ServerLoad } from '@sveltejs/kit';
 // `cloudflare:workers` is a URI-style specifier that the adapter's
 // Vite plugin resolves at runtime. tsc can't resolve it as a regular
 // module, so we cast through the locally-declared `OpenSimWorkerEnv`
@@ -49,6 +50,18 @@ const LoginSchema = v.object({
 type LoginFormFailure = { error: string };
 
 const GENERIC_AUTH_ERROR = 'Número de control o contraseña incorrectos';
+
+export const load: ServerLoad = async ({ locals, url }) => {
+	// If the visitor already has a valid session, do not let them
+	// re-land on /login. Bounce to /dashboard (or wherever they were
+	// trying to go via `?redirectTo=`, validated below).
+	if (locals.user) {
+		const raw = url.searchParams.get('redirectTo');
+		const target = raw && raw.startsWith('/') && !raw.startsWith('//') ? raw : '/dashboard';
+		throw redirect(303, target);
+	}
+	return {};
+};
 
 export const actions: Actions = {
 	default: async (event) => {
