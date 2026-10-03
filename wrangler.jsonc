@@ -14,7 +14,7 @@
 		{
 			"binding": "DB",
 			"database_name": "opensim",
-			"database_id": "00000000-0000-0000-0000-000000000000",
+			"database_id": "390df78e-c4c2-4ace-94f4-6baebf1eb88f",
 			"migrations_dir": "drizzle"
 		}
 	]
