@@ -10,6 +10,18 @@
 	},
 	"workers_dev": true,
 	"preview_urls": true,
+	// Cron trigger for the `scheduled` handler exported by
+	// src/lib/server/auth.ts (P0-4 / audit R8-8). Every 6 hours the
+	// worker invokes auth.scheduled, which bulk-DELETEs expired
+	// sessions and rate-limit buckets. SvelteKit's
+	// @sveltejs/adapter-cloudflare 8 only emits a `fetch` handler;
+	// the `scheduled` method is wired onto the default export by
+	// scripts/inject-scheduled-handler.mjs (runs after vite build,
+	// see package.json `build` script). Local dev: `wrangler dev`
+	// does NOT auto-fire crons — see the helper's JSDoc.
+	"triggers": {
+		"crons": ["0 */6 * * *"]
+	},
 	"d1_databases": [
 		{
 			"binding": "DB",

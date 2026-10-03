@@ -412,42 +412,12 @@ export async function validateSessionToken(
 }
 
 /**
- * Cloudflare Workers scheduled handler. Invoked by the
- * `0 [slash]6 * * *` cron (every 6 hours, see wrangler.jsonc
- * `triggers.crons`). The `@sveltejs/adapter-cloudflare` 8 worker
- * entry only ships a `fetch` handler by default; this function is
- * wired onto the worker's default export by
- * `scripts/inject-scheduled-handler.mjs`, which
- * runs after `vite build` (see package.json `build` script).
- *
- * What it does:
- *  - Bulk DELETE expired sessions (audit R8-8 / P0-4).
- *  - Bulk DELETE expired rate-limit buckets (audit R8-9 follow-up).
- *
- * Local dev: `wrangler dev` does NOT auto-fire crons. To exercise
- * this handler locally, hit the wrangler dev `/cdn-cgi/handler/scheduled`
- * endpoint with the cron expression, or call `pruneSessions` /
- * `pruneExpiredAttempts` directly from a test.
- */
-export async function scheduled(
-	event: { cron: string; scheduledTime: number | Date },
-	env: { DB: D1Database }
-): Promise<void> {
-	const db = getDb(env.DB);
-	const [prunedSessions, prunedAttempts] = await Promise.all([
-		pruneExpiredSessions(db),
-		pruneExpiredAttempts(db)
-	]);
-	// eslint-disable-next-line no-console
-	console.log(
-		`[scheduled] cron=${event.cron} prunedSessions=${prunedSessions} prunedAttempts=${prunedAttempts}`
-	);
-}
-
-/**
- * Bulk prune of expired sessions. Called by `scheduled` above.
- * Returned count is best-effort (D1 SQLite doesn't always surface
- * `changes_affected`); callers should log and move on.
+ * Bulk prune of expired sessions. The cron-driven worker handler
+ * (wired by `scripts/inject-scheduled-handler.mjs`) issues the
+ * DELETE inline as raw SQL, but this helper exists for unit tests
+ * and ad-hoc invocation paths. Returned count is best-effort (D1
+ * SQLite doesn't always surface `changes_affected`); callers should
+ * log and move on.
  */
 export async function pruneExpiredSessions(db: Database): Promise<number> {
 	const now = new Date();
