@@ -2,50 +2,40 @@
  * OpenSIM — Dashboard data loader (Phase 3 Tarea 3.2).
  *
  * Loads the four headline KPIs plus the today's-classes widget data
- * in a single `db.batch()` round trip so we incur one network hop to
- * D1, not five. Per audit NEW-1, every query uses an explicit column
- * allow-list — we never hydrate the full `StudentProfile` row client-
- * side (CURP / birthState stay server-only).
+ * in two batched round trips to D1. Per audit NEW-1, every query
+ * uses an explicit column allow-list — we never hydrate the full
+ * `StudentProfile` row client-side (CURP / birthState stay
+ * server-only).
  *
- * The `todayClasses` join is best-effort: if the seed does not have a
- * real enrollment for `<NUMERO DE CONTROL PURGADO>` yet, we return an empty list and the
- * widget renders the EmptyState. The card on the page invites the
- * student to keep exploring the retícula meanwhile.
+ * The enrollment lookup goes through `getCurrentEnrollment` (shared
+ * with `/horario`) so the "is this student enrolled?" check is
+ * defined in exactly one place: `status === 'ENROLLED'` in
+ * `student_progress`. The previous version counted all progress
+ * rows (audit M1), which made a fully-approved student with no
+ * current enrollment look enrolled.
+ *
+ * See: odd/tasks/opensim.md (Phase 3 dashboard + horario); audit
+ * H2 + M1 (Round 4).
  */
 
-import { asc, eq, inArray, and } from 'drizzle-orm';
+import { eq, and, inArray } from 'drizzle-orm';
 import { env as workerEnv } from 'cloudflare:workers';
 import type { OpenSimWorkerEnv } from '../../../cloudflare-workers';
 import type { PageServerLoad } from './$types';
 import { getDb } from '#lib/server/db';
-import {
-	studentProfiles,
-	studentProgress,
-	courseGroups,
-	courseScheduleBlocks,
-	subjects
-} from '#lib/server/db/schema';
+import { studentProfiles, subjects } from '#lib/server/db/schema';
+import { getCurrentEnrollment } from '#lib/server/enrollment';
 
 const env = workerEnv as OpenSimWorkerEnv;
 
-// Day-of-week -> Spanish single-letter abbreviation. The seed schedule
-// blocks use these exact strings (see src/lib/server/db/seed.sql and
-// the eventual enrollment loader for Phase 4).
 const DAY_LETTERS = ['D', 'L', 'M', 'X', 'J', 'V', 'S'] as const;
 type DayLetter = (typeof DAY_LETTERS)[number];
-
-function todayDayLetter(now: Date): DayLetter {
-	return DAY_LETTERS[now.getDay()] as DayLetter;
-}
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const u = locals.user!;
 	const controlNumber = u.controlNumber;
-	const today = todayDayLetter(new Date());
 
 	if (!env.DB) {
-		// Without a DB we can't compute KPIs; return a safe fallback
-		// that still satisfies the page's typed contract.
 		return {
 			firstName: u.fullName.split(/\s+/)[0] ?? u.fullName,
 			kpis: {
@@ -70,10 +60,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const db = getDb(env.DB);
 
-	// One round trip. Drizzle's `db.batch` issues the statements as a
-	// single HTTP request to D1 (saving 4 round trips vs sequential
-	// awaits). All five statements are read-only.
-	const [profileRows, progressRows, enrollments] = await db.batch([
+	const [profileRows, enrollment] = await Promise.all([
 		db
 			.select({
 				controlNumber: studentProfiles.controlNumber,
@@ -88,27 +75,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.from(studentProfiles)
 			.where(eq(studentProfiles.controlNumber, controlNumber))
 			.limit(1),
-		db
-			.select({
-				subjectCanonicalId: studentProgress.subjectCanonicalId,
-				status: studentProgress.status
-			})
-			.from(studentProgress)
-			.where(eq(studentProgress.studentControlNumber, controlNumber)),
-		// Resolve the student's current enrollment through
-		// student_progress + course_groups in two batched statements: first
-		// the set of canonical ids with an in-progress subject, then the
-		// matching course_groups. Both join on subjectCanonicalId so
-		// the second is a single index hit per row.
-		db
-			.select({ subjectCanonicalId: studentProgress.subjectCanonicalId })
-			.from(studentProgress)
-			.where(
-				and(
-					eq(studentProgress.studentControlNumber, controlNumber),
-					eq(studentProgress.status, 'ENROLLED')
-				)
-			)
+		getCurrentEnrollment(db, controlNumber)
 	]);
 
 	const profile = profileRows[0] ?? {
@@ -122,8 +89,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 		advancePercentage: u.advancePercentage
 	};
 
-	const enrolledIds = enrollments.map((r) => r.subjectCanonicalId);
-	let todayClasses: {
+	// Today's classes: filter the enrollment's schedule blocks to the
+	// letter of the current weekday. We compute the letter on the
+	// server (Cloudflare Workers run in UTC; see `time.ts` for the
+	// timezone-aware helper used elsewhere).
+	const todayLetter = todayDayLetter();
+	const todayClasses: {
 		code: string;
 		name: string;
 		subjectCanonicalId: string;
@@ -132,61 +103,33 @@ export const load: PageServerLoad = async ({ locals }) => {
 		classroom: string;
 	}[] = [];
 
-	if (enrolledIds.length > 0) {
-		// Second mini-batch: course_groups + schedule_blocks + subject
-		// details, filtered to the enrolled set. Done as a follow-up so
-		// the first batch stays small and predictable.
-		const [groups, blocks, subjectRows] = await db.batch([
-			db
-				.select({
-					id: courseGroups.id,
-					subjectCanonicalId: courseGroups.subjectCanonicalId
-				})
-				.from(courseGroups)
-				.where(inArray(courseGroups.subjectCanonicalId, enrolledIds)),
-			db
-				.select({
-					id: courseScheduleBlocks.id,
-					groupId: courseScheduleBlocks.groupId,
-					day: courseScheduleBlocks.day,
-					startTime: courseScheduleBlocks.startTime,
-					endTime: courseScheduleBlocks.endTime,
-					classroom: courseScheduleBlocks.classroom
-				})
-				.from(courseScheduleBlocks)
-				.where(eq(courseScheduleBlocks.day, today)),
-			db
-				.select({
-					canonicalId: subjects.canonicalId,
-					code: subjects.code,
-					name: subjects.name
-				})
-				.from(subjects)
-				.where(inArray(subjects.canonicalId, enrolledIds))
-		]);
+	if (enrollment.schedule.length > 0) {
+		const groupToCanonical = new Map<string, string>();
+		for (const g of enrollment.groups) groupToCanonical.set(g.id, g.subjectCanonicalId);
+		const enrolledIds = Array.from(new Set(groupToCanonical.values()));
+		const subjectRows = await db
+			.select({ canonicalId: subjects.canonicalId, code: subjects.code, name: subjects.name })
+			.from(subjects)
+			.where(inArray(subjects.canonicalId, enrolledIds));
+		const codeByCanonical = new Map<string, { code: string; name: string }>();
+		for (const s of subjectRows) codeByCanonical.set(s.canonicalId, { code: s.code, name: s.name });
 
-		const groupIdToCanonical = new Map<string, string>();
-		for (const g of groups) groupIdToCanonical.set(g.id, g.subjectCanonicalId);
-		const canonicalInfo = new Map<string, { code: string; name: string }>();
-		for (const s of subjectRows) canonicalInfo.set(s.canonicalId, { code: s.code, name: s.name });
-
-		todayClasses = blocks
-			.map((b) => {
-				const canonical = groupIdToCanonical.get(b.groupId);
-				if (!canonical) return null;
-				const info = canonicalInfo.get(canonical);
-				if (!info) return null;
-				return {
-					code: info.code,
-					name: info.name,
-					subjectCanonicalId: canonical,
-					startTime: b.startTime,
-					endTime: b.endTime,
-					classroom: b.classroom
-				};
-			})
-			.filter((x): x is NonNullable<typeof x> => x !== null)
-			.sort((a, b) => a.startTime.localeCompare(b.startTime));
+		for (const b of enrollment.schedule) {
+			if (b.day.toUpperCase() !== todayLetter) continue;
+			const canonical = groupToCanonical.get(b.groupId);
+			if (!canonical) continue;
+			const info = codeByCanonical.get(canonical);
+			if (!info) continue;
+			todayClasses.push({
+				code: info.code,
+				name: info.name,
+				subjectCanonicalId: canonical,
+				startTime: b.startTime,
+				endTime: b.endTime,
+				classroom: b.classroom
+			});
+		}
+		todayClasses.sort((a, b) => a.startTime.localeCompare(b.startTime));
 	}
 
 	return {
@@ -199,10 +142,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 			advancePercentage: profile.advancePercentage
 		},
 		todayClasses,
-		hasEnrollment: progressRows.length > 0,
-		dayLabel: 'hoy',
-		// Unused on the page itself, kept so child routes that compose
-		// the dashboard (e.g. an export view) can still inspect raw rows.
-		_enrolledIds: enrolledIds
+		// `hasEnrollment` reflects active enrollment only (status =
+		// 'ENROLLED'); see `getCurrentEnrollment` for the single
+		// source of truth.
+		hasEnrollment: enrollment.groups.length > 0,
+		dayLabel: 'hoy'
 	};
 };
+
+function todayDayLetter(now: Date = new Date()): DayLetter {
+	return DAY_LETTERS[now.getDay()] as DayLetter;
+}

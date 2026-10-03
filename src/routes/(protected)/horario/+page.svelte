@@ -1,12 +1,15 @@
 <!--
   OpenSIM — Horario semanal page.
 
-  Header + a synthetic-data notice when the student has no real
-  enrollment yet, followed by the TimeGridSchedule component.
+  Header plus either the TimeGridSchedule or an EmptyState when the
+  student has no real enrollment. No synthetic data is ever served
+  (audit H2): the page renders empty when the enrollment is empty.
 -->
 <script lang="ts">
 	import type { PageData } from './$types';
 	import TimeGridSchedule from '#lib/components/schedule/TimeGridSchedule.svelte';
+	import { EmptyState } from '#lib/components/ui';
+	import { CalendarX } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 </script>
@@ -23,15 +26,18 @@
 		<p class="horario__sub">
 			Cada bloque representa una clase con duración proporcional al tiempo real (60px por hora).
 		</p>
-		{#if data.synthetic}
-			<p class="horario__notice" role="status">
-				Mostrando datos de muestra — tu horario se mostrará aquí cuando completes la reinscripción.
-			</p>
-		{/if}
 	</header>
 
 	<div class="horario__grid">
-		<TimeGridSchedule schedule={data.schedule} />
+		{#if data.schedule.length === 0}
+			<EmptyState
+				title="No tienes horario activo"
+				description="No tienes horario activo este semestre. La reinscripción está disponible en /reinscripcion (próximamente)."
+				icon={CalendarX as never}
+			/>
+		{:else}
+			<TimeGridSchedule schedule={data.schedule} />
+		{/if}
 	</div>
 </section>
 
@@ -67,16 +73,6 @@
 		margin: 0;
 		font-size: var(--text-sm);
 		color: var(--fg-tertiary);
-	}
-
-	.horario__notice {
-		margin: var(--space-2) 0 0;
-		padding: var(--space-2) var(--space-3);
-		background-color: var(--info-50);
-		border: 1px solid color-mix(in srgb, var(--info-500) 20%, transparent);
-		border-radius: var(--radius-2);
-		color: var(--info-700);
-		font-size: var(--text-sm);
 	}
 
 	.horario__grid {
