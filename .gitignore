@@ -21,3 +21,6 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Dev artifacts (contain PBKDF2 hash + salt for the test student)
+/src/lib/server/db/seed-password.sql

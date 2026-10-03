@@ -252,22 +252,26 @@ export const courseScheduleBlocks = sqliteTable('course_schedule_blocks', {
 
 // 11. Credenciales de Acceso (PBKDF2/SHA-256 vía Web Crypto API)
 export const studentCredentials = sqliteTable('student_credentials', {
-  controlNumber: text('control_number').primaryKey().references(() => studentProfiles.controlNumber),
+  controlNumber: text('control_number').primaryKey().references(() => studentProfiles.controlNumber, { onDelete: 'cascade' }),
   passwordHash: text('password_hash').notNull(),         // base64url
   passwordSalt: text('password_salt').notNull(),         // base64url
   passwordIterations: integer('password_iterations').notNull().default(100000),
   passwordUpdatedAt: integer('password_updated_at', { mode: 'timestamp' }),
 });
 
-// 12. Sesiones de Autenticación (cookie token)
+// 12. Sesiones de Autenticación (PK = SHA-256 del token; cookie lleva token crudo)
+import { index } from 'drizzle-orm/sqlite-core';
 export const authSessions = sqliteTable('auth_sessions', {
-  id: text('id').primaryKey(),                              // session token (random 32 bytes base64url)
-  studentControlNumber: text('student_control_number').notNull().references(() => studentProfiles.controlNumber),
+  id: text('id').primaryKey(),                              // SHA-256(token) base64url, NO el token plano
+  studentControlNumber: text('student_control_number').notNull().references(() => studentProfiles.controlNumber, { onDelete: 'cascade' }),
   expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
   userAgent: text('user_agent'),
   ipHash: text('ip_hash'),                                   // hashed for privacy
-});
+}, (table) => ({
+  expiresAtIdx: index('idx_auth_sessions_expires_at').on(table.expiresAt),
+  studentIdx: index('idx_auth_sessions_student').on(table.studentControlNumber),
+}));
 ```
 
 ### 5.2 Diagrama Relacional (texto)
@@ -375,7 +379,7 @@ export function getSubjectColorHSL(subjectCode: string): string {
 
 ### Pending Phase 1 Tasks
 
-- [ ] **Task 1.4:** Seed CLI para provisionar credenciales del estudiante de prueba. Implementado ad-hoc en `src/lib/server/db/seed-password.ts` (alcanzable vía `pnpm run db:set-password`); no expuesto como recipe `just` todavía. Marcado pendiente para documentar formalmente la receta `just db-set-password` (Fase 3 / Tarea de tooling).
+- [x] **Task 1.4:** Seed CLI para provisionar credenciales del estudiante de prueba. Implementado en `src/lib/server/db/seed-password.ts`. Accesible vía `just db-set-password` (recipe expuesta en justfile) o `pnpm run db:set-password` (script en package.json). Default dev credential: controlNumber `<NUMERO DE CONTROL PURGADO>` / password `opensim-dev-2026`. NO USAR EN PRODUCCIÓN.
 
 ### Phase 2: Core Algorithmic Layer & Design System
 
