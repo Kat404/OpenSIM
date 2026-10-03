@@ -13,8 +13,9 @@
 -->
 <script lang="ts">
 	import { Table, Badge } from '#lib/components/ui';
-	import { EVALUATION_TYPES, type EvaluationType, type StudentProgressStatus } from '#lib/server/db/schema';
+	import { EVALUATION_TYPES, type EvaluationType } from '#lib/utils/academic';
 	import { isPassing } from '#lib/utils/academic';
+	import type { StudentProgressStatus } from '#lib/server/db/schema';
 	import { EVALUATION_LABEL, STATUS_LABEL } from '#lib/utils/status-labels';
 
 	export interface KardexEntry {

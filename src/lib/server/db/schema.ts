@@ -291,5 +291,9 @@ export type NewAuthSession = typeof authSessions.$inferInsert;
 export const STUDENT_PROGRESS_STATUSES = ['APPROVED', 'ENROLLED', 'AVAILABLE', 'LOCKED'] as const;
 export type StudentProgressStatus = (typeof STUDENT_PROGRESS_STATUSES)[number];
 
-export const EVALUATION_TYPES = ['ORDINARIO', 'REPETICION', 'ESPECIAL'] as const;
-export type EvaluationType = (typeof EVALUATION_TYPES)[number];
+// Evaluation types live in `#lib/utils/academic` (client-safe home)
+// so the kardex UI can read the array at runtime without dragging
+// the server-only schema into the browser bundle. Re-exported here
+// for backward compatibility with any server code that imports from
+// the schema path.
+export { EVALUATION_TYPES, type EvaluationType } from '#lib/utils/academic';
