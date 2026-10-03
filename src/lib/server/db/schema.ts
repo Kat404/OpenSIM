@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import { sqliteTable, text, integer, real, primaryKey } from 'drizzle-orm/sqlite-core';
 
 /**
@@ -168,6 +169,41 @@ export const courseScheduleBlocks = sqliteTable('course_schedule_blocks', {
 	classroom: text('classroom').notNull()
 });
 
+// 11. Credenciales de Acceso (PBKDF2 / SHA-256 via Web Crypto API)
+//
+// Stores the PBKDF2-derived key, salt, and iteration count for each
+// student. Hash and salt are base64url-encoded. passwordUpdatedAt is
+// nullable (set on rotation). No email/username column: the control
+// number is the credential identifier.
+export const studentCredentials = sqliteTable('student_credentials', {
+	controlNumber: text('control_number')
+		.primaryKey()
+		.references(() => studentProfiles.controlNumber),
+	passwordHash: text('password_hash').notNull(),
+	passwordSalt: text('password_salt').notNull(),
+	passwordIterations: integer('password_iterations').notNull().default(100000),
+	passwordUpdatedAt: integer('password_updated_at', { mode: 'timestamp' })
+});
+
+// 12. Sesiones de Autenticacion (cookie-backed)
+//
+// `id` is the random session token stored in the HttpOnly cookie. Rows
+// are invalidated by DELETE on logout or expiry. userAgent / ipHash are
+// stored as opaque strings; ipHash is a SHA-256 of the source IP for
+// privacy (the raw IP never lands in the database).
+export const authSessions = sqliteTable('auth_sessions', {
+	id: text('id').primaryKey(),
+	studentControlNumber: text('student_control_number')
+		.notNull()
+		.references(() => studentProfiles.controlNumber),
+	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.notNull()
+		.default(sql`(unixepoch())`),
+	userAgent: text('user_agent'),
+	ipHash: text('ip_hash')
+});
+
 // ---- Type exports for app layer ----
 
 export type Career = typeof careers.$inferSelect;
@@ -199,6 +235,12 @@ export type NewCourseGroup = typeof courseGroups.$inferInsert;
 
 export type CourseScheduleBlock = typeof courseScheduleBlocks.$inferSelect;
 export type NewCourseScheduleBlock = typeof courseScheduleBlocks.$inferInsert;
+
+export type StudentCredential = typeof studentCredentials.$inferSelect;
+export type NewStudentCredential = typeof studentCredentials.$inferInsert;
+
+export type AuthSession = typeof authSessions.$inferSelect;
+export type NewAuthSession = typeof authSessions.$inferInsert;
 
 // ---- Status union (TypeScript-side enforcement; SQLite stores TEXT) ----
 

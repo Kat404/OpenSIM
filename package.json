@@ -20,7 +20,8 @@
 		"db:migrate:apply": "wrangler d1 migrations apply opensim --local",
 		"db:seed:gen": "tsx src/lib/server/db/seed.ts",
 		"db:seed:apply": "pnpm run db:seed:gen && wrangler d1 execute opensim --local --file=./src/lib/server/db/seed.sql",
-		"db:seed": "pnpm run db:seed:apply"
+		"db:seed": "pnpm run db:seed:apply",
+		"db:set-password": "tsx src/lib/server/db/seed-password.ts"
 	},
 	"dependencies": {
 		"drizzle-orm": "0.45.3",
