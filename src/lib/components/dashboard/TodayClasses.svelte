@@ -10,7 +10,8 @@
 <script lang="ts">
 	import { EmptyState } from '#lib/components/ui';
 	import { CalendarX } from 'lucide-svelte';
-	import { getSubjectColorHSL } from '#lib/utils/color';
+	import { getSubjectColor } from '#lib/utils/color';
+	import { getTheme } from '#lib/utils/theme.svelte';
 
 	export interface TodayClass {
 		code: string;
@@ -44,7 +45,7 @@
 	{:else}
 		<ul class="today__list">
 			{#each classes as cls (cls.code + cls.startTime)}
-				{@const bg = getSubjectColorHSL(cls.code)}
+				{@const bg = getSubjectColor(cls.code, getTheme())}
 				<li class="today__item">
 					<span class="today__swatch" style:background-color={bg} aria-hidden="true"></span>
 					<div class="today__meta">

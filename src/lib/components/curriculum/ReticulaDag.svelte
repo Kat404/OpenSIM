@@ -15,7 +15,8 @@
 -->
 <script lang="ts">
 	import { buildAdjacency, getAncestorsFromMap, getDescendantsFromMap } from '#lib/utils/dag';
-	import { getSubjectColorHSL } from '#lib/utils/color';
+	import { getSubjectColor } from '#lib/utils/color';
+	import { getTheme } from '#lib/utils/theme.svelte';
 	import type { StudentProgressStatus } from '#lib/server/db/schema';
 	import SubjectNode, { type SubjectViewModel } from './SubjectNode.svelte';
 
@@ -194,7 +195,7 @@
 					y={pos.y}
 					width={NODE_WIDTH}
 					height={NODE_HEIGHT}
-					colorHsl={getSubjectColorHSL(s.code)}
+					colorHsl={getSubjectColor(s.code, getTheme())}
 					onHover={setHover}
 					onActivate={activate}
 				/>

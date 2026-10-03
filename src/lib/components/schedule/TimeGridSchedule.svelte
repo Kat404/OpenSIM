@@ -16,7 +16,8 @@
 -->
 <script lang="ts">
 	import ClassBlock, { type ScheduleBlock, type ScheduleSubject } from './ClassBlock.svelte';
-	import { getSubjectColorHSL } from '#lib/utils/color';
+	import { getSubjectColor } from '#lib/utils/color';
+	import { getTheme } from '#lib/utils/theme.svelte';
 
 	export interface ScheduledClass {
 		subject: ScheduleSubject;
@@ -60,6 +61,7 @@
 	const totalHeight = $derived((endHour - startHour) * PIXELS_PER_HOUR);
 
 	const positioned = $derived.by(() => {
+		const theme = getTheme();
 		const byDay = new Map<DayLetter, { subject: ScheduleSubject; block: ScheduleBlock; topPx: number; heightPx: number; colorHsl: string }[]>();
 		for (const { subject, block } of schedule) {
 			const day = DAY_INDEX[block.day.toUpperCase()];
@@ -68,7 +70,7 @@
 			const end = parseHHMM(block.endTime);
 			const topPx = Math.max(0, (start - startHour) * PIXELS_PER_HOUR);
 			const heightPx = Math.max(28, (end - start) * PIXELS_PER_HOUR);
-			const colorHsl = getSubjectColorHSL(subject.code);
+			const colorHsl = getSubjectColor(subject.code, theme);
 			const arr = byDay.get(day) ?? [];
 			arr.push({ subject, block, topPx, heightPx, colorHsl });
 			byDay.set(day, arr);
