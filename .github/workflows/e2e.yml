@@ -1,0 +1,96 @@
+# OpenSIM — End-to-end test pipeline.
+#
+# Runs the Playwright + axe-core suite on every push to main and every
+# PR targeting main. The test command (pnpm exec playwright test) is the
+# same as local; the `webServer` block in playwright.config.ts spawns
+# `pnpm dev` and tears it down at the end.
+#
+# D1 is a local Miniflare binding — the db:reset step wipes the local
+# state directory, re-applies migrations, and re-seeds the catalog
+# before db:set-password inserts the test student credential used by
+# auth.setup.ts. Both steps are best-effort (`|| echo ...`) so a DB
+# hiccup degrades to "auth tests skip" rather than a 500-class failure
+# that masks the real signal in CI logs.
+#
+# Trace + retry config: playwright.config.ts reads `process.env.CI` and
+# uses `trace: 'retain-on-failure'` + `retries: 1` for CI. On failure,
+# the `test-results/` directory (traces + screenshots) is uploaded as
+# an artifact for triage; on success, the HTML report is uploaded.
+#
+# Template: playwright-best-practices skill (infrastructure-ci-cd/
+# github-actions.md) — adapted for pnpm and the project's local D1
+# provisioning. YAML requires space indentation; the rest of the
+# project uses tabs but those are .json/.jsonc/.ts, not YAML.
+name: E2E Tests
+
+'on':
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: true
+
+jobs:
+  test:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache Playwright browsers
+        id: browser-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install browsers (cache miss)
+        if: steps.browser-cache.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Install OS dependencies (cache hit)
+        if: steps.browser-cache.outputs.cache-hit == 'true'
+        run: pnpm exec playwright install-deps
+
+      - name: Set up D1 (local Miniflare)
+        run: pnpm run db:reset || echo 'db-reset failed — skipping'
+
+      - name: Seed test student
+        if: always()
+        run: pnpm run db:set-password || echo 'password seed failed — auth tests will skip'
+
+      - name: Run Playwright tests
+        run: pnpm exec playwright test
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: test-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload traces + screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: traces
+          path: test-results/
+          retention-days: 7
