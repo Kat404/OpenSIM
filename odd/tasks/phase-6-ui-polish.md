@@ -66,25 +66,129 @@
 
 **Visual evidence (Image 3 from user):** The activity dot (green in Image 3) is currently **inside** the profile picture's constrained area, which limits the avatar's actual content to a smaller circle than the container.
 
-**Visual goal (Image 4 from user):** The activity indicator should sit **on the lower-right edge of the profile picture, overlapping it externally** (think: WhatsApp/Telegram/Slack online dot pattern). The avatar's actual content gets the full diameter, and the status dot is a separate `~25-30%` of the avatar diameter circle positioned at `bottom: 0; right: 0` (or with a small negative offset so it straddles the edge).
+**Visual goal (Image 4 from user):** The activity indicator should sit **on the lower-right edge of the profile picture, overlapping it externally** (think: WhatsApp/Telegram/Slack online dot pattern). The avatar's actual content gets the full diameter, and the status dot is a separate `~50%` overlap (half inside, half outside) of the avatar diameter.
 
-**Why it matters:** The current pattern wastes visual real estate and makes the avatar feel cramped. The standard pattern (WhatsApp, Slack, iOS contacts) communicates presence without sacrificing identity readability.
+**Diagnosis (current state of `src/lib/components/ui/Avatar.svelte:1-122`):**
+- `status` prop **already exists** (line 10, type `'online' | 'offline' | 'busy' | 'away'`).
+- The dot element exists (line 35) with `aria-label={status}` on a `<span>` with no role → **`aria-prohibited-attr` SERIOUS** logged in `tests/e2e/reports/axe-findings.json` for runs 3, 4, 16, 17, 29, 30 (target: `.avatar__status--online`, `.avatar__status--busy`).
+- The dot is positioned `position: absolute; bottom: 0; right: 0; width: 25%; height: 25%` (lines 98-103) **inside** the `.avatar` container which has `overflow: hidden` (line 48) — so the dot never extends outside, contrary to the WhatsApp-style overlap the spec wants.
+- Border color is `2px solid var(--surface-1)` (line 107). `--surface-1` does change between themes (light `#f7f8fa`, dark `#131825`) but **does not match the actual page background** behind the avatar in most call sites (`+page.svelte:93-97` sits on `--surface-0`). The ring is invisible (1.02:1 against the page) — fails the "punch through" intent.
+- **Dot fill colors fail WCAG 1.4.11** in light: `--success-500 #10b981` = 2.56:1, `--warning-500 #f59e0b` = 2.15:1 (axe-core does NOT detect non-text contrast). Dark mode passes (lightness shift makes the colors readable). Use `--success-700 #047857` and `--warning-700 #b45309` in light to fix.
+- `alt` prop is misleading: it feeds `aria-label` of the parent `role="img"`, not the `<img alt>` (which is hardcoded empty on line 29). The spec must be clear that `alt` is the accessible name, not an image alt.
+- Current aria-label mixes Spanish ("Avatar de") with English status token ("online") — needs localization.
 
-**Fix:**
-- `src/lib/components/ui/Avatar.svelte` (the atomic component, used in LayoutHeader for the user chip)
-- Wrap the avatar's content div in a `position: relative` container
-- Add a `<span class="avatar__status">` positioned `absolute; bottom: 0; right: 0; transform: translate(25%, 25%); width: 30%; height: 30%; border-radius: 50%; border: 2px solid var(--surface-1); background: var(--status-success);`
-- Add a `status?: 'online' | 'away' | 'offline' | 'busy'` prop
-- Update the existing `LayoutHeader.svelte` use site to pass a status
+**Fix (3 phases, applied in order):**
 
-**Acceptance criteria:**
-- [ ] Status dot visible at lower-right edge, overlapping the avatar boundary by ~25-30%
-- [ ] Dot has a 2px border in the surface color so it visually "punches through" the avatar
-- [ ] Works in both themes
-- [ ] When no status prop is passed, dot is hidden (don't force it)
-- [ ] Accessible: `aria-label="Estado: en línea"` on the dot
+**Phase A — A11y first (zero visual risk):**
+- Remove `aria-label={status}` from the status dot (line 35) — it's decorative.
+- Compose the parent avatar's `aria-label` from name + status, localized to Spanish: `"Ada Lovelace, en línea"`, `"Alan Turing, ocupado"`, etc. Status label map:
+  ```typescript
+  const STATUS_LABEL_ES = { online: 'en línea', offline: 'desconectado', busy: 'ocupado', away: 'ausente' } as const;
+  ```
+- Do NOT add `<span class="sr-only">` under the avatar — `role="img"` is a leaf role; AT ignores descendant content.
+- The `<img>` element keeps `alt=""` (decorative image inside the img role).
 
-**Effort:** ~20 lines, 2 files (Avatar + LayoutHeader).
+**Phase B — Tokens:**
+- Add a local CSS variable to `.avatar` for the ring color: `--avatar-ring: var(--surface-0);`. Override per-context (e.g., in `LayoutHeader.svelte` where the avatar sits on `--surface-1`, set `--avatar-ring: var(--surface-1)` on the wrapper).
+- Light-mode dot fills need darker shades for non-text contrast ≥ 3:1 (WCAG 1.4.11):
+  - `--success-500` → `--success-700 #047857` (3.74:1)
+  - `--warning-500` → `--warning-700 #b45309` (3.74:1)
+  - Or define new `--status-dot-online: var(--success-700)`, etc. for clarity.
+  - Dark mode: `--success-500 #34d399` (light) and `--warning-500 #fbbf24` (light) on `--surface-0 #0b0f17` already pass 3:1.
+
+**Phase C — Structure:**
+- Wrap the avatar in a `<span class="avatar-frame">` that owns `position: relative; display: inline-flex; flex-shrink: 0;` (replicates the flex-item contract of the original). The inner `<span class="avatar">` keeps `overflow: hidden` for the circular clip.
+- The status dot lives in the **wrapper**, not the inner avatar, so it can extend outside without being clipped.
+- Positioning: `position: absolute; bottom: 0; right: 0; width: 25%; height: 25%; min-width: 8px; min-height: 8px; transform: translate(50%, 50%); border: 2px solid var(--avatar-ring);` — `transform: translate(50%, 50%)` shifts the dot's center to the avatar's lower-right corner (50% inside, 50% outside).
+- **Never** use percentages on `bottom`/`right` (would break per-size). `transform: translate(50%, 50%)` is the correct primitive because percentages resolve against the dot's own box.
+- Drop the `min-width: 8px` (or make it `min(8px, 25%)` for consistency at xs) — at `xs` (24px), 25% = 6px, clamped to 8px = 33% which breaks the 50% overlap math.
+
+**Updated `Avatar.svelte` template:**
+```svelte
+<script lang="ts">
+  // ... existing imports/props ...
+  const STATUS_LABEL_ES = {
+    online: 'en línea',
+    offline: 'desconectado',
+    busy: 'ocupado',
+    away: 'ausente'
+  } as const;
+  const altText = $derived(
+    alt ?? (name
+      ? (status ? `${name}, ${STATUS_LABEL_ES[status]}` : `Avatar de ${name}`)
+      : 'Avatar')
+  );
+</script>
+
+<span class="avatar-frame">
+  <span class="avatar avatar--{size} avatar--{shape}" role="img" aria-label={altText}>
+    {#if src}<img {src} alt="" class="avatar__img" />
+    {:else if children}{@render children()}
+    {:else}<span class="avatar__initials" aria-hidden="true">{initialsText}</span>{/if}
+  </span>
+  {#if status}<span class="avatar__status avatar__status--{status}"></span>{/if}
+</span>
+
+<style>
+  .avatar-frame {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+  .avatar {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--brand-100);
+    color: var(--brand-700);
+    font-family: var(--font-sans);
+    font-weight: var(--weight-semibold);
+    overflow: hidden;
+    user-select: none;
+    flex-shrink: 0;
+    --avatar-ring: var(--surface-0);
+  }
+  /* ... existing size variants ... */
+  .avatar__status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 25%;
+    height: 25%;
+    min-width: 8px;
+    min-height: 8px;
+    border-radius: 50%;
+    border: 2px solid var(--avatar-ring);
+  }
+  .avatar__status--online  { background-color: var(--success-700); }
+  .avatar__status--offline { background-color: var(--fg-tertiary); }
+  .avatar__status--busy    { background-color: var(--danger-500); }
+  .avatar__status--away    { background-color: var(--warning-700); }
+</style>
+```
+
+**Override ring in `LayoutHeader.svelte`:** where the user avatar sits on `--surface-1`, add `--avatar-ring: var(--surface-1)` to the wrapper so the dot "punches through" against that surface.
+
+**Acceptance criteria (verified with axe-core + Playwright):**
+
+```
+AC1   axe in /       →  0 nodes aria-prohibited-attr with target .avatar__status
+AC2   axe in /       →  violations ⊆ {color-contrast, document-title}  (baseline preexisting; see U3 M7)
+AC3   axe in /       →  getByRole('img', { name: /Ada Lovelace/ }).count() === 1
+AC4   axe in /       →  getByRole('img', { name: /en línea/ }).count() === 1   (localized name)
+AC5   DOM            →  locator('.avatar__status').getAttribute('aria-label') === null
+AC6   Playwright     →  dotBox.right  - avatarBox.right  === dotBox.width  / 2  (±1px)
+AC7   Playwright     →  dotBox.bottom - avatarBox.bottom === dotBox.height / 2  (±1px)
+AC8   Playwright     →  document.elementFromPoint(corner outside the dot) === the dot  (no ancestor clipping)
+AC9   Playwright     →  getComputedStyle(dot).borderTopColor === resolved(--avatar-ring)
+AC10  Playwright     →  contrast(dotFill, --avatar-ring) >= 3.0  in light AND dark, for all 4 statuses  (M1)
+AC11  loop           →  5 sizes × 2 shapes × 4 statuses × 2 colorSchemes: AC6+AC7+AC8+AC10 all pass
+```
+
+AC1–AC5 are axe-detectable. AC6–AC8 are the actual overlap tests. AC9 verifies the contextual ring. **AC10 is mandatory** — axe does not check non-text contrast (M1), so this is the only test that catches the fill contrast bug.
+
+**Effort:** ~30 LOC in `Avatar.svelte`, ~5 LOC override in `LayoutHeader.svelte`. New Vitest unit for the status label map. 2-3 commits (a11y, tokens, structure).
 
 ---
 
