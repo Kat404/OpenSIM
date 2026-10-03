@@ -415,7 +415,7 @@ export function getSubjectColorHSL(subjectCode: string): string {
 
 ### Phase 5: Audit, Accessibility & Edge Deployment
 
-- [ ] **Task 5.1:** Auditoría WCAG 2.1 AA con `@axe-core/playwright 4.13`.
+- [x] **Task 5.1 — `8f06369` (closes Round 7 mcode audit):** Auditoría WCAG 2.1 AA con `@axe-core/playwright 4.13`. 14/14 specs verde (7 rutas × 2 temas de color) contra serious/critical. Findings cerradas: N9-N11 (sweep inicial), N12-N19 + N21-N22 (mcode M3.1-Flash-Preview round 7). 3 follow-ups menores documentados (N18 dev server reuse, N20 mobile sidebar flash, N23 results.json). Metodología y rutas en `docs/a11y-audit.md`.
 - [ ] **Task 5.2:** Deploy a Cloudflare Pages/Workers con `@sveltejs/adapter-cloudflare 8.0.0`.
 
 **Convención:** marcar items solo después de GREEN status via Vitest/Playwright tests.
