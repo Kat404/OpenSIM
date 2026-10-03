@@ -98,6 +98,10 @@ db-migrate-remote:
 db-seed:
     pnpm run db:seed
 
+# Set the default test student password (dev only — see seed-password.ts header)
+db-set-password:
+    pnpm run db:set-password
+
 # Drizzle Studio (visual DB explorer at localhost:4983)
 db-studio:
     pnpm run db:studio
