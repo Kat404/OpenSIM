@@ -18,22 +18,24 @@
  * H2 + M1 (Round 4).
  */
 
-import { eq, and, inArray } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { env as workerEnv } from 'cloudflare:workers';
 import type { OpenSimWorkerEnv } from '../../../cloudflare-workers';
 import type { PageServerLoad } from './$types';
 import { getDb } from '#lib/server/db';
 import { studentProfiles, subjects } from '#lib/server/db/schema';
 import { getCurrentEnrollment } from '#lib/server/enrollment';
+import { getTodayDayLetter } from '#lib/utils/time';
 
 const env = workerEnv as OpenSimWorkerEnv;
-
-const DAY_LETTERS = ['D', 'L', 'M', 'X', 'J', 'V', 'S'] as const;
-type DayLetter = (typeof DAY_LETTERS)[number];
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const u = locals.user!;
 	const controlNumber = u.controlNumber;
+	// Morelia is UTC-6 with no DST; the helper pins the day-letter
+	// computation to America/Mexico_City so a Friday-evening query
+	// does not silently land on Saturday (audit H4, Round 4).
+	const todayLetter = getTodayDayLetter();
 
 	if (!env.DB) {
 		return {
@@ -90,10 +92,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	};
 
 	// Today's classes: filter the enrollment's schedule blocks to the
-	// letter of the current weekday. We compute the letter on the
-	// server (Cloudflare Workers run in UTC; see `time.ts` for the
-	// timezone-aware helper used elsewhere).
-	const todayLetter = todayDayLetter();
+	// letter of the current weekday in Morelia (see `time.ts`).
 	const todayClasses: {
 		code: string;
 		name: string;
@@ -149,7 +148,3 @@ export const load: PageServerLoad = async ({ locals }) => {
 		dayLabel: 'hoy'
 	};
 };
-
-function todayDayLetter(now: Date = new Date()): DayLetter {
-	return DAY_LETTERS[now.getDay()] as DayLetter;
-}
