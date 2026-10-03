@@ -6,7 +6,7 @@
 	"description": "OpenSIM — Sistema Integral Modular for TecNM Morelia. FOSS rewrite in SvelteKit 3 + Svelte 5 + Cloudflare D1.",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "wrangler types --check && vite build",
+		"build": "wrangler types && vite build",
 		"preview": "wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "wrangler types --check && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
