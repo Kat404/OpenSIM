@@ -6,8 +6,10 @@
  * no hex/rgb literals are allowed in component styles.
  *
  * Two theme variants: light (default) and dark via [data-theme="dark"] on
- * <html> (also auto-applied via prefers-color-scheme when no explicit
- * data-theme is set).
+ * <html>. The OS preference is honored on first paint via the
+ * `prefers-color-scheme` @media block below when no explicit data-theme
+ * has been set; once the user picks a theme via the toggle it is
+ * stored in localStorage and applied on every subsequent load.
  *
  * Color scale uses a "pure neutral" graphite base (no chromatic tint in
  * neutral surfaces) plus a single brand accent (teal-cyan, WCAG-AA against
@@ -191,8 +193,18 @@
 	color-scheme: dark;
 }
 
-/* Auto-detect on first load when no explicit data-theme is set.
- * Component scripts may also set data-theme to override user preference. */
+/* OS preference path. Fires ONLY when <html data-theme> is unset,
+ * which is exactly the "no stored override" case (audit L1, Round 6):
+ *   - On first paint, app.html sets data-theme only when localStorage
+ *     has a stored value; otherwise it leaves the attribute unset and
+ *     this @media block owns the initial paint.
+ *   - Once the user clicks the toggle, the choice lands in localStorage
+ *     and app.html sets data-theme on every subsequent load; this
+ *     block never matches again for that user.
+ *   - The matchMedia listener in src/lib/utils/theme.svelte.ts mirrors
+ *     live OS-theme changes into <html data-theme> when no manual
+ *     override exists, so the "no choice" case still follows the OS
+ *     even after first paint. */
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme]) {
 		--surface-0: #0b0f17;
