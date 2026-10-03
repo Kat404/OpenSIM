@@ -57,6 +57,7 @@
 		<button
 			type="button"
 			role="tab"
+			id="trigger-{tab.id}"
 			class="tabs__trigger"
 			class:tabs__trigger--active={tab.id === value}
 			aria-selected={tab.id === value}
