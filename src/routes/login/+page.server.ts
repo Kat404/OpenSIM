@@ -31,6 +31,7 @@ import {
 	verifyPassword
 } from '#lib/server/auth';
 import { getDb } from '#lib/server/db';
+import { safeInternalRedirect } from '#lib/utils/redirect';
 
 const env = workerEnv as OpenSimWorkerEnv;
 
@@ -57,7 +58,7 @@ export const load: ServerLoad = async ({ locals, url }) => {
 	// trying to go via `?redirectTo=`, validated below).
 	if (locals.user) {
 		const raw = url.searchParams.get('redirectTo');
-		const target = raw && raw.startsWith('/') && !raw.startsWith('//') ? raw : '/dashboard';
+		const target = safeInternalRedirect(raw);
 		throw redirect(303, target);
 	}
 	return {};
@@ -116,10 +117,7 @@ export const actions: Actions = {
 		});
 
 		const redirectTo = event.url.searchParams.get('redirectTo');
-		const target =
-			redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//')
-				? redirectTo
-				: '/dashboard';
+		const target = safeInternalRedirect(redirectTo);
 		throw redirect(303, target);
 	}
 };
