@@ -89,7 +89,12 @@
 	.bar__fill {
 		height: 100%;
 		border-radius: var(--radius-pill);
-		transition: width var(--motion-duration-base) var(--motion-ease-emphasized);
+		/* Phase 6 U2: smooth 700ms ease-out (Material standard). The
+		 * global @media (prefers-reduced-motion) override at the top of
+		 * tokens.css zeroes all motion-* durations, which makes this
+		 * transition instant for users who request reduced motion — no
+		 * extra @media block needed here. */
+		transition: width 700ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	.bar__fill--brand {
