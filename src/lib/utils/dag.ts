@@ -30,6 +30,43 @@ export interface Edge {
 	to: string;
 }
 
+/**
+ * Adjacency map keyed by node id; each value lists the direct
+ * children (`to`) reachable from that node. Pre-computed once from an
+ * `Edge[]` array, this map turns traversal into O(V+E) work without
+ * re-scanning the edge list on every step — the hot path for the
+ * retícula DAG (Phase 3 Tarea 3.4) where hover highlighting must
+ * stay under the INP 200ms budget.
+ */
+export type AdjacencyMap = Map<string, string[]>;
+
+export interface ParentMap {
+	// For a child node, the list of its direct parents.
+	children: AdjacencyMap;
+	parents: Map<string, string[]>;
+}
+
+/**
+ * Builds a `{ children, parents }` map from an `Edge[]` in O(E).
+ * Pass the result to `getAncestorsFromMap` / `getDescendantsFromMap`
+ * instead of the raw edge list when you expect to traverse many
+ * nodes from the same graph (the retícula DAG hover path is the
+ * canonical example).
+ */
+export function buildAdjacency(edges: Edge[]): ParentMap {
+	const children: AdjacencyMap = new Map();
+	const parents: Map<string, string[]> = new Map();
+	for (const { from, to } of edges) {
+		const ch = children.get(from);
+		if (ch) ch.push(to);
+		else children.set(from, [to]);
+		const pa = parents.get(to);
+		if (pa) pa.push(from);
+		else parents.set(to, [from]);
+	}
+	return { children, parents };
+}
+
 // ---------- Traversal ----------
 
 /**
@@ -65,6 +102,48 @@ export function getDescendants(targetId: string, edges: Edge[]): Set<string> {
 	const descendants = new Set<string>();
 	function traverse(currentId: string): void {
 		const directChildren = edges.filter((e) => e.from === currentId).map((e) => e.to);
+		for (const childId of directChildren) {
+			if (!descendants.has(childId)) {
+				descendants.add(childId);
+				traverse(childId);
+			}
+		}
+	}
+	traverse(targetId);
+	return descendants;
+}
+
+/**
+ * Same traversal as `getAncestors` but takes a pre-built
+ * `{ children, parents }` adjacency map instead of the raw `Edge[]`.
+ * Use this when you expect to traverse many nodes from the same
+ * graph in one render cycle (Phase 3 Tarea 3.4 retícula hover).
+ */
+export function getAncestorsFromMap(targetId: string, map: ParentMap): Set<string> {
+	const ancestors = new Set<string>();
+	function traverse(currentId: string): void {
+		const directParents = map.parents.get(currentId);
+		if (!directParents) return;
+		for (const parentId of directParents) {
+			if (!ancestors.has(parentId)) {
+				ancestors.add(parentId);
+				traverse(parentId);
+			}
+		}
+	}
+	traverse(targetId);
+	return ancestors;
+}
+
+/**
+ * Same traversal as `getDescendants` but takes a pre-built
+ * `{ children, parents }` adjacency map instead of the raw `Edge[]`.
+ */
+export function getDescendantsFromMap(targetId: string, map: ParentMap): Set<string> {
+	const descendants = new Set<string>();
+	function traverse(currentId: string): void {
+		const directChildren = map.children.get(currentId);
+		if (!directChildren) return;
 		for (const childId of directChildren) {
 			if (!descendants.has(childId)) {
 				descendants.add(childId);
