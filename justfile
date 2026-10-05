@@ -59,13 +59,25 @@ gen-types:
 
 # ===== Format =====
 
-# Format all files (requires `pnpm add -D prettier prettier-plugin-svelte`)
+# Format all files with Biome
+[group('check')]
 format:
-    pnpm exec prettier --write .
+    pnpm exec biome format --write .
 
 # Verify formatting (CI mode, no writes)
+[group('check')]
 format-check:
-    pnpm exec prettier --check .
+    pnpm exec biome format --check .
+
+# Run Biome ci (format + lint + organizeImports, no writes) — CI gate
+[group('check')]
+biome-check:
+    pnpm exec biome ci
+
+# Run Biome linter only (no format check, no writes)
+[group('check')]
+lint:
+    pnpm exec biome lint .
 
 # ===== Tests =====
 
@@ -127,10 +139,6 @@ db-reset:
 
 # ===== Deploy =====
 
-# Deploy to Cloudflare Pages
-deploy:
-    wrangler pages deploy
-
 # Deploy to Cloudflare Workers (Tarea 5.2)
 # See docs/deploy.md for the full procedure (auth, D1 create, migrations, seed, deploy).
 # Requires wrangler login (or CLOUDFLARE_API_TOKEN env var) and the production
@@ -160,7 +168,7 @@ verify: check build test
     @echo ""
     @echo "✓ all green — ready for commit"
 
-# Pre-commit checklist: check + format-check + test
-precommit: check format-check test
+# Pre-commit checklist: check + biome-check + test
+precommit: check biome-check test
     @echo ""
     @echo "✓ pre-commit checks passed"
