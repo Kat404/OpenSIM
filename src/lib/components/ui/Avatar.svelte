@@ -46,18 +46,26 @@
 	const altText = $derived(composeAltText(name, status, alt));
 </script>
 
-<span class="avatar avatar--{size} avatar--{shape}" role="img" aria-label={altText}>
-	{#if src}
-		<img {src} alt="" class="avatar__img" />
-	{:else if children}
-		{@render children()}
-	{:else}
-		<span class="avatar__initials" aria-hidden="true">{initialsText}</span>
-	{/if}
+<span class="avatar-frame">
+	<span class="avatar avatar--{size} avatar--{shape}" role="img" aria-label={altText}>
+		{#if src}
+			<img {src} alt="" class="avatar__img" />
+		{:else if children}
+			{@render children()}
+		{:else}
+			<span class="avatar__initials" aria-hidden="true">{initialsText}</span>
+		{/if}
+	</span>
 	{#if status}<span class="avatar__status avatar__status--{status}"></span>{/if}
 </span>
 
 <style>
+	.avatar-frame {
+		position: relative;
+		display: inline-flex;
+		flex-shrink: 0;
+	}
+
 	.avatar {
 		position: relative;
 		display: inline-flex;
@@ -124,10 +132,9 @@
 		right: 0;
 		width: 25%;
 		height: 25%;
-		min-width: 8px;
-		min-height: 8px;
 		border-radius: 50%;
 		border: 2px solid var(--avatar-ring);
+		transform: translate(50%, 50%);
 	}
 
 	.avatar__status--online {
