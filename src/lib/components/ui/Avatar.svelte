@@ -64,6 +64,7 @@
 		position: relative;
 		display: inline-flex;
 		flex-shrink: 0;
+		--avatar-ring: var(--surface-0);
 	}
 
 	.avatar {
@@ -78,7 +79,6 @@
 		overflow: hidden;
 		user-select: none;
 		flex-shrink: 0;
-		--avatar-ring: var(--surface-0);
 	}
 
 	.avatar--circle {
