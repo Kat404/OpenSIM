@@ -30,7 +30,14 @@ const ALL_STATUSES: AvatarStatus[] = ['online', 'offline', 'busy', 'away'];
 // inside /* ... */ blocks (the ring-contract test would otherwise
 // match the literal "border:" inside its own "not border:" comment).
 const sourcePath = fileURLToPath(new URL('./Avatar.svelte', import.meta.url));
-const SOURCE = readFileSync(sourcePath, 'utf-8').replace(/\/\*[\s\S]*?\*\//g, '');
+// Strip CSS comments from inside <style> only, so a future JS block
+// comment or a string literal containing /* */ can never silently
+// delete bytes from SOURCE. The .avatar__status block lives in <style>.
+const rawSource = readFileSync(sourcePath, 'utf-8');
+const SOURCE = rawSource.replace(
+	/<style>([\s\S]*?)<\/style>/g,
+	(_match, body) => `<style>${body.replace(/\/\*[\s\S]*?\*\//g, '')}</style>`
+);
 
 describe('STATUS_LABEL_ES', () => {
 	it('maps every status to a non-empty Spanish label', () => {
@@ -104,6 +111,9 @@ describe('composeAltText', () => {
 		// live presence state.
 		it('returns "Avatar, en línea" for empty name + online', () => {
 			expect(composeAltText('', 'online')).toBe('Avatar, en línea');
+		});
+		it('returns "Avatar, desconectado" for empty name + offline', () => {
+			expect(composeAltText('', 'offline')).toBe('Avatar, desconectado');
 		});
 		it('returns "Avatar, ocupado" for empty name + busy', () => {
 			expect(composeAltText('', 'busy')).toBe('Avatar, ocupado');
