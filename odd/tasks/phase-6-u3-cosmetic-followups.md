@@ -293,7 +293,34 @@ After all:
 
 - mcode R11 audit log: `/tmp/opencode/mcode-u3-audit.log` (commit range `3099f24..281b9b5`)
 - mcode R12 cross-audit log: `/tmp/opencode/mcode-u3-plan-audit.log` (this plan + Avatar.svelte + Avatar.test.ts + tokens.css:289-303 + spec)
+- mcode R13 audit log: `/tmp/opencode/mcode-u3-cosmetic-audit.log` (C5 spec defect catch)
 - Memory observations: `opensim/phase-6-u3-audit-mcode-r11` (cascade bug), `opensim/test-infra-e2e-include-gap` (related, out of scope here)
 - Spec: `odd/tasks/phase-6-ui-polish.md` lines 80-191 (U3 phases A/B/C), 173-189 (AC1–AC11)
 - Last reviewed boundary: `d789930` (U3 cascade-bug fix, 2026-10-04)
 - This plan version: refined per R12 on 2026-10-04
+
+---
+
+## Post-implementation updates (2026-10-04)
+
+Implementation diverged slightly from the v1 plan above; this section logs the actual landing for traceability:
+
+**Actual commits shipped (3 planned + 1 mcode R13 follow-up):**
+
+| Plan task | Planned commits | Landed commits |
+|---|---|---|
+| C1+C2+C5 | `5b05166` | `5b05166` (as planned) |
+| C3 | `7fb89a7` | `7fb89a7` (as planned) |
+| C4 | `e43caae` | `e43caae` (as planned) |
+| (not in v1) | — | `482a00e` (mcode R13 catch: C5 spec defect LHS rewrite + `composeAltText('', 'offline')` test for 4-status symmetry + scoped CSS comment strip) |
+
+**Actual final test count: 149/149 (not 148/148 as planned).** `482a00e` added the offline test case (148 → 149).
+
+**Naming refactor (not in this plan; happened after via commit `cc0f8ee`):**
+
+- `just check` → `just qa-fast` (pre-commit fast gate: check + biome-check + test)
+- `just test` → `just qa-fast` (same recipe)
+- `just build` → `just qa` (full pre-push gate: check + biome-check + test + build)
+- `just verify` → `just qa` (was check + build + test; R17 fix added biome-check; rename made it identical to `just qa` so `verify` was deleted)
+
+The Verification section above uses the v1 names because it documents what was planned. **The commands that actually ran during implementation were** `pnpm run check` / `pnpm test` / `pnpm exec biome ci` / `pnpm run build` directly (the just-recipe rename landed in commit `cc0f8ee` after this plan was executed). The `just qa-fast` / `just qa` recipes were used for verification of the later Phase 6.5 commits.

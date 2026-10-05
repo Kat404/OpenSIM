@@ -285,3 +285,54 @@ AC1–AC5 are axe-detectable. AC6–AC8 are the actual overlap tests. AC9 verifi
 - `just test` 138/138 (122 baseline + 16 new Avatar tests)
 - `just build` clean
 - 3 GPG-signed commits on `main` (top of `3099f24`), NOT pushed (push is human-owned).
+
+---
+
+## Progress (2026-10-04, final — U3 audit cycle + tooling adoption)
+
+The U3 cycle, its cosmetic follow-ups, and a tooling overhaul all landed in one continuous session. Audit was conducted via mcode R11–R17 (minimax-coding-plan/MiniMax-M3.1-Flash-Preview, `--effort max --prompt-mode work`). mcode logs at `/tmp/opencode/mcode-*-log`.
+
+**U3 cascade bug fix** (mcode R11):
+
+- **✓ `d789930`** `fix(ui): declare --avatar-ring on avatar-frame so dot inherits (mcode R11)`. The `--avatar-ring` was declared on `.avatar` (Avatar.svelte:81) but the dot lives on its sibling `.avatar-frame` introduced in Phase C. CSS custom properties inherit parent → child, never between siblings, so the dot resolved the guaranteed-invalid value and the border fell back to none — invisible halo at every call site. Fix: move the declaration to `.avatar-frame`. 1 line.
+
+**U3 cosmetic follow-ups** (per plan v1 in `phase-6-u3-cosmetic-followups.md`, refined by mcode R12, executed as 3 work-unit commits + 1 follow-up):
+
+- **✓ `5b05166`** U3 follow-up C1+C2+C5 — border ring → `box-shadow` halo (escape global `box-sizing: border-box`); drop dead `position: relative` + `flex-shrink: 0` from inner `.avatar`; spec note in AC9. **Plus** static-regex test for the ring contract. **Plus** regex-comment-strip fix (a 1-line in-test fix at implementation time: scope the CSS comment strip to `<style>` only, since the defensive comment "not border:" would otherwise match the regex's own negation).
+- **✓ `7fb89a7`** U3 follow-up C3 — `composeAltText('', 'online')` was silently dropping status (public API bug). Rewrite branch order: `if (alt) return alt; if (!name) { if (status) return 'Avatar, ${STATUS_LABEL_ES[status]}'; return 'Avatar'; } if (status) ...`. 3 new test cases.
+- **✓ `e43caae`** U3 follow-up C4 — `initials('')` was returning `''` (not `'?'`) because the `parts.length === 0` branch was unreachable (`''.trim().split(/\s+/)` returns `['']`, length 1). R12 caught the bug while reviewing the plan; production fix is `if (!n.trim()) return '?'` at the top of `initials`, plus move to `<script module>` and export. 6 new test cases — 2 of which prove the production fix.
+- **✓ `482a00e`** (mcode R13 follow-up) — C5 spec defect. R13 caught that the original C5 implementation only appended parenthetical text "(was `borderTopColor`; updated to `boxShadow` shorthand)" without rewriting the LHS assertion. After C1, `getComputedStyle(dot).borderTopColor` was no longer valid (dot has no border). Rewrote AC9 to assert the resolved `--avatar-ring` color appears inside `getComputedStyle(dot).boxShadow`; documented AC8 hit-test implication (box-shadow spread is not hit-testable). Also added `composeAltText('', 'offline')` test case for 4-status symmetry and re-scoped the CSS comment strip.
+
+**Audit closure** (per plan in `phase-6-u3-audit-closure.md`):
+
+- **✓ `72cddf5`** `docs(odd): close R11/R12/R13 audit cycle + adopt just in reports (F1+F2)`. 5 files: new closure doc with traceability table (round | finding | fix commit | evidence mcode log path), 7 `pnpm` invocations migrated to `just` across 4 reports/README, 3 typo fixes (`just test:e2e` → `just test-e2e` in `phase-6-ui-polish.md:240`, `phase-5.md:67`, `phase-5.md:106`).
+
+**Tooling adoption** (per plan v5 in `phase-6.5-closure-and-just-adoption.md`, 4 commits):
+
+- **✓ `d5e2109`** `chore(tooling): adopt Biome 2.5.15 + activate domains + repair precommit + drop vestigial deploy (U3 follow-up F3)`. `biome.json` adopted with formatter (tab/double/semicolons:always/trailingCommas:all) + 4 domains enabled (svelte/drizzle/playwright at `all`, test at `recommended`). Repaired `just precommit` (was depending on broken `just format-check`). Deleted vestigial `just deploy` (canonical is `deploy-worker`). +1 devDep `@biomejs/biome@2.5.15` pinned exact.
+- **✓ `dcd3e9e`** `chore(style): format repo with Biome 2.5.15 (gate repair)`. 120 source files reformatted. Zero domain findings — the user's instinct to enable those domains was correct, the codebase is already idiomatic. 22 default-rule findings (lint/style/noNonNullAssertion, lint/a11y/*, lint/suspicious/noExplicitAny) — fixed in code or silenced in overrides per file-type, with full disclosure in commit body. Override patterns corrected from `*.svelte` to `**/*.svelte` to match nested component files.
+- **✓ `6e67534`** `chore(ci): drop GitHub Actions + add local Podman CI recipes (U3 follow-up F5)`. Deleted entire `.github/` directory (only `workflows/e2e.yml` was there). New `Containerfile.ci` at root: `node:24-bookworm-slim` base (Playwright rejects musl/Alpine per https://playwright.dev/docs/docker; caught by mcode R15), Chromium via apt-get + 31 runtime deps symlinked to `/usr/bin/chromium` matching `playwright.config.ts:49`. 5 new recipes: `ci-build`, `ci` (alias `ci-test`), `ci-shell`, `ci-clean`, `ci-drift` (opt-in schema drift detection, local-only). CMD = `[just, precommit]` (the orchestrator renamed `precommit` → `qa-fast` in a later commit).
+- **✓ `338ad07`** R17 follow-up A. 5 files, +33/-24. Repaired 3 doc-comments falsely claiming `just ci` runs axe (real `just ci` = `just precommit` = check + biome-check + test; axe-core e2e ran via `just test-e2e` separately). Updated `docs/ci-local.md:25` (pnpm install IS required on host; bind-mount doesn't install). Added `biome-check` to `just verify`. Softened `just ci-drift` doc to match what the recipe actually does. Ran `biome migrate` (resolved the `recommended: true` deprecation info). Moved multiline `#` comments → `[doc()]` attribute for clean `just --list` display.
+- **✓ `0baf00b`** R17 follow-up B. 4 files, +344/-1. New `.env.example` documenting the dotenv-load convention. Historical-record note added to `phase-6-u3-cosmetic-followups.md:237` (L21 had it, L237 was missed in first pass). Committed the previously-untracked `phase-6.5-closure-and-just-adoption.md` plan (was referenced by the closure doc but not in git). Added `packageManager: pnpm@11.28.4` to `package.json` so corepack enforces it (was a R17 finding that the Containerfile pin was technically not enforced).
+
+**Naming refactor** (per user request — user preferred `just qa`/`just qa-fast` over `just precommit`/`just verify`):
+
+- **✓ `cc0f8ee`** `refactor(just): rename verify→qa (full gate) and precommit→qa-fast (delete verify)`. 5 files, +13/-13. Aligns with TallerAgentes convention (`just qa` = full QA session). Tiered by scope (qa-fast = no build, qa = with build) rather than by git event (precommit, pre-push) — naming follows intent, not convention. `Containerfile.ci` CMD updated to `[just, qa-fast]`.
+
+**Verification (after all 15 commits on main post-`482a00e`):**
+
+- `pnpm run check` → 0 errors, 0 warnings
+- `pnpm test` → 149/149 (was 122 before Phase 6)
+- `pnpm exec biome ci` → exit 0 (deprecation info resolved by `biome migrate`)
+- `pnpm run build` → clean
+- `just qa-fast` → ✓ pre-commit checks passed
+- `just qa` → ✓ all green — ready to push (with build)
+- `git grep 'just verify\|just precommit'` → 0 hits
+- All 15 commits GPG-signed (key `3335F4A0…`); NOT pushed (push is human-owned)
+
+**Outstanding (NOT blocking, deferred to follow-up):**
+
+- Playwright AC6–AC11 loop for U3 (~80 test cases: 5 sizes × 2 shapes × 4 statuses × 2 themes) — separate feature with its own planning
+- `project` and `types` Biome domains — opt-in via uncommenting in `biome.json` (perf cost: module graph scan + type inference)
+- Lint findings silenced by override block — pre-existing smells that need human review (not blockers, deferred per plan)
+- Working tree dirty files (`tests/e2e/reports/*.json`, `.agents/`, `skills-lock.json`) — preserved across all 15 commits, user decision required

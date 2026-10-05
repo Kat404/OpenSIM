@@ -422,6 +422,55 @@ export function getSubjectColorHSL(subjectCode: string): string {
 
 ---
 
+### Phase 6: UI/UX Polish + Audit Cycle + Tooling Adoption (2026-10-03 → 2026-10-04)
+
+First-round user walkthrough on `https://opensim.jose-luis-rs.workers.dev` surfaced 4 polish items (U1–U4). U3 was deferred pending a spec rewrite. U3 implementation, audit cycle (R11–R17), and tooling overhaul (Biome 2.5.15 + Podman CI) followed.
+
+#### Phase 6.0 — Live Walkthrough Findings (closed 2026-10-03)
+
+- [x] **Task 6.0.1 — `1294c91`** fix(theme): unify dark-mode token parity (U1). The "Marca" badge symptom was the missing `--brand-50/100` in the `@media prefers-color-scheme: dark` block.
+- [x] **Task 6.0.2 — `5d7ac9c`** fix(ui): smooth ProgressBar transition (700ms cubic-bezier, U2). Honors `prefers-reduced-motion`.
+- [x] **Task 6.0.3 — `e7facd3`** fix(ui): align icon to text x-height via `.btn__icon` flex wrapper (U4).
+- [x] **U3 ⏸ deferred** — needs spec rewrite per M3.1 round 8 finding (status prop already exists; `aria-label` on `<span>` without role is exactly the `aria-prohibited-attr` violation already logged in axe findings; dot would be clipped by existing `overflow: hidden`).
+
+#### Phase 6.1 — U3 Implementation (closed 2026-10-04, mcode R11)
+
+- [x] **Task 6.1.1 — `a90ba55`** U3 Phase A — feat(ui): localize avatar status aria-label + remove aria-prohibited-attr. New `STATUS_LABEL_ES` map + `composeAltText()` in `<script module>`.
+- [x] **Task 6.1.2 — `2531434`** U3 Phase B — feat(ui): non-text contrast fixes for avatar status dot. `--success-700`/`--warning-700` (light: 3.7:1, dark: light shades already pass). `--avatar-ring: var(--surface-0)` local CSS variable. `LayoutHeader.svelte` override to `--surface-1` (dormant today).
+- [x] **Task 6.1.3 — `3608369`** U3 Phase C — feat(ui): wrap Avatar in frame so status dot extends outside the clip. New `.avatar-frame` wrapper owns `position: relative` + `display: inline-flex`; dot lives in the wrapper; `transform: translate(50%, 50%)` shifts the dot's center to the avatar's lower-right corner.
+- [x] **Task 6.1.4 — `281b9b5`** docs(odd): record U3 closeout (3 work-unit commits on main).
+- [x] **Task 6.1.5 — `d789930`** fix(ui): declare `--avatar-ring` on avatar-frame so dot inherits (mcode R11 cascade-bug catch). `--avatar-ring` was declared on `.avatar` but the dot lives on its sibling `.avatar-frame`; CSS custom properties inherit parent → child, never between siblings. 1 line moved.
+
+#### Phase 6.2 — Cosmetic Follow-ups (closed 2026-10-04, mcode R12 + R13)
+
+- [x] **Task 6.2.1 — `5b05166`** U3 follow-up C1+C2+C5 — border ring → `box-shadow` halo (escape global `box-sizing: border-box` at xs/sm); drop dead `position: relative` + `flex-shrink: 0` from inner `.avatar`; spec note in AC9. Static-regex test for ring contract. Regex-comment-strip scoped to `<style>` only (defensive comment would otherwise match the negation).
+- [x] **Task 6.2.2 — `7fb89a7`** U3 follow-up C3 — `composeAltText('', 'online')` was silently dropping status (public API bug). Rewrite branch order so status evaluates even with empty name.
+- [x] **Task 6.2.3 — `e43caae`** U3 follow-up C4 — `initials('')` was returning `''` (not `'?'`) because `''.trim().split(/\s+/)` returns `['']`, length 1, so the `parts.length === 0` branch was unreachable. Production fix: `if (!n.trim()) return '?'` at top of `initials`. Move to `<script module>` + export. 6 new test cases.
+- [x] **Task 6.2.4 — `482a00e`** mcode R13 follow-up — C5 spec defect. Original C5 added parenthetical "(was `borderTopColor`...)" without rewriting the LHS; `getComputedStyle(dot).borderTopColor` was no longer valid (dot has no border). Rewrote AC9 to assert the resolved `--avatar-ring` color appears inside `getComputedStyle(dot).boxShadow`; documented AC8 hit-test implication. Also added `composeAltText('', 'offline')` test case for 4-status symmetry.
+
+#### Phase 6.5 — Audit Closure + Biome Adoption + Local Podman CI (closed 2026-10-04, mcode R14 → R17)
+
+- [x] **Task 6.5.1 — `72cddf5`** docs(odd): close R11/R12/R13 audit cycle + adopt just in reports. New `odd/tasks/phase-6-u3-audit-closure.md` with traceability table. 7 `pnpm` invocations migrated to `just` across 4 reports/README. 3 typo fixes (`just test:e2e` → `just test-e2e`).
+- [x] **Task 6.5.2 — `d5e2109`** chore(tooling): adopt Biome 2.5.15 + activate domains + repair precommit + drop vestigial deploy. New `biome.json` (formatter + 4 domains: svelte/drizzle/playwright at `all`, test at `recommended`). Repaired `just precommit`. Deleted vestigial `just deploy`. +1 devDep `@biomejs/biome@2.5.15` pinned exact.
+- [x] **Task 6.5.3 — `dcd3e9e`** chore(style): format repo with Biome 2.5.15 (gate repair). 120 source files reformatted. Zero domain findings; 22 default-rule findings fixed in code or silenced in overrides (full disclosure in commit body). Override patterns corrected from `*.svelte` to `**/*.svelte`.
+- [x] **Task 6.5.4 — `6e67534`** chore(ci): drop GitHub Actions + add local Podman CI recipes. Deleted `.github/`. New `Containerfile.ci` (`node:24-bookworm-slim` base — Playwright rejects musl/Alpine per https://playwright.dev/docs/docker; mcode R15 caught this); Chromium via apt-get symlinked to `/usr/bin/chromium`. 5 new recipes: `ci-build`, `ci`, `ci-shell`, `ci-clean`, `ci-drift`.
+- [x] **Task 6.5.5 — `338ad07`** R17 follow-up A. Repaired 3 doc-comments falsely claiming `just ci` runs axe (real `just ci` = check + biome-check + test; axe-core e2e via `just test-e2e` separately). Added `biome-check` to `just verify`. Ran `biome migrate`. Moved multiline `#` comments → `[doc()]` attribute.
+- [x] **Task 6.5.6 — `0baf00b`** R17 follow-up B. New `.env.example`. Historical-record note at `phase-6-u3-cosmetic-followups.md:237`. Committed previously-untracked `phase-6.5-closure-and-just-adoption.md`. Added `packageManager: pnpm@11.28.4`.
+- [x] **Task 6.5.7 — `cc0f8ee`** refactor(just): rename `verify` → `qa` (full gate) and `precommit` → `qa-fast` (delete `verify`). Aligns with TallerAgentes convention. `Containerfile.ci` CMD updated to `[just, qa-fast]`.
+
+**Final state after Phase 6 (8 ahead of origin/main, all GPG-signed, key `3335F4A0…`):**
+
+- `pnpm run check` 0/0
+- `pnpm test` 149/149 (was 122 before Phase 6)
+- `pnpm exec biome ci` exit 0
+- `pnpm run build` clean
+- `just qa-fast` ✓ pre-commit checks passed
+- `just qa` ✓ all green — ready to push
+- `git grep 'just verify\|just precommit'` 0 hits
+- NOT pushed to remote (push is human-owned)
+
+---
+
 ## 9. Decisiones Técnicas
 
 ### Resueltas
