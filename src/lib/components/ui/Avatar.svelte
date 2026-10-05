@@ -41,15 +41,30 @@ interface Props {
 	alt?: string;
 	status?: AvatarStatus;
 	children?: Snippet;
+	/**
+	 * Optional testid forwarded to the outer `.avatar-frame` so e2e specs
+	 * can locate a specific cell deterministically. Opt-in: callers that
+	 * don't pass it see no attribute change in the DOM.
+	 */
+	dataTestid?: string;
 }
 
-let { name = "", src, size = "md", shape = "circle", alt, status, children }: Props = $props();
+let {
+	name = "",
+	src,
+	size = "md",
+	shape = "circle",
+	alt,
+	status,
+	children,
+	dataTestid,
+}: Props = $props();
 
 const initialsText = $derived(initials(name));
 const altText = $derived(composeAltText(name, status, alt));
 </script>
 
-<span class="avatar-frame">
+<span class="avatar-frame" data-testid={dataTestid}>
 	<span class="avatar avatar--{size} avatar--{shape}" role="img" aria-label={altText}>
 		{#if src}
 			<img {src} alt="" class="avatar__img">

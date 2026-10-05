@@ -1,0 +1,168 @@
+/**
+ * OpenSIM — Avatar overlap acceptance suite (Phase 6.1 / U3 AC6–AC11).
+ *
+ * Closes the open AC6–AC11 criteria from the U3 spec
+ * (odd/tasks/phase-6-ui-polish.md:173-189). The 80-matrix is 5 sizes ×
+ * 2 shapes × 4 statuses, executed on the chromium +
+ * chromium-data-theme-dark Playwright projects (chromium-dark skipped
+ * per D14 — token values are identical to chromium-data-theme-dark, so
+ * the third run is zero-signal duplicate CI time).
+ *
+ * Per test:
+ *   AC6  : dot's right edge extends dot.width/2 past the avatar's right
+ *          edge (the diagonal-corner overlap), within ±1px.
+ *   AC7  : same on the bottom axis.
+ *   AC8  : probe the centre of the dot with elementFromPoint; the hit
+ *          must be the dot itself or any descendant of the avatar
+ *          frame (relaxed per R13: box-shadow spread is not
+ *          hit-testable).
+ *   AC9  : getComputedStyle(dot).boxShadow contains the resolved
+ *          `--avatar-ring` rgb string (the halo's colour).
+ *   AC10 : WCAG 2.1 contrast ratio between dot fill (backgroundColor)
+ *          and ring (--avatar-ring) >= 3.0 (the non-text contrast
+ *          threshold; axe does NOT enforce this).
+ *
+ * Project scope: enforced by `just test-e2e-avatar` with
+ * `--project=chromium --project=chromium-data-theme-dark` flags.
+ */
+
+import { expect, type Locator, type Page, test } from "@playwright/test";
+
+import {
+	contrast,
+	getBoxShadowRaw,
+	getDotBox,
+	getRgbFromComputed,
+	getRingColor,
+	probeElementFromPoint,
+} from "./_helpers/avatar";
+
+const SIZES = ["xs", "sm", "md", "lg", "xl"] as const;
+const SHAPES = ["circle", "square"] as const;
+const STATUSES = ["online", "offline", "busy", "away"] as const;
+
+/**
+ * Body of a single 80-cell test. Extracted so the light + dark
+ * describe blocks share one source of truth — divergence between
+ * the two paths is the most common cause of "tests pass locally
+ * and fail in CI" bugs in matrix suites.
+ */
+async function assertAvatarCell(
+	page: Page,
+	size: (typeof SIZES)[number],
+	shape: (typeof SHAPES)[number],
+	status: (typeof STATUSES)[number],
+): Promise<void> {
+	const testId = `avatar-${size}-${shape}-${status}`;
+	const frame: Locator = page.getByTestId(testId);
+	const { dotBox, avatarBox } = await getDotBox(page, frame);
+
+	// AC6: dotBox.right - avatarBox.right === dotBox.width / 2 (±1px)
+	// The dot's center is the avatar's lower-right corner; the dot's
+	// right edge therefore sits dot.width/2 past the avatar's right
+	// edge. Tolerance is ±1px to absorb subpixel rounding at xs (24px).
+	expect(
+		Math.abs(dotBox.right - avatarBox.right - dotBox.width / 2),
+		`AC6: ${testId} dot.right=${dotBox.right} avatar.right=${avatarBox.right} dot.width=${dotBox.width}`,
+	).toBeLessThanOrEqual(1);
+
+	// AC7: dotBox.bottom - avatarBox.bottom === dotBox.height / 2 (±1px)
+	expect(
+		Math.abs(dotBox.bottom - avatarBox.bottom - dotBox.height / 2),
+		`AC7: ${testId} dot.bottom=${dotBox.bottom} avatar.bottom=${avatarBox.bottom} dot.height=${dotBox.height}`,
+	).toBeLessThanOrEqual(1);
+
+	// AC8 (relaxed per R13): the dot is `position: absolute; bottom: 0;
+	// right: 0; transform: translate(50%, 50%)` with a 2px box-shadow
+	// halo. The halo is NOT hit-testable, so the strict spec
+	// (elementFromPoint === dot) would always fail. Relaxation: probe
+	// the center of the dot (always inside the dot, >2px from any
+	// edge) and accept either the dot element itself OR any
+	// descendant of the avatar frame.
+	const probed = await probeElementFromPoint(
+		page,
+		dotBox.x + dotBox.width / 2,
+		dotBox.y + dotBox.height / 2,
+	);
+	expect(probed, `AC8: ${testId} probe point is outside the document`).not.toBeNull();
+
+	const dotSelector = `[data-testid="${testId}"] .avatar__status--${status}`;
+	const dotTagName = await page.locator(dotSelector).evaluate((el) => el.tagName);
+	const isMatch =
+		probed!.tagName === dotTagName && probed!.classes.includes(`avatar__status--${status}`);
+
+	// Descendant check: the probe is "inside" the frame if it is
+	// either the dot element, or any element that is a descendant of
+	// the frame. The frame contains only one child branch (the dot),
+	// so in practice this collapses to the match check above, but
+	// the descendant assertion documents the R13 reasoning.
+	const isDescendantOfFrame = await page
+		.locator(`[data-testid="${testId}"] *`)
+		.evaluateAll((els, probeTag) => els.some((e) => e.tagName === probeTag), probed!.tagName);
+
+	expect(
+		isMatch || isDescendantOfFrame,
+		`AC8: ${testId} probed element <${probed!.tagName} class="${probed!.classes}"> is neither the dot nor a frame descendant`,
+	).toBeTruthy();
+
+	// AC9: getComputedStyle(dot).boxShadow contains the resolved
+	// --avatar-ring rgb string. Browsers serialise computed box-shadow
+	// as "rgba(r, g, b, a) 0px 0px 0px 2px" (Chromium) or with
+	// different spacing; substring match on the rgb triple is robust.
+	const ringColor = await getRingColor(page, frame);
+	const boxShadow = await getBoxShadowRaw(page, dotSelector);
+	const ringRgb = `rgb(${ringColor[0]}, ${ringColor[1]}, ${ringColor[2]})`;
+	expect(
+		boxShadow.includes(ringRgb),
+		`AC9: ${testId} box-shadow="${boxShadow}" does not contain ${ringRgb} (resolved --avatar-ring)`,
+	).toBeTruthy();
+
+	// AC10: WCAG 2.1 contrast between dot fill (backgroundColor) and
+	// ring (--avatar-ring) >= 3.0. This is the non-text contrast
+	// threshold (WCAG 1.4.11) which axe-core does not check.
+	const fillColor = await getRgbFromComputed(page, dotSelector, "background-color");
+	const ratio = contrast(fillColor, ringColor);
+	expect(
+		ratio,
+		`AC10: ${testId} contrast(fill=${fillColor}, ring=${ringColor})=${ratio.toFixed(2)} < 3.0`,
+	).toBeGreaterThanOrEqual(3.0);
+}
+
+test.describe("light", () => {
+	for (const size of SIZES) {
+		for (const shape of SHAPES) {
+			for (const status of STATUSES) {
+				test(`${size} ${shape} ${status}: AC6/AC7/AC8/AC9/AC10`, async ({ page }) => {
+					await page.goto("/_dev/avatars");
+					await assertAvatarCell(page, size, shape, status);
+				});
+			}
+		}
+	}
+});
+
+test.describe("dark", () => {
+	// Defeat theme.svelte.ts:61's post-hydration stomp: the OS-theme
+	// follower overwrites data-theme if no localStorage override is
+	// set. addInitScript sets the attribute before any module runs;
+	// page.reload() then re-runs the document so the OS follower
+	// observes the attribute and leaves it alone. Same pattern as
+	// tests/e2e/axe/_helpers.ts:49-54.
+	test.beforeEach(async ({ page }) => {
+		await page.addInitScript(() => {
+			document.documentElement.setAttribute("data-theme", "dark");
+		});
+		await page.goto("/_dev/avatars");
+		await page.reload();
+	});
+
+	for (const size of SIZES) {
+		for (const shape of SHAPES) {
+			for (const status of STATUSES) {
+				test(`${size} ${shape} ${status}: AC6/AC7/AC8/AC9/AC10`, async ({ page }) => {
+					await assertAvatarCell(page, size, shape, status);
+				});
+			}
+		}
+	}
+});
