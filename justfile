@@ -89,6 +89,14 @@ test:
 test-watch:
     pnpm run test:unit
 
+# Run Playwright AC6-AC11 avatar overlap suite (light + dark; uses
+# dev fixture page). Public spec — no auth required.
+[group('test')]
+[doc('Run Playwright AC6-AC11 avatar overlap suite (light + dark; uses dev fixture page).')]
+test-e2e-avatar:
+    pnpm exec playwright test tests/e2e/avatar-overlap.spec.ts \
+        --project=chromium --project=chromium-data-theme-dark
+
 # End-to-end tests (Playwright + axe-core).
 [doc('Full pipeline: reset D1, provision the test student credential, then run the Playwright + axe-core suite. The webServer block auto-spawns pnpm dev and tears it down on exit.')]
 test-e2e: db-reset db-set-password
