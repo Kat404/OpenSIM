@@ -24,7 +24,7 @@
  * `just db-reset && just db-set-password` ran beforehand. The
  * `just test-e2e` recipe wires that up locally. NOTE: `just ci`
  * (the pre-push container gate) does NOT run this e2e suite — it
- * runs `just precommit` (check + biome-check + test). For axe-core
+ * runs `just qa-fast` (check + biome-check + test). For axe-core
  * e2e coverage, run `just test-e2e` on the host.
  */
 import { defineConfig, devices } from "@playwright/test";

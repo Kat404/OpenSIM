@@ -38,7 +38,7 @@ Visit `http://localhost:5173`, log in with the test credentials above, and `/das
 
 Run `just` (or `just --list`) to see all 30+ recipes. Key ones:
 
-- `just dev`, `just build`, `just check`, `just test`, `just verify`, `just precommit`
+- `just dev`, `just build`, `just check`, `just test`, `just qa`, `just qa-fast`
 - `just db-reset` (full local D1 reset + migrate + seed)
 - `just db-set-password` (provision test credential)
 - `just db-migrate-remote` (apply migrations to production D1)

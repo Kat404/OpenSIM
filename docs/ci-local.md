@@ -80,7 +80,7 @@ Removes the `opensim-ci:latest` image. Bind-mounted artifacts (`playwright-repor
 | Recipe | What it does | When to run |
 | --- | --- | --- |
 | `just ci-build` | `podman build -f Containerfile.ci -t opensim-ci:latest .` | First time, or when `Containerfile.ci` changes |
-| `just ci` | Build + run `just precommit` inside the container | Pre-push hook |
+| `just ci` | Build + run `just qa-fast` inside the container | Pre-push hook |
 | `just ci-shell` | Interactive bash inside the container | Debugging |
 | `just ci-clean` | `podman rmi opensim-ci:latest` | When you want to reclaim disk |
 | `just ci-drift` | Snapshot local D1, re-migrate, diff | Quarterly, opt-in |

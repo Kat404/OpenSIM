@@ -159,13 +159,13 @@ nuke:
 
 # ===== Pipelines =====
 
-# Full verification: check + biome-check + test + build
-verify: check biome-check test build
+# Full pre-push QA gate: check + biome-check + test + build
+qa: check biome-check test build
     @echo ""
-    @echo "✓ all green — ready for commit"
+    @echo "✓ all green — ready to push"
 
-# Pre-commit checklist: check + biome-check + test
-precommit: check biome-check test
+# Fast pre-commit QA gate: check + biome-check + test (no build)
+qa-fast: check biome-check test
     @echo ""
     @echo "✓ pre-commit checks passed"
 
@@ -178,17 +178,17 @@ precommit: check biome-check test
 ci-build:
     podman build -f Containerfile.ci -t opensim-ci:latest .
 
-# Run the full pre-push QA session inside the opensim-ci container.
+# Run the fast pre-commit QA gate inside the opensim-ci container.
 # bind-mounts the repo to /repo; --userns=keep-id preserves host UID
 # for bind-mounted artifacts (playwright-report, test-results);
 # -e HOME=/tmp because npm/pnpm need HOME and the kept host UID
 # may not exist in /etc/passwd inside the container. The container's
-# default CMD (just precommit) runs the in-image QA gate.
-# NOTE: the in-image gate is `just precommit` (check + biome-check + test).
+# default CMD (`just qa-fast`) runs the in-image fast QA gate.
+# NOTE: the in-image gate is `just qa-fast` (check + biome-check + test).
 # It does NOT run the axe-core e2e suite — for that, run `just test-e2e`
 # on the host (it needs system Chromium and local D1 state).
 [group('ci')]
-[doc('Full pre-push QA session (check + biome-check + test) inside opensim-ci container. For axe-core e2e suite, run `just test-e2e` separately.')]
+[doc('Run `just qa-fast` (check + biome-check + test) inside opensim-ci container. For axe-core e2e suite, run `just test-e2e` separately.')]
 ci: ci-build
     podman run --rm \
         --userns=keep-id \

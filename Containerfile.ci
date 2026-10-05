@@ -71,4 +71,4 @@ ENV CI=true
 # (no command override), so this CMD is what runs by default.
 # For an interactive shell, use `just ci-shell` which overrides
 # with `bash`.
-CMD ["just", "precommit"]
+CMD ["just", "qa-fast"]
