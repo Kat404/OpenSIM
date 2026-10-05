@@ -70,6 +70,7 @@
 		overflow: hidden;
 		user-select: none;
 		flex-shrink: 0;
+		--avatar-ring: var(--surface-0);
 	}
 
 	.avatar--circle {
@@ -126,11 +127,11 @@
 		min-width: 8px;
 		min-height: 8px;
 		border-radius: 50%;
-		border: 2px solid var(--surface-1);
+		border: 2px solid var(--avatar-ring);
 	}
 
 	.avatar__status--online {
-		background-color: var(--success-500);
+		background-color: var(--success-700);
 	}
 	.avatar__status--offline {
 		background-color: var(--fg-tertiary);
@@ -139,6 +140,6 @@
 		background-color: var(--danger-500);
 	}
 	.avatar__status--away {
-		background-color: var(--warning-500);
+		background-color: var(--warning-700);
 	}
 </style>

@@ -242,6 +242,11 @@
 		gap: var(--space-2);
 		padding: var(--space-1) var(--space-2);
 		border-radius: var(--radius-2);
+		/* Avatar status dot (if/when status is ever passed) sits on the
+		   --surface-1 header strip, so the ring should match that surface
+		   — not the --surface-0 page background the default ring assumes.
+		   Dormant today since the avatar is rendered without a status. */
+		--avatar-ring: var(--surface-1);
 	}
 
 	.header__user-meta {
