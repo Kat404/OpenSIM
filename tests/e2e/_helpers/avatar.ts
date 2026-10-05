@@ -89,9 +89,13 @@ export async function getDotBox(page: Page, avatar: Locator): Promise<AvatarOver
 }
 
 /**
- * Resolves a CSS custom property to [r, g, b]. The browser normalises the
- * computed value to `rgb(r, g, b)` or `rgba(r, g, b, a)` regardless of how
- * the source token is declared, so a single regex handles both.
+ * Resolves a CSS custom property to [r, g, b]. The returned string is
+ * the raw, UNNORMALISED value as declared in the source — Chrome does
+ * NOT canonicalise custom-property declarations, so a token declared
+ * `--surface-0: #ffffff` resolves to the literal string `#ffffff`, not
+ * `rgb(255, 255, 255)`. `parseRgbString` accepts both forms (and 3-digit
+ * hex) and does the normalisation; see its docblock for the accepted
+ * shapes.
  *
  * When `scope` is provided, the variable is read on that element so
  * cascaded custom properties (e.g. `--avatar-ring` declared on

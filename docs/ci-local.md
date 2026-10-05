@@ -84,4 +84,4 @@ Removes the `opensim-ci:latest` image. Bind-mounted artifacts (`playwright-repor
 | `just ci-shell` | Interactive bash inside the container | Debugging |
 | `just ci-clean` | `podman rmi opensim-ci:latest` | When you want to reclaim disk |
 | `just ci-drift` | Snapshot local D1, re-migrate, diff | Quarterly, opt-in |
-| `just test-e2e-avatar` | Playwright AC6-AC11 overlap suite (light + dark; 80 cells) | Dev iteration on the Avatar component, no auth required |
+| `just test-e2e-avatar` | Playwright AC6-AC11 overlap suite (light + dark; 40 cells × 2 themes) | Dev iteration on the Avatar component, no auth required |

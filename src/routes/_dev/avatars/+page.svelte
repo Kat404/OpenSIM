@@ -24,7 +24,8 @@ const STATUSES = ["online", "offline", "busy", "away"] as const;
 <main class="fixture" data-testid="avatar-fixture-root">
 	<h1>Avatar fixture — Phase 6.1 overlap suite</h1>
 	<p class="hint">
-		This page renders all 80 cells (5 sizes × 2 shapes × 4 statuses). It is gated by
+		This page renders all 40 cells (5 sizes × 2 shapes × 4 statuses). The Playwright suite exercises
+		each cell under both light and dark themes for a total of 80 test cases. It is gated by
 		<code>+page.server.ts</code>
 		to 404 in non-dev environments.
 	</p>
