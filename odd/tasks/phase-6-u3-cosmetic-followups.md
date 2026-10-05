@@ -234,7 +234,7 @@ Ship as **4 work-unit commits** on `main` (R12 refinement #6 split commit 2):
 
 Total: **3 work-unit commits**, 2 files (Avatar.svelte + Avatar.test.ts) + 1 spec line in commit 1. ~+23/-8 LOC. 0 new dependencies. 0 new tokens. **0 new test infrastructure.**
 
-Estimated: ~15 min of dev + ~5 min of verification (3× pnpm check + 3× pnpm test + 1× pnpm build + 3 commits).
+Estimated: ~15 min of dev + ~5 min of verification (3× pnpm check + 3× pnpm test + 1× pnpm build + 3 commits). *(historical record of U3 cycle execution; canonical commands are now `just`)*
 
 ---
 

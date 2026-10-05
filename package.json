@@ -3,6 +3,7 @@
 	"private": true,
 	"version": "0.1.0",
 	"type": "module",
+	"packageManager": "pnpm@11.28.4",
 	"description": "OpenSIM — Sistema Integral Modular for TecNM Morelia. FOSS rewrite in SvelteKit 3 + Svelte 5 + Cloudflare D1.",
 	"scripts": {
 		"dev": "vite dev",
