@@ -15,12 +15,12 @@
  * not behavioural, so a regex over the source is the right primitive.
  */
 
-import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { STATUS_LABEL_ES, composeAltText, initials, type AvatarStatus } from './Avatar.svelte';
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { describe, expect, it } from "vitest";
+import { type AvatarStatus, composeAltText, initials, STATUS_LABEL_ES } from "./Avatar.svelte";
 
-const ALL_STATUSES: AvatarStatus[] = ['online', 'offline', 'busy', 'away'];
+const ALL_STATUSES: AvatarStatus[] = ["online", "offline", "busy", "away"];
 
 // Read the .svelte source once and share it across the structural test
 // blocks. The dot assertions and the ring contract both probe the raw
@@ -29,33 +29,33 @@ const ALL_STATUSES: AvatarStatus[] = ['online', 'offline', 'busy', 'away'];
 // stripped up-front so static-regex assertions don't match the prose
 // inside /* ... */ blocks (the ring-contract test would otherwise
 // match the literal "border:" inside its own "not border:" comment).
-const sourcePath = fileURLToPath(new URL('./Avatar.svelte', import.meta.url));
+const sourcePath = fileURLToPath(new URL("./Avatar.svelte", import.meta.url));
 // Strip CSS comments from inside <style> only, so a future JS block
 // comment or a string literal containing /* */ can never silently
 // delete bytes from SOURCE. The .avatar__status block lives in <style>.
-const rawSource = readFileSync(sourcePath, 'utf-8');
+const rawSource = readFileSync(sourcePath, "utf-8");
 const SOURCE = rawSource.replace(
 	/<style>([\s\S]*?)<\/style>/g,
-	(_match, body) => `<style>${body.replace(/\/\*[\s\S]*?\*\//g, '')}</style>`
+	(_match, body) => `<style>${body.replace(/\/\*[\s\S]*?\*\//g, "")}</style>`,
 );
 
-describe('STATUS_LABEL_ES', () => {
-	it('maps every status to a non-empty Spanish label', () => {
+describe("STATUS_LABEL_ES", () => {
+	it("maps every status to a non-empty Spanish label", () => {
 		for (const status of ALL_STATUSES) {
 			const label = STATUS_LABEL_ES[status];
-			expect(label).toBeTypeOf('string');
+			expect(label).toBeTypeOf("string");
 			expect(label.length).toBeGreaterThan(0);
 		}
 	});
 
-	it('round-trips every status to its expected Spanish phrase', () => {
-		expect(STATUS_LABEL_ES.online).toBe('en línea');
-		expect(STATUS_LABEL_ES.offline).toBe('desconectado');
-		expect(STATUS_LABEL_ES.busy).toBe('ocupado');
-		expect(STATUS_LABEL_ES.away).toBe('ausente');
+	it("round-trips every status to its expected Spanish phrase", () => {
+		expect(STATUS_LABEL_ES.online).toBe("en línea");
+		expect(STATUS_LABEL_ES.offline).toBe("desconectado");
+		expect(STATUS_LABEL_ES.busy).toBe("ocupado");
+		expect(STATUS_LABEL_ES.away).toBe("ausente");
 	});
 
-	it('is the inverse of a status-keyed lookup (no duplicates, no missing)', () => {
+	it("is the inverse of a status-keyed lookup (no duplicates, no missing)", () => {
 		const seen = new Set<string>();
 		for (const status of ALL_STATUSES) {
 			const label = STATUS_LABEL_ES[status];
@@ -65,44 +65,44 @@ describe('STATUS_LABEL_ES', () => {
 		expect(seen.size).toBe(ALL_STATUSES.length);
 	});
 
-	it('never returns an empty string or an English token for a known status', () => {
+	it("never returns an empty string or an English token for a known status", () => {
 		for (const status of ALL_STATUSES) {
 			const label = STATUS_LABEL_ES[status];
-			expect(label).not.toBe('');
+			expect(label).not.toBe("");
 			expect(label).not.toBe(status); // 'online' would mean we forgot to localize
 		}
 	});
 });
 
-describe('composeAltText', () => {
+describe("composeAltText", () => {
 	describe('with name AND status (Phase A target: "Ada Lovelace, en línea")', () => {
 		it('returns "<name>, <status label>" for online', () => {
-			expect(composeAltText('Ada Lovelace', 'online')).toBe('Ada Lovelace, en línea');
+			expect(composeAltText("Ada Lovelace", "online")).toBe("Ada Lovelace, en línea");
 		});
 		it('returns "<name>, <status label>" for offline', () => {
-			expect(composeAltText('Ada Lovelace', 'offline')).toBe('Ada Lovelace, desconectado');
+			expect(composeAltText("Ada Lovelace", "offline")).toBe("Ada Lovelace, desconectado");
 		});
 		it('returns "<name>, <status label>" for busy', () => {
-			expect(composeAltText('Alan Turing', 'busy')).toBe('Alan Turing, ocupado');
+			expect(composeAltText("Alan Turing", "busy")).toBe("Alan Turing, ocupado");
 		});
 		it('returns "<name>, <status label>" for away', () => {
-			expect(composeAltText('Alan Turing', 'away')).toBe('Alan Turing, ausente');
+			expect(composeAltText("Alan Turing", "away")).toBe("Alan Turing, ausente");
 		});
 	});
 
-	describe('with name only (no status)', () => {
+	describe("with name only (no status)", () => {
 		it('returns the legacy "Avatar de <name>" form so existing call-sites are stable', () => {
-			expect(composeAltText('Ada Lovelace', undefined)).toBe('Avatar de Ada Lovelace');
+			expect(composeAltText("Ada Lovelace", undefined)).toBe("Avatar de Ada Lovelace");
 		});
 	});
 
-	describe('with no name and no status', () => {
+	describe("with no name and no status", () => {
 		it('falls back to the generic "Avatar"', () => {
-			expect(composeAltText('', undefined)).toBe('Avatar');
+			expect(composeAltText("", undefined)).toBe("Avatar");
 		});
 	});
 
-	describe('with no name but a status (U3 follow-up C3)', () => {
+	describe("with no name but a status (U3 follow-up C3)", () => {
 		// Before C3, an anonymous avatar with a status would drop the
 		// status info and render plain "Avatar" — losing the same
 		// Spanish label that callers deliberately passed. The status
@@ -110,94 +110,94 @@ describe('composeAltText', () => {
 		// hear "Avatar, en línea" (etc.) so screen readers convey the
 		// live presence state.
 		it('returns "Avatar, en línea" for empty name + online', () => {
-			expect(composeAltText('', 'online')).toBe('Avatar, en línea');
+			expect(composeAltText("", "online")).toBe("Avatar, en línea");
 		});
 		it('returns "Avatar, desconectado" for empty name + offline', () => {
-			expect(composeAltText('', 'offline')).toBe('Avatar, desconectado');
+			expect(composeAltText("", "offline")).toBe("Avatar, desconectado");
 		});
 		it('returns "Avatar, ocupado" for empty name + busy', () => {
-			expect(composeAltText('', 'busy')).toBe('Avatar, ocupado');
+			expect(composeAltText("", "busy")).toBe("Avatar, ocupado");
 		});
 		it('returns "Avatar, ausente" for empty name + away', () => {
-			expect(composeAltText('', 'away')).toBe('Avatar, ausente');
+			expect(composeAltText("", "away")).toBe("Avatar, ausente");
 		});
 	});
 
-	describe('with explicit alt override', () => {
-		it('returns the caller-provided alt verbatim, ignoring name and status', () => {
-			expect(composeAltText('Ada Lovelace', 'online', 'Custom name')).toBe('Custom name');
+	describe("with explicit alt override", () => {
+		it("returns the caller-provided alt verbatim, ignoring name and status", () => {
+			expect(composeAltText("Ada Lovelace", "online", "Custom name")).toBe("Custom name");
 		});
-		it('returns the caller-provided alt even when no name is given', () => {
-			expect(composeAltText('', 'busy', 'Custom')).toBe('Custom');
+		it("returns the caller-provided alt even when no name is given", () => {
+			expect(composeAltText("", "busy", "Custom")).toBe("Custom");
 		});
 	});
 });
 
-describe('initials (U3 follow-up C4)', () => {
+describe("initials (U3 follow-up C4)", () => {
 	// Before C4, `initials('')` returned '' instead of '?': the
 	// `parts.length === 0` branch was unreachable because
 	// `''.trim().split(/\s+/)` returns `['']` (length 1), so the
 	// single-word branch always fired and `''.slice(0, 2)` produced ''.
 	// The fix is a real empty-name guard at the top of the function.
 	it('empty string returns "?"', () => {
-		expect(initials('')).toBe('?');
+		expect(initials("")).toBe("?");
 	});
 	it('whitespace-only string returns "?"', () => {
-		expect(initials('   ')).toBe('?');
+		expect(initials("   ")).toBe("?");
 	});
-	it('single word returns the first 2 chars uppercased', () => {
-		expect(initials('Grace')).toBe('GR');
+	it("single word returns the first 2 chars uppercased", () => {
+		expect(initials("Grace")).toBe("GR");
 	});
-	it('2 words returns the first letter of each, uppercased', () => {
-		expect(initials('Grace Hopper')).toBe('GH');
+	it("2 words returns the first letter of each, uppercased", () => {
+		expect(initials("Grace Hopper")).toBe("GH");
 	});
-	it('extra spaces + lowercase are normalized', () => {
-		expect(initials('  ada  lovelace  ')).toBe('AL');
+	it("extra spaces + lowercase are normalized", () => {
+		expect(initials("  ada  lovelace  ")).toBe("AL");
 	});
-	it('Ada Lovelace returns AL (regression — the named-user case)', () => {
-		expect(initials('Ada Lovelace')).toBe('AL');
+	it("Ada Lovelace returns AL (regression — the named-user case)", () => {
+		expect(initials("Ada Lovelace")).toBe("AL");
 	});
 });
 
-describe('Avatar.svelte template (structural — Phase A a11y contract)', () => {
+describe("Avatar.svelte template (structural — Phase A a11y contract)", () => {
 	// The dot lives inside the .svelte template, not in script. Find the
 	// <span … class="avatar__status …"> opening tag and assert it carries
 	// no aria-* attribute. This is the actual axe finding being closed:
 	// aria-prohibited-attr on .avatar__status--{online,busy}.
 	const dotOpenTag = SOURCE.match(/<span[^>]*class="avatar__status[^"]*"[^>]*>/);
-	if (!dotOpenTag) throw new Error('Avatar.svelte: cannot locate the status dot <span>');
+	if (!dotOpenTag) throw new Error("Avatar.svelte: cannot locate the status dot <span>");
 
 	const dotTag = dotOpenTag[0];
 
-	it('does not put aria-label on the status dot (decorative — axe aria-prohibited-attr)', () => {
+	it("does not put aria-label on the status dot (decorative — axe aria-prohibited-attr)", () => {
 		expect(dotTag).not.toMatch(/aria-label/);
 	});
 
-	it('does not put any aria-* attribute on the status dot (decorative leaf)', () => {
+	it("does not put any aria-* attribute on the status dot (decorative leaf)", () => {
 		// The parent role="img" is a leaf role, so any aria-* on the dot
 		// is meaningless at best and prohibited at worst. Keep the dot
 		// a plain visual element.
 		expect(dotTag).not.toMatch(/\saria-[\w-]+=/);
 	});
 
-	it('still renders the dot conditionally (i.e. we did not delete the markup)', () => {
+	it("still renders the dot conditionally (i.e. we did not delete the markup)", () => {
 		expect(SOURCE).toMatch(/\{#if\s+status\}[\s\S]*?\{\/if\}/);
 	});
 
-	it('exposes status to the script via the typed AvatarStatus alias (not the raw string)', () => {
+	it("exposes status to the script via the typed AvatarStatus alias (not the raw string)", () => {
 		// Defends against a future refactor that drops the type and turns
 		// status back into an unconstrained string.
 		expect(SOURCE).toMatch(/status\??:\s*AvatarStatus/);
 	});
 });
 
-describe('Avatar.svelte ring contract (U3 follow-up C1)', () => {
+describe("Avatar.svelte ring contract (U3 follow-up C1)", () => {
 	// Defends the box-shadow switch (C1): with global box-sizing: border-box
 	// (tokens.css:299-303) a 2px solid border on .avatar__status eats the
 	// 25% fill at xs (6px → 4px fill) and sm (8px → 4px fill). The
 	// contract is: paint the halo via spread, not via a border.
-	it('avatar__status block paints outward via box-shadow (no border)', () => {
-		const statusBlock = SOURCE.match(/\.avatar__status\s*\{[^}]*\}/)?.[0] ?? '';
+	it("avatar__status block paints outward via box-shadow (no border)", () => {
+		const statusBlock = SOURCE.match(/\.avatar__status\s*\{[^}]*\}/)?.[0] ?? "";
 		expect(statusBlock).toMatch(/box-shadow:\s*0 0 0 2px var\(--avatar-ring\)/);
 		// 'none' is fine; a 2px solid border would re-introduce the bug.
 		expect(statusBlock).not.toMatch(/border:\s*[^n]/);

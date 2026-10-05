@@ -24,44 +24,44 @@
  * See: odd/tasks/opensim.md §7.2; audit M8 (Round 4) + N2/N4 (Round 6).
  */
 
-import type { Theme } from './color';
+import type { Theme } from "./color";
 
-const state = $state<{ value: Theme }>({ value: 'light' });
+const state = $state<{ value: Theme }>({ value: "light" });
 
 // Detect browser without `$app/environment` so this module can be
 // imported from `*.svelte` and unit-tested under node. The DOM
 // check is sufficient: the rune module is only ever executed on the
 // server (SSR) or in the browser, never in pure node tests.
-if (typeof document !== 'undefined' && typeof MutationObserver !== 'undefined') {
+if (typeof document !== "undefined" && typeof MutationObserver !== "undefined") {
 	const sync = () => {
-		const next = document.documentElement.getAttribute('data-theme');
-		state.value = next === 'dark' ? 'dark' : 'light';
+		const next = document.documentElement.getAttribute("data-theme");
+		state.value = next === "dark" ? "dark" : "light";
 	};
 	sync();
 	const observer = new MutationObserver(sync);
 	observer.observe(document.documentElement, {
 		attributes: true,
-		attributeFilter: ['data-theme']
+		attributeFilter: ["data-theme"],
 	});
 
 	// OS theme reactivity (audit N4, Round 6). Only mirrors the OS
 	// preference to <html data-theme> when the user has NOT stored an
 	// explicit choice. The MutationObserver above then propagates the
 	// change into the rune.
-	if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
-		const mq = window.matchMedia('(prefers-color-scheme: dark)');
+	if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
+		const mq = window.matchMedia("(prefers-color-scheme: dark)");
 		const followOs = (e: MediaQueryListEvent | MediaQueryList) => {
 			let stored: string | null = null;
 			try {
-				stored = localStorage.getItem('opensim-theme');
+				stored = localStorage.getItem("opensim-theme");
 			} catch {
 				// localStorage unavailable; fall through and follow the OS.
 			}
-			if (stored === 'light' || stored === 'dark') return; // user override wins
-			document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+			if (stored === "light" || stored === "dark") return; // user override wins
+			document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
 		};
 		followOs(mq); // sync on boot in case app.html didn't set the attribute
-		mq.addEventListener('change', followOs);
+		mq.addEventListener("change", followOs);
 	}
 }
 

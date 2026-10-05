@@ -51,7 +51,7 @@ function parseBlock(b: ConflictBlock): ParsedBlock | null {
 		id: b.id,
 		day: normalizeDay(b.day),
 		startMin: start,
-		endMin: end
+		endMin: end,
 	};
 }
 
@@ -77,11 +77,9 @@ function normalizeDay(d: string): string {
  */
 export function findConflicts<T extends ConflictBlock>(
 	candidate: readonly T[],
-	existing: readonly ConflictBlock[]
+	existing: readonly ConflictBlock[],
 ): Set<string | number> {
-	const parsedExisting = existing
-		.map(parseBlock)
-		.filter((b): b is ParsedBlock => b !== null);
+	const parsedExisting = existing.map(parseBlock).filter((b): b is ParsedBlock => b !== null);
 	const conflicts = new Set<string | number>();
 	for (const c of candidate) {
 		const pc = parseBlock(c);
@@ -108,7 +106,7 @@ export function findConflicts<T extends ConflictBlock>(
  */
 export function annotateConflicts<T extends ConflictBlock>(
 	candidate: readonly T[],
-	existing: readonly ConflictBlock[]
+	existing: readonly ConflictBlock[],
 ): Array<T & { hasConflict: boolean }> {
 	const conflicts = findConflicts(candidate, existing);
 	return candidate.map((c) => ({ ...c, hasConflict: conflicts.has(c.id) }));

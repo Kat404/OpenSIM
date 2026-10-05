@@ -25,11 +25,5 @@
 		"playwright.config.ts",
 		"tests/**/*.ts"
 	],
-	"exclude": [
-		"node_modules",
-		".svelte-kit",
-		"build",
-		".wrangler",
-		"drizzle"
-	]
+	"exclude": ["node_modules", ".svelte-kit", "build", ".wrangler", "drizzle"]
 }

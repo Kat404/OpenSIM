@@ -18,19 +18,19 @@
  * same default to assert the conversion.
  */
 
-export type DayLetter = 'D' | 'L' | 'M' | 'X' | 'J' | 'V' | 'S';
+export type DayLetter = "D" | "L" | "M" | "X" | "J" | "V" | "S";
 
 const WEEKDAY_TO_LETTER: Record<string, DayLetter> = {
-	Sun: 'D',
-	Mon: 'L',
-	Tue: 'M',
-	Wed: 'X',
-	Thu: 'J',
-	Fri: 'V',
-	Sat: 'S'
+	Sun: "D",
+	Mon: "L",
+	Tue: "M",
+	Wed: "X",
+	Thu: "J",
+	Fri: "V",
+	Sat: "S",
 };
 
-const DEFAULT_TIMEZONE = 'America/Mexico_City';
+const DEFAULT_TIMEZONE = "America/Mexico_City";
 
 /**
  * Returns the Spanish single-letter day abbreviation for the given
@@ -41,14 +41,14 @@ const DEFAULT_TIMEZONE = 'America/Mexico_City';
  */
 export function getTodayDayLetter(
 	now: Date = new Date(),
-	timeZone: string = DEFAULT_TIMEZONE
+	timeZone: string = DEFAULT_TIMEZONE,
 ): DayLetter {
-	const formatter = new Intl.DateTimeFormat('en-US', {
+	const formatter = new Intl.DateTimeFormat("en-US", {
 		timeZone,
-		weekday: 'short'
+		weekday: "short",
 	});
 	const weekday = formatter.format(now);
-	return WEEKDAY_TO_LETTER[weekday] ?? 'D';
+	return WEEKDAY_TO_LETTER[weekday] ?? "D";
 }
 
 /**
@@ -58,15 +58,12 @@ export function getTodayDayLetter(
  * `Intl.DateTimeFormat` without the `sv-SE` or hand-rolled formatter
  * fallbacks other projects reach for.
  */
-export function getTodayDate(
-	now: Date = new Date(),
-	timeZone: string = DEFAULT_TIMEZONE
-): string {
-	const formatter = new Intl.DateTimeFormat('en-CA', {
+export function getTodayDate(now: Date = new Date(), timeZone: string = DEFAULT_TIMEZONE): string {
+	const formatter = new Intl.DateTimeFormat("en-CA", {
 		timeZone,
-		year: 'numeric',
-		month: '2-digit',
-		day: '2-digit'
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
 	});
 	return formatter.format(now);
 }

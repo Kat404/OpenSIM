@@ -187,6 +187,6 @@ export function evaluateCreditThresholds(approvedCredits: number): CreditThresho
 	return {
 		canStartSocialService: approvedCredits >= 182,
 		canStartResidency: approvedCredits >= 208,
-		canTakeTallerInv1: approvedCredits >= 130
+		canTakeTallerInv1: approvedCredits >= 130,
 	};
 }

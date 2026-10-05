@@ -30,10 +30,10 @@
  * audit H2 + M1 (Round 4).
  */
 
-import { and, desc, eq, inArray } from 'drizzle-orm';
-import { courseGroups, courseScheduleBlocks, studentProgress } from './db/schema';
-import type { CourseGroup, CourseScheduleBlock } from './db/schema';
-import type { Database } from './db';
+import { and, desc, eq, inArray } from "drizzle-orm";
+import type { Database } from "./db";
+import type { CourseGroup, CourseScheduleBlock } from "./db/schema";
+import { courseGroups, courseScheduleBlocks, studentProgress } from "./db/schema";
 
 export interface CurrentEnrollment {
 	groups: CourseGroup[];
@@ -62,7 +62,7 @@ export interface CurrentEnrollment {
  */
 export async function getCurrentPeriod(
 	db: Database,
-	controlNumber: string
+	controlNumber: string,
 ): Promise<string | null> {
 	const rows = await db
 		.select({ period: studentProgress.period })
@@ -70,8 +70,8 @@ export async function getCurrentPeriod(
 		.where(
 			and(
 				eq(studentProgress.studentControlNumber, controlNumber),
-				eq(studentProgress.status, 'ENROLLED')
-			)
+				eq(studentProgress.status, "ENROLLED"),
+			),
 		)
 		.orderBy(desc(studentProgress.period))
 		.limit(1);
@@ -90,7 +90,7 @@ export async function getCurrentPeriod(
 export async function getCurrentEnrollment(
 	db: Database,
 	controlNumber: string,
-	period?: string
+	period?: string,
 ): Promise<CurrentEnrollment> {
 	const effectivePeriod = period ?? (await getCurrentPeriod(db, controlNumber));
 	if (!effectivePeriod) {
@@ -103,9 +103,9 @@ export async function getCurrentEnrollment(
 		.where(
 			and(
 				eq(studentProgress.studentControlNumber, controlNumber),
-				eq(studentProgress.status, 'ENROLLED'),
-				eq(studentProgress.period, effectivePeriod)
-			)
+				eq(studentProgress.status, "ENROLLED"),
+				eq(studentProgress.period, effectivePeriod),
+			),
 		);
 
 	if (enrolled.length === 0) {

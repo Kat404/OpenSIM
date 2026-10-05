@@ -15,36 +15,36 @@
   (`evaluateCreditThresholds`).
 -->
 <script lang="ts">
-	import { Badge, Card, ProgressBar, Stepper, type Step } from '#lib/components/ui';
-	import TramiteFormServicioSocial from './TramiteFormServicioSocial.svelte';
-	import TramiteFormResidencia from './TramiteFormResidencia.svelte';
-	import TramiteFormTitulacion from './TramiteFormTitulacion.svelte';
-	import { CheckCircle2, Lock } from 'lucide-svelte';
-	import type { ProcedureStatus } from './types';
-	import { PROCEDURE_STATE_LABEL } from '#lib/utils/procedure-labels';
+import { CheckCircle2, Lock } from "lucide-svelte";
+import { Badge, Card, ProgressBar, type Step, Stepper } from "#lib/components/ui";
+import { PROCEDURE_STATE_LABEL } from "#lib/utils/procedure-labels";
+import TramiteFormResidencia from "./TramiteFormResidencia.svelte";
+import TramiteFormServicioSocial from "./TramiteFormServicioSocial.svelte";
+import TramiteFormTitulacion from "./TramiteFormTitulacion.svelte";
+import type { ProcedureStatus } from "./types";
 
-	interface Props {
-		procedures: ProcedureStatus[];
-		formNotice?: string | null;
-	}
+interface Props {
+	procedures: ProcedureStatus[];
+	formNotice?: string | null;
+}
 
-	let { procedures, formNotice = null }: Props = $props();
+let { procedures, formNotice = null }: Props = $props();
 
-	const steps: Step[] = $derived(
-		procedures.map((p) => ({
-			id: p.id,
-			label: p.label,
-			description: `${p.creditsRequired} créditos (${Math.round((p.creditsRequired / 260) * 100)}% de la carrera)`
-		}))
-	);
+const steps: Step[] = $derived(
+	procedures.map((p) => ({
+		id: p.id,
+		label: p.label,
+		description: `${p.creditsRequired} créditos (${Math.round((p.creditsRequired / 260) * 100)}% de la carrera)`,
+	})),
+);
 
-	let current = $state(0);
+let current = $state(0);
 
-	const active = $derived(procedures[current] ?? null);
+const active = $derived(procedures[current] ?? null);
 </script>
 
 <section class="proc" aria-label="Trámites académicos">
-	<Stepper steps={steps} {current} orientation="horizontal" />
+	<Stepper {steps} {current} orientation="horizontal" />
 
 	{#if formNotice}
 		<Card padding="sm">
@@ -89,12 +89,12 @@
 		</Card>
 
 		<form method="POST" class="proc__form">
-			<input type="hidden" name="procedure" value={active.id} />
-			{#if active.id === 'servicio-social'}
+			<input type="hidden" name="procedure" value={active.id}>
+			{#if active.id === "servicio-social"}
 				<TramiteFormServicioSocial unlocked={active.unlocked} />
-			{:else if active.id === 'residencia'}
+			{:else if active.id === "residencia"}
 				<TramiteFormResidencia unlocked={active.unlocked} />
-			{:else if active.id === 'titulacion'}
+			{:else if active.id === "titulacion"}
 				<TramiteFormTitulacion unlocked={active.unlocked} />
 			{/if}
 		</form>
@@ -117,99 +117,99 @@
 </section>
 
 <style>
-	.proc {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-4);
-		font-family: var(--font-sans);
-	}
+.proc {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+	font-family: var(--font-sans);
+}
 
-	.proc__notice {
-		font-size: var(--text-sm);
-		color: var(--info-700);
-	}
+.proc__notice {
+	font-size: var(--text-sm);
+	color: var(--info-700);
+}
 
-	.proc__header {
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-between;
-		gap: var(--space-3);
-	}
+.proc__header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: var(--space-3);
+}
 
-	.proc__title {
-		margin: 0 0 var(--space-1) 0;
-		font-size: var(--text-lg);
-		font-weight: var(--weight-semibold);
-		color: var(--fg-primary);
-	}
+.proc__title {
+	margin: 0 0 var(--space-1) 0;
+	font-size: var(--text-lg);
+	font-weight: var(--weight-semibold);
+	color: var(--fg-primary);
+}
 
-	.proc__desc {
-		margin: 0;
-		font-size: var(--text-sm);
-		color: var(--fg-tertiary);
-		max-width: 600px;
-	}
+.proc__desc {
+	margin: 0;
+	font-size: var(--text-sm);
+	color: var(--fg-tertiary);
+	max-width: 600px;
+}
 
-	.proc__progress {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-2);
-	}
+.proc__progress {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+}
 
-	.proc__blocked {
-		margin: 0;
-		font-size: var(--text-sm);
-		color: var(--warning-700);
-	}
+.proc__blocked {
+	margin: 0;
+	font-size: var(--text-sm);
+	color: var(--warning-700);
+}
 
-	.proc__form {
-		display: contents;
-	}
+.proc__form {
+	display: contents;
+}
 
-	.proc__nav {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--space-2);
-		padding: var(--space-3);
-		background-color: var(--surface-1);
-		border: 1px solid var(--border-subtle);
-		border-radius: var(--radius-3);
-	}
+.proc__nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+	padding: var(--space-3);
+	background-color: var(--surface-1);
+	border: 1px solid var(--border-subtle);
+	border-radius: var(--radius-3);
+}
 
-	.proc__nav-button {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--space-2);
-		padding: var(--space-2) var(--space-3);
-		background-color: transparent;
-		color: var(--fg-secondary);
-		border: 1px solid var(--border-subtle);
-		border-radius: var(--radius-2);
-		font-family: var(--font-sans);
-		font-size: var(--text-sm);
-		cursor: pointer;
-		transition:
-			background-color var(--motion-duration-fast) var(--motion-ease-standard),
-			border-color var(--motion-duration-fast) var(--motion-ease-standard);
-	}
+.proc__nav-button {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+	padding: var(--space-2) var(--space-3);
+	background-color: transparent;
+	color: var(--fg-secondary);
+	border: 1px solid var(--border-subtle);
+	border-radius: var(--radius-2);
+	font-family: var(--font-sans);
+	font-size: var(--text-sm);
+	cursor: pointer;
+	transition:
+		background-color var(--motion-duration-fast) var(--motion-ease-standard),
+		border-color var(--motion-duration-fast) var(--motion-ease-standard);
+}
 
-	.proc__nav-button:hover {
-		background-color: var(--surface-2);
-	}
+.proc__nav-button:hover {
+	background-color: var(--surface-2);
+}
 
-	.proc__nav-button--active {
-		background-color: var(--brand-50);
-		border-color: var(--brand-100);
-		color: var(--brand-700);
-	}
+.proc__nav-button--active {
+	background-color: var(--brand-50);
+	border-color: var(--brand-100);
+	color: var(--brand-700);
+}
 
-	.proc__nav-label {
-		font-weight: var(--weight-medium);
-	}
+.proc__nav-label {
+	font-weight: var(--weight-medium);
+}
 
-	.proc__nav-meta {
-		font-family: var(--font-mono);
-		font-size: var(--text-xs);
-		color: var(--fg-tertiary);
-	}
+.proc__nav-meta {
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	color: var(--fg-tertiary);
+}
 </style>

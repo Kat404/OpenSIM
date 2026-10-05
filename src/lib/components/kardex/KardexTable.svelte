@@ -12,79 +12,84 @@
   retícula (`STATUS_LABEL`).
 -->
 <script lang="ts">
-	import { Table, Badge } from '#lib/components/ui';
-	import { EVALUATION_TYPES, type EvaluationType } from '#lib/utils/academic';
-	import { isPassing } from '#lib/utils/academic';
-	import type { StudentProgressStatus } from '#lib/server/db/schema';
-	import { EVALUATION_LABEL, STATUS_LABEL } from '#lib/utils/status-labels';
+import { Badge, Table } from "#lib/components/ui";
+import type { StudentProgressStatus } from "#lib/server/db/schema";
+import { EVALUATION_TYPES, type EvaluationType, isPassing } from "#lib/utils/academic";
+import { EVALUATION_LABEL, STATUS_LABEL } from "#lib/utils/status-labels";
 
-	export interface KardexEntry {
-		code: string;
-		name: string;
-		grade: number | null;
-		credits: number;
-		period: string;
-		evaluationType: EvaluationType | null;
-		status: StudentProgressStatus;
-	}
+export interface KardexEntry {
+	code: string;
+	name: string;
+	grade: number | null;
+	credits: number;
+	period: string;
+	evaluationType: EvaluationType | null;
+	status: StudentProgressStatus;
+}
 
-	interface Props {
-		entries: KardexEntry[];
-	}
+interface Props {
+	entries: KardexEntry[];
+}
 
-	let { entries }: Props = $props();
+let { entries }: Props = $props();
 
-	// Filter state lives locally; the page does not need to know
-	// about it. The Table atom owns the sort UI internally.
-	let filter = $state<'ALL' | EvaluationType>('ALL');
+// Filter state lives locally; the page does not need to know
+// about it. The Table atom owns the sort UI internally.
+let filter = $state<"ALL" | EvaluationType>("ALL");
 
-	// Filter pills share their labels with the cell renderer through
-	// EVALUATION_LABEL so they can never drift (audit L3, Round 6).
-	const filterOptions: { key: 'ALL' | EvaluationType; label: string }[] = [
-		{ key: 'ALL', label: 'Todos' },
-		...EVALUATION_TYPES.map((t) => ({ key: t, label: EVALUATION_LABEL[t] }))
-	];
+// Filter pills share their labels with the cell renderer through
+// EVALUATION_LABEL so they can never drift (audit L3, Round 6).
+const filterOptions: { key: "ALL" | EvaluationType; label: string }[] = [
+	{ key: "ALL", label: "Todos" },
+	...EVALUATION_TYPES.map((t) => ({ key: t, label: EVALUATION_LABEL[t] })),
+];
 
-	const filtered = $derived(
-		filter === 'ALL' ? entries : entries.filter((e) => e.evaluationType === filter)
-	);
+const filtered = $derived(
+	filter === "ALL" ? entries : entries.filter((e) => e.evaluationType === filter),
+);
 
-	function gradeBadgeVariant(grade: number | null, status: StudentProgressStatus) {
-		if (status === 'ENROLLED' || grade == null) return 'warning' as const;
-		if (isPassing(grade)) return 'success' as const;
-		return 'danger' as const;
-	}
+function gradeBadgeVariant(grade: number | null, status: StudentProgressStatus) {
+	if (status === "ENROLLED" || grade == null) return "warning" as const;
+	if (isPassing(grade)) return "success" as const;
+	return "danger" as const;
+}
 
-	function gradeText(grade: number | null, status: StudentProgressStatus): string {
-		if (status === 'ENROLLED' || grade == null) return 'En curso';
-		return grade.toFixed(1);
-	}
+function gradeText(grade: number | null, status: StudentProgressStatus): string {
+	if (status === "ENROLLED" || grade == null) return "En curso";
+	return grade.toFixed(1);
+}
 
-	function statusBadgeVariant(status: StudentProgressStatus) {
-		if (status === 'APPROVED') return 'success' as const;
-		if (status === 'ENROLLED') return 'brand' as const;
-		if (status === 'LOCKED') return 'danger' as const;
-		return 'neutral' as const;
-	}
+function statusBadgeVariant(status: StudentProgressStatus) {
+	if (status === "APPROVED") return "success" as const;
+	if (status === "ENROLLED") return "brand" as const;
+	if (status === "LOCKED") return "danger" as const;
+	return "neutral" as const;
+}
 
-	function evalLabel(t: EvaluationType | null): string {
-		return t ? EVALUATION_LABEL[t] : '—';
-	}
+function evalLabel(t: EvaluationType | null): string {
+	return t ? EVALUATION_LABEL[t] : "—";
+}
 </script>
 
 <!-- Snippet definitions live at the top of the template so the column
      declarations below (in the {#if} branch) can reference them. -->
-{#snippet gradeCell(e: KardexEntry)}
+{#snippet gradeCell(
+	e: KardexEntry,
+)}
 	<Badge variant={gradeBadgeVariant(e.grade, e.status)} size="sm">
 		{gradeText(e.grade, e.status)}
 	</Badge>
 {/snippet}
 
-{#snippet evalCell(e: KardexEntry)}
+{#snippet evalCell(
+	e: KardexEntry,
+)}
 	<span class="kardex__eval">{evalLabel(e.evaluationType)}</span>
 {/snippet}
 
-{#snippet statusCell(e: KardexEntry)}
+{#snippet statusCell(
+	e: KardexEntry,
+)}
 	<Badge variant={statusBadgeVariant(e.status)} size="sm">
 		{STATUS_LABEL[e.status]}
 	</Badge>
@@ -111,83 +116,83 @@
 		<p class="kardex__empty">Sin resultados con el filtro seleccionado.</p>
 	{:else}
 		{@const columns = [
-			{ key: 'code', label: 'Clave', sortable: true },
-			{ key: 'name', label: 'Asignatura', sortable: true },
-			{ key: 'credits', label: 'Cr', sortable: true, align: 'right' as const },
-			{ key: 'period', label: 'Periodo', sortable: true },
+			{ key: "code", label: "Clave", sortable: true },
+			{ key: "name", label: "Asignatura", sortable: true },
+			{ key: "credits", label: "Cr", sortable: true, align: "right" as const },
+			{ key: "period", label: "Periodo", sortable: true },
 			{
-				key: 'grade',
-				label: 'Calificación',
+				key: "grade",
+				label: "Calificación",
 				sortable: true,
-				align: 'right' as const,
-				render: gradeCell
+				align: "right" as const,
+				render: gradeCell,
 			},
 			{
-				key: 'evaluationType',
-				label: 'Evaluación',
+				key: "evaluationType",
+				label: "Evaluación",
 				sortable: true,
-				render: evalCell
+				render: evalCell,
 			},
-			{ key: 'status', label: 'Estado', sortable: true, render: statusCell }
+			{ key: "status", label: "Estado", sortable: true, render: statusCell },
 		]}
 		<Table {columns} rows={filtered} sortable />
 	{/if}
 </section>
 
 <style>
-	.kardex {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-4);
-	}
+.kardex {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
 
-	.kardex__filters {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--space-2);
-	}
+.kardex__filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+}
 
-	.kardex__filter {
-		padding: var(--space-1) var(--space-3);
-		height: 32px;
-		font: inherit;
-		font-size: var(--text-sm);
-		font-weight: var(--weight-medium);
-		color: var(--fg-secondary);
-		background-color: var(--surface-1);
-		border: 1px solid var(--border-default);
-		border-radius: var(--radius-2);
-		cursor: pointer;
-		transition:
-			background-color var(--motion-duration-fast) var(--motion-ease-standard),
-			color var(--motion-duration-fast) var(--motion-ease-standard),
-			border-color var(--motion-duration-fast) var(--motion-ease-standard);
-	}
+.kardex__filter {
+	padding: var(--space-1) var(--space-3);
+	height: 32px;
+	font: inherit;
+	font-size: var(--text-sm);
+	font-weight: var(--weight-medium);
+	color: var(--fg-secondary);
+	background-color: var(--surface-1);
+	border: 1px solid var(--border-default);
+	border-radius: var(--radius-2);
+	cursor: pointer;
+	transition:
+		background-color var(--motion-duration-fast) var(--motion-ease-standard),
+		color var(--motion-duration-fast) var(--motion-ease-standard),
+		border-color var(--motion-duration-fast) var(--motion-ease-standard);
+}
 
-	.kardex__filter:hover {
-		background-color: var(--surface-2);
-		color: var(--fg-primary);
-	}
+.kardex__filter:hover {
+	background-color: var(--surface-2);
+	color: var(--fg-primary);
+}
 
-	.kardex__filter--active {
-		background-color: var(--brand-50);
-		color: var(--brand-700);
-		border-color: var(--brand-500);
-	}
+.kardex__filter--active {
+	background-color: var(--brand-50);
+	color: var(--brand-700);
+	border-color: var(--brand-500);
+}
 
-	.kardex__eval {
-		font-size: var(--text-sm);
-		color: var(--fg-secondary);
-	}
+.kardex__eval {
+	font-size: var(--text-sm);
+	color: var(--fg-secondary);
+}
 
-	.kardex__empty {
-		margin: 0;
-		padding: var(--space-6);
-		background-color: var(--surface-1);
-		border: 1px solid var(--border-subtle);
-		border-radius: var(--radius-3);
-		text-align: center;
-		color: var(--fg-tertiary);
-		font-style: italic;
-	}
+.kardex__empty {
+	margin: 0;
+	padding: var(--space-6);
+	background-color: var(--surface-1);
+	border: 1px solid var(--border-subtle);
+	border-radius: var(--radius-3);
+	text-align: center;
+	color: var(--fg-tertiary);
+	font-style: italic;
+}
 </style>

@@ -27,19 +27,19 @@
  * R8-7 / R9 (round 9 task 11).
  */
 
-import { and, eq, inArray } from 'drizzle-orm';
-import type { RequestHandler } from '@sveltejs/kit';
-import { env as workerEnv } from 'cloudflare:workers';
-import type { OpenSimWorkerEnv } from '../../../../cloudflare-workers';
-import { getDb } from '#lib/server/db';
+import { env as workerEnv } from "cloudflare:workers";
+import type { RequestHandler } from "@sveltejs/kit";
+import { and, eq, inArray } from "drizzle-orm";
+import { getDb } from "#lib/server/db";
 import {
 	courseGroups,
 	courseScheduleBlocks,
 	studentProfiles,
 	studentProgress,
-	subjects
-} from '#lib/server/db/schema';
-import { getCurrentPeriod } from '#lib/server/enrollment';
+	subjects,
+} from "#lib/server/db/schema";
+import { getCurrentPeriod } from "#lib/server/enrollment";
+import type { OpenSimWorkerEnv } from "../../../../cloudflare-workers";
 
 const env = workerEnv as OpenSimWorkerEnv;
 
@@ -47,15 +47,15 @@ export const POST: RequestHandler = async ({ locals }) => {
 	// Auth gate. The (protected) layout middleware only applies to
 	// pages, not /api routes, so we re-check here.
 	if (!locals.user) {
-		return new Response('Unauthorized', { status: 401 });
+		return new Response("Unauthorized", { status: 401 });
 	}
 	if (!env.DB) {
-		return new Response('Database not available', { status: 503 });
+		return new Response("Database not available", { status: 503 });
 	}
 
 	// DYNAMIC import: pdf-lib is heavy (~120 KB gz). Loaded only
 	// on demand by the student who clicks "Descargar PDF".
-	const { generateCargaPdf } = await import('#lib/server/pdf/carga');
+	const { generateCargaPdf } = await import("#lib/server/pdf/carga");
 
 	const db = getDb(env.DB);
 	const u = locals.user;
@@ -65,7 +65,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 	//    do not leak into "current").
 	const period = await getCurrentPeriod(db, u.controlNumber);
 	if (!period) {
-		return new Response('No hay periodo activo para exportar.', { status: 400 });
+		return new Response("No hay periodo activo para exportar.", { status: 400 });
 	}
 
 	// 2. Profile (PII-trim: only the four columns the PDF header
@@ -75,14 +75,14 @@ export const POST: RequestHandler = async ({ locals }) => {
 			controlNumber: studentProfiles.controlNumber,
 			fullName: studentProfiles.fullName,
 			careerCode: studentProfiles.careerCode,
-			currentSemester: studentProfiles.currentSemester
+			currentSemester: studentProfiles.currentSemester,
 		})
 		.from(studentProfiles)
 		.where(eq(studentProfiles.controlNumber, u.controlNumber))
 		.limit(1);
 	const profile = profileRows[0];
 	if (!profile) {
-		return new Response('Student profile not found', { status: 404 });
+		return new Response("Student profile not found", { status: 404 });
 	}
 
 	// 3. Enrolled subjects for the period.
@@ -91,20 +91,18 @@ export const POST: RequestHandler = async ({ locals }) => {
 		.from(studentProgress)
 		.innerJoin(
 			courseGroups,
-			and(eq(courseGroups.subjectCanonicalId, studentProgress.subjectCanonicalId))
+			and(eq(courseGroups.subjectCanonicalId, studentProgress.subjectCanonicalId)),
 		)
 		.where(
 			and(
 				eq(studentProgress.studentControlNumber, u.controlNumber),
-				eq(studentProgress.status, 'ENROLLED'),
-				eq(studentProgress.period, period)
-			)
+				eq(studentProgress.status, "ENROLLED"),
+				eq(studentProgress.period, period),
+			),
 		);
-	const enrolledCanonicalIds = Array.from(
-		new Set(enrolledRows.map((r) => r.subjectCanonicalId))
-	);
+	const enrolledCanonicalIds = Array.from(new Set(enrolledRows.map((r) => r.subjectCanonicalId)));
 	if (enrolledCanonicalIds.length === 0) {
-		return new Response('No tienes materias inscritas en este periodo.', { status: 400 });
+		return new Response("No tienes materias inscritas en este periodo.", { status: 400 });
 	}
 
 	// 4. Groups, schedule blocks, and subject catalog run in
@@ -115,11 +113,14 @@ export const POST: RequestHandler = async ({ locals }) => {
 	//    `course_schedule_blocks.groupId` is small and index-
 	//    backed.
 	const [groups, subjectRows] = await Promise.all([
-		db.select().from(courseGroups).where(inArray(courseGroups.subjectCanonicalId, enrolledCanonicalIds)),
+		db
+			.select()
+			.from(courseGroups)
+			.where(inArray(courseGroups.subjectCanonicalId, enrolledCanonicalIds)),
 		db
 			.select({ canonicalId: subjects.canonicalId, code: subjects.code, name: subjects.name })
 			.from(subjects)
-			.where(inArray(subjects.canonicalId, enrolledCanonicalIds))
+			.where(inArray(subjects.canonicalId, enrolledCanonicalIds)),
 	]);
 	const realGroupIds = Array.from(new Set(groups.map((g) => g.id)));
 	const realBlocks = realGroupIds.length
@@ -130,13 +131,15 @@ export const POST: RequestHandler = async ({ locals }) => {
 					day: courseScheduleBlocks.day,
 					startTime: courseScheduleBlocks.startTime,
 					endTime: courseScheduleBlocks.endTime,
-					classroom: courseScheduleBlocks.classroom
+					classroom: courseScheduleBlocks.classroom,
 				})
 				.from(courseScheduleBlocks)
 				.where(inArray(courseScheduleBlocks.groupId, realGroupIds))
 		: [];
 
-	const subjectMap = new Map(subjectRows.map((s) => [s.canonicalId, { code: s.code, name: s.name }]));
+	const subjectMap = new Map(
+		subjectRows.map((s) => [s.canonicalId, { code: s.code, name: s.name }]),
+	);
 
 	// 5. Generate the PDF
 	const pdfBytes = await generateCargaPdf({
@@ -144,12 +147,12 @@ export const POST: RequestHandler = async ({ locals }) => {
 			controlNumber: profile.controlNumber,
 			fullName: profile.fullName,
 			careerCode: profile.careerCode,
-			currentSemester: profile.currentSemester
+			currentSemester: profile.currentSemester,
 		},
 		period,
 		groups,
 		blocks: realBlocks,
-		subjects: subjectMap
+		subjects: subjectMap,
 	});
 
 	// Wrap the Uint8Array in a Blob so the Response constructor
@@ -158,12 +161,12 @@ export const POST: RequestHandler = async ({ locals }) => {
 	// the Workers fetch body, but the type system does not know
 	// that). The Blob carries the right Content-Type and streams
 	// without copying.
-	const pdfBlob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
+	const pdfBlob = new Blob([new Uint8Array(pdfBytes)], { type: "application/pdf" });
 	return new Response(pdfBlob, {
 		headers: {
-			'Content-Type': 'application/pdf',
-			'Content-Disposition': `attachment; filename="carga-academica-${profile.controlNumber}.pdf"`,
-			'Cache-Control': 'no-store'
-		}
+			"Content-Type": "application/pdf",
+			"Content-Disposition": `attachment; filename="carga-academica-${profile.controlNumber}.pdf"`,
+			"Cache-Control": "no-store",
+		},
 	});
 };

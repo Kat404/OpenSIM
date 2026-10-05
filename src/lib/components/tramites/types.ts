@@ -8,7 +8,7 @@
  */
 
 export interface ProcedureStatus {
-	id: 'servicio-social' | 'residencia' | 'titulacion';
+	id: "servicio-social" | "residencia" | "titulacion";
 	label: string;
 	description: string;
 	creditsRequired: number;

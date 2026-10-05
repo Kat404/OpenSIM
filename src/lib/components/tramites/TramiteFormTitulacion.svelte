@@ -7,30 +7,30 @@
   notice.
 -->
 <script lang="ts">
-	import { Input, Select, Button, Badge, Card } from '#lib/components/ui';
-	import { PROCEDURE_STATE_LABEL } from '#lib/utils/procedure-labels';
+import { Badge, Button, Card, Input, Select } from "#lib/components/ui";
+import { PROCEDURE_STATE_LABEL } from "#lib/utils/procedure-labels";
 
-	interface Props {
-		unlocked: boolean;
-	}
+interface Props {
+	unlocked: boolean;
+}
 
-	let { unlocked }: Props = $props();
+let { unlocked }: Props = $props();
 
-	const modalityOptions = [
-		{ value: 'tesis', label: 'Tesis' },
-		{ value: 'informe-residencia', label: 'Informe de Residencia' },
-		{ value: 'proyecto-investigacion', label: 'Proyecto de investigación' },
-		{ value: 'examen-conocimientos', label: 'Examen de conocimientos' },
-		{ value: 'promedio', label: 'Excelencia académica (promedio >= 9.0)' }
-	];
+const modalityOptions = [
+	{ value: "tesis", label: "Tesis" },
+	{ value: "informe-residencia", label: "Informe de Residencia" },
+	{ value: "proyecto-investigacion", label: "Proyecto de investigación" },
+	{ value: "examen-conocimientos", label: "Examen de conocimientos" },
+	{ value: "promedio", label: "Excelencia académica (promedio >= 9.0)" },
+];
 </script>
 
 <Card padding="lg">
 	{#snippet header()}
 		<div class="form__header">
 			<h3 class="form__title">Datos de Titulación</h3>
-			<Badge variant={unlocked ? 'success' : 'neutral'} size="sm" dot>
-				{PROCEDURE_STATE_LABEL[unlocked ? 'AVAILABLE' : 'LOCKED']}
+			<Badge variant={unlocked ? "success" : "neutral"} size="sm" dot>
+				{PROCEDURE_STATE_LABEL[unlocked ? "AVAILABLE" : "LOCKED"]}
 			</Badge>
 		</div>
 	{/snippet}
@@ -56,23 +56,11 @@
 			name="director"
 		/>
 
-		<Input
-			label="Sinodal presidente"
-			placeholder="DOC-001"
-			name="reviewer1"
-		/>
+		<Input label="Sinodal presidente" placeholder="DOC-001" name="reviewer1" />
 
-		<Input
-			label="Sinodal secretario"
-			placeholder="DOC-002"
-			name="reviewer2"
-		/>
+		<Input label="Sinodal secretario" placeholder="DOC-002" name="reviewer2" />
 
-		<Input
-			label="Sinodal vocal"
-			placeholder="DOC-005"
-			name="reviewer3"
-		/>
+		<Input label="Sinodal vocal" placeholder="DOC-005" name="reviewer3" />
 
 		<Button type="submit" variant="primary" size="md" disabled={!unlocked}>
 			Programar acto de titulación
@@ -81,31 +69,31 @@
 </Card>
 
 <style>
-	.form__header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: var(--space-2);
-	}
+.form__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-2);
+}
 
-	.form__title {
-		margin: 0;
-		font-size: var(--text-md);
-		font-weight: var(--weight-semibold);
-		color: var(--fg-primary);
-	}
+.form__title {
+	margin: 0;
+	font-size: var(--text-md);
+	font-weight: var(--weight-semibold);
+	color: var(--fg-primary);
+}
 
-	.form {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-4);
-		border: 0;
-		padding: 0;
-		margin: 0;
-		min-width: 0;
-	}
+.form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+	border: 0;
+	padding: 0;
+	margin: 0;
+	min-width: 0;
+}
 
-	.form:disabled {
-		opacity: 0.6;
-	}
+.form:disabled {
+	opacity: 0.6;
+}
 </style>

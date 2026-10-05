@@ -16,6 +16,6 @@
  * `as unknown as` escape hatch.
  */
 
-import { Icon } from 'lucide-svelte';
+import type { Icon } from "lucide-svelte";
 
 export type IconComponent = typeof Icon;

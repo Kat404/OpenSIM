@@ -1,6 +1,6 @@
-import { defineConfig } from 'vitest/config';
-import adapter from '@sveltejs/adapter-cloudflare';
-import { sveltekit } from '@sveltejs/kit/vite';
+import adapter from "@sveltejs/adapter-cloudflare";
+import { sveltekit } from "@sveltejs/kit/vite";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
 	plugins: [
@@ -8,23 +8,23 @@ export default defineConfig({
 			compilerOptions: {
 				// Force runes mode for the project, except for libraries. Can be removed in svelte 6.
 				runes: ({ filename }) =>
-					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
+					filename.split(/[/\\]/).includes("node_modules") ? undefined : true,
 			},
-			adapter: adapter()
-		})
+			adapter: adapter(),
+		}),
 	],
 	test: {
 		expect: { requireAssertions: true },
 		projects: [
 			{
-				extends: './vite.config.ts',
+				extends: "./vite.config.ts",
 				test: {
-					name: 'server',
-					environment: 'node',
-					include: ['src/**/*.{test,spec}.{js,ts}', 'tests/unit/**/*.{test,spec}.{js,ts}'],
-					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
-				}
-			}
-		]
-	}
+					name: "server",
+					environment: "node",
+					include: ["src/**/*.{test,spec}.{js,ts}", "tests/unit/**/*.{test,spec}.{js,ts}"],
+					exclude: ["src/**/*.svelte.{test,spec}.{js,ts}"],
+				},
+			},
+		],
+	},
 });

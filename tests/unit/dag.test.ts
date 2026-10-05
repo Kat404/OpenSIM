@@ -6,153 +6,153 @@
  * src/lib/utils/dag.ts and odd/tasks/opensim.md §7.1.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from "vitest";
+import type { Edge } from "../../src/lib/utils/dag";
 import {
 	buildAdjacency,
 	evaluateCreditThresholds,
 	getAncestors,
 	getAncestorsFromMap,
 	getDescendants,
-	getDescendantsFromMap
-} from '../../src/lib/utils/dag';
-import type { Edge } from '../../src/lib/utils/dag';
+	getDescendantsFromMap,
+} from "../../src/lib/utils/dag";
 
-describe('getAncestors', () => {
-	it('returns an empty set when the target has no parents', () => {
+describe("getAncestors", () => {
+	it("returns an empty set when the target has no parents", () => {
 		const edges: Edge[] = [
-			{ from: 'a', to: 'b' },
-			{ from: 'c', to: 'd' }
+			{ from: "a", to: "b" },
+			{ from: "c", to: "d" },
 		];
-		const result = getAncestors('a', edges);
+		const result = getAncestors("a", edges);
 		expect(result.size).toBe(0);
 	});
 
-	it('returns the direct parents of the target', () => {
+	it("returns the direct parents of the target", () => {
 		const edges: Edge[] = [
-			{ from: 'a', to: 'c' },
-			{ from: 'b', to: 'c' }
+			{ from: "a", to: "c" },
+			{ from: "b", to: "c" },
 		];
-		const result = getAncestors('c', edges);
+		const result = getAncestors("c", edges);
 		expect(result.size).toBe(2);
-		expect(result.has('a')).toBe(true);
-		expect(result.has('b')).toBe(true);
+		expect(result.has("a")).toBe(true);
+		expect(result.has("b")).toBe(true);
 	});
 
-	it('returns transitive ancestors through a chain of three or more nodes', () => {
+	it("returns transitive ancestors through a chain of three or more nodes", () => {
 		// a -> b -> c -> d (target)
 		const edges: Edge[] = [
-			{ from: 'a', to: 'b' },
-			{ from: 'b', to: 'c' },
-			{ from: 'c', to: 'd' }
+			{ from: "a", to: "b" },
+			{ from: "b", to: "c" },
+			{ from: "c", to: "d" },
 		];
-		const result = getAncestors('d', edges);
+		const result = getAncestors("d", edges);
 		expect(result.size).toBe(3);
-		expect(result.has('a')).toBe(true);
-		expect(result.has('b')).toBe(true);
-		expect(result.has('c')).toBe(true);
+		expect(result.has("a")).toBe(true);
+		expect(result.has("b")).toBe(true);
+		expect(result.has("c")).toBe(true);
 	});
 
-	it('does not include the target itself in its ancestors', () => {
-		const edges: Edge[] = [{ from: 'a', to: 'b' }];
-		const result = getAncestors('b', edges);
-		expect(result.has('b')).toBe(false);
+	it("does not include the target itself in its ancestors", () => {
+		const edges: Edge[] = [{ from: "a", to: "b" }];
+		const result = getAncestors("b", edges);
+		expect(result.has("b")).toBe(false);
 	});
 
-	it('handles a diamond (DAG) without double-counting nodes', () => {
+	it("handles a diamond (DAG) without double-counting nodes", () => {
 		// a -> b, a -> c, b -> d, c -> d
 		const edges: Edge[] = [
-			{ from: 'a', to: 'b' },
-			{ from: 'a', to: 'c' },
-			{ from: 'b', to: 'd' },
-			{ from: 'c', to: 'd' }
+			{ from: "a", to: "b" },
+			{ from: "a", to: "c" },
+			{ from: "b", to: "d" },
+			{ from: "c", to: "d" },
 		];
-		const result = getAncestors('d', edges);
+		const result = getAncestors("d", edges);
 		expect(result.size).toBe(3);
-		expect(result.has('a')).toBe(true);
-		expect(result.has('b')).toBe(true);
-		expect(result.has('c')).toBe(true);
+		expect(result.has("a")).toBe(true);
+		expect(result.has("b")).toBe(true);
+		expect(result.has("c")).toBe(true);
 	});
 });
 
-describe('getDescendants', () => {
-	it('returns an empty set when the target has no children', () => {
+describe("getDescendants", () => {
+	it("returns an empty set when the target has no children", () => {
 		const edges: Edge[] = [
-			{ from: 'a', to: 'b' },
-			{ from: 'c', to: 'd' }
+			{ from: "a", to: "b" },
+			{ from: "c", to: "d" },
 		];
-		const result = getDescendants('d', edges);
+		const result = getDescendants("d", edges);
 		expect(result.size).toBe(0);
 	});
 
-	it('returns the direct children of the target', () => {
+	it("returns the direct children of the target", () => {
 		const edges: Edge[] = [
-			{ from: 'a', to: 'b' },
-			{ from: 'a', to: 'c' }
+			{ from: "a", to: "b" },
+			{ from: "a", to: "c" },
 		];
-		const result = getDescendants('a', edges);
+		const result = getDescendants("a", edges);
 		expect(result.size).toBe(2);
-		expect(result.has('b')).toBe(true);
-		expect(result.has('c')).toBe(true);
+		expect(result.has("b")).toBe(true);
+		expect(result.has("c")).toBe(true);
 	});
 
-	it('returns transitive descendants through a chain of three or more nodes', () => {
+	it("returns transitive descendants through a chain of three or more nodes", () => {
 		// a -> b -> c -> d
 		const edges: Edge[] = [
-			{ from: 'a', to: 'b' },
-			{ from: 'b', to: 'c' },
-			{ from: 'c', to: 'd' }
+			{ from: "a", to: "b" },
+			{ from: "b", to: "c" },
+			{ from: "c", to: "d" },
 		];
-		const result = getDescendants('a', edges);
+		const result = getDescendants("a", edges);
 		expect(result.size).toBe(3);
-		expect(result.has('b')).toBe(true);
-		expect(result.has('c')).toBe(true);
-		expect(result.has('d')).toBe(true);
+		expect(result.has("b")).toBe(true);
+		expect(result.has("c")).toBe(true);
+		expect(result.has("d")).toBe(true);
 	});
 
-	it('does not include the target itself in its descendants', () => {
-		const edges: Edge[] = [{ from: 'a', to: 'b' }];
-		const result = getDescendants('a', edges);
-		expect(result.has('a')).toBe(false);
+	it("does not include the target itself in its descendants", () => {
+		const edges: Edge[] = [{ from: "a", to: "b" }];
+		const result = getDescendants("a", edges);
+		expect(result.has("a")).toBe(false);
 	});
 });
 
-describe('evaluateCreditThresholds', () => {
-	it('returns all false for 50 approved credits (below every threshold)', () => {
+describe("evaluateCreditThresholds", () => {
+	it("returns all false for 50 approved credits (below every threshold)", () => {
 		const result = evaluateCreditThresholds(50);
 		expect(result.canStartSocialService).toBe(false);
 		expect(result.canStartResidency).toBe(false);
 		expect(result.canTakeTallerInv1).toBe(false);
 	});
 
-	it('returns canTakeTallerInv1 true at exactly 130 approved credits', () => {
+	it("returns canTakeTallerInv1 true at exactly 130 approved credits", () => {
 		const result = evaluateCreditThresholds(130);
 		expect(result.canTakeTallerInv1).toBe(true);
 		expect(result.canStartSocialService).toBe(false);
 		expect(result.canStartResidency).toBe(false);
 	});
 
-	it('returns canStartSocialService true at exactly 182 approved credits', () => {
+	it("returns canStartSocialService true at exactly 182 approved credits", () => {
 		const result = evaluateCreditThresholds(182);
 		expect(result.canStartSocialService).toBe(true);
 		expect(result.canTakeTallerInv1).toBe(true);
 		expect(result.canStartResidency).toBe(false);
 	});
 
-	it('returns all true at exactly 208 approved credits (full residency threshold)', () => {
+	it("returns all true at exactly 208 approved credits (full residency threshold)", () => {
 		const result = evaluateCreditThresholds(208);
 		expect(result.canStartSocialService).toBe(true);
 		expect(result.canStartResidency).toBe(true);
 		expect(result.canTakeTallerInv1).toBe(true);
 	});
 
-	it('returns all true for approved credits above the maximum threshold', () => {
+	it("returns all true for approved credits above the maximum threshold", () => {
 		const result = evaluateCreditThresholds(260);
 		expect(result.canStartSocialService).toBe(true);
 		expect(result.canStartResidency).toBe(true);
 		expect(result.canTakeTallerInv1).toBe(true);
 	});
 
-	it('returns all false for zero approved credits', () => {
+	it("returns all false for zero approved credits", () => {
 		const result = evaluateCreditThresholds(0);
 		expect(result.canStartSocialService).toBe(false);
 		expect(result.canStartResidency).toBe(false);
@@ -160,92 +160,92 @@ describe('evaluateCreditThresholds', () => {
 	});
 });
 
-describe('buildAdjacency', () => {
-	it('returns an empty adjacency for an empty edge list', () => {
+describe("buildAdjacency", () => {
+	it("returns an empty adjacency for an empty edge list", () => {
 		const map = buildAdjacency([]);
 		expect(map.children.size).toBe(0);
 		expect(map.parents.size).toBe(0);
 	});
 
-	it('records every (from -> to) edge in the children map', () => {
+	it("records every (from -> to) edge in the children map", () => {
 		const edges: Edge[] = [
-			{ from: 'a', to: 'b' },
-			{ from: 'a', to: 'c' },
-			{ from: 'b', to: 'd' }
+			{ from: "a", to: "b" },
+			{ from: "a", to: "c" },
+			{ from: "b", to: "d" },
 		];
 		const map = buildAdjacency(edges);
-		expect(map.children.get('a')).toEqual(['b', 'c']);
-		expect(map.children.get('b')).toEqual(['d']);
-		expect(map.children.get('c')).toBeUndefined();
-		expect(map.children.get('d')).toBeUndefined();
+		expect(map.children.get("a")).toEqual(["b", "c"]);
+		expect(map.children.get("b")).toEqual(["d"]);
+		expect(map.children.get("c")).toBeUndefined();
+		expect(map.children.get("d")).toBeUndefined();
 	});
 
-	it('records every (from -> to) edge in the parents map (inverse index)', () => {
+	it("records every (from -> to) edge in the parents map (inverse index)", () => {
 		const edges: Edge[] = [
-			{ from: 'a', to: 'c' },
-			{ from: 'b', to: 'c' },
-			{ from: 'b', to: 'd' }
+			{ from: "a", to: "c" },
+			{ from: "b", to: "c" },
+			{ from: "b", to: "d" },
 		];
 		const map = buildAdjacency(edges);
-		expect(map.parents.get('c')).toEqual(['a', 'b']);
-		expect(map.parents.get('d')).toEqual(['b']);
-		expect(map.parents.get('a')).toBeUndefined();
-		expect(map.parents.get('b')).toBeUndefined();
+		expect(map.parents.get("c")).toEqual(["a", "b"]);
+		expect(map.parents.get("d")).toEqual(["b"]);
+		expect(map.parents.get("a")).toBeUndefined();
+		expect(map.parents.get("b")).toBeUndefined();
 	});
 
-	it('preserves the input order of siblings in both maps', () => {
+	it("preserves the input order of siblings in both maps", () => {
 		// The retícula connectors rely on stable child order so the
 		// Bézier list does not reshuffle between SSR and CSR.
 		const edges: Edge[] = [
-			{ from: 'a', to: 'd' },
-			{ from: 'a', to: 'b' },
-			{ from: 'a', to: 'c' }
+			{ from: "a", to: "d" },
+			{ from: "a", to: "b" },
+			{ from: "a", to: "c" },
 		];
 		const map = buildAdjacency(edges);
-		expect(map.children.get('a')).toEqual(['d', 'b', 'c']);
+		expect(map.children.get("a")).toEqual(["d", "b", "c"]);
 	});
 });
 
-describe('getAncestorsFromMap', () => {
+describe("getAncestorsFromMap", () => {
 	const edges: Edge[] = [
-		{ from: 'a', to: 'b' },
-		{ from: 'b', to: 'c' },
-		{ from: 'c', to: 'd' }
+		{ from: "a", to: "b" },
+		{ from: "b", to: "c" },
+		{ from: "c", to: "d" },
 	];
 
-	it('returns an empty set when the target has no parents', () => {
+	it("returns an empty set when the target has no parents", () => {
 		const map = buildAdjacency(edges);
-		expect(getAncestorsFromMap('a', map).size).toBe(0);
+		expect(getAncestorsFromMap("a", map).size).toBe(0);
 	});
 
-	it('returns the transitive ancestor set', () => {
+	it("returns the transitive ancestor set", () => {
 		const map = buildAdjacency(edges);
-		const result = getAncestorsFromMap('d', map);
+		const result = getAncestorsFromMap("d", map);
 		expect(result.size).toBe(3);
-		expect(result.has('a')).toBe(true);
-		expect(result.has('b')).toBe(true);
-		expect(result.has('c')).toBe(true);
+		expect(result.has("a")).toBe(true);
+		expect(result.has("b")).toBe(true);
+		expect(result.has("c")).toBe(true);
 	});
 
-	it('handles a diamond through the map without double-counting', () => {
+	it("handles a diamond through the map without double-counting", () => {
 		const map = buildAdjacency([
-			{ from: 'a', to: 'b' },
-			{ from: 'a', to: 'c' },
-			{ from: 'b', to: 'd' },
-			{ from: 'c', to: 'd' }
+			{ from: "a", to: "b" },
+			{ from: "a", to: "c" },
+			{ from: "b", to: "d" },
+			{ from: "c", to: "d" },
 		]);
-		const result = getAncestorsFromMap('d', map);
+		const result = getAncestorsFromMap("d", map);
 		expect(result.size).toBe(3);
-		expect(result.has('a')).toBe(true);
-		expect(result.has('b')).toBe(true);
-		expect(result.has('c')).toBe(true);
+		expect(result.has("a")).toBe(true);
+		expect(result.has("b")).toBe(true);
+		expect(result.has("c")).toBe(true);
 	});
 
-	it('is equivalent to getAncestors(id, edges) for the same edge set', () => {
+	it("is equivalent to getAncestors(id, edges) for the same edge set", () => {
 		const map = buildAdjacency(edges);
 		// Equivalence: every reachable ancestor via raw edges is
 		// also reachable via the pre-built map, and vice versa.
-		for (const id of ['a', 'b', 'c', 'd']) {
+		for (const id of ["a", "b", "c", "d"]) {
 			const fromMap = getAncestorsFromMap(id, map);
 			const fromEdges = getAncestors(id, edges);
 			expect([...fromMap].sort()).toEqual([...fromEdges].sort());
@@ -253,30 +253,30 @@ describe('getAncestorsFromMap', () => {
 	});
 });
 
-describe('getDescendantsFromMap', () => {
+describe("getDescendantsFromMap", () => {
 	const edges: Edge[] = [
-		{ from: 'a', to: 'b' },
-		{ from: 'b', to: 'c' },
-		{ from: 'c', to: 'd' }
+		{ from: "a", to: "b" },
+		{ from: "b", to: "c" },
+		{ from: "c", to: "d" },
 	];
 
-	it('returns an empty set when the target has no children', () => {
+	it("returns an empty set when the target has no children", () => {
 		const map = buildAdjacency(edges);
-		expect(getDescendantsFromMap('d', map).size).toBe(0);
+		expect(getDescendantsFromMap("d", map).size).toBe(0);
 	});
 
-	it('returns the transitive descendant set', () => {
+	it("returns the transitive descendant set", () => {
 		const map = buildAdjacency(edges);
-		const result = getDescendantsFromMap('a', map);
+		const result = getDescendantsFromMap("a", map);
 		expect(result.size).toBe(3);
-		expect(result.has('b')).toBe(true);
-		expect(result.has('c')).toBe(true);
-		expect(result.has('d')).toBe(true);
+		expect(result.has("b")).toBe(true);
+		expect(result.has("c")).toBe(true);
+		expect(result.has("d")).toBe(true);
 	});
 
-	it('is equivalent to getDescendants(id, edges) for the same edge set', () => {
+	it("is equivalent to getDescendants(id, edges) for the same edge set", () => {
 		const map = buildAdjacency(edges);
-		for (const id of ['a', 'b', 'c', 'd']) {
+		for (const id of ["a", "b", "c", "d"]) {
 			const fromMap = getDescendantsFromMap(id, map);
 			const fromEdges = getDescendants(id, edges);
 			expect([...fromMap].sort()).toEqual([...fromEdges].sort());
@@ -284,7 +284,7 @@ describe('getDescendantsFromMap', () => {
 	});
 });
 
-describe('cycle contract', () => {
+describe("cycle contract", () => {
 	// Documented contract (see src/lib/utils/dag.ts):
 	//   "The `traverse` recursion tracks visited ids in the result
 	//    set before recursing, so a malformed cyclic input is
@@ -297,52 +297,52 @@ describe('cycle contract', () => {
 	// visited set must contain every node the traversal can reach
 	// before it re-enters a visited one.
 
-	it('terminates on a 2-node cycle a <-> b without recursing forever', () => {
+	it("terminates on a 2-node cycle a <-> b without recursing forever", () => {
 		const edges: Edge[] = [
-			{ from: 'a', to: 'b' },
-			{ from: 'b', to: 'a' }
+			{ from: "a", to: "b" },
+			{ from: "b", to: "a" },
 		];
 		const map = buildAdjacency(edges);
-		const ancestors = getAncestorsFromMap('a', map);
-		const descendants = getDescendantsFromMap('a', map);
+		const ancestors = getAncestorsFromMap("a", map);
+		const descendants = getDescendantsFromMap("a", map);
 		// `a`'s ancestors include `b`; `a` is NOT in its own
 		// ancestors (per the documented "excluding targetId itself"
 		// contract).
-		expect(ancestors.has('b')).toBe(true);
-		expect(ancestors.has('a')).toBe(false);
-		expect(descendants.has('b')).toBe(true);
-		expect(descendants.has('a')).toBe(false);
+		expect(ancestors.has("b")).toBe(true);
+		expect(ancestors.has("a")).toBe(false);
+		expect(descendants.has("b")).toBe(true);
+		expect(descendants.has("a")).toBe(false);
 	});
 
-	it('terminates on a 3-node cycle a -> b -> c -> a', () => {
+	it("terminates on a 3-node cycle a -> b -> c -> a", () => {
 		const edges: Edge[] = [
-			{ from: 'a', to: 'b' },
-			{ from: 'b', to: 'c' },
-			{ from: 'c', to: 'a' }
+			{ from: "a", to: "b" },
+			{ from: "b", to: "c" },
+			{ from: "c", to: "a" },
 		];
 		const map = buildAdjacency(edges);
 		// From `a`, ancestors and descendants both cover the cycle
 		// without infinite recursion.
-		const ancestors = getAncestorsFromMap('a', map);
-		const descendants = getDescendantsFromMap('a', map);
-		expect(ancestors.has('b')).toBe(true);
-		expect(ancestors.has('c')).toBe(true);
-		expect(ancestors.has('a')).toBe(false);
-		expect(descendants.has('b')).toBe(true);
-		expect(descendants.has('c')).toBe(true);
-		expect(descendants.has('a')).toBe(false);
+		const ancestors = getAncestorsFromMap("a", map);
+		const descendants = getDescendantsFromMap("a", map);
+		expect(ancestors.has("b")).toBe(true);
+		expect(ancestors.has("c")).toBe(true);
+		expect(ancestors.has("a")).toBe(false);
+		expect(descendants.has("b")).toBe(true);
+		expect(descendants.has("c")).toBe(true);
+		expect(descendants.has("a")).toBe(false);
 	});
 
-	it('does not include the target itself in its own ancestor / descendant set', () => {
+	it("does not include the target itself in its own ancestor / descendant set", () => {
 		// Belt-and-suspenders: a cycle must not turn the set into
 		// {target, ...rest} even when every other node is reachable
 		// through the cycle.
 		const edges: Edge[] = [
-			{ from: 'a', to: 'b' },
-			{ from: 'b', to: 'a' }
+			{ from: "a", to: "b" },
+			{ from: "b", to: "a" },
 		];
 		const map = buildAdjacency(edges);
-		expect(getAncestorsFromMap('a', map).has('a')).toBe(false);
-		expect(getDescendantsFromMap('a', map).has('a')).toBe(false);
+		expect(getAncestorsFromMap("a", map).has("a")).toBe(false);
+		expect(getDescendantsFromMap("a", map).has("a")).toBe(false);
 	});
 });

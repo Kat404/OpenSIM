@@ -20,13 +20,13 @@
  * `just db-reset && just db-set-password` ran beforehand. The
  * `just test-e2e` recipe wires that up.
  */
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from "@playwright/test";
 
 const PORT = 5173;
 const BASE_URL = `http://localhost:${PORT}`;
 
 export default defineConfig({
-	testDir: './tests/e2e',
+	testDir: "./tests/e2e",
 	fullyParallel: false,
 	workers: 1, // D1 local is single-writer; serial avoids flake
 	// CI gets one retry to absorb transient network/timing flake; local
@@ -36,38 +36,38 @@ export default defineConfig({
 	// `retries: 0` and never produced traces.
 	retries: process.env.CI ? 1 : 0,
 	reporter: [
-		['list'],
-		['json', { outputFile: 'tests/e2e/reports/results.json' }],
-		['html', { outputFolder: 'tests/e2e/reports/html', open: 'never' }]
+		["list"],
+		["json", { outputFile: "tests/e2e/reports/results.json" }],
+		["html", { outputFolder: "tests/e2e/reports/html", open: "never" }],
 	],
 	use: {
 		baseURL: BASE_URL,
-		trace: 'retain-on-failure',
+		trace: "retain-on-failure",
 		headless: true,
 		launchOptions: {
 			// System Chromium — no Playwright bundled browser.
-			executablePath: '/usr/bin/chromium',
-			args: ['--no-sandbox', '--disable-dev-shm-usage']
-		}
+			executablePath: "/usr/bin/chromium",
+			args: ["--no-sandbox", "--disable-dev-shm-usage"],
+		},
 	},
 	projects: [
 		{
-			name: 'setup',
+			name: "setup",
 			testMatch: /.*\.setup\.ts/,
 			use: {
 				launchOptions: {
-					executablePath: '/usr/bin/chromium',
-					args: ['--no-sandbox', '--disable-dev-shm-usage']
-				}
-			}
+					executablePath: "/usr/bin/chromium",
+					args: ["--no-sandbox", "--disable-dev-shm-usage"],
+				},
+			},
 		},
 		{
-			name: 'chromium',
+			name: "chromium",
 			use: {
-				...devices['Desktop Chrome'],
-				colorScheme: 'light'
+				...devices["Desktop Chrome"],
+				colorScheme: "light",
 			},
-			dependencies: ['setup']
+			dependencies: ["setup"],
 		},
 		{
 			// mcode round-7 N16: the previous sweep only ran in light.
@@ -75,12 +75,12 @@ export default defineConfig({
 			// #67e8f9 in dark) and the previous "10/10 verde" was
 			// lucky. Re-run every spec against a dark color scheme to
 			// catch the cases that only fail in dark.
-			name: 'chromium-dark',
+			name: "chromium-dark",
 			use: {
-				...devices['Desktop Chrome'],
-				colorScheme: 'dark'
+				...devices["Desktop Chrome"],
+				colorScheme: "dark",
 			},
-			dependencies: ['setup']
+			dependencies: ["setup"],
 		},
 		{
 			// Audit R8-4 + R9 NUEVO-1: `chromium-dark` only sets the
@@ -91,20 +91,20 @@ export default defineConfig({
 			// on top of a LIGHT OS so the script alone sets the theme.
 			// Without it, every token added only to the
 			// `[data-theme='dark']` block is invisible to CI.
-			name: 'chromium-data-theme-dark',
+			name: "chromium-data-theme-dark",
 			use: {
-				...devices['Desktop Chrome'],
-				colorScheme: 'light'
+				...devices["Desktop Chrome"],
+				colorScheme: "light",
 			},
-			dependencies: ['setup']
-		}
+			dependencies: ["setup"],
+		},
 	],
 	webServer: {
-		command: 'pnpm dev',
+		command: "pnpm dev",
 		url: BASE_URL,
 		reuseExistingServer: !process.env.CI,
 		timeout: 120_000,
-		stdout: 'pipe',
-		stderr: 'pipe'
-	}
+		stdout: "pipe",
+		stderr: "pipe",
+	},
 });

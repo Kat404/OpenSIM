@@ -13,8 +13,8 @@
  */
 
 export const PROCEDURE_STATE_LABEL = {
-	AVAILABLE: 'Disponible',
-	LOCKED: 'Bloqueado'
+	AVAILABLE: "Disponible",
+	LOCKED: "Bloqueado",
 } as const;
 
 export type ProcedureState = keyof typeof PROCEDURE_STATE_LABEL;

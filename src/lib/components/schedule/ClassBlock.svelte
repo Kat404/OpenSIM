@@ -9,33 +9,33 @@
   renders it.
 -->
 <script lang="ts">
-	export interface ScheduleBlock {
-		startTime: string;
-		endTime: string;
-		classroom: string;
-	}
+export interface ScheduleBlock {
+	startTime: string;
+	endTime: string;
+	classroom: string;
+}
 
-	export interface ScheduleSubject {
-		code: string;
-		name: string;
-		canonicalId: string;
-	}
+export interface ScheduleSubject {
+	code: string;
+	name: string;
+	canonicalId: string;
+}
 
-	interface Props {
-		subject: ScheduleSubject;
-		block: ScheduleBlock;
-		colorHsl: string;
-		topPx: number;
-		heightPx: number;
-	}
+interface Props {
+	subject: ScheduleSubject;
+	block: ScheduleBlock;
+	colorHsl: string;
+	topPx: number;
+	heightPx: number;
+}
 
-	let { subject, block, colorHsl, topPx, heightPx }: Props = $props();
+let { subject, block, colorHsl, topPx, heightPx }: Props = $props();
 
-	const subtitle = $derived(
-		heightPx >= 60
-			? `${block.startTime} – ${block.endTime} · ${block.classroom}`
-			: `${block.startTime} – ${block.endTime}`
-	);
+const subtitle = $derived(
+	heightPx >= 60
+		? `${block.startTime} – ${block.endTime} · ${block.classroom}`
+		: `${block.startTime} – ${block.endTime}`,
+);
 </script>
 
 <div
@@ -56,61 +56,61 @@
 </div>
 
 <style>
-	.class-block {
-		position: absolute;
-		left: 4px;
-		right: 4px;
-		border-radius: var(--radius-2);
-		padding: var(--space-1) var(--space-2);
-		font-family: var(--font-sans);
-		color: var(--fg-primary);
-		overflow: hidden;
-		border: 1px solid color-mix(in srgb, var(--fg-primary) 8%, transparent);
-		transition:
-			transform var(--motion-duration-fast) var(--motion-ease-standard),
-			box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
-	}
+.class-block {
+	position: absolute;
+	left: 4px;
+	right: 4px;
+	border-radius: var(--radius-2);
+	padding: var(--space-1) var(--space-2);
+	font-family: var(--font-sans);
+	color: var(--fg-primary);
+	overflow: hidden;
+	border: 1px solid color-mix(in srgb, var(--fg-primary) 8%, transparent);
+	transition:
+		transform var(--motion-duration-fast) var(--motion-ease-standard),
+		box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+}
 
-	.class-block:hover {
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-2);
-		z-index: 1;
-	}
+.class-block:hover {
+	transform: translateY(-1px);
+	box-shadow: var(--shadow-2);
+	z-index: 1;
+}
 
-	.class-block__inner {
-		display: flex;
-		flex-direction: column;
-		gap: 1px;
-		height: 100%;
-		min-height: 0;
-	}
+.class-block__inner {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	height: 100%;
+	min-height: 0;
+}
 
-	.class-block__code {
-		font-family: var(--font-mono);
-		font-size: var(--text-xs);
-		font-weight: var(--weight-semibold);
-		color: var(--fg-primary);
-		line-height: 1.2;
-	}
+.class-block__code {
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	font-weight: var(--weight-semibold);
+	color: var(--fg-primary);
+	line-height: 1.2;
+}
 
-	.class-block__name {
-		font-size: var(--text-sm);
-		font-weight: var(--weight-medium);
-		color: var(--fg-primary);
-		line-height: 1.2;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		line-clamp: 2;
-		-webkit-box-orient: vertical;
-	}
+.class-block__name {
+	font-size: var(--text-sm);
+	font-weight: var(--weight-medium);
+	color: var(--fg-primary);
+	line-height: 1.2;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
 
-	.class-block__meta {
-		font-size: var(--text-xs);
-		font-family: var(--font-mono);
-		color: var(--fg-secondary);
-		font-variant-numeric: tabular-nums;
-		margin-top: auto;
-	}
+.class-block__meta {
+	font-size: var(--text-xs);
+	font-family: var(--font-mono);
+	color: var(--fg-secondary);
+	font-variant-numeric: tabular-nums;
+	margin-top: auto;
+}
 </style>

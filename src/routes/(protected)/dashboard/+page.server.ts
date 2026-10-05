@@ -21,19 +21,21 @@
  * audit H2 + M1 (Round 4).
  */
 
-import { eq, inArray } from 'drizzle-orm';
-import { env as workerEnv } from 'cloudflare:workers';
-import type { OpenSimWorkerEnv } from '../../../cloudflare-workers';
-import type { PageServerLoad } from './$types';
-import { getDb } from '#lib/server/db';
-import { studentProfiles, subjects } from '#lib/server/db/schema';
-import { getCurrentEnrollment, getCurrentPeriod } from '#lib/server/enrollment';
-import { getTodayDayLetter } from '#lib/utils/time';
+import { env as workerEnv } from "cloudflare:workers";
+import { redirect } from "@sveltejs/kit";
+import { eq, inArray } from "drizzle-orm";
+import { getDb } from "#lib/server/db";
+import { studentProfiles, subjects } from "#lib/server/db/schema";
+import { getCurrentEnrollment, getCurrentPeriod } from "#lib/server/enrollment";
+import { getTodayDayLetter } from "#lib/utils/time";
+import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
+import type { PageServerLoad } from "./$types";
 
 const env = workerEnv as OpenSimWorkerEnv;
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const u = locals.user!;
+	const u = locals.user;
+	if (!u) throw redirect(302, "/login");
 	const controlNumber = u.controlNumber;
 	// Morelia is UTC-6 with no DST; the helper pins the day-letter
 	// computation to America/Mexico_City so a Friday-evening query
@@ -48,7 +50,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				arithmeticAverage: u.arithmeticAverage,
 				approvedCredits: u.approvedCredits,
 				totalCredits: u.approvedCredits + u.remainingCredits,
-				advancePercentage: u.advancePercentage
+				advancePercentage: u.advancePercentage,
 			},
 			todayClasses: [] as {
 				code: string;
@@ -59,8 +61,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 				classroom: string;
 			}[],
 			hasEnrollment: false,
-			dayLabel: 'hoy',
-			period: null
+			dayLabel: "hoy",
+			period: null,
 		};
 	}
 
@@ -82,12 +84,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 				approvedCredits: studentProfiles.approvedCredits,
 				remainingCredits: studentProfiles.remainingCredits,
 				completedCredits: studentProfiles.completedCredits,
-				advancePercentage: studentProfiles.advancePercentage
+				advancePercentage: studentProfiles.advancePercentage,
 			})
 			.from(studentProfiles)
 			.where(eq(studentProfiles.controlNumber, controlNumber))
 			.limit(1),
-		getCurrentEnrollment(db, controlNumber, currentPeriod ?? undefined)
+		getCurrentEnrollment(db, controlNumber, currentPeriod ?? undefined),
 	]);
 
 	const profile = profileRows[0] ?? {
@@ -98,7 +100,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		approvedCredits: u.approvedCredits,
 		remainingCredits: u.remainingCredits,
 		completedCredits: u.completedCredits,
-		advancePercentage: u.advancePercentage
+		advancePercentage: u.advancePercentage,
 	};
 
 	// Today's classes: filter the enrollment's schedule blocks to the
@@ -135,7 +137,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				subjectCanonicalId: canonical,
 				startTime: b.startTime,
 				endTime: b.endTime,
-				classroom: b.classroom
+				classroom: b.classroom,
 			});
 		}
 		todayClasses.sort((a, b) => a.startTime.localeCompare(b.startTime));
@@ -148,14 +150,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 			arithmeticAverage: profile.arithmeticAverage,
 			approvedCredits: profile.approvedCredits,
 			totalCredits: profile.approvedCredits + profile.remainingCredits,
-			advancePercentage: profile.advancePercentage
+			advancePercentage: profile.advancePercentage,
 		},
 		todayClasses,
 		// `hasEnrollment` reflects active enrollment only (status =
 		// 'ENROLLED'); see `getCurrentEnrollment` for the single
 		// source of truth.
 		hasEnrollment: enrollment.groups.length > 0,
-		dayLabel: 'hoy',
-		period: enrollment.period
+		dayLabel: "hoy",
+		period: enrollment.period,
 	};
 };

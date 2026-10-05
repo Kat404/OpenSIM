@@ -1,55 +1,55 @@
 <script lang="ts">
-	import {
-		Avatar,
-		Badge,
-		Button,
-		Card,
-		Dropdown,
-		EmptyState,
-		Input,
-		Kbd,
-		Modal,
-		ProgressBar,
-		Select,
-		Skeleton,
-		Stepper,
-		Tabs,
-		Tooltip,
-		pushToast
-	} from '#lib/components/ui';
-	import { Search, Save, Trash2 } from 'lucide-svelte';
+import { Save, Search, Trash2 } from "lucide-svelte";
+import {
+	Avatar,
+	Badge,
+	Button,
+	Card,
+	Dropdown,
+	EmptyState,
+	Input,
+	Kbd,
+	Modal,
+	ProgressBar,
+	pushToast,
+	Select,
+	Skeleton,
+	Stepper,
+	Tabs,
+	Tooltip,
+} from "#lib/components/ui";
 
-	const tabItems = [
-		{ id: 'overview', label: 'Resumen' },
-		{ id: 'kardex', label: 'Kardex' },
-		{ id: 'reticula', label: 'Retícula' }
-	];
+const tabItems = [
+	{ id: "overview", label: "Resumen" },
+	{ id: "kardex", label: "Kardex" },
+	{ id: "reticula", label: "Retícula" },
+];
 
-	const stepperSteps = [
-		{ id: 's1', label: 'Datos personales', description: 'Verifica tu información' },
-		{ id: 's2', label: 'Selección de materias' },
-		{ id: 's3', label: 'Confirmación' }
-	];
+const stepperSteps = [
+	{ id: "s1", label: "Datos personales", description: "Verifica tu información" },
+	{ id: "s2", label: "Selección de materias" },
+	{ id: "s3", label: "Confirmación" },
+];
 
-	const selectOptions = [
-		{ value: '1', label: 'Primero' },
-		{ value: '2', label: 'Segundo' },
-		{ value: '3', label: 'Tercero' }
-	];
+const selectOptions = [
+	{ value: "1", label: "Primero" },
+	{ value: "2", label: "Segundo" },
+	{ value: "3", label: "Tercero" },
+];
 
-	const dropdownItems = [
-		{ id: 'edit', label: 'Editar' },
-		{ id: 'export', label: 'Exportar PDF' },
-		{ id: 'delete', label: 'Eliminar', destructive: true, disabled: false }
-	];
+const dropdownItems = [
+	{ id: "edit", label: "Editar" },
+	{ id: "export", label: "Exportar PDF" },
+	{ id: "delete", label: "Eliminar", destructive: true, disabled: false },
+];
 
-	let modalOpen = $state(false);
-	let drawerOpen = false;
-	let tabValue = $state('overview');
+let modalOpen = $state(false);
+let _drawerOpen = false;
+let tabValue = $state("overview");
 
-	function notify() {
-		pushToast({ variant: 'success', title: 'Listo', description: 'Cambios guardados' });
-	}
+function notify() {
+	pushToast({ variant: "success", title: "Listo", description: "Cambios guardados" });
+}
 </script>
 
 <main class="page">
@@ -104,10 +104,14 @@
 		<Stepper steps={stepperSteps} current={1} />
 		<Tabs tabs={tabItems} bind:value={tabValue} />
 		<div class="row">
-			<Dropdown label="Acciones" items={dropdownItems} onSelect={(id: string) => notify()} />
+			<Dropdown label="Acciones" items={dropdownItems} onSelect={(_id: string) => notify()} />
 			<Button onclick={() => (modalOpen = true)}>
-				{#snippet startIcon()}<Search size={16} strokeWidth={1.75} />{/snippet}
-				{#snippet children()}Abrir modal{/snippet}
+				{#snippet startIcon()}
+					<Search size={16} strokeWidth={1.75} />
+				{/snippet}
+				{#snippet children()}
+					Abrir modal
+				{/snippet}
 			</Button>
 		</div>
 	</section>
@@ -135,14 +139,22 @@
 		<div class="row">
 			<Tooltip content="Guardar cambios">
 				<Button>
-					{#snippet startIcon()}<Save size={16} strokeWidth={1.75} />{/snippet}
-					{#snippet children()}Guardar{/snippet}
+					{#snippet startIcon()}
+						<Save size={16} strokeWidth={1.75} />
+					{/snippet}
+					{#snippet children()}
+						Guardar
+					{/snippet}
 				</Button>
 			</Tooltip>
 			<Tooltip content="Eliminar elemento" placement="right">
 				<Button variant="danger">
-					{#snippet startIcon()}<Trash2 size={16} strokeWidth={1.75} />{/snippet}
-					{#snippet children()}Eliminar{/snippet}
+					{#snippet startIcon()}
+						<Trash2 size={16} strokeWidth={1.75} />
+					{/snippet}
+					{#snippet children()}
+						Eliminar
+					{/snippet}
 				</Button>
 			</Tooltip>
 			<Kbd size="md">Ctrl</Kbd>
@@ -151,7 +163,11 @@
 		</div>
 	</section>
 
-	<Modal bind:open={modalOpen} title="Confirmar reinscripción" description="Revisa tu selección antes de continuar.">
+	<Modal
+		bind:open={modalOpen}
+		title="Confirmar reinscripción"
+		description="Revisa tu selección antes de continuar."
+	>
 		<p>Esta acción registra tus materias para el período actual.</p>
 		{#snippet footer()}
 			<Button variant="ghost" onclick={() => (modalOpen = false)}>Cancelar</Button>
@@ -161,46 +177,46 @@
 </main>
 
 <style>
-	.page {
-		max-width: 960px;
-		margin: 0 auto;
-		padding: var(--space-8) var(--space-5);
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-8);
-		font-family: var(--font-sans);
-	}
+.page {
+	max-width: 960px;
+	margin: 0 auto;
+	padding: var(--space-8) var(--space-5);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-8);
+	font-family: var(--font-sans);
+}
 
-	.page__header {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-2);
-	}
+.page__header {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+}
 
-	.page__sub {
-		margin: 0;
-		color: var(--fg-tertiary);
-		font-size: var(--text-sm);
-	}
+.page__sub {
+	margin: 0;
+	color: var(--fg-tertiary);
+	font-size: var(--text-sm);
+}
 
-	.page__section {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-3);
-		padding-bottom: var(--space-6);
-		border-bottom: 1px solid var(--border-subtle);
-	}
+.page__section {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	padding-bottom: var(--space-6);
+	border-bottom: 1px solid var(--border-subtle);
+}
 
-	.row {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: var(--space-3);
-	}
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-3);
+}
 
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-		gap: var(--space-4);
-	}
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: var(--space-4);
+}
 </style>

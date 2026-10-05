@@ -13,32 +13,32 @@
   this layout never carries more than the session-trimmed user.
 -->
 <script lang="ts">
-	import type { LayoutData } from './$types';
-	import LayoutShell from '#lib/components/layout/LayoutShell.svelte';
-	import type { PaletteRoute, PaletteSubject } from '#lib/components/layout/CmdKPalette.svelte';
+import type { PaletteRoute } from "#lib/components/layout/CmdKPalette.svelte";
+import LayoutShell from "#lib/components/layout/LayoutShell.svelte";
+import type { LayoutData } from "./$types";
 
-	let { data, children }: { data: LayoutData; children: import('svelte').Snippet } = $props();
+let { data, children }: { data: LayoutData; children: import("svelte").Snippet } = $props();
 
-	const paletteRoutes: PaletteRoute[] = [
-		{ label: 'Panel', href: '/dashboard', group: 'Navegación' },
-		{ label: 'Horario', href: '/horario', group: 'Navegación' },
-		{ label: 'Retícula', href: '/reticula', group: 'Navegación' },
-		{ label: 'Kardex', href: '/academico/kardex', group: 'Navegación' }
-	];
+const paletteRoutes: PaletteRoute[] = [
+	{ label: "Panel", href: "/dashboard", group: "Navegación" },
+	{ label: "Horario", href: "/horario", group: "Navegación" },
+	{ label: "Retícula", href: "/reticula", group: "Navegación" },
+	{ label: "Kardex", href: "/academico/kardex", group: "Navegación" },
+];
 </script>
 
 {#if data.user}
 	{@const subjects = (data.paletteSubjects ?? []).map((s) => ({
 		label: `${s.code} — ${s.name}`,
 		canonicalId: s.canonicalId,
-		group: 'Asignatura'
+		group: "Asignatura",
 	}))}
 	<LayoutShell
 		user={{
 			controlNumber: data.user.controlNumber,
-			fullName: data.user.fullName
+			fullName: data.user.fullName,
 		}}
-		paletteRoutes={paletteRoutes}
+		{paletteRoutes}
 		paletteSubjects={subjects}
 	>
 		{@render children()}

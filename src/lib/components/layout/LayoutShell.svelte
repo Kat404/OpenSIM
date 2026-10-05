@@ -11,50 +11,50 @@
   sidebar and a future top-bar hamburger stay in sync.
 -->
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import LayoutSidebar from './LayoutSidebar.svelte';
-	import LayoutHeader from './LayoutHeader.svelte';
-	import CmdKPalette, { type PaletteRoute, type PaletteSubject } from './CmdKPalette.svelte';
+import type { Snippet } from "svelte";
+import CmdKPalette, { type PaletteRoute, type PaletteSubject } from "./CmdKPalette.svelte";
+import LayoutHeader from "./LayoutHeader.svelte";
+import LayoutSidebar from "./LayoutSidebar.svelte";
 
-	interface UserSummary {
-		controlNumber: string;
-		fullName: string;
-	}
+interface UserSummary {
+	controlNumber: string;
+	fullName: string;
+}
 
-	interface Props {
-		user: UserSummary;
-		paletteRoutes: PaletteRoute[];
-		paletteSubjects: PaletteSubject[];
-		children: Snippet;
-	}
+interface Props {
+	user: UserSummary;
+	paletteRoutes: PaletteRoute[];
+	paletteSubjects: PaletteSubject[];
+	children: Snippet;
+}
 
-	let { user, paletteRoutes, paletteSubjects, children }: Props = $props();
+let { user, paletteRoutes, paletteSubjects, children }: Props = $props();
 
-	// Default expanded on >= 1024px (audit axe-core, Round 7): when
-	// collapsed on first paint the sidebar nav links have no visible
-	// label and the lucide icons are aria-hidden, so screen readers
-	// (and axe-core) see them as focusable-without-name. Starting
-	// expanded means the SSR/initial-hydration state is correct for
-	// the common case; the matchMedia callback collapses on narrow
-	// viewports, and the sidebar itself adds aria-label on its links
-	// when collapsed so the focusable-name is preserved.
-	let collapsed = $state(false);
-	let paletteOpen = $state(false);
+// Default expanded on >= 1024px (audit axe-core, Round 7): when
+// collapsed on first paint the sidebar nav links have no visible
+// label and the lucide icons are aria-hidden, so screen readers
+// (and axe-core) see them as focusable-without-name. Starting
+// expanded means the SSR/initial-hydration state is correct for
+// the common case; the matchMedia callback collapses on narrow
+// viewports, and the sidebar itself adds aria-label on its links
+// when collapsed so the focusable-name is preserved.
+let collapsed = $state(false);
+let paletteOpen = $state(false);
 
-	$effect(() => {
-		if (typeof window === 'undefined') return;
-		const mql = window.matchMedia('(min-width: 1024px)');
-		collapsed = !mql.matches;
-		const onChange = (e: MediaQueryListEvent) => {
-			collapsed = !e.matches;
-		};
-		mql.addEventListener('change', onChange);
-		return () => mql.removeEventListener('change', onChange);
-	});
+$effect(() => {
+	if (typeof window === "undefined") return;
+	const mql = window.matchMedia("(min-width: 1024px)");
+	collapsed = !mql.matches;
+	const onChange = (e: MediaQueryListEvent) => {
+		collapsed = !e.matches;
+	};
+	mql.addEventListener("change", onChange);
+	return () => mql.removeEventListener("change", onChange);
+});
 
-	function toggleSidebar() {
-		collapsed = !collapsed;
-	}
+function toggleSidebar() {
+	collapsed = !collapsed;
+}
 </script>
 
 <div class="shell">
@@ -76,32 +76,32 @@
 </div>
 
 <style>
-	.shell {
-		display: flex;
-		min-height: 100dvh;
-		background-color: var(--surface-0);
-		font-family: var(--font-sans);
-		color: var(--fg-secondary);
-	}
+.shell {
+	display: flex;
+	min-height: 100dvh;
+	background-color: var(--surface-0);
+	font-family: var(--font-sans);
+	color: var(--fg-secondary);
+}
 
-	.shell__body {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		min-width: 0;
-	}
+.shell__body {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
 
+.shell__main {
+	flex: 1;
+	padding: var(--space-6) var(--space-5);
+	max-width: 1280px;
+	width: 100%;
+	margin: 0 auto;
+}
+
+@media (max-width: 720px) {
 	.shell__main {
-		flex: 1;
-		padding: var(--space-6) var(--space-5);
-		max-width: 1280px;
-		width: 100%;
-		margin: 0 auto;
+		padding: var(--space-4) var(--space-3);
 	}
-
-	@media (max-width: 720px) {
-		.shell__main {
-			padding: var(--space-4) var(--space-3);
-		}
-	}
+}
 </style>

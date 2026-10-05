@@ -32,21 +32,21 @@
  * See: odd/tasks/opensim.md Tarea 4.1.
  */
 
-import { and, eq, inArray } from 'drizzle-orm';
-import { fail, redirect, type Actions } from '@sveltejs/kit';
-import { env as workerEnv } from 'cloudflare:workers';
-import type { OpenSimWorkerEnv } from '../../../cloudflare-workers';
-import type { PageServerLoad } from './$types';
-import { getDb } from '#lib/server/db';
+import { env as workerEnv } from "cloudflare:workers";
+import { type Actions, fail, redirect } from "@sveltejs/kit";
+import { and, eq, inArray } from "drizzle-orm";
+import type { OfferBlock, OfferGroup } from "#lib/components/simulador/types";
+import { getDb } from "#lib/server/db";
 import {
 	courseGroups,
 	courseScheduleBlocks,
 	studentProgress,
-	subjects
-} from '#lib/server/db/schema';
-import { findConflicts } from '#lib/utils/schedule-conflict';
-import { getCurrentPeriod } from '#lib/server/enrollment';
-import type { OfferBlock, OfferGroup } from '#lib/components/simulador/types';
+	subjects,
+} from "#lib/server/db/schema";
+import { getCurrentPeriod } from "#lib/server/enrollment";
+import { findConflicts } from "#lib/utils/schedule-conflict";
+import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
+import type { PageServerLoad } from "./$types";
 
 const env = workerEnv as OpenSimWorkerEnv;
 
@@ -64,7 +64,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			groups: [] as OfferGroup[],
 			blocks: [] as OfferBlock[],
 			enrolledCanonicalIds: [] as string[],
-			enrolledBlocks: [] as OfferBlock[]
+			enrolledBlocks: [] as OfferBlock[],
 		};
 	}
 	if (!env.DB) {
@@ -73,7 +73,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			groups: [] as OfferGroup[],
 			blocks: [] as OfferBlock[],
 			enrolledCanonicalIds: [] as string[],
-			enrolledBlocks: [] as OfferBlock[]
+			enrolledBlocks: [] as OfferBlock[],
 		};
 	}
 	const db = getDb(env.DB);
@@ -86,7 +86,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			groups: [] as OfferGroup[],
 			blocks: [] as OfferBlock[],
 			enrolledCanonicalIds: [] as string[],
-			enrolledBlocks: [] as OfferBlock[]
+			enrolledBlocks: [] as OfferBlock[],
 		};
 	}
 
@@ -98,9 +98,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.where(
 			and(
 				eq(studentProgress.studentControlNumber, u.controlNumber),
-				eq(studentProgress.status, 'ENROLLED'),
-				eq(studentProgress.period, period)
-			)
+				eq(studentProgress.status, "ENROLLED"),
+				eq(studentProgress.period, period),
+			),
 		);
 	const enrolledCanonicalIds = enrolledRows.map((r) => r.subjectCanonicalId);
 
@@ -118,14 +118,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 			area: subjects.area,
 			credits: subjects.credits,
 			hasLab: courseGroups.hasLab,
-			teacherName: courseGroups.teacherName
+			teacherName: courseGroups.teacherName,
 		})
 		.from(courseGroups)
 		.innerJoin(subjects, eq(subjects.canonicalId, courseGroups.subjectCanonicalId));
 
 	const groups: OfferGroup[] = offerRows.map((r) => ({
 		...r,
-		alreadyEnrolled: enrolledCanonicalIds.includes(r.subjectCanonicalId)
+		alreadyEnrolled: enrolledCanonicalIds.includes(r.subjectCanonicalId),
 	}));
 
 	// 3. Schedule blocks: ALL offer blocks + the student's enrolled
@@ -143,14 +143,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 						day: courseScheduleBlocks.day,
 						startTime: courseScheduleBlocks.startTime,
 						endTime: courseScheduleBlocks.endTime,
-						classroom: courseScheduleBlocks.classroom
+						classroom: courseScheduleBlocks.classroom,
 					})
 					.from(courseScheduleBlocks)
 					.where(inArray(courseScheduleBlocks.groupId, allGroupIds));
 
-	const enrolledGroupIds = new Set(
-		groups.filter((g) => g.alreadyEnrolled).map((g) => g.groupId)
-	);
+	const enrolledGroupIds = new Set(groups.filter((g) => g.alreadyEnrolled).map((g) => g.groupId));
 	const blocks: OfferBlock[] = blockRows;
 	const enrolledBlocks: OfferBlock[] = blockRows.filter((b) => enrolledGroupIds.has(b.groupId));
 
@@ -178,35 +176,35 @@ export const actions: Actions = {
 		// and TypeError on `u.controlNumber` (audit R8-7 / P0-3).
 		const u = locals.user;
 		if (!u) {
-			return fail(401, { error: 'No autenticado. Inicia sesión.' });
+			return fail(401, { error: "No autenticado. Inicia sesión." });
 		}
 		if (!env.DB) {
-			return fail(503, { error: 'Servicio no disponible' });
+			return fail(503, { error: "Servicio no disponible" });
 		}
 		const form = await request.formData();
-		const raw = form.getAll('groupId').map((v) => String(v));
+		const raw = form.getAll("groupId").map((v) => String(v));
 		const unique = Array.from(new Set(raw)).filter((s) => s.length > 0);
 
 		if (unique.length === 0) {
-			return fail(400, { error: 'Selecciona al menos un grupo para inscribir.' });
+			return fail(400, { error: "Selecciona al menos un grupo para inscribir." });
 		}
 
 		const db = getDb(env.DB);
 		const period = await getCurrentPeriod(db, u.controlNumber);
 		if (!period) {
-			return fail(400, { error: 'No hay un periodo activo para inscribir.' });
+			return fail(400, { error: "No hay un periodo activo para inscribir." });
 		}
 
 		// Look up the candidate groups + their subjects.
 		const candidates = await db
 			.select({
 				groupId: courseGroups.id,
-				subjectCanonicalId: courseGroups.subjectCanonicalId
+				subjectCanonicalId: courseGroups.subjectCanonicalId,
 			})
 			.from(courseGroups)
 			.where(inArray(courseGroups.id, unique));
 		if (candidates.length !== unique.length) {
-			return fail(400, { error: 'Uno o más grupos seleccionados no existen.' });
+			return fail(400, { error: "Uno o más grupos seleccionados no existen." });
 		}
 
 		// Reject groups whose subject the student is already enrolled
@@ -218,15 +216,15 @@ export const actions: Actions = {
 			.where(
 				and(
 					eq(studentProgress.studentControlNumber, u.controlNumber),
-					eq(studentProgress.status, 'ENROLLED'),
-					eq(studentProgress.period, period)
-				)
+					eq(studentProgress.status, "ENROLLED"),
+					eq(studentProgress.period, period),
+				),
 			);
 		const taken = new Set(alreadyEnrolled.map((r) => r.subjectCanonicalId));
 		for (const c of candidates) {
 			if (taken.has(c.subjectCanonicalId)) {
 				return fail(409, {
-					error: 'Una materia seleccionada ya está inscrita este periodo.'
+					error: "Una materia seleccionada ya está inscrita este periodo.",
 				});
 			}
 		}
@@ -240,7 +238,7 @@ export const actions: Actions = {
 				groupId: courseScheduleBlocks.groupId,
 				day: courseScheduleBlocks.day,
 				startTime: courseScheduleBlocks.startTime,
-				endTime: courseScheduleBlocks.endTime
+				endTime: courseScheduleBlocks.endTime,
 			})
 			.from(courseScheduleBlocks)
 			.where(inArray(courseScheduleBlocks.groupId, unique));
@@ -253,9 +251,9 @@ export const actions: Actions = {
 					and(
 						eq(studentProgress.subjectCanonicalId, courseGroups.subjectCanonicalId),
 						eq(studentProgress.studentControlNumber, u.controlNumber),
-						eq(studentProgress.status, 'ENROLLED'),
-						eq(studentProgress.period, period)
-					)
+						eq(studentProgress.status, "ENROLLED"),
+						eq(studentProgress.period, period),
+					),
 				)
 		).map((r) => r.id);
 		const enrolledBlocks = enrolledGroupIds.length
@@ -265,7 +263,7 @@ export const actions: Actions = {
 						groupId: courseScheduleBlocks.groupId,
 						day: courseScheduleBlocks.day,
 						startTime: courseScheduleBlocks.startTime,
-						endTime: courseScheduleBlocks.endTime
+						endTime: courseScheduleBlocks.endTime,
 					})
 					.from(courseScheduleBlocks)
 					.where(inArray(courseScheduleBlocks.groupId, enrolledGroupIds))
@@ -273,7 +271,7 @@ export const actions: Actions = {
 		const conflicts = findConflicts(candidateBlocks, enrolledBlocks);
 		if (conflicts.size > 0) {
 			return fail(409, {
-				error: 'Conflicto de horario con materias ya inscritas.'
+				error: "Conflicto de horario con materias ya inscritas.",
 			});
 		}
 
@@ -287,13 +285,13 @@ export const actions: Actions = {
 			candidates.map((c) => ({
 				studentControlNumber: u.controlNumber,
 				subjectCanonicalId: c.subjectCanonicalId,
-				status: 'ENROLLED' as const,
+				status: "ENROLLED" as const,
 				grade: null,
 				evaluationType: null,
-				period
-			}))
+				period,
+			})),
 		);
 
-		throw redirect(303, '/dashboard?enrolled=1');
-	}
+		throw redirect(303, "/dashboard?enrolled=1");
+	},
 };

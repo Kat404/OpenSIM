@@ -40,11 +40,11 @@
  *     `X-Frame-Options: DENY`; both are set for legacy-client coverage.
  */
 const SECURITY_HEADERS: Readonly<Record<string, string>> = Object.freeze({
-	'X-Frame-Options': 'DENY',
-	'X-Content-Type-Options': 'nosniff',
-	'Referrer-Policy': 'strict-origin-when-cross-origin',
-	'Permissions-Policy': 'interest-cohort=(), document-domain=()',
-	'Content-Security-Policy': [
+	"X-Frame-Options": "DENY",
+	"X-Content-Type-Options": "nosniff",
+	"Referrer-Policy": "strict-origin-when-cross-origin",
+	"Permissions-Policy": "interest-cohort=(), document-domain=()",
+	"Content-Security-Policy": [
 		"default-src 'self'",
 		// Inline scripts: bootstrap (head) is hashed; body hydration is
 		// SvelteKit's per-build inline start() shim. Replace 'unsafe-inline'
@@ -58,25 +58,21 @@ const SECURITY_HEADERS: Readonly<Record<string, string>> = Object.freeze({
 		"connect-src 'self'",
 		"frame-ancestors 'none'",
 		"base-uri 'self'",
-		"form-action 'self'"
-	].join('; '),
-	'Cross-Origin-Opener-Policy': 'same-site',
-	'Cross-Origin-Resource-Policy': 'same-site'
+		"form-action 'self'",
+	].join("; "),
+	"Cross-Origin-Opener-Policy": "same-site",
+	"Cross-Origin-Resource-Policy": "same-site",
 });
 
-import type { Handle } from '@sveltejs/kit/hooks';
 // `cloudflare:workers` is a URI-style specifier that the adapter's
 // Vite plugin resolves at runtime. tsc can't resolve it as a regular
 // module, so we cast through the locally-declared `OpenSimWorkerEnv`
 // interface (see src/cloudflare-workers.d.ts).
-import { env as workerEnv } from 'cloudflare:workers';
-import type { OpenSimWorkerEnv } from './cloudflare-workers';
-import {
-	SESSION_COOKIE_NAME,
-	getUserFromSessionToken,
-	invalidateSession
-} from '#lib/server/auth';
-import { getDb } from '#lib/server/db';
+import { env as workerEnv } from "cloudflare:workers";
+import type { Handle } from "@sveltejs/kit/hooks";
+import { getUserFromSessionToken, invalidateSession, SESSION_COOKIE_NAME } from "#lib/server/auth";
+import { getDb } from "#lib/server/db";
+import type { OpenSimWorkerEnv } from "./cloudflare-workers";
 
 const env = workerEnv as OpenSimWorkerEnv;
 
@@ -95,7 +91,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		} else {
 			// Stale or invalid session — clear the cookie so the client
 			// does not keep presenting a dead token.
-			event.cookies.delete(SESSION_COOKIE_NAME, { path: '/' });
+			event.cookies.delete(SESSION_COOKIE_NAME, { path: "/" });
 			// Best-effort: prune the row in D1.
 			await invalidateSession(db, token).catch(() => {
 				/* swallow — invalidation is a tidy-up, not a critical path */

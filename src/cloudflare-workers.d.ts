@@ -26,7 +26,7 @@ export interface OpenSimWorkerEnv {
 	ASSETS: Fetcher;
 }
 
-declare module 'cloudflare:workers' {
+declare module "cloudflare:workers" {
 	export const env: OpenSimWorkerEnv;
 	export const caches: CacheStorage;
 	export const ctx: ExecutionContext;
@@ -36,5 +36,3 @@ declare module 'cloudflare:workers' {
 	export const exports: Record<string, unknown>;
 	export const waitUntil: (promise: Promise<unknown>) => void;
 }
-
-export {};

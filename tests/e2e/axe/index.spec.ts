@@ -11,20 +11,20 @@
  *
  * The `/` route is public; the 404 spec doesn't need auth.
  */
-import { test, expect } from '@playwright/test';
-import { scanForA11y } from './_helpers';
+import { expect, test } from "@playwright/test";
+import { scanForA11y } from "./_helpers";
 
-test('component gallery at / has no serious/critical WCAG 2.1 AA violations', async ({
-	page
+test("component gallery at / has no serious/critical WCAG 2.1 AA violations", async ({
+	page,
 }, testInfo) => {
-	await page.goto('/');
+	await page.goto("/");
 	await scanForA11y(page, testInfo);
 });
 
-test('404 error boundary has no serious/critical WCAG 2.1 AA violations', async ({
-	page
+test("404 error boundary has no serious/critical WCAG 2.1 AA violations", async ({
+	page,
 }, testInfo) => {
-	const response = await page.goto('/this-route-does-not-exist-and-never-will');
+	const response = await page.goto("/this-route-does-not-exist-and-never-will");
 	// 404 (or 200 if the dev server catches it as a soft route). Either
 	// way, +error.svelte should have rendered.
 	expect(response?.status() ?? 0).toBeGreaterThanOrEqual(400);

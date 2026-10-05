@@ -68,16 +68,35 @@
 	},
 	"overrides": [
 		{
-			"includes": ["*.svelte", "*.astro", "*.vue"],
+			"includes": ["**/*.svelte", "**/*.astro", "**/*.vue"],
 			"linter": {
 				"rules": {
 					"style": {
 						"useConst": "off",
-						"useImportType": "off"
+						"useImportType": "off",
+						"noNonNullAssertion": "off"
 					},
 					"correctness": {
 						"noUnusedVariables": "off",
 						"noUnusedImports": "off"
+					},
+					"a11y": {
+						"useSemanticElements": "off",
+						"noStaticElementInteractions": "off",
+						"useAriaPropsSupportedByRole": "off",
+						"noSvgWithoutTitle": "off",
+						"noNoninteractiveElementToInteractiveRole": "off",
+						"noRedundantRoles": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/*.test.ts", "**/tests/**/*.ts"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noExplicitAny": "off"
 					}
 				}
 			}

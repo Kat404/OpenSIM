@@ -1,5 +1,5 @@
-import { sql } from 'drizzle-orm';
-import { sqliteTable, text, integer, real, primaryKey, index } from 'drizzle-orm/sqlite-core';
+import { sql } from "drizzle-orm";
+import { index, integer, primaryKey, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 /**
  * OpenSIM — Drizzle ORM Schema (12 normalized tables)
@@ -27,171 +27,163 @@ import { sqliteTable, text, integer, real, primaryKey, index } from 'drizzle-orm
  */
 
 // 1. Carreras / Planes de Estudio
-export const careers = sqliteTable('careers', {
-	code: text('code').primaryKey(),
-	name: text('name').notNull(),
-	totalCredits: integer('total_credits').notNull().default(260),
-	totalSemesters: integer('total_semesters').notNull().default(9)
+export const careers = sqliteTable("careers", {
+	code: text("code").primaryKey(),
+	name: text("name").notNull(),
+	totalCredits: integer("total_credits").notNull().default(260),
+	totalSemesters: integer("total_semesters").notNull().default(9),
 });
 
 // 2. Modulos de Especialidad
-export const specialties = sqliteTable('specialties', {
-	code: text('code').primaryKey(),
-	careerCode: text('career_code')
+export const specialties = sqliteTable("specialties", {
+	code: text("code").primaryKey(),
+	careerCode: text("career_code")
 		.notNull()
 		.references(() => careers.code),
-	name: text('name').notNull()
+	name: text("name").notNull(),
 });
 
 // 3. Catalogo Unificado de Asignaturas (Nodo Base DAG)
-export const subjects = sqliteTable('subjects', {
-	canonicalId: text('canonical_id').primaryKey(),
-	code: text('code').notNull().unique(),
-	name: text('name').notNull(),
-	semester: integer('semester').notNull(),
-	ht: integer('ht').notNull(),
-	hp: integer('hp').notNull(),
-	credits: integer('credits').notNull(),
-	area: text('area').notNull(),
-	specialtyCode: text('specialty_code').references(() => specialties.code)
+export const subjects = sqliteTable("subjects", {
+	canonicalId: text("canonical_id").primaryKey(),
+	code: text("code").notNull().unique(),
+	name: text("name").notNull(),
+	semester: integer("semester").notNull(),
+	ht: integer("ht").notNull(),
+	hp: integer("hp").notNull(),
+	credits: integer("credits").notNull(),
+	area: text("area").notNull(),
+	specialtyCode: text("specialty_code").references(() => specialties.code),
 });
 
 // 4. Claves Alias / Historicas
-export const subjectAliases = sqliteTable(
-	'subject_aliases',
-	{
-		id: integer('id').primaryKey({ autoIncrement: true }),
-		subjectCanonicalId: text('subject_canonical_id')
-			.notNull()
-			.references(() => subjects.canonicalId),
-		aliasCode: text('alias_code').notNull().unique()
-	}
-);
+export const subjectAliases = sqliteTable("subject_aliases", {
+	id: integer("id").primaryKey({ autoIncrement: true }),
+	subjectCanonicalId: text("subject_canonical_id")
+		.notNull()
+		.references(() => subjects.canonicalId),
+	aliasCode: text("alias_code").notNull().unique(),
+});
 
 // 5. Prerrequisitos (Aristas DAG) — composite PK (a,b)
 export const subjectPrerequisites = sqliteTable(
-	'subject_prerequisites',
+	"subject_prerequisites",
 	{
-		subjectCanonicalId: text('subject_canonical_id')
+		subjectCanonicalId: text("subject_canonical_id")
 			.notNull()
 			.references(() => subjects.canonicalId),
-		prerequisiteCanonicalId: text('prerequisite_canonical_id')
+		prerequisiteCanonicalId: text("prerequisite_canonical_id")
 			.notNull()
-			.references(() => subjects.canonicalId)
+			.references(() => subjects.canonicalId),
 	},
 	(table) => ({
 		pk: primaryKey({
-			columns: [table.subjectCanonicalId, table.prerequisiteCanonicalId]
-		})
-	})
+			columns: [table.subjectCanonicalId, table.prerequisiteCanonicalId],
+		}),
+	}),
 );
 
 // 6. Temarios (Unidades y Subtemas)
-export const subjectUnits = sqliteTable(
-	'subject_units',
-	{
-		id: integer('id').primaryKey({ autoIncrement: true }),
-		subjectCanonicalId: text('subject_canonical_id')
-			.notNull()
-			.references(() => subjects.canonicalId),
-		unitNumber: integer('unit_number').notNull(),
-		title: text('title').notNull(),
-		subtopicsJson: text('subtopics_json').notNull()
-	}
-);
+export const subjectUnits = sqliteTable("subject_units", {
+	id: integer("id").primaryKey({ autoIncrement: true }),
+	subjectCanonicalId: text("subject_canonical_id")
+		.notNull()
+		.references(() => subjects.canonicalId),
+	unitNumber: integer("unit_number").notNull(),
+	title: text("title").notNull(),
+	subtopicsJson: text("subtopics_json").notNull(),
+});
 
 // 7. Perfil de Estudiantes (FIXES v2.0 applied)
-export const studentProfiles = sqliteTable('student_profiles', {
-	controlNumber: text('control_number').primaryKey(),
-	fullName: text('full_name').notNull(),
-	curp: text('curp').notNull(),
-	birthState: text('birth_state').notNull(),
-	careerCode: text('career_code')
+export const studentProfiles = sqliteTable("student_profiles", {
+	controlNumber: text("control_number").primaryKey(),
+	fullName: text("full_name").notNull(),
+	curp: text("curp").notNull(),
+	birthState: text("birth_state").notNull(),
+	careerCode: text("career_code")
 		.notNull()
 		.references(() => careers.code),
-	specialtyCode: text('specialty_code').references(() => specialties.code),
-	currentSemester: integer('current_semester').notNull().default(1),
-	certifiedAverage: real('certified_average').notNull().default(0.0),
-	arithmeticAverage: real('arithmetic_average').notNull().default(0.0),
-	passedAverage: real('passed_average').notNull().default(0.0),
-	approvedCredits: integer('approved_credits').notNull().default(0),
-	remainingCredits: integer('remaining_credits').notNull().default(260),
-	completedCredits: integer('completed_credits').notNull().default(0),
-	inProgressCredits: integer('in_progress_credits').notNull().default(0),
-	advancePercentage: real('advance_percentage').notNull().default(0.0),
-	status: text('status').notNull().default('Activo regular'),
-	healthService: text('health_service').notNull().default('IMSS'),
-	enrollmentPeriod: text('enrollment_period').notNull().default('')
+	specialtyCode: text("specialty_code").references(() => specialties.code),
+	currentSemester: integer("current_semester").notNull().default(1),
+	certifiedAverage: real("certified_average").notNull().default(0.0),
+	arithmeticAverage: real("arithmetic_average").notNull().default(0.0),
+	passedAverage: real("passed_average").notNull().default(0.0),
+	approvedCredits: integer("approved_credits").notNull().default(0),
+	remainingCredits: integer("remaining_credits").notNull().default(260),
+	completedCredits: integer("completed_credits").notNull().default(0),
+	inProgressCredits: integer("in_progress_credits").notNull().default(0),
+	advancePercentage: real("advance_percentage").notNull().default(0.0),
+	status: text("status").notNull().default("Activo regular"),
+	healthService: text("health_service").notNull().default("IMSS"),
+	enrollmentPeriod: text("enrollment_period").notNull().default(""),
 });
 
 // 8. Historial Academico (FIX v2.0: status union includes LOCKED)
 export const studentProgress = sqliteTable(
-	'student_progress',
+	"student_progress",
 	{
-		studentControlNumber: text('student_control_number')
+		studentControlNumber: text("student_control_number")
 			.notNull()
 			.references(() => studentProfiles.controlNumber),
-		subjectCanonicalId: text('subject_canonical_id')
+		subjectCanonicalId: text("subject_canonical_id")
 			.notNull()
 			.references(() => subjects.canonicalId),
-		status: text('status').notNull(),
-		grade: real('grade'),
-		evaluationType: text('evaluation_type'),
-		period: text('period').notNull()
+		status: text("status").notNull(),
+		grade: real("grade"),
+		evaluationType: text("evaluation_type"),
+		period: text("period").notNull(),
 	},
 	(table) => ({
 		pk: primaryKey({
-			columns: [table.studentControlNumber, table.subjectCanonicalId]
-		})
-	})
+			columns: [table.studentControlNumber, table.subjectCanonicalId],
+		}),
+	}),
 );
 
 // 9. Oferta de Grupos
 export const courseGroups = sqliteTable(
-	'course_groups',
+	"course_groups",
 	{
-		id: text('id').primaryKey(),
-		subjectCanonicalId: text('subject_canonical_id')
+		id: text("id").primaryKey(),
+		subjectCanonicalId: text("subject_canonical_id")
 			.notNull()
 			.references(() => subjects.canonicalId),
-		groupCode: text('group_code').notNull(),
-		teacherName: text('teacher_name').notNull(),
-		hasLab: integer('has_lab', { mode: 'boolean' }).notNull().default(false)
+		groupCode: text("group_code").notNull(),
+		teacherName: text("teacher_name").notNull(),
+		hasLab: integer("has_lab", { mode: "boolean" }).notNull().default(false),
 	},
 	(table) => ({
 		// Hot path: the enrollment helper joins course_groups on
 		// subjectCanonicalId for the student's enrolled set. Without
 		// this index the join is a full table scan (audit M2, Round 4).
-		subjectCanonicalIdx: index('idx_course_groups_subject_canonical').on(
-			table.subjectCanonicalId
-		)
-	})
+		subjectCanonicalIdx: index("idx_course_groups_subject_canonical").on(table.subjectCanonicalId),
+	}),
 );
 
 // 10. Bloques de Horario
 export const courseScheduleBlocks = sqliteTable(
-	'course_schedule_blocks',
+	"course_schedule_blocks",
 	{
-		id: integer('id').primaryKey({ autoIncrement: true }),
-		groupId: text('group_id')
+		id: integer("id").primaryKey({ autoIncrement: true }),
+		groupId: text("group_id")
 			.notNull()
 			.references(() => courseGroups.id),
-		day: text('day').notNull(),
-		startTime: text('start_time').notNull(),
-		endTime: text('end_time').notNull(),
-		classroom: text('classroom').notNull()
+		day: text("day").notNull(),
+		startTime: text("start_time").notNull(),
+		endTime: text("end_time").notNull(),
+		classroom: text("classroom").notNull(),
 	},
 	(table) => ({
 		// Hot path: the enrollment helper fetches blocks for the
 		// student's groups (`inArray(groupId, ...)`); this index
 		// turns that into a single index range scan instead of a
 		// full table scan (audit M2, Round 4).
-		groupIdx: index('idx_course_schedule_blocks_group').on(table.groupId),
+		groupIdx: index("idx_course_schedule_blocks_group").on(table.groupId),
 		// Day-letter filter is the secondary predicate; an index
 		// here keeps \"classes for today\" cheap even as the schedule
 		// grows across careers.
-		dayIdx: index('idx_course_schedule_blocks_day').on(table.day)
-	})
+		dayIdx: index("idx_course_schedule_blocks_day").on(table.day),
+	}),
 );
 
 // 11. Credenciales de Acceso (PBKDF2 / SHA-256 via Web Crypto API)
@@ -203,14 +195,14 @@ export const courseScheduleBlocks = sqliteTable(
 // is `ON DELETE CASCADE` (audit A5/A6, Phase 2.5): when a student
 // profile is removed (egreso, control-number correction), the
 // credential row goes with it.
-export const studentCredentials = sqliteTable('student_credentials', {
-	controlNumber: text('control_number')
+export const studentCredentials = sqliteTable("student_credentials", {
+	controlNumber: text("control_number")
 		.primaryKey()
-		.references(() => studentProfiles.controlNumber, { onDelete: 'cascade' }),
-	passwordHash: text('password_hash').notNull(),
-	passwordSalt: text('password_salt').notNull(),
-	passwordIterations: integer('password_iterations').notNull().default(10000),
-	passwordUpdatedAt: integer('password_updated_at', { mode: 'timestamp' })
+		.references(() => studentProfiles.controlNumber, { onDelete: "cascade" }),
+	passwordHash: text("password_hash").notNull(),
+	passwordSalt: text("password_salt").notNull(),
+	passwordIterations: integer("password_iterations").notNull().default(10000),
+	passwordUpdatedAt: integer("password_updated_at", { mode: "timestamp" }),
 });
 
 // 12. Sesiones de Autenticacion (cookie-backed)
@@ -229,23 +221,21 @@ export const studentCredentials = sqliteTable('student_credentials', {
 // "log out all devices" for a given student is supported by the
 // `idx_auth_sessions_student` index.
 export const authSessions = sqliteTable(
-	'auth_sessions',
+	"auth_sessions",
 	{
-		id: text('id').primaryKey(),
-		studentControlNumber: text('student_control_number')
+		id: text("id").primaryKey(),
+		studentControlNumber: text("student_control_number")
 			.notNull()
-			.references(() => studentProfiles.controlNumber, { onDelete: 'cascade' }),
-		expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
-		createdAt: integer('created_at', { mode: 'timestamp' })
-			.notNull()
-			.default(sql`(unixepoch())`),
-		userAgent: text('user_agent'),
-		ipHash: text('ip_hash')
+			.references(() => studentProfiles.controlNumber, { onDelete: "cascade" }),
+		expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+		createdAt: integer("created_at", { mode: "timestamp" }).notNull().default(sql`(unixepoch())`),
+		userAgent: text("user_agent"),
+		ipHash: text("ip_hash"),
 	},
 	(table) => ({
-		expiresAtIdx: index('idx_auth_sessions_expires_at').on(table.expiresAt),
-		studentIdx: index('idx_auth_sessions_student').on(table.studentControlNumber)
-	})
+		expiresAtIdx: index("idx_auth_sessions_expires_at").on(table.expiresAt),
+		studentIdx: index("idx_auth_sessions_student").on(table.studentControlNumber),
+	}),
 );
 
 // 13. Auth Attempts (login rate limiting).
@@ -268,22 +258,22 @@ export const authSessions = sqliteTable(
 // produces ~4 rows/day, ~1.5k rows/year. Within D1 free-tier budget
 // for the next decade; revisit when adding a janitor.
 export const authAttempts = sqliteTable(
-	'auth_attempts',
+	"auth_attempts",
 	{
-		id: integer('id').primaryKey({ autoIncrement: true }),
-		attemptKey: text('attempt_key').notNull(),
-		windowStart: integer('window_start', { mode: 'timestamp' }).notNull(),
-		attemptCount: integer('attempt_count').notNull().default(1)
+		id: integer("id").primaryKey({ autoIncrement: true }),
+		attemptKey: text("attempt_key").notNull(),
+		windowStart: integer("window_start", { mode: "timestamp" }).notNull(),
+		attemptCount: integer("attempt_count").notNull().default(1),
 	},
 	(table) => ({
 		// Hot path for `isRateLimited`: WHERE attempt_key = ? AND
 		// window_start >= now() - 15min. The composite index collapses
 		// that into a single range scan per lookup.
-		attemptKeyWindowIdx: index('idx_auth_attempts_key_window').on(
+		attemptKeyWindowIdx: index("idx_auth_attempts_key_window").on(
 			table.attemptKey,
-			table.windowStart
-		)
-	})
+			table.windowStart,
+		),
+	}),
 );
 
 // ---- Type exports for app layer ----
@@ -326,7 +316,7 @@ export type NewAuthSession = typeof authSessions.$inferInsert;
 
 // ---- Status union (TypeScript-side enforcement; SQLite stores TEXT) ----
 
-export const STUDENT_PROGRESS_STATUSES = ['APPROVED', 'ENROLLED', 'AVAILABLE', 'LOCKED'] as const;
+export const STUDENT_PROGRESS_STATUSES = ["APPROVED", "ENROLLED", "AVAILABLE", "LOCKED"] as const;
 export type StudentProgressStatus = (typeof STUDENT_PROGRESS_STATUSES)[number];
 
 // Evaluation types live in `#lib/utils/academic` (client-safe home)
@@ -334,4 +324,4 @@ export type StudentProgressStatus = (typeof STUDENT_PROGRESS_STATUSES)[number];
 // the server-only schema into the browser bundle. Re-exported here
 // for backward compatibility with any server code that imports from
 // the schema path.
-export { EVALUATION_TYPES, type EvaluationType } from '#lib/utils/academic';
+export { EVALUATION_TYPES, type EvaluationType } from "#lib/utils/academic";

@@ -26,15 +26,15 @@
  * See: odd/tasks/opensim.md §5.1 (schema), §9 (CF-3), §16.2 (A3 fix).
  */
 
-import { and, eq, gte, lt, sql } from 'drizzle-orm';
-import { getDb, type Database } from './db';
+import { and, eq, gte, lt, sql } from "drizzle-orm";
+import { type Database, getDb } from "./db";
 import {
 	authAttempts,
 	authSessions,
+	type StudentProfile,
 	studentCredentials,
 	studentProfiles,
-	type StudentProfile
-} from './db/schema';
+} from "./db/schema";
 
 // ---------- Constants ----------
 
@@ -43,7 +43,7 @@ const SALT_BYTES = 16;
 const DERIVED_KEY_BITS = 256; // 32 bytes
 const SESSION_TOKEN_BYTES = 32;
 const SESSION_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
-const COOKIE_NAME = 'opensim_session';
+const COOKIE_NAME = "opensim_session";
 
 // ---------- Rate limiting (audit R8-9 / P0-2) ----------
 //
@@ -93,10 +93,7 @@ export async function isRateLimited(db: Database, key: string): Promise<RateLimi
 		.orderBy(authAttempts.windowStart);
 	const oldest = buckets[0]?.windowStart;
 	const retryAfterSec = oldest
-		? Math.max(
-				1,
-				Math.ceil((oldest.getTime() + RATE_LIMIT_WINDOW_MS - Date.now()) / 1000)
-			)
+		? Math.max(1, Math.ceil((oldest.getTime() + RATE_LIMIT_WINDOW_MS - Date.now()) / 1000))
 		: RATE_LIMIT_WINDOW_MS / 1000;
 	return { limited: true, retryAfterSec };
 }
@@ -127,12 +124,7 @@ export async function recordFailedAttempt(db: Database, key: string): Promise<vo
 			const existing = await tx
 				.select({ id: authAttempts.id })
 				.from(authAttempts)
-				.where(
-					and(
-						eq(authAttempts.attemptKey, key),
-						eq(authAttempts.windowStart, windowStart)
-					)
-				)
+				.where(and(eq(authAttempts.attemptKey, key), eq(authAttempts.windowStart, windowStart)))
 				.limit(1);
 			if (existing[0]) {
 				await tx
@@ -143,7 +135,7 @@ export async function recordFailedAttempt(db: Database, key: string): Promise<vo
 				await tx.insert(authAttempts).values({
 					attemptKey: key,
 					windowStart,
-					attemptCount: 1
+					attemptCount: 1,
 				});
 			}
 		});
@@ -173,9 +165,7 @@ export async function clearRateLimit(db: Database, key: string): Promise<void> {
  */
 export async function pruneExpiredAttempts(db: Database): Promise<number> {
 	const cutoff = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
-	const result = await db
-		.delete(authAttempts)
-		.where(lt(authAttempts.windowStart, cutoff));
+	const result = await db.delete(authAttempts).where(lt(authAttempts.windowStart, cutoff));
 	return extractAffectedRows(result);
 }
 
@@ -187,12 +177,12 @@ export async function pruneExpiredAttempts(db: Database): Promise<number> {
  * and production.
  */
 function extractAffectedRows(result: unknown): number {
-	if (!result || typeof result !== 'object') return 0;
+	if (!result || typeof result !== "object") return 0;
 	const r = result as Record<string, unknown>;
-	if (typeof r.rowsWritten === 'number') return r.rowsWritten;
+	if (typeof r.rowsWritten === "number") return r.rowsWritten;
 	const meta = r.meta as Record<string, unknown> | undefined;
-	if (meta && typeof meta.rows_written === 'number') return meta.rows_written;
-	if (typeof r.changes === 'number') return r.changes;
+	if (meta && typeof meta.rows_written === "number") return meta.rows_written;
+	if (typeof r.changes === "number") return r.changes;
 	return 0;
 }
 
@@ -211,19 +201,19 @@ function bytesToBase64Url(bytes: Uint8Array): string {
 	// has overloaded `toString` definitions across @types/node and
 	// Workers that confuse svelte-check). base64url is the URL-safe
 	// variant of base64 (RFC 4648 §5): '+' -> '-', '/' -> '_', no '='.
-	let binary = '';
+	let binary = "";
 	for (let i = 0; i < bytes.length; i++) {
 		binary += String.fromCharCode(bytes[i] ?? 0);
 	}
 	const b64 = btoa(binary);
-	return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+	return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
 /** Decodes a base64url string to a Uint8Array. Returns an empty buffer for malformed input. */
 function base64UrlToBytes(s: string): Uint8Array {
 	try {
-		const b64 = s.replace(/-/g, '+').replace(/_/g, '/');
-		const padded = b64 + '='.repeat((4 - (b64.length % 4)) % 4);
+		const b64 = s.replace(/-/g, "+").replace(/_/g, "/");
+		const padded = b64 + "=".repeat((4 - (b64.length % 4)) % 4);
 		const binary = atob(padded);
 		const out = new Uint8Array(binary.length);
 		for (let i = 0; i < binary.length; i++) {
@@ -242,10 +232,10 @@ function base64UrlToBytes(s: string): Uint8Array {
 function timingSafeEqual(a: Uint8Array, b: Uint8Array): boolean {
 	if (a.length !== b.length) {
 		// Still do a per-byte scan to keep timing similar across calls.
-		let diff = a.length ^ b.length;
+		let _diff = a.length ^ b.length;
 		const max = Math.max(a.length, b.length);
 		for (let i = 0; i < max; i++) {
-			diff |= (a[i] ?? 0) ^ (b[i] ?? 0);
+			_diff |= (a[i] ?? 0) ^ (b[i] ?? 0);
 		}
 		return false;
 	}
@@ -275,7 +265,7 @@ export async function hashPassword(password: string): Promise<PasswordHashResult
 	return {
 		hash: bytesToBase64Url(derived),
 		salt: bytesToBase64Url(salt),
-		iterations: PBKDF2_ITERATIONS
+		iterations: PBKDF2_ITERATIONS,
 	};
 }
 
@@ -288,7 +278,7 @@ export async function verifyPassword(
 	password: string,
 	hash: string,
 	salt: string,
-	iterations: number
+	iterations: number,
 ): Promise<boolean> {
 	if (iterations <= 0 || !Number.isFinite(iterations)) return false;
 	const derivedSalt = base64UrlToBytes(salt);
@@ -302,14 +292,14 @@ async function pbkdf2(
 	password: string,
 	salt: Uint8Array,
 	iterations: number,
-	bits: number
+	bits: number,
 ): Promise<Uint8Array> {
 	const key = await crypto.subtle.importKey(
-		'raw',
+		"raw",
 		new TextEncoder().encode(password),
-		'PBKDF2',
+		"PBKDF2",
 		false,
-		['deriveBits']
+		["deriveBits"],
 	);
 	// Copy the salt into a fresh ArrayBuffer-backed Uint8Array so
 	// `deriveBits`'s BufferSource parameter is satisfied regardless of
@@ -319,13 +309,13 @@ async function pbkdf2(
 	for (let i = 0; i < salt.length; i++) saltCopy[i] = salt[i] ?? 0;
 	const bitsBuffer = await crypto.subtle.deriveBits(
 		{
-			name: 'PBKDF2',
-			hash: 'SHA-256',
+			name: "PBKDF2",
+			hash: "SHA-256",
 			salt: saltCopy,
-			iterations
+			iterations,
 		},
 		key,
-		bits
+		bits,
 	);
 	return new Uint8Array(bitsBuffer);
 }
@@ -354,7 +344,7 @@ export interface SessionValidation {
  * time, so callers only ever see the hash on the database side.
  */
 export async function hashToken(token: string): Promise<string> {
-	const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
+	const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token));
 	return bytesToBase64Url(new Uint8Array(digest));
 }
 
@@ -369,7 +359,7 @@ export async function createSession(
 	db: Database,
 	controlNumber: string,
 	userAgent: string,
-	ipHash: string
+	ipHash: string,
 ): Promise<SessionRecord> {
 	const rawToken = bytesToBase64Url(randomBytes(SESSION_TOKEN_BYTES));
 	const id = await hashToken(rawToken);
@@ -379,7 +369,7 @@ export async function createSession(
 		studentControlNumber: controlNumber,
 		expiresAt,
 		userAgent,
-		ipHash
+		ipHash,
 	});
 	return { id: rawToken, expiresAt };
 }
@@ -394,16 +384,12 @@ export async function createSession(
  */
 export async function validateSessionToken(
 	db: Database,
-	token: string
+	token: string,
 ): Promise<SessionValidation | null> {
 	const id = await hashToken(token);
 	const now = new Date();
 
-	const rows = await db
-		.select()
-		.from(authSessions)
-		.where(eq(authSessions.id, id))
-		.limit(1);
+	const rows = await db.select().from(authSessions).where(eq(authSessions.id, id)).limit(1);
 	const row = rows[0];
 	if (!row) return null;
 	if (row.expiresAt.getTime() <= now.getTime()) {
@@ -413,7 +399,7 @@ export async function validateSessionToken(
 	}
 	return {
 		controlNumber: row.studentControlNumber,
-		expiresAt: row.expiresAt
+		expiresAt: row.expiresAt,
 	};
 }
 
@@ -447,7 +433,7 @@ export async function invalidateSession(db: Database, token: string): Promise<vo
  */
 export async function getUserFromSessionToken(
 	db: Database,
-	token: string
+	token: string,
 ): Promise<StudentProfile | null> {
 	const session = await validateSessionToken(db, token);
 	if (!session) return null;
@@ -464,13 +450,13 @@ export async function getUserFromSessionToken(
 /** Fetches a credential row by control number, or `undefined`. */
 export async function getCredential(
 	db: Database,
-	controlNumber: string
+	controlNumber: string,
 ): Promise<{ passwordHash: string; passwordSalt: string; passwordIterations: number } | undefined> {
 	const rows = await db
 		.select({
 			passwordHash: studentCredentials.passwordHash,
 			passwordSalt: studentCredentials.passwordSalt,
-			passwordIterations: studentCredentials.passwordIterations
+			passwordIterations: studentCredentials.passwordIterations,
 		})
 		.from(studentCredentials)
 		.where(eq(studentCredentials.controlNumber, controlNumber))
@@ -485,11 +471,11 @@ export async function getCredential(
  * the hex digest. We do not store the raw IP for privacy reasons.
  */
 export async function hashIp(ip: string): Promise<string> {
-	const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(ip));
+	const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ip));
 	const bytes = new Uint8Array(digest);
-	let hex = '';
+	let hex = "";
 	for (let i = 0; i < bytes.length; i++) {
-		hex += (bytes[i] ?? 0).toString(16).padStart(2, '0');
+		hex += (bytes[i] ?? 0).toString(16).padStart(2, "0");
 	}
 	return hex;
 }
@@ -503,18 +489,18 @@ export const SESSION_MAX_AGE_SECONDS = SESSION_LIFETIME_MS / 1000;
 export const sessionCookieOptions = {
 	httpOnly: true,
 	secure: true,
-	sameSite: 'lax' as const,
-	path: '/',
-	maxAge: SESSION_MAX_AGE_SECONDS
+	sameSite: "lax" as const,
+	path: "/",
+	maxAge: SESSION_MAX_AGE_SECONDS,
 };
 
 /** Build the `delete` payload to clear the session cookie. */
 export const clearSessionCookieOptions = {
 	httpOnly: true,
 	secure: true,
-	sameSite: 'lax' as const,
-	path: '/',
-	maxAge: 0
+	sameSite: "lax" as const,
+	path: "/",
+	maxAge: 0,
 };
 
 // ---------- Re-export for tests / ergonomics ----------

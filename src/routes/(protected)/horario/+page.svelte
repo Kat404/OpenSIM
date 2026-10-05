@@ -9,17 +9,17 @@
   header.
 -->
 <script lang="ts">
-	import type { PageData } from './$types';
-	import TimeGridSchedule from '#lib/components/schedule/TimeGridSchedule.svelte';
-	import { EmptyState } from '#lib/components/ui';
-	import { CalendarX } from 'lucide-svelte';
+import { CalendarX } from "lucide-svelte";
+import TimeGridSchedule from "#lib/components/schedule/TimeGridSchedule.svelte";
+import { EmptyState } from "#lib/components/ui";
+import type { PageData } from "./$types";
 
-	let { data }: { data: PageData } = $props();
+let { data }: { data: PageData } = $props();
 </script>
 
 <svelte:head>
 	<title>Horario — OpenSIM</title>
-	<meta name="description" content="Horario semanal con bloques proporcionales al tiempo real." />
+	<meta name="description" content="Horario semanal con bloques proporcionales al tiempo real.">
 </svelte:head>
 
 <section class="horario">
@@ -48,51 +48,51 @@
 </section>
 
 <style>
-	.horario {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-5);
-	}
+.horario {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-5);
+}
 
-	.horario__header {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-1);
-	}
+.horario__header {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+}
 
-	.horario__eyebrow {
-		margin: 0;
-		font-size: var(--text-xs);
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--fg-tertiary);
-	}
+.horario__eyebrow {
+	margin: 0;
+	font-size: var(--text-xs);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--fg-tertiary);
+}
 
-	.horario__title {
-		margin: 0;
-		font-size: var(--text-2xl);
-		font-weight: var(--weight-semibold);
-		color: var(--fg-primary);
-	}
+.horario__title {
+	margin: 0;
+	font-size: var(--text-2xl);
+	font-weight: var(--weight-semibold);
+	color: var(--fg-primary);
+}
 
-	.horario__period {
-		margin: 0;
-		font-size: var(--text-sm);
-		color: var(--fg-secondary);
-	}
+.horario__period {
+	margin: 0;
+	font-size: var(--text-sm);
+	color: var(--fg-secondary);
+}
 
-	.horario__period strong {
-		font-weight: var(--weight-semibold);
-		color: var(--fg-primary);
-	}
+.horario__period strong {
+	font-weight: var(--weight-semibold);
+	color: var(--fg-primary);
+}
 
-	.horario__sub {
-		margin: 0;
-		font-size: var(--text-sm);
-		color: var(--fg-tertiary);
-	}
+.horario__sub {
+	margin: 0;
+	font-size: var(--text-sm);
+	color: var(--fg-tertiary);
+}
 
-	.horario__grid {
-		min-width: 0;
-	}
+.horario__grid {
+	min-width: 0;
+}
 </style>

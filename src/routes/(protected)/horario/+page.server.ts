@@ -21,19 +21,19 @@
  * ScheduleDay-letter array; the data shape is what the grid expects.
  */
 
-import { asc, inArray } from 'drizzle-orm';
-import { env as workerEnv } from 'cloudflare:workers';
-import type { OpenSimWorkerEnv } from '../../../cloudflare-workers';
-import type { PageServerLoad } from './$types';
-import { getDb } from '#lib/server/db';
-import { subjects } from '#lib/server/db/schema';
-import { getCurrentEnrollment, getCurrentPeriod } from '#lib/server/enrollment';
+import { env as workerEnv } from "cloudflare:workers";
+import { asc, inArray } from "drizzle-orm";
+import { getDb } from "#lib/server/db";
+import { subjects } from "#lib/server/db/schema";
+import { getCurrentEnrollment, getCurrentPeriod } from "#lib/server/enrollment";
+import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
+import type { PageServerLoad } from "./$types";
 
 const env = workerEnv as OpenSimWorkerEnv;
 
-export type DayLetter = 'L' | 'M' | 'X' | 'J' | 'V' | 'S' | 'D';
+export type DayLetter = "L" | "M" | "X" | "J" | "V" | "S" | "D";
 
-const DAY_LETTERS: ReadonlySet<DayLetter> = new Set(['L', 'M', 'X', 'J', 'V', 'S', 'D']);
+const DAY_LETTERS: ReadonlySet<DayLetter> = new Set(["L", "M", "X", "J", "V", "S", "D"]);
 
 interface ScheduledClassItem {
 	subject: { code: string; name: string; canonicalId: string };
@@ -41,15 +41,17 @@ interface ScheduledClassItem {
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const u = locals.user!;
+	const u = locals.user;
+	if (!u) return { schedule: [] as ScheduledClassItem[], period: null };
 
 	if (!env.DB) {
 		return { schedule: [] as ScheduledClassItem[], period: null };
 	}
 
 	const db = getDb(env.DB);
-	const currentPeriod = await getCurrentPeriod(db, u.controlNumber);
-	const enrollment = await getCurrentEnrollment(db, u.controlNumber, currentPeriod ?? undefined);
+	const controlNumber = u.controlNumber;
+	const currentPeriod = await getCurrentPeriod(db, controlNumber);
+	const enrollment = await getCurrentEnrollment(db, controlNumber, currentPeriod ?? undefined);
 
 	if (enrollment.schedule.length === 0) {
 		return { schedule: [] as ScheduledClassItem[], period: enrollment.period };
@@ -85,8 +87,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 				day: day as DayLetter,
 				startTime: b.startTime,
 				endTime: b.endTime,
-				classroom: b.classroom
-			}
+				classroom: b.classroom,
+			},
 		});
 	}
 

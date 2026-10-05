@@ -18,15 +18,15 @@
  * See: odd/tasks/opensim.md §16 (audit A1).
  */
 
-import { redirect, type RequestHandler } from '@sveltejs/kit';
-import { SESSION_COOKIE_NAME, invalidateSession } from '#lib/server/auth';
-import { getDb } from '#lib/server/db';
 // `cloudflare:workers` is a URI-style specifier that the adapter's
 // Vite plugin resolves at runtime. tsc can't resolve it as a regular
 // module, so we cast through the locally-declared `OpenSimWorkerEnv`
 // interface (see src/cloudflare-workers.d.ts).
-import { env as workerEnv } from 'cloudflare:workers';
-import type { OpenSimWorkerEnv } from '../../../cloudflare-workers';
+import { env as workerEnv } from "cloudflare:workers";
+import { type RequestHandler, redirect } from "@sveltejs/kit";
+import { invalidateSession, SESSION_COOKIE_NAME } from "#lib/server/auth";
+import { getDb } from "#lib/server/db";
+import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 
 const env = workerEnv as OpenSimWorkerEnv;
 
@@ -38,6 +38,6 @@ export const POST: RequestHandler = async ({ cookies }) => {
 			/* swallow — invalidation is a tidy-up, not a critical path */
 		});
 	}
-	cookies.delete(SESSION_COOKIE_NAME, { path: '/' });
-	throw redirect(303, '/login?reason=logged-out');
+	cookies.delete(SESSION_COOKIE_NAME, { path: "/" });
+	throw redirect(303, "/login?reason=logged-out");
 };

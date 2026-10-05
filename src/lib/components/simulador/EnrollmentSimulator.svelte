@@ -16,139 +16,129 @@
   so the bundle stays under the 100KB budget.
 -->
 <script lang="ts">
-	import { Badge, Button, Card } from '#lib/components/ui';
-	import CourseFilter from './CourseFilter.svelte';
-	import SchedulePreview, { type PreviewBlock } from './SchedulePreview.svelte';
-	import { CheckCircle2, AlertCircle, FileSignature } from 'lucide-svelte';
-	import { findConflicts } from '#lib/utils/schedule-conflict';
-	import type { OfferBlock, OfferGroup } from './types';
+import { AlertCircle, CheckCircle2, FileSignature } from "lucide-svelte";
+import { Badge, Button, Card } from "#lib/components/ui";
+import { findConflicts } from "#lib/utils/schedule-conflict";
+import CourseFilter from "./CourseFilter.svelte";
+import SchedulePreview, { type PreviewBlock } from "./SchedulePreview.svelte";
+import type { OfferBlock, OfferGroup } from "./types";
 
-	interface Props {
-		period: string | null;
-		groups: OfferGroup[];
-		allBlocks: OfferBlock[];
-		enrolledCanonicalIds: string[];
-		enrolledBlocks: OfferBlock[];
-		formError?: string | null;
-	}
+interface Props {
+	period: string | null;
+	groups: OfferGroup[];
+	allBlocks: OfferBlock[];
+	enrolledCanonicalIds: string[];
+	enrolledBlocks: OfferBlock[];
+	formError?: string | null;
+}
 
-	let {
-		period,
-		groups,
-		allBlocks,
-		enrolledCanonicalIds,
-		enrolledBlocks,
-		formError = null
-	}: Props = $props();
+let {
+	period,
+	groups,
+	allBlocks,
+	enrolledCanonicalIds,
+	enrolledBlocks,
+	formError = null,
+}: Props = $props();
 
-	// ---------- Selection state ----------
-	let query = $state('');
-	let area = $state('');
-	// `creditsValue` mirrors `credits` as a string so the Select
-	// component can `bind:value` to it (Select's value is typed as
-	// string). The `$derived` `credits` narrows the string back to
-	// the literal-union the filter logic uses.
-	let creditsValue = $state<'' | 'lt5' | 'eq5'>('');
-	const credits = $derived<'' | 'lt5' | 'eq5'>(creditsValue);
-	let onlyConflicts = $state(false);
-	let selectedIds = $state<Set<string>>(new Set());
+// ---------- Selection state ----------
+let query = $state("");
+let area = $state("");
+// `creditsValue` mirrors `credits` as a string so the Select
+// component can `bind:value` to it (Select's value is typed as
+// string). The `$derived` `credits` narrows the string back to
+// the literal-union the filter logic uses.
+let creditsValue = $state<"" | "lt5" | "eq5">("");
+const credits = $derived<"" | "lt5" | "eq5">(creditsValue);
+let onlyConflicts = $state(false);
+let selectedIds = $state<Set<string>>(new Set());
 
-	// ---------- Derived: filter pipeline ----------
-	const areas = $derived(
-		Array.from(new Set(groups.map((g) => g.area))).sort((a, b) => a.localeCompare(b, 'es'))
+// ---------- Derived: filter pipeline ----------
+const areas = $derived(
+	Array.from(new Set(groups.map((g) => g.area))).sort((a, b) => a.localeCompare(b, "es")),
+);
+
+const groupToEnrolled = $derived(new Set(enrolledCanonicalIds));
+const _groupIdToCanonical = $derived(new Map(groups.map((g) => [g.groupId, g.subjectCanonicalId])));
+
+// Compute conflict set once per render so the table + the
+// preview agree on the same answer.
+const allConflictIds = $derived.by(() => {
+	const candidateBlockIds = new Set(
+		allBlocks.filter((b) => selectedIds.has(b.groupId)).map((b) => b.id),
 	);
-
-	const groupToEnrolled = $derived(new Set(enrolledCanonicalIds));
-	const groupIdToCanonical = $derived(
-		new Map(groups.map((g) => [g.groupId, g.subjectCanonicalId]))
-	);
-
-	// Compute conflict set once per render so the table + the
-	// preview agree on the same answer.
-	const allConflictIds = $derived.by(() => {
-		const candidateBlockIds = new Set(
-			allBlocks
-				.filter((b) => selectedIds.has(b.groupId))
-				.map((b) => b.id)
-		);
-		const candidateBlocks = allBlocks.filter((b) => candidateBlockIds.has(b.id));
-		const enrolled: { id: number; day: string; startTime: string; endTime: string }[] =
-			enrolledBlocks.map((b) => ({
-				id: b.id,
-				day: b.day,
-				startTime: b.startTime,
-				endTime: b.endTime
-			}));
-		const ids = findConflicts(candidateBlocks, enrolled);
-		// Pair conflicts back to the groupId so the table can flag
-		// the row and the filter can hide non-conflicting groups.
-		const groupIds = new Set<string>();
-		for (const b of candidateBlocks) {
-			if (ids.has(b.id)) groupIds.add(b.groupId);
-		}
-		return groupIds;
-	});
-
-	const filtered = $derived.by(() => {
-		const needle = query.trim().toLowerCase();
-		return groups.filter((g) => {
-			if (g.alreadyEnrolled) return false;
-			if (area && g.area !== area) return false;
-			if (credits === 'lt5' && g.credits >= 5) return false;
-			if (credits === 'eq5' && g.credits !== 5) return false;
-			if (needle) {
-				const haystack = `${g.subjectCode} ${g.subjectName}`.toLowerCase();
-				if (!haystack.includes(needle)) return false;
-			}
-			if (onlyConflicts && !allConflictIds.has(g.groupId)) return false;
-			return true;
-		});
-	});
-
-	const selectedGroups = $derived(groups.filter((g) => selectedIds.has(g.groupId)));
-	const selectedCredits = $derived(
-		selectedGroups.reduce((acc, g) => acc + g.credits, 0)
-	);
-
-	// ---------- Derived: schedule preview shapes ----------
-	function blockToPreview(b: OfferBlock, kind: 'enrolled' | 'candidate'): PreviewBlock {
-		const g = groups.find((x) => x.groupId === b.groupId);
-		return {
+	const candidateBlocks = allBlocks.filter((b) => candidateBlockIds.has(b.id));
+	const enrolled: { id: number; day: string; startTime: string; endTime: string }[] =
+		enrolledBlocks.map((b) => ({
 			id: b.id,
-			groupId: b.groupId,
 			day: b.day,
 			startTime: b.startTime,
 			endTime: b.endTime,
-			classroom: b.classroom,
-			subjectCode: g?.subjectCode ?? '—',
-			subjectName: g?.subjectName ?? '',
-			teacherName: g?.teacherName ?? '',
-			kind
-		};
+		}));
+	const ids = findConflicts(candidateBlocks, enrolled);
+	// Pair conflicts back to the groupId so the table can flag
+	// the row and the filter can hide non-conflicting groups.
+	const groupIds = new Set<string>();
+	for (const b of candidateBlocks) {
+		if (ids.has(b.id)) groupIds.add(b.groupId);
 	}
+	return groupIds;
+});
 
-	const enrolledPreview = $derived(
-		enrolledBlocks.map((b) => blockToPreview(b, 'enrolled'))
-	);
-	const candidatePreview = $derived(
-		allBlocks
-			.filter((b) => selectedIds.has(b.groupId))
-			.map((b) => blockToPreview(b, 'candidate'))
-	);
+const filtered = $derived.by(() => {
+	const needle = query.trim().toLowerCase();
+	return groups.filter((g) => {
+		if (g.alreadyEnrolled) return false;
+		if (area && g.area !== area) return false;
+		if (credits === "lt5" && g.credits >= 5) return false;
+		if (credits === "eq5" && g.credits !== 5) return false;
+		if (needle) {
+			const haystack = `${g.subjectCode} ${g.subjectName}`.toLowerCase();
+			if (!haystack.includes(needle)) return false;
+		}
+		if (onlyConflicts && !allConflictIds.has(g.groupId)) return false;
+		return true;
+	});
+});
 
-	const selectionHasConflict = $derived(allConflictIds.size > 0);
-	const selectionCount = $derived(selectedIds.size);
+const selectedGroups = $derived(groups.filter((g) => selectedIds.has(g.groupId)));
+const selectedCredits = $derived(selectedGroups.reduce((acc, g) => acc + g.credits, 0));
 
-	function toggleGroup(groupId: string): void {
-		const next = new Set(selectedIds);
-		if (next.has(groupId)) next.delete(groupId);
-		else next.add(groupId);
-		selectedIds = next;
-	}
+// ---------- Derived: schedule preview shapes ----------
+function blockToPreview(b: OfferBlock, kind: "enrolled" | "candidate"): PreviewBlock {
+	const g = groups.find((x) => x.groupId === b.groupId);
+	return {
+		id: b.id,
+		groupId: b.groupId,
+		day: b.day,
+		startTime: b.startTime,
+		endTime: b.endTime,
+		classroom: b.classroom,
+		subjectCode: g?.subjectCode ?? "—",
+		subjectName: g?.subjectName ?? "",
+		teacherName: g?.teacherName ?? "",
+		kind,
+	};
+}
 
-	function isSelected(groupId: string): boolean {
-		return selectedIds.has(groupId);
-	}
+const enrolledPreview = $derived(enrolledBlocks.map((b) => blockToPreview(b, "enrolled")));
+const candidatePreview = $derived(
+	allBlocks.filter((b) => selectedIds.has(b.groupId)).map((b) => blockToPreview(b, "candidate")),
+);
+
+const selectionHasConflict = $derived(allConflictIds.size > 0);
+const selectionCount = $derived(selectedIds.size);
+
+function toggleGroup(groupId: string): void {
+	const next = new Set(selectedIds);
+	if (next.has(groupId)) next.delete(groupId);
+	else next.add(groupId);
+	selectedIds = next;
+}
+
+function isSelected(groupId: string): boolean {
+	return selectedIds.has(groupId);
+}
 </script>
 
 {#if !period}
@@ -180,7 +170,11 @@
 			{#if groupToEnrolled.size > 0}
 				<div class="simulator__enrolled-note">
 					<CheckCircle2 size={16} strokeWidth={1.75} aria-hidden="true" />
-					<span>Inscrito en {groupToEnrolled.size} {groupToEnrolled.size === 1 ? 'materia' : 'materias'} este periodo.</span>
+					<span
+						>Inscrito en {groupToEnrolled.size}
+						{groupToEnrolled.size === 1 ? "materia" : "materias"}
+						este periodo.</span
+					>
 				</div>
 			{/if}
 
@@ -194,7 +188,7 @@
 			{#if filtered.length === 0}
 				<p class="simulator__empty">No hay grupos que coincidan con los filtros.</p>
 			{:else}
-				<ul class="simulator__list" role="list">
+				<ul class="simulator__list">
 					{#each filtered as g (g.groupId)}
 						{@const conflicts = allConflictIds.has(g.groupId)}
 						<li class="simulator__row" class:simulator__row--conflict={conflicts}>
@@ -206,15 +200,18 @@
 									checked={isSelected(g.groupId)}
 									onchange={() => toggleGroup(g.groupId)}
 									aria-describedby={`g-${g.groupId}-meta`}
-								/>
+								>
 								<span class="simulator__row-body">
 									<span class="simulator__row-top">
 										<span class="simulator__row-code">{g.subjectCode}</span>
 										<span class="simulator__row-name">{g.subjectName}</span>
 									</span>
 									<span class="simulator__row-meta" id={`g-${g.groupId}-meta`}>
-										{g.area} · {g.credits} créditos · {g.teacherName}
-										{#if g.hasLab}· Lab{/if}
+										{g.area}
+										· {g.credits} créditos · {g.teacherName}
+										{#if g.hasLab}
+											· Lab
+										{/if}
 									</span>
 									{#if conflicts}
 										<Badge variant="danger" size="sm" dot>
@@ -234,13 +231,10 @@
 			<header class="simulator__preview-header">
 				<h2 class="simulator__preview-title">Carga actual</h2>
 				<Badge variant="neutral" size="sm">
-					{selectionCount} {selectionCount === 1 ? 'grupo' : 'grupos'} · {selectedCredits} créditos
+					{selectionCount} {selectionCount === 1 ? "grupo" : "grupos"} · {selectedCredits} créditos
 				</Badge>
 			</header>
-			<SchedulePreview
-				enrolledBlocks={enrolledPreview}
-				candidateBlocks={candidatePreview}
-			/>
+			<SchedulePreview enrolledBlocks={enrolledPreview} candidateBlocks={candidatePreview} />
 		</section>
 
 		<footer class="simulator__footer">
@@ -250,7 +244,9 @@
 				size="lg"
 				disabled={selectionCount === 0 || selectionHasConflict}
 			>
-				{#snippet startIcon()}<FileSignature size={16} strokeWidth={1.75} aria-hidden="true" />{/snippet}
+				{#snippet startIcon()}
+					<FileSignature size={16} strokeWidth={1.75} aria-hidden="true" />
+				{/snippet}
 				Inscribir y firmar
 			</Button>
 			<p class="simulator__footer-help">
@@ -259,7 +255,8 @@
 				{:else if selectionCount === 0}
 					Selecciona al menos un grupo.
 				{:else}
-					La firma registra {selectionCount} {selectionCount === 1 ? 'materia' : 'materias'} en tu historial.
+					La firma registra {selectionCount} {selectionCount === 1 ? "materia" : "materias"} en tu
+					historial.
 				{/if}
 			</p>
 		</footer>
@@ -267,198 +264,198 @@
 {/if}
 
 <style>
+.simulator {
+	display: grid;
+	grid-template-columns: 280px minmax(0, 1fr);
+	grid-template-rows: auto auto auto;
+	grid-template-areas:
+		"filter catalog"
+		"filter preview"
+		"footer footer";
+	gap: var(--space-4);
+	font-family: var(--font-sans);
+}
+
+.simulator__filter {
+	grid-area: filter;
+	min-width: 0;
+}
+
+.simulator__catalog {
+	grid-area: catalog;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	min-width: 0;
+}
+
+.simulator__catalog-header {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--space-2);
+	flex-wrap: wrap;
+}
+
+.simulator__catalog-title {
+	margin: 0;
+	font-size: var(--text-md);
+	font-weight: var(--weight-semibold);
+	color: var(--fg-primary);
+}
+
+.simulator__catalog-sub {
+	margin: 0;
+	font-size: var(--text-sm);
+	color: var(--fg-tertiary);
+}
+
+.simulator__enrolled-note {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+	padding: var(--space-2) var(--space-3);
+	background-color: var(--success-50);
+	border: 1px solid color-mix(in srgb, var(--success-500) 20%, transparent);
+	border-radius: var(--radius-2);
+	color: var(--success-700);
+	font-size: var(--text-sm);
+}
+
+.simulator__error {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+	padding: var(--space-2) var(--space-3);
+	background-color: var(--danger-50);
+	border: 1px solid color-mix(in srgb, var(--danger-500) 20%, transparent);
+	border-radius: var(--radius-2);
+	color: var(--danger-700);
+	font-size: var(--text-sm);
+}
+
+.simulator__list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.simulator__row {
+	background-color: var(--surface-1);
+	border: 1px solid var(--border-subtle);
+	border-radius: var(--radius-2);
+	padding: var(--space-3);
+	transition: border-color var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.simulator__row:hover {
+	border-color: var(--border-default);
+}
+
+.simulator__row--conflict {
+	border-color: var(--danger-500);
+}
+
+.simulator__row-label {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--space-3);
+	cursor: pointer;
+}
+
+.simulator__row-label input {
+	margin-top: 4px;
+	cursor: pointer;
+}
+
+.simulator__row-body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+	min-width: 0;
+}
+
+.simulator__row-top {
+	display: flex;
+	align-items: baseline;
+	gap: var(--space-2);
+	flex-wrap: wrap;
+}
+
+.simulator__row-code {
+	font-family: var(--font-mono);
+	font-size: var(--text-sm);
+	font-weight: var(--weight-semibold);
+	color: var(--fg-primary);
+}
+
+.simulator__row-name {
+	font-size: var(--text-sm);
+	color: var(--fg-primary);
+}
+
+.simulator__row-meta {
+	font-size: var(--text-xs);
+	color: var(--fg-tertiary);
+}
+
+.simulator__preview {
+	grid-area: preview;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	min-width: 0;
+}
+
+.simulator__preview-header {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--space-2);
+}
+
+.simulator__preview-title {
+	margin: 0;
+	font-size: var(--text-md);
+	font-weight: var(--weight-semibold);
+	color: var(--fg-primary);
+}
+
+.simulator__footer {
+	grid-area: footer;
+	display: flex;
+	align-items: center;
+	gap: var(--space-4);
+	flex-wrap: wrap;
+	padding: var(--space-4);
+	background-color: var(--surface-1);
+	border: 1px solid var(--border-subtle);
+	border-radius: var(--radius-3);
+}
+
+.simulator__footer-help {
+	margin: 0;
+	font-size: var(--text-sm);
+	color: var(--fg-tertiary);
+}
+
+.simulator__empty {
+	margin: 0;
+	font-size: var(--text-sm);
+	color: var(--fg-tertiary);
+}
+
+@media (max-width: 960px) {
 	.simulator {
-		display: grid;
-		grid-template-columns: 280px minmax(0, 1fr);
-		grid-template-rows: auto auto auto;
+		grid-template-columns: 1fr;
 		grid-template-areas:
-			'filter catalog'
-			'filter preview'
-			'footer footer';
-		gap: var(--space-4);
-		font-family: var(--font-sans);
+			"filter"
+			"catalog"
+			"preview"
+			"footer";
 	}
-
-	.simulator__filter {
-		grid-area: filter;
-		min-width: 0;
-	}
-
-	.simulator__catalog {
-		grid-area: catalog;
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-3);
-		min-width: 0;
-	}
-
-	.simulator__catalog-header {
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		gap: var(--space-2);
-		flex-wrap: wrap;
-	}
-
-	.simulator__catalog-title {
-		margin: 0;
-		font-size: var(--text-md);
-		font-weight: var(--weight-semibold);
-		color: var(--fg-primary);
-	}
-
-	.simulator__catalog-sub {
-		margin: 0;
-		font-size: var(--text-sm);
-		color: var(--fg-tertiary);
-	}
-
-	.simulator__enrolled-note {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--space-2);
-		padding: var(--space-2) var(--space-3);
-		background-color: var(--success-50);
-		border: 1px solid color-mix(in srgb, var(--success-500) 20%, transparent);
-		border-radius: var(--radius-2);
-		color: var(--success-700);
-		font-size: var(--text-sm);
-	}
-
-	.simulator__error {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--space-2);
-		padding: var(--space-2) var(--space-3);
-		background-color: var(--danger-50);
-		border: 1px solid color-mix(in srgb, var(--danger-500) 20%, transparent);
-		border-radius: var(--radius-2);
-		color: var(--danger-700);
-		font-size: var(--text-sm);
-	}
-
-	.simulator__list {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-2);
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.simulator__row {
-		background-color: var(--surface-1);
-		border: 1px solid var(--border-subtle);
-		border-radius: var(--radius-2);
-		padding: var(--space-3);
-		transition: border-color var(--motion-duration-fast) var(--motion-ease-standard);
-	}
-
-	.simulator__row:hover {
-		border-color: var(--border-default);
-	}
-
-	.simulator__row--conflict {
-		border-color: var(--danger-500);
-	}
-
-	.simulator__row-label {
-		display: flex;
-		align-items: flex-start;
-		gap: var(--space-3);
-		cursor: pointer;
-	}
-
-	.simulator__row-label input {
-		margin-top: 4px;
-		cursor: pointer;
-	}
-
-	.simulator__row-body {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-1);
-		min-width: 0;
-	}
-
-	.simulator__row-top {
-		display: flex;
-		align-items: baseline;
-		gap: var(--space-2);
-		flex-wrap: wrap;
-	}
-
-	.simulator__row-code {
-		font-family: var(--font-mono);
-		font-size: var(--text-sm);
-		font-weight: var(--weight-semibold);
-		color: var(--fg-primary);
-	}
-
-	.simulator__row-name {
-		font-size: var(--text-sm);
-		color: var(--fg-primary);
-	}
-
-	.simulator__row-meta {
-		font-size: var(--text-xs);
-		color: var(--fg-tertiary);
-	}
-
-	.simulator__preview {
-		grid-area: preview;
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-3);
-		min-width: 0;
-	}
-
-	.simulator__preview-header {
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		gap: var(--space-2);
-	}
-
-	.simulator__preview-title {
-		margin: 0;
-		font-size: var(--text-md);
-		font-weight: var(--weight-semibold);
-		color: var(--fg-primary);
-	}
-
-	.simulator__footer {
-		grid-area: footer;
-		display: flex;
-		align-items: center;
-		gap: var(--space-4);
-		flex-wrap: wrap;
-		padding: var(--space-4);
-		background-color: var(--surface-1);
-		border: 1px solid var(--border-subtle);
-		border-radius: var(--radius-3);
-	}
-
-	.simulator__footer-help {
-		margin: 0;
-		font-size: var(--text-sm);
-		color: var(--fg-tertiary);
-	}
-
-	.simulator__empty {
-		margin: 0;
-		font-size: var(--text-sm);
-		color: var(--fg-tertiary);
-	}
-
-	@media (max-width: 960px) {
-		.simulator {
-			grid-template-columns: 1fr;
-			grid-template-areas:
-				'filter'
-				'catalog'
-				'preview'
-				'footer';
-		}
-	}
+}
 </style>

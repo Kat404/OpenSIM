@@ -23,7 +23,7 @@ const FNV_OFFSET_BASIS = 2166136261;
 const LIGHT_LIGHTNESS = 88;
 const DARK_LIGHTNESS = 28;
 
-export type Theme = 'light' | 'dark';
+export type Theme = "light" | "dark";
 
 /**
  * FNV-1a-style 32-bit hash of `subjectCode`, mapped into [0, 360).
@@ -46,6 +46,6 @@ export function hashHue(subjectCode: string): number {
  */
 export function getSubjectColor(subjectCode: string, theme: Theme): string {
 	const hue = hashHue(subjectCode);
-	const lightness = theme === 'dark' ? DARK_LIGHTNESS : LIGHT_LIGHTNESS;
+	const lightness = theme === "dark" ? DARK_LIGHTNESS : LIGHT_LIGHTNESS;
 	return `hsl(${hue}, 60%, ${lightness}%)`;
 }

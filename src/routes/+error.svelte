@@ -11,17 +11,17 @@
   state to the public error page.
 -->
 <script lang="ts">
-	import { page } from '$app/state';
-	import { Card } from '#lib/components/ui';
+import { Card } from "#lib/components/ui";
+import { page } from "$app/state";
 
-	const status = $derived(page.status);
-	const message = $derived(page.error?.message ?? '');
-	const isNotFound = $derived(status === 404);
+const status = $derived(page.status);
+const message = $derived(page.error?.message ?? "");
+const isNotFound = $derived(status === 404);
 </script>
 
 <svelte:head>
 	<title>{status} — OpenSIM</title>
-	<meta name="robots" content="noindex" />
+	<meta name="robots" content="noindex">
 </svelte:head>
 
 <main class="error" aria-labelledby="error-title">
@@ -57,74 +57,74 @@
 </main>
 
 <style>
-	.error {
-		min-height: 100dvh;
-		display: grid;
-		place-items: center;
-		padding: var(--space-6) var(--space-4);
-		background-color: var(--surface-0);
-		font-family: var(--font-sans);
-	}
+.error {
+	min-height: 100dvh;
+	display: grid;
+	place-items: center;
+	padding: var(--space-6) var(--space-4);
+	background-color: var(--surface-0);
+	font-family: var(--font-sans);
+}
 
-	.error__inner {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-3);
-		max-width: 480px;
-	}
+.error__inner {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	max-width: 480px;
+}
 
-	.error__eyebrow {
-		margin: 0;
-		font-size: var(--text-xs);
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--fg-tertiary);
-	}
+.error__eyebrow {
+	margin: 0;
+	font-size: var(--text-xs);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--fg-tertiary);
+}
 
-	.error__title {
-		margin: 0;
-		font-size: var(--text-2xl);
-		font-weight: var(--weight-semibold);
-		color: var(--fg-primary);
-	}
+.error__title {
+	margin: 0;
+	font-size: var(--text-2xl);
+	font-weight: var(--weight-semibold);
+	color: var(--fg-primary);
+}
 
-	.error__sub {
-		margin: 0;
-		font-size: var(--text-base);
-		color: var(--fg-secondary);
-	}
+.error__sub {
+	margin: 0;
+	font-size: var(--text-base);
+	color: var(--fg-secondary);
+}
 
-	.error__sub a {
-		color: var(--brand-700);
-	}
+.error__sub a {
+	color: var(--brand-700);
+}
 
-	.error__details {
-		margin-top: var(--space-2);
-		padding: var(--space-2) var(--space-3);
-		background-color: var(--surface-2);
-		border-radius: var(--radius-2);
-	}
+.error__details {
+	margin-top: var(--space-2);
+	padding: var(--space-2) var(--space-3);
+	background-color: var(--surface-2);
+	border-radius: var(--radius-2);
+}
 
-	.error__details summary {
-		cursor: pointer;
-		font-size: var(--text-sm);
-		color: var(--fg-secondary);
-	}
+.error__details summary {
+	cursor: pointer;
+	font-size: var(--text-sm);
+	color: var(--fg-secondary);
+}
 
-	.error__details pre {
-		margin: var(--space-2) 0 0;
-		font-family: var(--font-mono);
-		font-size: var(--text-xs);
-		color: var(--fg-tertiary);
-		white-space: pre-wrap;
-		word-break: break-word;
-	}
+.error__details pre {
+	margin: var(--space-2) 0 0;
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	color: var(--fg-tertiary);
+	white-space: pre-wrap;
+	word-break: break-word;
+}
 
-	.error__actions {
-		margin-top: var(--space-2);
-	}
+.error__actions {
+	margin-top: var(--space-2);
+}
 
-	.error__actions .btn {
-		text-decoration: none;
-	}
+.error__actions .btn {
+	text-decoration: none;
+}
 </style>

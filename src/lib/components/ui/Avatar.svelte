@@ -1,156 +1,158 @@
 <script lang="ts" module>
-	export const STATUS_LABEL_ES = {
-		online: 'en línea',
-		offline: 'desconectado',
-		busy: 'ocupado',
-		away: 'ausente'
-	} as const;
+export const STATUS_LABEL_ES = {
+	online: "en línea",
+	offline: "desconectado",
+	busy: "ocupado",
+	away: "ausente",
+} as const;
 
-	export type AvatarStatus = keyof typeof STATUS_LABEL_ES;
+export type AvatarStatus = keyof typeof STATUS_LABEL_ES;
 
-	export function composeAltText(
-		name: string,
-		status: AvatarStatus | undefined,
-		alt?: string
-	): string {
-		if (alt) return alt;
-		if (!name) {
-			if (status) return `Avatar, ${STATUS_LABEL_ES[status]}`;
-			return 'Avatar';
-		}
-		if (status) return `${name}, ${STATUS_LABEL_ES[status]}`;
-		return `Avatar de ${name}`;
+export function composeAltText(
+	name: string,
+	status: AvatarStatus | undefined,
+	alt?: string,
+): string {
+	if (alt) return alt;
+	if (!name) {
+		if (status) return `Avatar, ${STATUS_LABEL_ES[status]}`;
+		return "Avatar";
 	}
+	if (status) return `${name}, ${STATUS_LABEL_ES[status]}`;
+	return `Avatar de ${name}`;
+}
 
-	export function initials(n: string): string {
-		if (!n.trim()) return '?';
-		const parts = n.trim().split(/\s+/);
-		if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
-		return (parts[0]![0]! + parts[parts.length - 1]![0]!).toUpperCase();
-	}
+export function initials(n: string): string {
+	if (!n.trim()) return "?";
+	const parts = n.trim().split(/\s+/);
+	if (parts.length === 1) return (parts[0] ?? "").slice(0, 2).toUpperCase();
+	return ((parts[0]?.[0] ?? "") + (parts[parts.length - 1]?.[0] ?? "")).toUpperCase();
+}
 </script>
 
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+import type { Snippet } from "svelte";
 
-	interface Props {
-		name?: string;
-		src?: string;
-		size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-		shape?: 'circle' | 'square';
-		alt?: string;
-		status?: AvatarStatus;
-		children?: Snippet;
-	}
+interface Props {
+	name?: string;
+	src?: string;
+	size?: "xs" | "sm" | "md" | "lg" | "xl";
+	shape?: "circle" | "square";
+	alt?: string;
+	status?: AvatarStatus;
+	children?: Snippet;
+}
 
-	let { name = '', src, size = 'md', shape = 'circle', alt, status, children }: Props = $props();
+let { name = "", src, size = "md", shape = "circle", alt, status, children }: Props = $props();
 
-	const initialsText = $derived(initials(name));
-	const altText = $derived(composeAltText(name, status, alt));
+const initialsText = $derived(initials(name));
+const altText = $derived(composeAltText(name, status, alt));
 </script>
 
 <span class="avatar-frame">
 	<span class="avatar avatar--{size} avatar--{shape}" role="img" aria-label={altText}>
 		{#if src}
-			<img {src} alt="" class="avatar__img" />
+			<img {src} alt="" class="avatar__img">
 		{:else if children}
 			{@render children()}
 		{:else}
 			<span class="avatar__initials" aria-hidden="true">{initialsText}</span>
 		{/if}
 	</span>
-	{#if status}<span class="avatar__status avatar__status--{status}"></span>{/if}
+	{#if status}
+		<span class="avatar__status avatar__status--{status}"></span>
+	{/if}
 </span>
 
 <style>
-	.avatar-frame {
-		position: relative;
-		display: inline-flex;
-		flex-shrink: 0;
-		--avatar-ring: var(--surface-0);
-	}
+.avatar-frame {
+	position: relative;
+	display: inline-flex;
+	flex-shrink: 0;
+	--avatar-ring: var(--surface-0);
+}
 
-	.avatar {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		background-color: var(--brand-100);
-		color: var(--brand-700);
-		font-family: var(--font-sans);
-		font-weight: var(--weight-semibold);
-		overflow: hidden;
-		user-select: none;
-	}
+.avatar {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--brand-100);
+	color: var(--brand-700);
+	font-family: var(--font-sans);
+	font-weight: var(--weight-semibold);
+	overflow: hidden;
+	user-select: none;
+}
 
-	.avatar--circle {
-		border-radius: 50%;
-	}
+.avatar--circle {
+	border-radius: 50%;
+}
 
-	.avatar--square {
-		border-radius: var(--radius-3);
-	}
+.avatar--square {
+	border-radius: var(--radius-3);
+}
 
-	.avatar--xs {
-		width: 24px;
-		height: 24px;
-		font-size: 10px;
-	}
-	.avatar--sm {
-		width: 32px;
-		height: 32px;
-		font-size: var(--text-xs);
-	}
-	.avatar--md {
-		width: 40px;
-		height: 40px;
-		font-size: var(--text-sm);
-	}
-	.avatar--lg {
-		width: 56px;
-		height: 56px;
-		font-size: var(--text-base);
-	}
-	.avatar--xl {
-		width: 80px;
-		height: 80px;
-		font-size: var(--text-lg);
-	}
+.avatar--xs {
+	width: 24px;
+	height: 24px;
+	font-size: 10px;
+}
+.avatar--sm {
+	width: 32px;
+	height: 32px;
+	font-size: var(--text-xs);
+}
+.avatar--md {
+	width: 40px;
+	height: 40px;
+	font-size: var(--text-sm);
+}
+.avatar--lg {
+	width: 56px;
+	height: 56px;
+	font-size: var(--text-base);
+}
+.avatar--xl {
+	width: 80px;
+	height: 80px;
+	font-size: var(--text-lg);
+}
 
-	.avatar__img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		display: block;
-	}
+.avatar__img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
 
-	.avatar__initials {
-		text-transform: uppercase;
-	}
+.avatar__initials {
+	text-transform: uppercase;
+}
 
-	.avatar__status {
-		position: absolute;
-		bottom: 0;
-		right: 0;
-		width: 25%;
-		height: 25%;
-		border-radius: 50%;
-		/* box-shadow, not border: with global box-sizing: border-box
+.avatar__status {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 25%;
+	height: 25%;
+	border-radius: 50%;
+	/* box-shadow, not border: with global box-sizing: border-box
 		   (tokens.css:299-303) a 2px border eats the 25% fill at xs/sm.
 		   Spread paints outward. Do not "fix" back to border. */
-		box-shadow: 0 0 0 2px var(--avatar-ring);
-		transform: translate(50%, 50%);
-	}
+	box-shadow: 0 0 0 2px var(--avatar-ring);
+	transform: translate(50%, 50%);
+}
 
-	.avatar__status--online {
-		background-color: var(--success-700);
-	}
-	.avatar__status--offline {
-		background-color: var(--fg-tertiary);
-	}
-	.avatar__status--busy {
-		background-color: var(--danger-500);
-	}
-	.avatar__status--away {
-		background-color: var(--warning-700);
-	}
+.avatar__status--online {
+	background-color: var(--success-700);
+}
+.avatar__status--offline {
+	background-color: var(--fg-tertiary);
+}
+.avatar__status--busy {
+	background-color: var(--danger-500);
+}
+.avatar__status--away {
+	background-color: var(--warning-700);
+}
 </style>

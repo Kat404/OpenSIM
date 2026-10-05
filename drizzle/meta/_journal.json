@@ -1,48 +1,48 @@
 {
-  "version": "7",
-  "dialect": "sqlite",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "6",
-      "when": 1790969241946,
-      "tag": "0000_tough_scalphunter",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1790996606282,
-      "tag": "0001_many_human_fly",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1790999222868,
-      "tag": "0002_unusual_radioactive_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1791000330371,
-      "tag": "0003_rainy_rumiko_fujikawa",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1791004122218,
-      "tag": "0004_clammy_miss_america",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1791049564275,
-      "tag": "0005_uneven_whizzer",
-      "breakpoints": true
-    }
-  ]
+	"version": "7",
+	"dialect": "sqlite",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "6",
+			"when": 1790969241946,
+			"tag": "0000_tough_scalphunter",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "6",
+			"when": 1790996606282,
+			"tag": "0001_many_human_fly",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "6",
+			"when": 1790999222868,
+			"tag": "0002_unusual_radioactive_man",
+			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "6",
+			"when": 1791000330371,
+			"tag": "0003_rainy_rumiko_fujikawa",
+			"breakpoints": true
+		},
+		{
+			"idx": 4,
+			"version": "6",
+			"when": 1791004122218,
+			"tag": "0004_clammy_miss_america",
+			"breakpoints": true
+		},
+		{
+			"idx": 5,
+			"version": "6",
+			"when": 1791049564275,
+			"tag": "0005_uneven_whizzer",
+			"breakpoints": true
+		}
+	]
 }

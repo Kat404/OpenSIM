@@ -21,8 +21,8 @@
  * caller wraps it in a Response with `Content-Type: application/pdf`.
  */
 
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
-import type { CourseGroup, CourseScheduleBlock } from '../db/schema';
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import type { CourseGroup, CourseScheduleBlock } from "../db/schema";
 
 export interface CargaPdfInput {
 	profile: {
@@ -46,7 +46,7 @@ const END_HOUR = 22;
 const PIXELS_PER_HOUR = 60; // 60pt = 1 hour, matches the in-app grid
 const HOUR_ROW_HEIGHT = (END_HOUR - START_HOUR) * (PIXELS_PER_HOUR / 2); // 15h * 30pt = 450pt grid
 
-const DAY_LETTERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'] as const;
+const DAY_LETTERS = ["L", "M", "X", "J", "V", "S", "D"] as const;
 type DayLetter = (typeof DAY_LETTERS)[number];
 
 // Letter width: 612pt - 2*50pt margin = 512pt. Subtract the 40pt
@@ -71,7 +71,7 @@ function parseHHMM(s: string): number | null {
 
 function formatNow(): string {
 	const d = new Date();
-	const pad = (n: number) => String(n).padStart(2, '0');
+	const pad = (n: number) => String(n).padStart(2, "0");
 	return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
@@ -91,9 +91,9 @@ function dayLetter(b: CourseScheduleBlock): DayLetter | null {
  */
 export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array> {
 	const doc = await PDFDocument.create();
-	doc.setTitle('Carga Académica — OpenSIM');
-	doc.setAuthor('TecNM Morelia');
-	doc.setSubject('Carga académica del periodo ' + input.period);
+	doc.setTitle("Carga Académica — OpenSIM");
+	doc.setAuthor("TecNM Morelia");
+	doc.setSubject(`Carga académica del periodo ${input.period}`);
 
 	const helv = await doc.embedFont(StandardFonts.Helvetica);
 	const helvBold = await doc.embedFont(StandardFonts.HelveticaBold);
@@ -103,12 +103,12 @@ export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array
 	let cursorY = PAGE_HEIGHT - MARGIN;
 
 	// ---------- Title ----------
-	page.drawText('TecNM Morelia — Carga Académica', {
+	page.drawText("TecNM Morelia — Carga Académica", {
 		x: MARGIN,
 		y: cursorY - 18,
 		size: 16,
 		font: helvBold,
-		color: BLACK
+		color: BLACK,
 	});
 	cursorY -= 22;
 	page.drawText(`Periodo: ${input.period}`, {
@@ -116,7 +116,7 @@ export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array
 		y: cursorY - 14,
 		size: 10,
 		font: courier,
-		color: GRAY
+		color: GRAY,
 	});
 	cursorY -= 22;
 
@@ -125,10 +125,10 @@ export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array
 	const valueX = MARGIN + 90;
 	const rowGap = 14;
 	const infoRows: Array<[string, string]> = [
-		['Número de control', input.profile.controlNumber],
-		['Nombre', input.profile.fullName],
-		['Carrera', input.profile.careerCode],
-		['Semestre', String(input.profile.currentSemester)]
+		["Número de control", input.profile.controlNumber],
+		["Nombre", input.profile.fullName],
+		["Carrera", input.profile.careerCode],
+		["Semestre", String(input.profile.currentSemester)],
 	];
 	for (const [label, value] of infoRows) {
 		page.drawText(label, { x: labelX, y: cursorY, size: 9, font: helvBold, color: GRAY });
@@ -138,20 +138,20 @@ export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array
 	cursorY -= 8;
 
 	// ---------- Grid header ----------
-	const gridTop = cursorY;
-	page.drawText('Horario semanal', {
+	const _gridTop = cursorY;
+	page.drawText("Horario semanal", {
 		x: MARGIN,
 		y: cursorY,
 		size: 11,
 		font: helvBold,
-		color: BLACK
+		color: BLACK,
 	});
 	cursorY -= 6;
 	page.drawLine({
 		start: { x: MARGIN, y: cursorY },
 		end: { x: PAGE_WIDTH - MARGIN, y: cursorY },
 		thickness: 0.5,
-		color: LIGHT
+		color: LIGHT,
 	});
 	cursorY -= 14;
 
@@ -167,19 +167,19 @@ export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array
 			y: gridOriginY + 6,
 			size: 9,
 			font: helvBold,
-			color: BLACK
+			color: BLACK,
 		});
 	}
 	// Hour gutter labels (07:00, 08:00, ..., 21:00 — 22:00 sits at the bottom of the last row)
 	for (let h = START_HOUR; h <= END_HOUR; h++) {
 		const y = gridOriginY - (h - START_HOUR) * rowHeight - 2;
-		const label = `${String(h).padStart(2, '0')}:00`;
+		const label = `${String(h).padStart(2, "0")}:00`;
 		page.drawText(label, {
 			x: MARGIN,
 			y,
 			size: 7,
 			font: courier,
-			color: GRAY
+			color: GRAY,
 		});
 	}
 
@@ -190,7 +190,7 @@ export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array
 			start: { x: gridLeft, y },
 			end: { x: gridLeft + 7 * DAY_COL_WIDTH, y },
 			thickness: 0.5,
-			color: LIGHT
+			color: LIGHT,
 		});
 	}
 	// Day-column vertical separators
@@ -200,7 +200,7 @@ export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array
 			start: { x, y: gridOriginY },
 			end: { x, y: gridOriginY - HOUR_ROW_HEIGHT },
 			thickness: 0.5,
-			color: LIGHT
+			color: LIGHT,
 		});
 	}
 
@@ -230,13 +230,13 @@ export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array
 			height,
 			color: ACCENT_BG,
 			borderColor: BRAND,
-			borderWidth: 0.75
+			borderWidth: 0.75,
 		});
 
 		const canonical = groupIdToCanonical.get(b.groupId);
 		const meta = canonical ? input.subjects.get(canonical) : undefined;
-		const code = meta?.code ?? '—';
-		const name = meta?.name ?? '';
+		const code = meta?.code ?? "—";
+		const name = meta?.name ?? "";
 
 		// Subject code (bold)
 		page.drawText(code, {
@@ -244,7 +244,7 @@ export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array
 			y: top - 10,
 			size: 7,
 			font: helvBold,
-			color: BLACK
+			color: BLACK,
 		});
 		// Subject name (truncated to fit column)
 		if (height >= 20) {
@@ -253,7 +253,7 @@ export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array
 				y: top - 18,
 				size: 6.5,
 				font: helv,
-				color: BLACK
+				color: BLACK,
 			});
 		}
 		// Classroom + time (mono)
@@ -263,7 +263,7 @@ export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array
 			y: top - height + 2,
 			size: 5.5,
 			font: courier,
-			color: GRAY
+			color: GRAY,
 		});
 		if (height >= 24) {
 			page.drawText(truncate(b.classroom, 18, courier, 5.5), {
@@ -271,7 +271,7 @@ export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array
 				y: top - height + 9,
 				size: 5.5,
 				font: courier,
-				color: GRAY
+				color: GRAY,
 			});
 		}
 	}
@@ -283,20 +283,20 @@ export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array
 		y: footerY + 18,
 		size: 7,
 		font: courier,
-		color: GRAY
+		color: GRAY,
 	});
 	page.drawLine({
 		start: { x: PAGE_WIDTH - MARGIN - 200, y: footerY + 14 },
 		end: { x: PAGE_WIDTH - MARGIN, y: footerY + 14 },
 		thickness: 0.5,
-		color: BLACK
+		color: BLACK,
 	});
-	page.drawText('Firma del alumno', {
+	page.drawText("Firma del alumno", {
 		x: PAGE_WIDTH - MARGIN - 80,
 		y: footerY + 4,
 		size: 7,
 		font: helv,
-		color: GRAY
+		color: GRAY,
 	});
 
 	return await doc.save();
@@ -308,7 +308,12 @@ export async function generateCargaPdf(input: CargaPdfInput): Promise<Uint8Array
  * The width helper is `font.widthOfTextAtSize(s, size)` which is
  * the pdf-lib way to measure text before drawing.
  */
-function truncate(s: string, maxChars: number, font: import('pdf-lib').PDFFont, size: number): string {
+function truncate(
+	s: string,
+	maxChars: number,
+	_font: import("pdf-lib").PDFFont,
+	_size: number,
+): string {
 	if (s.length <= maxChars) return s;
-	return s.slice(0, maxChars - 1) + '…';
+	return `${s.slice(0, maxChars - 1)}…`;
 }

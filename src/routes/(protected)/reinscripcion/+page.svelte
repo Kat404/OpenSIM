@@ -7,16 +7,19 @@
   component; this page just lays out the chrome.
 -->
 <script lang="ts">
-	import type { PageData, ActionData } from './$types';
-	import EnrollmentSimulator from '#lib/components/simulador/EnrollmentSimulator.svelte';
+import EnrollmentSimulator from "#lib/components/simulador/EnrollmentSimulator.svelte";
+import type { ActionData, PageData } from "./$types";
 
-	let { data, form }: { data: PageData; form: ActionData } = $props();
-	const formError = $derived(form && 'error' in form ? form.error : null);
+let { data, form }: { data: PageData; form: ActionData } = $props();
+const formError = $derived(form && "error" in form ? form.error : null);
 </script>
 
 <svelte:head>
 	<title>Reinscripción — OpenSIM</title>
-	<meta name="description" content="Simulador de reinscripción con detección de conflictos de horario." />
+	<meta
+		name="description"
+		content="Simulador de reinscripción con detección de conflictos de horario."
+	>
 </svelte:head>
 
 <section class="reinscripcion">
@@ -24,7 +27,8 @@
 		<p class="reinscripcion__eyebrow">Reinscripción</p>
 		<h1 class="reinscripcion__title">Simulador de Reinscripción</h1>
 		<p class="reinscripcion__sub">
-			Selecciona los grupos que deseas cursar este periodo. La firma se aplica a todos en un solo paso.
+			Selecciona los grupos que deseas cursar este periodo. La firma se aplica a todos en un solo
+			paso.
 		</p>
 	</header>
 
@@ -39,37 +43,37 @@
 </section>
 
 <style>
-	.reinscripcion {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-5);
-	}
+.reinscripcion {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-5);
+}
 
-	.reinscripcion__header {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-1);
-	}
+.reinscripcion__header {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+}
 
-	.reinscripcion__eyebrow {
-		margin: 0;
-		font-size: var(--text-xs);
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--fg-tertiary);
-	}
+.reinscripcion__eyebrow {
+	margin: 0;
+	font-size: var(--text-xs);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--fg-tertiary);
+}
 
-	.reinscripcion__title {
-		margin: 0;
-		font-size: var(--text-2xl);
-		font-weight: var(--weight-semibold);
-		color: var(--fg-primary);
-	}
+.reinscripcion__title {
+	margin: 0;
+	font-size: var(--text-2xl);
+	font-weight: var(--weight-semibold);
+	color: var(--fg-primary);
+}
 
-	.reinscripcion__sub {
-		margin: 0;
-		font-size: var(--text-sm);
-		color: var(--fg-tertiary);
-		max-width: 720px;
-	}
+.reinscripcion__sub {
+	margin: 0;
+	font-size: var(--text-sm);
+	color: var(--fg-tertiary);
+	max-width: 720px;
+}
 </style>

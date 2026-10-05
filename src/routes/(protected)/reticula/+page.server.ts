@@ -11,17 +11,17 @@
  * `StudentProfile` row, only the fields the retícula needs.
  */
 
-import { asc, eq } from 'drizzle-orm';
-import { env as workerEnv } from 'cloudflare:workers';
-import type { OpenSimWorkerEnv } from '../../../cloudflare-workers';
-import type { PageServerLoad } from './$types';
-import { getDb } from '#lib/server/db';
+import { env as workerEnv } from "cloudflare:workers";
+import { asc, eq } from "drizzle-orm";
+import { getDb } from "#lib/server/db";
 import {
+	type StudentProgressStatus,
 	studentProgress,
 	subjectPrerequisites,
 	subjects,
-	type StudentProgressStatus
-} from '#lib/server/db/schema';
+} from "#lib/server/db/schema";
+import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
+import type { PageServerLoad } from "./$types";
 
 const env = workerEnv as OpenSimWorkerEnv;
 
@@ -39,7 +39,8 @@ export interface RetEdge {
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const u = locals.user!;
+	const u = locals.user;
+	const hasUser = !!u;
 
 	if (!env.DB) {
 		return { subjects: [], edges: [], statusByCanonicalId: {} } satisfies {
@@ -50,6 +51,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	const db = getDb(env.DB);
+	if (!hasUser) {
+		return { subjects: [], edges: [], statusByCanonicalId: {} } satisfies {
+			subjects: RetSubject[];
+			edges: RetEdge[];
+			statusByCanonicalId: Record<string, StudentProgressStatus>;
+		};
+	}
 
 	const [subjectRows, edgeRows, progressRows] = await db.batch([
 		db
@@ -58,23 +66,23 @@ export const load: PageServerLoad = async ({ locals }) => {
 				code: subjects.code,
 				name: subjects.name,
 				semester: subjects.semester,
-				credits: subjects.credits
+				credits: subjects.credits,
 			})
 			.from(subjects)
 			.orderBy(asc(subjects.semester), asc(subjects.code)),
 		db
 			.select({
 				from: subjectPrerequisites.prerequisiteCanonicalId,
-				to: subjectPrerequisites.subjectCanonicalId
+				to: subjectPrerequisites.subjectCanonicalId,
 			})
 			.from(subjectPrerequisites),
 		db
 			.select({
 				subjectCanonicalId: studentProgress.subjectCanonicalId,
-				status: studentProgress.status
+				status: studentProgress.status,
 			})
 			.from(studentProgress)
-			.where(eq(studentProgress.studentControlNumber, u.controlNumber))
+			.where(eq(studentProgress.studentControlNumber, u.controlNumber)),
 	]);
 
 	// Build a quick lookup for "is every prerequisite of this subject
@@ -84,7 +92,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// is AVAILABLE unless a prereq is missing, in which case LOCKED.
 	const approvedSet = new Set<string>();
 	for (const p of progressRows) {
-		if (p.status === 'APPROVED') approvedSet.add(p.subjectCanonicalId);
+		if (p.status === "APPROVED") approvedSet.add(p.subjectCanonicalId);
 	}
 	const statusByCanonicalId: Record<string, StudentProgressStatus> = {};
 	for (const p of progressRows) {
@@ -100,12 +108,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 		if (statusByCanonicalId[s.canonicalId]) continue; // already explicit
 		const incoming = incomingBySubject.get(s.canonicalId) ?? [];
 		const locked = incoming.some((p) => !approvedSet.has(p));
-		statusByCanonicalId[s.canonicalId] = locked ? 'LOCKED' : 'AVAILABLE';
+		statusByCanonicalId[s.canonicalId] = locked ? "LOCKED" : "AVAILABLE";
 	}
 
 	return {
 		subjects: subjectRows,
 		edges: edgeRows,
-		statusByCanonicalId
+		statusByCanonicalId,
 	};
 };

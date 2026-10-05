@@ -29,7 +29,7 @@ export const MAX_GRADE = 10.0;
 export const MIN_GRADE = 0.0;
 
 /** The three evaluation types TecNM recognises for a subject. */
-export const EVALUATION_TYPES = ['ORDINARIO', 'REPETICION', 'ESPECIAL'] as const;
+export const EVALUATION_TYPES = ["ORDINARIO", "REPETICION", "ESPECIAL"] as const;
 
 /** Convenience union of the evaluation-type tuple. */
 export type EvaluationType = (typeof EVALUATION_TYPES)[number];

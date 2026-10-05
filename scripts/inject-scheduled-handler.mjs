@@ -24,22 +24,20 @@
  * Idempotent: a marker comment lets re-runs no-op without producing
  * duplicate `scheduled` methods.
  */
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
-const WORKER_PATH = '.svelte-kit/cloudflare/_worker.js';
+const WORKER_PATH = ".svelte-kit/cloudflare/_worker.js";
 
 if (!existsSync(WORKER_PATH)) {
-	console.error(
-		`[inject-scheduled] ${WORKER_PATH} not found — was vite build skipped?`
-	);
+	console.error(`[inject-scheduled] ${WORKER_PATH} not found — was vite build skipped?`);
 	process.exit(1);
 }
 
-const src = readFileSync(WORKER_PATH, 'utf8');
+const src = readFileSync(WORKER_PATH, "utf8");
 
-const MARKER = '/* injected-by:scripts/inject-scheduled-handler.mjs */';
+const MARKER = "/* injected-by:scripts/inject-scheduled-handler.mjs */";
 if (src.includes(MARKER)) {
-	console.log('[inject-scheduled] worker already patched — skipping (idempotent).');
+	console.log("[inject-scheduled] worker already patched — skipping (idempotent).");
 	process.exit(0);
 }
 
@@ -57,31 +55,31 @@ const SCHEDULED_BODY = `	async scheduled(event, env, _ctx) {
 		}
 	},`;
 
-const lines = src.split('\n');
+const lines = src.split("\n");
 const exportIdx = lines.findIndex((l) => /^export default \{/.test(l));
 if (exportIdx === -1) {
 	console.error(
-		'[inject-scheduled] could not find `export default {` in ' +
+		"[inject-scheduled] could not find `export default {` in " +
 			WORKER_PATH +
-			' — adapter output shape changed?'
+			" — adapter output shape changed?",
 	);
 	process.exit(1);
 }
 
 let closeIdx = -1;
 for (let i = exportIdx + 1; i < lines.length; i++) {
-	if (lines[i].trim() === '};') {
+	if (lines[i].trim() === "};") {
 		closeIdx = i;
 		break;
 	}
 }
 if (closeIdx === -1) {
-	console.error('[inject-scheduled] could not find closing `};` for default export');
+	console.error("[inject-scheduled] could not find closing `};` for default export");
 	process.exit(1);
 }
 
 lines.splice(closeIdx, 0, MARKER, SCHEDULED_BODY);
-writeFileSync(WORKER_PATH, lines.join('\n'));
+writeFileSync(WORKER_PATH, lines.join("\n"));
 console.log(
-	`[inject-scheduled] patched ${WORKER_PATH} — scheduled handler added to default export.`
+	`[inject-scheduled] patched ${WORKER_PATH} — scheduled handler added to default export.`,
 );

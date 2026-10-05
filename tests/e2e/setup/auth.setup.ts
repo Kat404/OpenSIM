@@ -13,19 +13,19 @@
  *   controlNumber: <NUMERO DE CONTROL PURGADO>
  *   password:      opensim-dev-2026
  */
-import { test as setup, expect } from '@playwright/test';
+import { expect, test as setup } from "@playwright/test";
 
-const AUTH_FILE = 'playwright/.auth/storage.json';
+const AUTH_FILE = "playwright/.auth/storage.json";
 
-setup('authenticate as test student <NUMERO DE CONTROL PURGADO>', async ({ page }) => {
-	await page.goto('/login');
+setup("authenticate as test student <NUMERO DE CONTROL PURGADO>", async ({ page }) => {
+	await page.goto("/login");
 
-	await page.fill('input[name="controlNumber"]', '<NUMERO DE CONTROL PURGADO>');
-	await page.fill('input[name="password"]', 'opensim-dev-2026');
+	await page.fill('input[name="controlNumber"]', "<NUMERO DE CONTROL PURGADO>");
+	await page.fill('input[name="password"]', "opensim-dev-2026");
 
 	await Promise.all([
-		page.waitForURL((url) => !url.pathname.startsWith('/login'), { timeout: 15_000 }),
-		page.click('button[type="submit"]')
+		page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15_000 }),
+		page.click('button[type="submit"]'),
 	]);
 
 	// The (protected) layout bounces to /dashboard on success.

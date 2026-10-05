@@ -27,7 +27,7 @@
  * See: odd/tasks/opensim.md §16 (audit NEW-2).
  */
 
-const SENTINEL_ORIGIN = 'https://internal.invalid';
+const SENTINEL_ORIGIN = "https://internal.invalid";
 
 /**
  * Returns a path-only string suitable for SvelteKit's `redirect()`,
@@ -37,17 +37,17 @@ const SENTINEL_ORIGIN = 'https://internal.invalid';
  */
 export function safeInternalRedirect(
 	target: string | null | undefined,
-	fallback = '/dashboard'
+	fallback = "/dashboard",
 ): string {
 	if (!target) return fallback;
 
 	// Reject open-redirect vectors: protocol-relative URLs and backslash.
-	if (target.startsWith('//') || target.startsWith('\\') || target.startsWith('/\\')) {
+	if (target.startsWith("//") || target.startsWith("\\") || target.startsWith("/\\")) {
 		return fallback;
 	}
 
 	// Must start with single forward slash.
-	if (!target.startsWith('/')) return fallback;
+	if (!target.startsWith("/")) return fallback;
 
 	// Parse to verify it's a same-origin path. Using a sentinel base
 	// means we don't depend on the current request origin and we

@@ -19,9 +19,9 @@
  *   project without extra dependencies.
  */
 
-import { describe, it, expect } from 'vitest';
-import { getCurrentEnrollment, getCurrentPeriod } from '../../src/lib/server/enrollment';
-import type { Database } from '../../src/lib/server/db';
+import { describe, expect, it } from "vitest";
+import type { Database } from "../../src/lib/server/db";
+import { getCurrentEnrollment, getCurrentPeriod } from "../../src/lib/server/enrollment";
 
 /**
  * Build a thenable proxy that records the chain shape but resolves
@@ -36,7 +36,7 @@ function makeMockDb(results: unknown[]): Database {
 		{},
 		{
 			get(_target, prop) {
-				if (prop === 'then') {
+				if (prop === "then") {
 					return (onFulfilled: (v: unknown) => unknown) => {
 						const value = cursor < results.length ? results[cursor++] : resolved.value;
 						return Promise.resolve(onFulfilled(value));
@@ -46,114 +46,120 @@ function makeMockDb(results: unknown[]): Database {
 				// the chain compiles and the final await returns the
 				// next queued result.
 				return () => proxy;
-			}
-		}
+			},
+		},
 	);
 	return proxy as Database;
 }
 
-describe('getCurrentPeriod', () => {
-	it('returns null when the student has no progress rows', async () => {
+describe("getCurrentPeriod", () => {
+	it("returns null when the student has no progress rows", async () => {
 		const db = makeMockDb([[]]);
-		const period = await getCurrentPeriod(db, '<NUMERO DE CONTROL PURGADO>');
+		const period = await getCurrentPeriod(db, "<NUMERO DE CONTROL PURGADO>");
 		expect(period).toBeNull();
 	});
 
-	it('returns the most recent ENROLLED period from student_progress', async () => {
+	it("returns the most recent ENROLLED period from student_progress", async () => {
 		// Drizzle's `where(... status = ENROLLED).orderBy(desc(period)).limit(1)`
 		// returns the first row; the mock pretends the DB already sorted
 		// and already filtered to ENROLLED.
-		const db = makeMockDb([[{ period: 'AGOSTO-DICIEMBRE/2026' }]]);
-		const period = await getCurrentPeriod(db, '<NUMERO DE CONTROL PURGADO>');
-		expect(period).toBe('AGOSTO-DICIEMBRE/2026');
+		const db = makeMockDb([[{ period: "AGOSTO-DICIEMBRE/2026" }]]);
+		const period = await getCurrentPeriod(db, "<NUMERO DE CONTROL PURGADO>");
+		expect(period).toBe("AGOSTO-DICIEMBRE/2026");
 	});
 
-	it('ignores LOCKED/APPROVED rows that happen to have a more recent period string', async () => {
+	it("ignores LOCKED/APPROVED rows that happen to have a more recent period string", async () => {
 		// The mock has the WHERE clause already applied, so the
 		// result it returns only includes ENROLLED rows. This pins
 		// the contract: a future LOCKED row (next year's Servicio
 		// Social, say) must not flip "current" to next year.
-		const db = makeMockDb([[{ period: 'AGOSTO-DICIEMBRE/2026' }]]);
-		const period = await getCurrentPeriod(db, '<NUMERO DE CONTROL PURGADO>');
-		expect(period).toBe('AGOSTO-DICIEMBRE/2026');
+		const db = makeMockDb([[{ period: "AGOSTO-DICIEMBRE/2026" }]]);
+		const period = await getCurrentPeriod(db, "<NUMERO DE CONTROL PURGADO>");
+		expect(period).toBe("AGOSTO-DICIEMBRE/2026");
 	});
 });
 
-describe('getCurrentEnrollment with explicit period', () => {
-	it('returns empty arrays + the period when the student has no progress in that period', async () => {
+describe("getCurrentEnrollment with explicit period", () => {
+	it("returns empty arrays + the period when the student has no progress in that period", async () => {
 		// 1) getCurrentPeriod (caller resolves it in production; this
 		//    test passes the period explicitly so the helper skips it
 		//    and goes straight to the enrollment query).
 		// 2) The enrollment query returns zero rows → empty result.
 		const db = makeMockDb([[]]);
-		const out = await getCurrentEnrollment(db, '<NUMERO DE CONTROL PURGADO>', 'AGOSTO-DICIEMBRE/2026');
+		const out = await getCurrentEnrollment(db, "<NUMERO DE CONTROL PURGADO>", "AGOSTO-DICIEMBRE/2026");
 		expect(out.groups).toEqual([]);
 		expect(out.schedule).toEqual([]);
-		expect(out.period).toBe('AGOSTO-DICIEMBRE/2026');
+		expect(out.period).toBe("AGOSTO-DICIEMBRE/2026");
 	});
 
-	it('joins groups + schedule blocks for the enrollment set', async () => {
-		const enrolledRows = [{ subjectCanonicalId: 'graficacion' }];
+	it("joins groups + schedule blocks for the enrollment set", async () => {
+		const enrolledRows = [{ subjectCanonicalId: "graficacion" }];
 		const groups = [
-			{ id: 'G-SCC1027-1', subjectCanonicalId: 'graficacion', groupCode: 'A', teacherName: 'X', hasLab: true }
+			{
+				id: "G-SCC1027-1",
+				subjectCanonicalId: "graficacion",
+				groupCode: "A",
+				teacherName: "X",
+				hasLab: true,
+			},
 		];
 		const blocks = [
 			{
 				id: 1,
-				groupId: 'G-SCC1027-1',
-				day: 'L',
-				startTime: '08:00',
-				endTime: '10:00',
-				classroom: 'Lab 1'
-			}
+				groupId: "G-SCC1027-1",
+				day: "L",
+				startTime: "08:00",
+				endTime: "10:00",
+				classroom: "Lab 1",
+			},
 		];
 		const db = makeMockDb([enrolledRows, groups, blocks]);
-		const out = await getCurrentEnrollment(db, '<NUMERO DE CONTROL PURGADO>', 'AGOSTO-DICIEMBRE/2026');
+		const out = await getCurrentEnrollment(db, "<NUMERO DE CONTROL PURGADO>", "AGOSTO-DICIEMBRE/2026");
 		expect(out.groups).toEqual(groups);
 		expect(out.schedule).toEqual(blocks);
-		expect(out.period).toBe('AGOSTO-DICIEMBRE/2026');
+		expect(out.period).toBe("AGOSTO-DICIEMBRE/2026");
 	});
 });
 
-describe('getCurrentEnrollment without explicit period', () => {
-	it('resolves the most recent period via getCurrentPeriod', async () => {
+describe("getCurrentEnrollment without explicit period", () => {
+	it("resolves the most recent period via getCurrentPeriod", async () => {
 		// 1) getCurrentPeriod → 'AGOSTO-DICIEMBRE/2026'
 		// 2) enrollment query filtered to that period → one row
 		// 3) groups query → one group
 		// 4) schedule query → one block
 		const db = makeMockDb([
-			[{ period: 'AGOSTO-DICIEMBRE/2026' }],
-			[{ subjectCanonicalId: 'graficacion' }],
+			[{ period: "AGOSTO-DICIEMBRE/2026" }],
+			[{ subjectCanonicalId: "graficacion" }],
 			[
 				{
-					id: 'G-SCC1027-1',
-					subjectCanonicalId: 'graficacion',
-					groupCode: 'A',
-					teacherName: 'X',
-					hasLab: true
-				}
+					id: "G-SCC1027-1",
+					subjectCanonicalId: "graficacion",
+					groupCode: "A",
+					teacherName: "X",
+					hasLab: true,
+				},
 			],
 			[
 				{
 					id: 1,
-					groupId: 'G-SCC1027-1',
-					day: 'L',
-					startTime: '08:00',
-					endTime: '10:00',
-					classroom: 'Lab 1'
-				}
-			]
+					groupId: "G-SCC1027-1",
+					day: "L",
+					startTime: "08:00",
+					endTime: "10:00",
+					classroom: "Lab 1",
+				},
+			],
 		]);
-		const out = await getCurrentEnrollment(db, '<NUMERO DE CONTROL PURGADO>');
-		expect(out.period).toBe('AGOSTO-DICIEMBRE/2026');
+		const out = await getCurrentEnrollment(db, "<NUMERO DE CONTROL PURGADO>");
+		expect(out.period).toBe("AGOSTO-DICIEMBRE/2026");
 		expect(out.groups).toHaveLength(1);
 		expect(out.schedule).toHaveLength(1);
 	});
 
-	it('returns empty arrays when the student has no progress at all', async () => {
+	it("returns empty arrays when the student has no progress at all", async () => {
 		// 1) getCurrentPeriod → null → return early before any other query.
 		const db = makeMockDb([[]]);
-		const out = await getCurrentEnrollment(db, '<NUMERO DE CONTROL PURGADO>');
+		const out = await getCurrentEnrollment(db, "<NUMERO DE CONTROL PURGADO>");
 		expect(out.groups).toEqual([]);
 		expect(out.schedule).toEqual([]);
 		expect(out.period).toBeNull();

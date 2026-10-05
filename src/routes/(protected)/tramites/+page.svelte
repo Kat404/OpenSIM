@@ -7,18 +7,16 @@
   'Trámite en desarrollo'.
 -->
 <script lang="ts">
-	import type { PageData, ActionData } from './$types';
-	import ProcedureStepper from '#lib/components/tramites/ProcedureStepper.svelte';
+import ProcedureStepper from "#lib/components/tramites/ProcedureStepper.svelte";
+import type { ActionData, PageData } from "./$types";
 
-	let { data, form }: { data: PageData; form: ActionData } = $props();
-	const formNotice = $derived(
-		form && 'notice' in form ? (form.notice as string) : null
-	);
+let { data, form }: { data: PageData; form: ActionData } = $props();
+const formNotice = $derived(form && "notice" in form ? (form.notice as string) : null);
 </script>
 
 <svelte:head>
 	<title>Trámites — OpenSIM</title>
-	<meta name="description" content="Servicio Social, Residencia Profesional y Titulación." />
+	<meta name="description" content="Servicio Social, Residencia Profesional y Titulación.">
 </svelte:head>
 
 <section class="tramites">
@@ -26,13 +24,13 @@
 		<p class="tramites__eyebrow">Trámites</p>
 		<h1 class="tramites__title">Trámites académicos</h1>
 		<p class="tramites__sub">
-			Sigue los procedimientos de Servicio Social, Residencia Profesional y
-			Titulación. Los requisitos se evalúan en función de tus créditos
-			aprobados (de {data.totalCredits} totales).
+			Sigue los procedimientos de Servicio Social, Residencia Profesional y Titulación. Los
+			requisitos se evalúan en función de tus créditos aprobados (de {data.totalCredits} totales).
 		</p>
 		<p class="tramites__progress">
-			Tienes <strong>{data.approvedCredits}</strong> créditos aprobados
-			({Math.round((data.approvedCredits / data.totalCredits) * 100)}% de la carrera).
+			Tienes <strong>{data.approvedCredits}</strong> créditos aprobados ({Math.round(
+				(data.approvedCredits / data.totalCredits) * 100,
+			)}% de la carrera).
 			{#if data.socialServiceDone}
 				<span class="tramites__badge">Servicio Social: completado</span>
 			{/if}
@@ -43,54 +41,54 @@
 </section>
 
 <style>
-	.tramites {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-5);
-	}
+.tramites {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-5);
+}
 
-	.tramites__header {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-1);
-	}
+.tramites__header {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+}
 
-	.tramites__eyebrow {
-		margin: 0;
-		font-size: var(--text-xs);
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--fg-tertiary);
-	}
+.tramites__eyebrow {
+	margin: 0;
+	font-size: var(--text-xs);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--fg-tertiary);
+}
 
-	.tramites__title {
-		margin: 0;
-		font-size: var(--text-2xl);
-		font-weight: var(--weight-semibold);
-		color: var(--fg-primary);
-	}
+.tramites__title {
+	margin: 0;
+	font-size: var(--text-2xl);
+	font-weight: var(--weight-semibold);
+	color: var(--fg-primary);
+}
 
-	.tramites__sub {
-		margin: 0;
-		font-size: var(--text-sm);
-		color: var(--fg-tertiary);
-		max-width: 720px;
-	}
+.tramites__sub {
+	margin: 0;
+	font-size: var(--text-sm);
+	color: var(--fg-tertiary);
+	max-width: 720px;
+}
 
-	.tramites__progress {
-		margin: 0;
-		font-size: var(--text-sm);
-		color: var(--fg-secondary);
-	}
+.tramites__progress {
+	margin: 0;
+	font-size: var(--text-sm);
+	color: var(--fg-secondary);
+}
 
-	.tramites__badge {
-		display: inline-block;
-		margin-left: var(--space-2);
-		padding: 2px 8px;
-		background-color: var(--success-50);
-		color: var(--success-700);
-		border: 1px solid color-mix(in srgb, var(--success-500) 20%, transparent);
-		border-radius: var(--radius-1);
-		font-size: var(--text-xs);
-	}
+.tramites__badge {
+	display: inline-block;
+	margin-left: var(--space-2);
+	padding: 2px 8px;
+	background-color: var(--success-50);
+	color: var(--success-700);
+	border: 1px solid color-mix(in srgb, var(--success-500) 20%, transparent);
+	border-radius: var(--radius-1);
+	font-size: var(--text-xs);
+}
 </style>

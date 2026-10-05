@@ -22,13 +22,13 @@
  * See: odd/tasks/opensim.md §16.1 (audit C5).
  */
 
-import { redirect } from '@sveltejs/kit';
-import { asc } from 'drizzle-orm';
-import { env as workerEnv } from 'cloudflare:workers';
-import type { OpenSimWorkerEnv } from '../../cloudflare-workers';
-import type { LayoutServerLoad } from './$types';
-import { getDb } from '#lib/server/db';
-import { subjects } from '#lib/server/db/schema';
+import { env as workerEnv } from "cloudflare:workers";
+import { redirect } from "@sveltejs/kit";
+import { asc } from "drizzle-orm";
+import { getDb } from "#lib/server/db";
+import { subjects } from "#lib/server/db/schema";
+import type { OpenSimWorkerEnv } from "../../cloudflare-workers";
+import type { LayoutServerLoad } from "./$types";
 
 const env = workerEnv as OpenSimWorkerEnv;
 
@@ -43,7 +43,7 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 	const safeUser = {
 		controlNumber: locals.user.controlNumber,
 		fullName: locals.user.fullName,
-		status: locals.user.status
+		status: locals.user.status,
 	};
 
 	// Palette index: build from the subjects catalog. Keep the
@@ -58,7 +58,7 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 				.select({
 					canonicalId: subjects.canonicalId,
 					code: subjects.code,
-					name: subjects.name
+					name: subjects.name,
 				})
 				.from(subjects)
 				.orderBy(asc(subjects.code));
@@ -73,6 +73,6 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 
 	return {
 		user: safeUser,
-		paletteSubjects
+		paletteSubjects,
 	};
 };

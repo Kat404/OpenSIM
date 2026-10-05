@@ -12,17 +12,17 @@
  * stays server-side.
  */
 
-import { asc, eq } from 'drizzle-orm';
-import { env as workerEnv } from 'cloudflare:workers';
-import type { OpenSimWorkerEnv } from '../../../../cloudflare-workers';
-import type { PageServerLoad } from './$types';
-import { getDb } from '#lib/server/db';
+import { env as workerEnv } from "cloudflare:workers";
+import { asc, eq } from "drizzle-orm";
+import { getDb } from "#lib/server/db";
 import {
+	type EvaluationType,
+	type StudentProgressStatus,
 	studentProgress,
 	subjects,
-	type EvaluationType,
-	type StudentProgressStatus
-} from '#lib/server/db/schema';
+} from "#lib/server/db/schema";
+import type { OpenSimWorkerEnv } from "../../../../cloudflare-workers";
+import type { PageServerLoad } from "./$types";
 
 const env = workerEnv as OpenSimWorkerEnv;
 
@@ -37,7 +37,8 @@ export interface KardexRow {
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const u = locals.user!;
+	const u = locals.user;
+	if (!u) return { entries: [] as KardexRow[] };
 
 	if (!env.DB) {
 		return { entries: [] as KardexRow[] };
@@ -45,6 +46,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const db = getDb(env.DB);
 
+	const controlNumber = u.controlNumber;
 	const rows = await db
 		.select({
 			code: subjects.code,
@@ -53,11 +55,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 			grade: studentProgress.grade,
 			period: studentProgress.period,
 			evaluationType: studentProgress.evaluationType,
-			status: studentProgress.status
+			status: studentProgress.status,
 		})
 		.from(studentProgress)
 		.innerJoin(subjects, eq(subjects.canonicalId, studentProgress.subjectCanonicalId))
-		.where(eq(studentProgress.studentControlNumber, u.controlNumber))
+		.where(eq(studentProgress.studentControlNumber, controlNumber))
 		.orderBy(asc(studentProgress.period), asc(subjects.code));
 
 	return {
@@ -70,8 +72,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 					credits: r.credits,
 					period: r.period,
 					evaluationType: (r.evaluationType ?? null) as EvaluationType | null,
-					status: r.status as StudentProgressStatus
-				}) satisfies KardexRow
-		)
+					status: r.status as StudentProgressStatus,
+				}) satisfies KardexRow,
+		),
 	};
 };

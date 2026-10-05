@@ -6,29 +6,29 @@
   default action which returns a 'Trámite en desarrollo' notice.
 -->
 <script lang="ts">
-	import { Input, Select, Button, Badge, Card } from '#lib/components/ui';
-	import { PROCEDURE_STATE_LABEL } from '#lib/utils/procedure-labels';
+import { Badge, Button, Card, Input, Select } from "#lib/components/ui";
+import { PROCEDURE_STATE_LABEL } from "#lib/utils/procedure-labels";
 
-	interface Props {
-		unlocked: boolean;
-	}
+interface Props {
+	unlocked: boolean;
+}
 
-	let { unlocked }: Props = $props();
+let { unlocked }: Props = $props();
 
-	const modalityOptions = [
-		{ value: 'interna', label: 'Empresa privada' },
-		{ value: 'publica', label: 'Dependencia pública' },
-		{ value: 'investigacion', label: 'Vinculación a investigación' },
-		{ value: 'emprendimiento', label: 'Emprendimiento propio' }
-	];
+const modalityOptions = [
+	{ value: "interna", label: "Empresa privada" },
+	{ value: "publica", label: "Dependencia pública" },
+	{ value: "investigacion", label: "Vinculación a investigación" },
+	{ value: "emprendimiento", label: "Emprendimiento propio" },
+];
 </script>
 
 <Card padding="lg">
 	{#snippet header()}
 		<div class="form__header">
 			<h3 class="form__title">Datos de la Residencia Profesional</h3>
-			<Badge variant={unlocked ? 'success' : 'neutral'} size="sm" dot>
-				{PROCEDURE_STATE_LABEL[unlocked ? 'AVAILABLE' : 'LOCKED']}
+			<Badge variant={unlocked ? "success" : "neutral"} size="sm" dot>
+				{PROCEDURE_STATE_LABEL[unlocked ? "AVAILABLE" : "LOCKED"]}
 			</Badge>
 		</div>
 	{/snippet}
@@ -58,12 +58,7 @@
 			name="advisorExternal"
 		/>
 
-		<Select
-			label="Modalidad"
-			options={modalityOptions}
-			value="publica"
-			name="modality"
-		/>
+		<Select label="Modalidad" options={modalityOptions} value="publica" name="modality" />
 
 		<label class="form__field">
 			<span class="form__label">Objetivo del proyecto</span>
@@ -84,73 +79,73 @@
 </Card>
 
 <style>
-	.form__header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: var(--space-2);
-	}
+.form__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-2);
+}
 
-	.form__title {
-		margin: 0;
-		font-size: var(--text-md);
-		font-weight: var(--weight-semibold);
-		color: var(--fg-primary);
-	}
+.form__title {
+	margin: 0;
+	font-size: var(--text-md);
+	font-weight: var(--weight-semibold);
+	color: var(--fg-primary);
+}
 
-	.form {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-4);
-		border: 0;
-		padding: 0;
-		margin: 0;
-		min-width: 0;
-	}
+.form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+	border: 0;
+	padding: 0;
+	margin: 0;
+	min-width: 0;
+}
 
-	.form:disabled {
-		opacity: 0.6;
-	}
+.form:disabled {
+	opacity: 0.6;
+}
 
-	.form__field {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-1);
-		font-family: var(--font-sans);
-	}
+.form__field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+	font-family: var(--font-sans);
+}
 
-	.form__label {
-		font-size: var(--text-sm);
-		font-weight: var(--weight-medium);
-		color: var(--fg-primary);
-	}
+.form__label {
+	font-size: var(--text-sm);
+	font-weight: var(--weight-medium);
+	color: var(--fg-primary);
+}
 
-	.form__helper {
-		font-size: var(--text-xs);
-		color: var(--fg-tertiary);
-	}
+.form__helper {
+	font-size: var(--text-xs);
+	color: var(--fg-tertiary);
+}
 
-	.form__textarea {
-		font-family: inherit;
-		color: var(--fg-primary);
-		background-color: var(--surface-1);
-		border: 1px solid var(--border-default);
-		border-radius: var(--radius-2);
-		padding: var(--space-2) var(--space-3);
-		font-size: var(--text-base);
-		min-height: 110px;
-		resize: vertical;
-	}
+.form__textarea {
+	font-family: inherit;
+	color: var(--fg-primary);
+	background-color: var(--surface-1);
+	border: 1px solid var(--border-default);
+	border-radius: var(--radius-2);
+	padding: var(--space-2) var(--space-3);
+	font-size: var(--text-base);
+	min-height: 110px;
+	resize: vertical;
+}
 
-	.form__textarea:focus {
-		outline: none;
-		border-color: var(--brand-500);
-		box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 18%, transparent);
-	}
+.form__textarea:focus {
+	outline: none;
+	border-color: var(--brand-500);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 18%, transparent);
+}
 
-	.form__textarea:disabled {
-		background-color: var(--surface-2);
-		color: var(--fg-disabled);
-		cursor: not-allowed;
-	}
+.form__textarea:disabled {
+	background-color: var(--surface-2);
+	color: var(--fg-disabled);
+	cursor: not-allowed;
+}
 </style>
