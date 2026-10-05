@@ -1,3 +1,25 @@
+<script lang="ts" module>
+	export const STATUS_LABEL_ES = {
+		online: 'en línea',
+		offline: 'desconectado',
+		busy: 'ocupado',
+		away: 'ausente'
+	} as const;
+
+	export type AvatarStatus = keyof typeof STATUS_LABEL_ES;
+
+	export function composeAltText(
+		name: string,
+		status: AvatarStatus | undefined,
+		alt?: string
+	): string {
+		if (alt) return alt;
+		if (!name) return 'Avatar';
+		if (status) return `${name}, ${STATUS_LABEL_ES[status]}`;
+		return `Avatar de ${name}`;
+	}
+</script>
+
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
@@ -7,7 +29,7 @@
 		size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 		shape?: 'circle' | 'square';
 		alt?: string;
-		status?: 'online' | 'offline' | 'busy' | 'away';
+		status?: AvatarStatus;
 		children?: Snippet;
 	}
 
@@ -21,7 +43,7 @@
 	}
 
 	const initialsText = $derived(initials(name));
-	const altText = $derived(alt ?? (name ? `Avatar de ${name}` : 'Avatar'));
+	const altText = $derived(composeAltText(name, status, alt));
 </script>
 
 <span class="avatar avatar--{size} avatar--{shape}" role="img" aria-label={altText}>
@@ -32,7 +54,7 @@
 	{:else}
 		<span class="avatar__initials" aria-hidden="true">{initialsText}</span>
 	{/if}
-	{#if status}<span class="avatar__status avatar__status--{status}" aria-label={status}></span>{/if}
+	{#if status}<span class="avatar__status avatar__status--{status}"></span>{/if}
 </span>
 
 <style>
