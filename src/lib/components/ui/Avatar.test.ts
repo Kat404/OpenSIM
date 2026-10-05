@@ -18,7 +18,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { STATUS_LABEL_ES, composeAltText, type AvatarStatus } from './Avatar.svelte';
+import { STATUS_LABEL_ES, composeAltText, initials, type AvatarStatus } from './Avatar.svelte';
 
 const ALL_STATUSES: AvatarStatus[] = ['online', 'offline', 'busy', 'away'];
 
@@ -120,6 +120,32 @@ describe('composeAltText', () => {
 		it('returns the caller-provided alt even when no name is given', () => {
 			expect(composeAltText('', 'busy', 'Custom')).toBe('Custom');
 		});
+	});
+});
+
+describe('initials (U3 follow-up C4)', () => {
+	// Before C4, `initials('')` returned '' instead of '?': the
+	// `parts.length === 0` branch was unreachable because
+	// `''.trim().split(/\s+/)` returns `['']` (length 1), so the
+	// single-word branch always fired and `''.slice(0, 2)` produced ''.
+	// The fix is a real empty-name guard at the top of the function.
+	it('empty string returns "?"', () => {
+		expect(initials('')).toBe('?');
+	});
+	it('whitespace-only string returns "?"', () => {
+		expect(initials('   ')).toBe('?');
+	});
+	it('single word returns the first 2 chars uppercased', () => {
+		expect(initials('Grace')).toBe('GR');
+	});
+	it('2 words returns the first letter of each, uppercased', () => {
+		expect(initials('Grace Hopper')).toBe('GH');
+	});
+	it('extra spaces + lowercase are normalized', () => {
+		expect(initials('  ada  lovelace  ')).toBe('AL');
+	});
+	it('Ada Lovelace returns AL (regression — the named-user case)', () => {
+		expect(initials('Ada Lovelace')).toBe('AL');
 	});
 });
 

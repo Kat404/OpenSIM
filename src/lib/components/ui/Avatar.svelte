@@ -21,6 +21,13 @@
 		if (status) return `${name}, ${STATUS_LABEL_ES[status]}`;
 		return `Avatar de ${name}`;
 	}
+
+	export function initials(n: string): string {
+		if (!n.trim()) return '?';
+		const parts = n.trim().split(/\s+/);
+		if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
+		return (parts[0]![0]! + parts[parts.length - 1]![0]!).toUpperCase();
+	}
 </script>
 
 <script lang="ts">
@@ -37,13 +44,6 @@
 	}
 
 	let { name = '', src, size = 'md', shape = 'circle', alt, status, children }: Props = $props();
-
-	function initials(n: string): string {
-		const parts = n.trim().split(/\s+/);
-		if (parts.length === 0) return '?';
-		if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
-		return (parts[0]![0]! + parts[parts.length - 1]![0]!).toUpperCase();
-	}
 
 	const initialsText = $derived(initials(name));
 	const altText = $derived(composeAltText(name, status, alt));
