@@ -64,7 +64,7 @@
 - [ ] Address any Critical/Serious findings mcode flags; document Moderate/Minor.
 
 ### 5.1.7 — Recipe + docs
-- [ ] Add `just test:e2e` recipe: `db-reset && db-set-password && playwright test`.
+- [ ] Add `just test-e2e` recipe: `db-reset && db-set-password && playwright test`.
 - [ ] Add a short `docs/a11y-audit.md` summarising the methodology, the routes scanned, and the violation counts per severity.
 - [ ] Conventional Commit: `chore(test): e2e recipe + a11y audit doc (work-unit)`.
 
@@ -103,7 +103,7 @@
 
 - `just check` 0/0.
 - `just test` (Vitest 115/115 still green).
-- `just test:e2e` (Playwright + axe 7/7 routes green or only documented non-blocking findings).
+- `just test-e2e` (Playwright + axe 7/7 routes green or only documented non-blocking findings).
 - mcode review pass captured.
 - Production URL responds with 200 on every user-facing route.
 - Bundle + DB metrics recorded.

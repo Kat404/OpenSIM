@@ -23,15 +23,14 @@ Visit `http://localhost:5173`, log in with the test credentials above, and `/das
 
 | Script | What it does |
 | --- | --- |
-| `pnpm dev` | Vite dev server |
-| `pnpm build` | Wrangler types check + Vite production build for Cloudflare |
-| `pnpm preview` | Wrangler dev against the built Worker |
-| `pnpm check` | svelte-kit sync + svelte-check + wrangler types |
-| `pnpm test` | Vitest unit tests (single run) |
-| `pnpm db:generate` | Drizzle Kit — generate SQL migrations from schema diff (codegen only) |
-| `pnpm db:seed` | Apply `seed.sql` (curriculum dataset) to local D1 via `wrangler d1 execute --file` |
-| `pnpm db:seed:apply` | Generate + apply seed in one step |
-| `pnpm db:set-password` | Provision test student credential (dev only) |
+| `just dev` | Vite dev server |
+| `just build` | Wrangler types check + Vite production build for Cloudflare |
+| `just preview` | Wrangler dev against the built Worker |
+| `just check` | svelte-kit sync + svelte-check + wrangler types |
+| `just test` | Vitest unit tests (single run) |
+| `just db-generate` | Drizzle Kit — generate SQL migrations from schema diff (codegen only) |
+| `just db-seed` | Generate + apply `seed.sql` in one step (Drizzle codegen + `wrangler d1 execute --file`) |
+| `just db-set-password` | Provision test student credential (dev only) |
 
 > **Deprecated / dead code:** `pnpm db:migrate` (Drizzle Kit) is intentionally NOT the canonical path. The canonical migrator is `wrangler d1 migrations apply` (via `just db-migrate`). See `docs/drizzle-migrations-and-data.md` for the rationale.
 
@@ -106,9 +105,9 @@ justfile                  # 30+ recipes for build, check, test, db, deploy
 Local D1 runs via Miniflare. The canonical migration flow is:
 
 1. Edit `src/lib/server/db/schema.ts`
-2. `pnpm db:generate` — produces SQL in `./drizzle/`
+2. `just db-generate` — produces SQL in `./drizzle/`
 3. `just db-migrate` — applies via `wrangler d1 migrations apply --local` (each file in a transaction)
-4. `pnpm db:seed` — applies `seed.sql` via `d1 execute --file` (data only)
+4. `just db-seed` — applies `seed.sql` via `d1 execute --file` (data only)
 5. `just db-migrate-remote` — same runner, `--remote` binding
 
 The rule: **`wrangler d1 execute --file` is for DATA only; DDL always goes through the migration runner.** See `docs/drizzle-migrations-and-data.md`.

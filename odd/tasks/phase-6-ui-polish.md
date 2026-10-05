@@ -35,7 +35,7 @@
 - [ ] Badge background matches the active theme (no pure white in dark)
 - [ ] Map pin icon visible to the left of the label, using `currentColor` so it inherits the brand hue
 - [ ] AA contrast ≥ 4.5:1 in both light and dark
-- [ ] `pnpm test` still green; no new Vitest required (visual only)
+- [ ] `just test` still green; no new Vitest required (visual only)
 
 **Effort:** ~5 lines, 1 file, no new deps.
 
@@ -237,7 +237,7 @@ AC1–AC5 are axe-detectable. AC6–AC8 are the actual overlap tests. AC9 verifi
 
 - `just check` 0/0.
 - `just test` 115+/115+ (no new tests required for visual-only fixes; existing snapshot tests still pass).
-- `just test:e2e` (Playwright + axe) — 7/7 routes green, 0 new violations.
+- `just test-e2e` (Playwright + axe) — 7/7 routes green, 0 new violations.
 - Manual smoke test on `https://opensim.jose-luis-rs.workers.dev` after deploy: open `/dashboard`, `/kardex`, click "Guardar"/"Eliminar" buttons, verify activity dot position, verify dark theme is consistent.
 
 ---
@@ -260,9 +260,9 @@ AC1–AC5 are axe-detectable. AC6–AC8 are the actual overlap tests. AC9 verifi
 
 **Verification after U2 + U4:**
 
-- `pnpm run check` 0/0
-- `pnpm test` 122/122 (no new tests; visual-only fixes)
-- `pnpm run build` clean
+- `just check` 0/0
+- `just test` 122/122 (no new tests; visual-only fixes)
+- `just build` clean
 - Both commits pushed to `origin` (GitHub + Codeberg mirror)
 
 **Open for a future round:** re-spec U3 → implement.
@@ -281,7 +281,7 @@ AC1–AC5 are axe-detectable. AC6–AC8 are the actual overlap tests. AC9 verifi
 
 **Verification after U3:**
 
-- `pnpm run check` 0/0
-- `pnpm test` 138/138 (122 baseline + 16 new Avatar tests)
-- `pnpm run build` clean
+- `just check` 0/0
+- `just test` 138/138 (122 baseline + 16 new Avatar tests)
+- `just build` clean
 - 3 GPG-signed commits on `main` (top of `3099f24`), NOT pushed (push is human-owned).
