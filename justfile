@@ -90,9 +90,7 @@ test-watch:
     pnpm run test:unit
 
 # End-to-end tests (Playwright + axe-core).
-# Full pipeline: reset D1, provision the test student credential,
-# then run the suite. The Playwright `webServer` block auto-spawns
-# `pnpm dev` for the test and tears it down on exit.
+[doc('Full pipeline: reset D1, provision the test student credential, then run the Playwright + axe-core suite. The webServer block auto-spawns pnpm dev and tears it down on exit.')]
 test-e2e: db-reset db-set-password
     pnpm exec playwright test
 
@@ -140,9 +138,7 @@ db-reset:
 # ===== Deploy =====
 
 # Deploy to Cloudflare Workers (Tarea 5.2)
-# See docs/deploy.md for the full procedure (auth, D1 create, migrations, seed, deploy).
-# Requires wrangler login (or CLOUDFLARE_API_TOKEN env var) and the production
-# database_id set in wrangler.jsonc.
+[doc('See docs/deploy.md for the full procedure (auth, D1 create, migrations, seed, deploy). Requires wrangler login (or CLOUDFLARE_API_TOKEN env var) and the production database_id set in wrangler.jsonc.')]
 deploy-worker:
     pnpm build
     wrangler deploy
@@ -163,8 +159,8 @@ nuke:
 
 # ===== Pipelines =====
 
-# Full verification: check + build + test
-verify: check build test
+# Full verification: check + biome-check + test + build
+verify: check biome-check test build
     @echo ""
     @echo "✓ all green — ready for commit"
 
@@ -188,8 +184,11 @@ ci-build:
 # -e HOME=/tmp because npm/pnpm need HOME and the kept host UID
 # may not exist in /etc/passwd inside the container. The container's
 # default CMD (just precommit) runs the in-image QA gate.
+# NOTE: the in-image gate is `just precommit` (check + biome-check + test).
+# It does NOT run the axe-core e2e suite — for that, run `just test-e2e`
+# on the host (it needs system Chromium and local D1 state).
 [group('ci')]
-[doc('Full pre-push QA session (axe + unit tests + biome ci) inside opensim-ci container.')]
+[doc('Full pre-push QA session (check + biome-check + test) inside opensim-ci container. For axe-core e2e suite, run `just test-e2e` separately.')]
 ci: ci-build
     podman run --rm \
         --userns=keep-id \
@@ -215,12 +214,17 @@ ci-shell:
 ci-clean:
     podman rmi opensim-ci:latest
 
-# Schema drift detection (opt-in, quarterly). Snapshots the
-# local D1 state, re-applies migrations, diffs the schema.
+# Migration re-apply smoke test (opt-in, quarterly). Snapshots the
+# local D1 state, re-applies the migrations directory, and diffs
+# the result. Re-applying already-applied migrations is a no-op, so
+# "no diff" only proves migrations are idempotent on this state —
+# it does NOT compare migrations vs the Drizzle schema. Use as a
+# cheap "did migrations break anything since last apply" signal,
+# not as a true drift detector.
 # Pure local; does NOT touch remote Cloudflare D1 (destructive
 # risk per mcode R15 audit).
 [group('ci')]
-[doc('Schema drift check: snapshot local D1, re-migrate, diff. Opt-in, quarterly.')]
+[doc('Migration re-apply smoke test (opt-in, quarterly): snapshot local D1, re-migrate, diff. NOT a real schema-drift detector.')]
 ci-drift:
     #!/usr/bin/env bash
     set -euo pipefail

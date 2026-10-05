@@ -107,7 +107,7 @@ Local D1 runs via Miniflare. The canonical migration flow is:
 1. Edit `src/lib/server/db/schema.ts`
 2. `just db-generate` — produces SQL in `./drizzle/`
 3. `just db-migrate` — applies via `wrangler d1 migrations apply --local` (each file in a transaction)
-4. `just db-seed` — applies `seed.sql` via `d1 execute --file` (data only)
+4. `just db-seed` — generates `seed.sql` from the catalog and applies it via `d1 execute --file` (data only; the recipe is the collapsed `db:seed:apply`)
 5. `just db-migrate-remote` — same runner, `--remote` binding
 
 The rule: **`wrangler d1 execute --file` is for DATA only; DDL always goes through the migration runner.** See `docs/drizzle-migrations-and-data.md`.

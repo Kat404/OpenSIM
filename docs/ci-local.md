@@ -22,7 +22,9 @@ The trade is worth it for a one-person FOSS project whose CI is 7 axe-core route
 
 - `podman` ≥ 5.0 (verified: 6.1.3 on Arch). Rootless mode is fine; `just ci` uses `--userns=keep-id` to preserve the host UID for bind-mounted artifacts.
 - `just` ≥ 1.58.0 (the recipe runner). Verified: 1.58.0.
-- `pnpm` is **not** required on the host — the `opensim-ci` image installs `pnpm@10.0.0` at build time. The host only needs Podman to run the image.
+- `pnpm` IS required on the host for **a clean clone**: the `opensim-ci` image never runs `pnpm install` — it bind-mounts the host's `node_modules/` into `/repo/node_modules/`. A fresh checkout must run `pnpm install --frozen-lockfile` (or `just install`) on the host before `just ci`, otherwise the in-image gate will fail at the first `import`.
+
+> **TODO (future Option B):** add `pnpm install --frozen-lockfile` to `Containerfile.ci` as a build step. Trade-off: ~+300 MB in the image, but the image becomes self-contained (any host with Podman can run the gate without a pre-installed `node_modules/`). Tracked as a follow-up — mcode R17 §A5(b).
 
 ## Build the image
 

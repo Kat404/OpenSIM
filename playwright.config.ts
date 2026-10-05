@@ -17,13 +17,15 @@
  * fast on the developer machine: if a dev server is already on
  * :5173 the test reuses it. There is no cloud-CI consumer setting
  * `CI=true` anymore — the only consumer is local Podman via
- * `just ci`, which sets `CI=true` for the e2e spec's retry
- * behaviour, not the webServer block.
+ * `just ci-shell` (interactive debugging), which sets `CI=true`
+ * for the e2e spec's retry behaviour, not the webServer block.
  *
  * D1 is a local Miniflare binding driven by wrangler; tests assume
  * `just db-reset && just db-set-password` ran beforehand. The
- * `just test-e2e` recipe wires that up locally; `just ci` runs
- * the same suite inside the opensim-ci container.
+ * `just test-e2e` recipe wires that up locally. NOTE: `just ci`
+ * (the pre-push container gate) does NOT run this e2e suite — it
+ * runs `just precommit` (check + biome-check + test). For axe-core
+ * e2e coverage, run `just test-e2e` on the host.
  */
 import { defineConfig, devices } from "@playwright/test";
 
@@ -108,11 +110,12 @@ export default defineConfig({
 		command: "pnpm dev",
 		url: BASE_URL,
 		// Dev-machine UX: if a dev server is already on :5173, reuse
-		// it. The only consumer in the local-Podman CI path (just ci)
-		// is the opensim-ci container, which spawns a fresh webServer
-		// every run and tears it down — no consumer sets CI=true to
-		// get a fresh start anymore, but the flag stays for
-		// cross-environment robustness.
+		// it. `just test-e2e` is the only path that spawns a fresh
+		// webServer every run and tears it down — the `just ci`
+		// pre-push container gate does NOT run e2e. No consumer sets
+		// CI=true to get a fresh start anymore, but the flag stays
+		// for cross-environment robustness (e.g. CI runners in the
+		// future that may opt in).
 		reuseExistingServer: !process.env.CI,
 		timeout: 120_000,
 		stdout: "pipe",
