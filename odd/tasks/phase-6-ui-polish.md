@@ -181,7 +181,7 @@ AC5   DOM            →  locator('.avatar__status').getAttribute('aria-label') 
 AC6   Playwright     →  dotBox.right  - avatarBox.right  === dotBox.width  / 2  (±1px)
 AC7   Playwright     →  dotBox.bottom - avatarBox.bottom === dotBox.height / 2  (±1px)
 AC8   Playwright     →  document.elementFromPoint(corner outside the dot) === the dot  (no ancestor clipping)
-AC9   Playwright     →  getComputedStyle(dot).borderTopColor === resolved(--avatar-ring)
+AC9   Playwright     →  getComputedStyle(dot).borderTopColor === resolved(--avatar-ring)  (was `borderTopColor`; updated to `boxShadow` shorthand per U3 follow-up C5)
 AC10  Playwright     →  contrast(dotFill, --avatar-ring) >= 3.0  in light AND dark, for all 4 statuses  (M1)
 AC11  loop           →  5 sizes × 2 shapes × 4 statuses × 2 colorSchemes: AC6+AC7+AC8+AC10 all pass
 ```

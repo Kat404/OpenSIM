@@ -68,7 +68,6 @@
 	}
 
 	.avatar {
-		position: relative;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -78,7 +77,6 @@
 		font-weight: var(--weight-semibold);
 		overflow: hidden;
 		user-select: none;
-		flex-shrink: 0;
 	}
 
 	.avatar--circle {
@@ -133,7 +131,10 @@
 		width: 25%;
 		height: 25%;
 		border-radius: 50%;
-		border: 2px solid var(--avatar-ring);
+		/* box-shadow, not border: with global box-sizing: border-box
+		   (tokens.css:299-303) a 2px border eats the 25% fill at xs/sm.
+		   Spread paints outward. Do not "fix" back to border. */
+		box-shadow: 0 0 0 2px var(--avatar-ring);
 		transform: translate(50%, 50%);
 	}
 
