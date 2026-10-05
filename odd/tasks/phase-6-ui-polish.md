@@ -266,3 +266,22 @@ AC1–AC5 are axe-detectable. AC6–AC8 are the actual overlap tests. AC9 verifi
 - Both commits pushed to `origin` (GitHub + Codeberg mirror)
 
 **Open for a future round:** re-spec U3 → implement.
+
+---
+
+## Progress (2026-10-04)
+
+- **U3 ✓** — closed via 3 work-unit commits on `main`:
+  - `a90ba55` feat(ui): localize avatar status aria-label + remove aria-prohibited-attr (U3 Phase A)
+  - `2531434` feat(ui): non-text contrast fixes for avatar status dot (U3 Phase B)  [includes LayoutHeader --avatar-ring override]
+  - `3608369` feat(ui): wrap Avatar in frame so status dot extends outside the clip (U3 Phase C)
+- Added: `src/lib/components/ui/Avatar.test.ts` — Vitest unit for `STATUS_LABEL_ES` and aria-label composition.
+- Outstanding (Playwright-only, not blocking): AC6-AC11 (overlap geometry + WCAG 1.4.11 non-text contrast).
+- axe-core sweep: pending (orchestrator will run after this commit, with the existing e2e tests in `tests/e2e/axe/*.spec.ts`).
+
+**Verification after U3:**
+
+- `pnpm run check` 0/0
+- `pnpm test` 138/138 (122 baseline + 16 new Avatar tests)
+- `pnpm run build` clean
+- 3 GPG-signed commits on `main` (top of `3099f24`), NOT pushed (push is human-owned).
