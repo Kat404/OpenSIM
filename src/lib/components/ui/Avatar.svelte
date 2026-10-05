@@ -14,7 +14,10 @@
 		alt?: string
 	): string {
 		if (alt) return alt;
-		if (!name) return 'Avatar';
+		if (!name) {
+			if (status) return `Avatar, ${STATUS_LABEL_ES[status]}`;
+			return 'Avatar';
+		}
 		if (status) return `${name}, ${STATUS_LABEL_ES[status]}`;
 		return `Avatar de ${name}`;
 	}

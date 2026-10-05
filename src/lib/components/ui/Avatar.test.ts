@@ -95,6 +95,24 @@ describe('composeAltText', () => {
 		});
 	});
 
+	describe('with no name but a status (U3 follow-up C3)', () => {
+		// Before C3, an anonymous avatar with a status would drop the
+		// status info and render plain "Avatar" — losing the same
+		// Spanish label that callers deliberately passed. The status
+		// is independent of the name; an unknown caller should still
+		// hear "Avatar, en línea" (etc.) so screen readers convey the
+		// live presence state.
+		it('returns "Avatar, en línea" for empty name + online', () => {
+			expect(composeAltText('', 'online')).toBe('Avatar, en línea');
+		});
+		it('returns "Avatar, ocupado" for empty name + busy', () => {
+			expect(composeAltText('', 'busy')).toBe('Avatar, ocupado');
+		});
+		it('returns "Avatar, ausente" for empty name + away', () => {
+			expect(composeAltText('', 'away')).toBe('Avatar, ausente');
+		});
+	});
+
 	describe('with explicit alt override', () => {
 		it('returns the caller-provided alt verbatim, ignoring name and status', () => {
 			expect(composeAltText('Ada Lovelace', 'online', 'Custom name')).toBe('Custom name');
