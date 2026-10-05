@@ -14,11 +14,16 @@
  * The dev server is auto-managed via `webServer` — Playwright spawns
  * `pnpm dev` for the suite and tears it down at the end. The
  * `reuseExistingServer: !process.env.CI` line keeps iterative dev
- * fast: if a dev server is already on :5173 the test reuses it.
+ * fast on the developer machine: if a dev server is already on
+ * :5173 the test reuses it. There is no cloud-CI consumer setting
+ * `CI=true` anymore — the only consumer is local Podman via
+ * `just ci`, which sets `CI=true` for the e2e spec's retry
+ * behaviour, not the webServer block.
  *
  * D1 is a local Miniflare binding driven by wrangler; tests assume
  * `just db-reset && just db-set-password` ran beforehand. The
- * `just test-e2e` recipe wires that up.
+ * `just test-e2e` recipe wires that up locally; `just ci` runs
+ * the same suite inside the opensim-ci container.
  */
 import { defineConfig, devices } from "@playwright/test";
 
@@ -102,6 +107,12 @@ export default defineConfig({
 	webServer: {
 		command: "pnpm dev",
 		url: BASE_URL,
+		// Dev-machine UX: if a dev server is already on :5173, reuse
+		// it. The only consumer in the local-Podman CI path (just ci)
+		// is the opensim-ci container, which spawns a fresh webServer
+		// every run and tears it down — no consumer sets CI=true to
+		// get a fresh start anymore, but the flag stays for
+		// cross-environment robustness.
 		reuseExistingServer: !process.env.CI,
 		timeout: 120_000,
 		stdout: "pipe",

@@ -1,0 +1,74 @@
+# syntax=docker/dockerfile-upstream:1.7
+# Containerfile.ci — opensim reproducible CI gate
+#
+# Builds a glibc-based image (Playwright rejects musl/Alpine
+# per https://playwright.dev/docs/docker). Mirrors the pattern
+# from TallerAgentes' Containerfile.ci but with Chromium
+# installed via apt-get because OpenSIM's e2e suite needs a
+# real browser binary that Playwright supports.
+
+FROM node:24-bookworm-slim
+
+LABEL org.opencontainers.image.title="opensim-ci"
+LABEL org.opencontainers.image.description="Reproducible CI gate for opensim (Bookworm + Node 24 + pnpm + just + Chromium)"
+LABEL org.opencontainers.image.source="https://github.com/Kat404/OpenSIM"
+LABEL org.opencontainers.image.licenses="MIT"
+
+# System deps: bash (just recipes use bash), just (command
+# runner), Chromium (Playwright needs real browser binary;
+# symlink to /usr/bin/chromium matches playwright.config.ts:49)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		git \
+		bash \
+		just \
+		ca-certificates \
+		chromium \
+		fonts-liberation \
+		libasound2 \
+		libatk-bridge2.0-0 \
+		libatk1.0-0 \
+		libcairo2 \
+		libcups2 \
+		libdbus-1-3 \
+		libexpat1 \
+		libfontconfig1 \
+		libgbm1 \
+		libgcc-s1 \
+		libglib2.0-0 \
+		libgtk-3-0 \
+		libnspr4 \
+		libnss3 \
+		libpango-1.0-0 \
+		libpangocairo-1.0-0 \
+		libstdc++6 \
+		libx11-6 \
+		libx11-xcb1 \
+		libxcb1 \
+		libxcomposite1 \
+		libxcursor1 \
+		libxdamage1 \
+		libxext6 \
+		libxfixes3 \
+		libxi6 \
+		libxrandr2 \
+		libxrender1 \
+		libxss1 \
+		libxtst6 \
+	&& rm -rf /var/lib/apt/lists/*
+
+RUN chromium --version
+
+# Pin pnpm to match host contract (per TallerAgentes precedent)
+RUN npm install -g pnpm@10.0.0 \
+	&& pnpm --version
+
+WORKDIR /repo
+
+ENV CI=true
+
+# Default command: run the in-container QA gate.
+# The host's `just ci` recipe calls `podman run ... opensim-ci:latest`
+# (no command override), so this CMD is what runs by default.
+# For an interactive shell, use `just ci-shell` which overrides
+# with `bash`.
+CMD ["just", "precommit"]

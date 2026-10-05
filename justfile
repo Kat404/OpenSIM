@@ -172,3 +172,70 @@ verify: check build test
 precommit: check biome-check test
     @echo ""
     @echo "✓ pre-commit checks passed"
+
+# ===== CI (Podman local) =====
+
+# Build the opensim-ci container image from Containerfile.ci.
+# First-time setup; rebuild when Containerfile.ci or dependencies change.
+[group('ci')]
+[doc('Build the opensim-ci container image from Containerfile.ci.')]
+ci-build:
+    podman build -f Containerfile.ci -t opensim-ci:latest .
+
+# Run the full pre-push QA session inside the opensim-ci container.
+# bind-mounts the repo to /repo; --userns=keep-id preserves host UID
+# for bind-mounted artifacts (playwright-report, test-results);
+# -e HOME=/tmp because npm/pnpm need HOME and the kept host UID
+# may not exist in /etc/passwd inside the container. The container's
+# default CMD (just precommit) runs the in-image QA gate.
+[group('ci')]
+[doc('Full pre-push QA session (axe + unit tests + biome ci) inside opensim-ci container.')]
+ci: ci-build
+    podman run --rm \
+        --userns=keep-id \
+        -v "$(pwd)":/repo \
+        -w /repo \
+        -e HOME=/tmp \
+        opensim-ci:latest
+
+# Interactive shell inside the opensim-ci container. For debugging.
+[group('ci')]
+[doc('Interactive bash shell inside opensim-ci container.')]
+ci-shell:
+    podman run --rm -it \
+        --userns=keep-id \
+        -v "$(pwd)":/repo \
+        -w /repo \
+        -e HOME=/tmp \
+        opensim-ci:latest bash
+
+# Remove the opensim-ci container image.
+[group('ci')]
+[doc('Remove the opensim-ci container image.')]
+ci-clean:
+    podman rmi opensim-ci:latest
+
+# Schema drift detection (opt-in, quarterly). Snapshots the
+# local D1 state, re-applies migrations, diffs the schema.
+# Pure local; does NOT touch remote Cloudflare D1 (destructive
+# risk per mcode R15 audit).
+[group('ci')]
+[doc('Schema drift check: snapshot local D1, re-migrate, diff. Opt-in, quarterly.')]
+ci-drift:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ ! -d .wrangler/state/v3/d1 ]; then
+        echo "no .wrangler/state/v3/d1 — run `just db-migrate` first"
+        exit 1
+    fi
+    cp -r .wrangler/state/v3/d1 .wrangler/state/v3/d1.snapshot
+    pnpm run db:migrate:apply
+    if diff -r .wrangler/state/v3/d1.snapshot .wrangler/state/v3/d1 > /dev/null; then
+        echo "no drift"
+        rm -rf .wrangler/state/v3/d1.snapshot
+    else
+        echo "DRIFT DETECTED — investigate migrations:"
+        diff -r .wrangler/state/v3/d1.snapshot .wrangler/state/v3/d1 | head -50
+        rm -rf .wrangler/state/v3/d1.snapshot
+        exit 1
+    fi
