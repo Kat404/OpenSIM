@@ -1,5 +1,13 @@
 import { sql } from "drizzle-orm";
-import { index, integer, primaryKey, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+	index,
+	integer,
+	primaryKey,
+	real,
+	sqliteTable,
+	text,
+	uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 /**
  * OpenSIM — Drizzle ORM Schema (12 normalized tables)
@@ -280,6 +288,16 @@ export const authAttempts = sqliteTable(
 		// window_start >= now() - 15min. The composite index collapses
 		// that into a single range scan per lookup.
 		attemptKeyWindowIdx: index("idx_auth_attempts_key_window").on(
+			table.attemptKey,
+			table.windowStart,
+		),
+		// UNIQUE (not a plain index): `recordFailedAttempt` upserts with
+		// ON CONFLICT (attempt_key, window_start) DO UPDATE, and that
+		// clause needs a matching unique constraint to fire. D1 refuses
+		// BEGIN/SAVEPOINT, so the previous read-then-write inside
+		// db.transaction could never commit — the counter was silently
+		// dropped and the lockout was inert in production.
+		attemptKeyWindowUnique: uniqueIndex("uq_auth_attempts_key_window").on(
 			table.attemptKey,
 			table.windowStart,
 		),

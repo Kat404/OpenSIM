@@ -50,6 +50,13 @@
 			"when": 1791319610447,
 			"tag": "0006_lush_wild_pack",
 			"breakpoints": true
+		},
+		{
+			"idx": 7,
+			"version": "6",
+			"when": 1791326373183,
+			"tag": "0007_fast_scarlet_witch",
+			"breakpoints": true
 		}
 	]
 }

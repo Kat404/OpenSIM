@@ -162,6 +162,14 @@ describe("hashToken", () => {
 // The schema (authAttempts) is created on demand from the same Drizzle
 // definition `auth.ts` imports, so any future column added to the
 // table is automatically reflected here.
+//
+// NOTE: this suite's `sqlite-proxy` driver honours BEGIN, which real D1
+// rejects — so it cannot catch a helper that silently relies on
+// transactions. `login-action.test.ts` uses the D1-faithful harness
+// (tests/unit/_helpers/harness.ts) for that, and that is where the
+// `recordFailedAttempt` transaction defect was found. Keep the
+// `uq_auth_attempts_key_window` unique index below in sync with
+// schema.ts: `recordFailedAttempt` upserts against it.
 
 import { DatabaseSync } from "node:sqlite";
 import { drizzle } from "drizzle-orm/sqlite-proxy";
@@ -180,6 +188,7 @@ function makeSqliteDb(): {
 			attempt_count INTEGER NOT NULL DEFAULT 1
 		);
 		CREATE INDEX idx_auth_attempts_key_window ON auth_attempts (attempt_key, window_start);
+		CREATE UNIQUE INDEX uq_auth_attempts_key_window ON auth_attempts (attempt_key, window_start);
 	`);
 	// Drizzle's D1 mode declares `integer({mode:'timestamp'})` columns;
 	// at the wire it serializes the value as a JS Date object. The

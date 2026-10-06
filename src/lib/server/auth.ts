@@ -99,11 +99,21 @@ export async function isRateLimited(db: Database, key: string): Promise<RateLimi
 }
 
 /**
- * Records a failed login attempt for the given key. Inserts a new
- * bucket row if no bucket exists for the current minute; otherwise
- * increments the existing bucket's counter. Best-effort: errors are
- * swallowed because failing to record a failed attempt should never
- * prevent the user from seeing the auth error.
+ * Records a failed login attempt for the given key. Inserts a new bucket
+ * row if no bucket exists for the current minute; otherwise increments
+ * the existing bucket's counter. Best-effort: errors are swallowed
+ * because failing to record a failed attempt should never prevent the
+ * user from seeing the auth error.
+ *
+ * Single atomic UPSERT. The previous version did a SELECT-then-INSERT or
+ * UPDATE inside `db.transaction`, which Drizzle's D1 session emits as
+ * `BEGIN` / `SAVEPOINT` — both of which D1 rejects outright. The catch
+ * block swallowed the rejection, so the counter was never persisted and
+ * `isRateLimited` always reported `limited: false`: the rate limiter was
+ * inert in production while unit tests (running through sqlite-proxy,
+ * which honours BEGIN) reported it as working. The
+ * `uq_auth_attempts_key_window` unique index is what lets
+ * `onConflictDoUpdate` fire.
  *
  * ponytail: the bucket key is the timestamp truncated to a 1-minute
  * boundary, so a sustained attack on one key produces ~15 rows / 15
@@ -112,33 +122,13 @@ export async function isRateLimited(db: Database, key: string): Promise<RateLimi
 export async function recordFailedAttempt(db: Database, key: string): Promise<void> {
 	try {
 		const windowStart = new Date(Math.floor(Date.now() / 60_000) * 60_000);
-		// INSERT ... ON CONFLICT (attempt_key, window_start) DO UPDATE.
-		// Drizzle doesn't expose ON CONFLICT for sqlite directly here
-		// (we don't have a unique constraint on the pair), so we do a
-		// SELECT + INSERT or UPDATE in one round-trip via Drizzle's
-		// `insert(...).onConflictDoUpdate(...)`. We need an actual
-		// unique constraint for the upsert to fire, so we rely on a
-		// transactional pattern: read-then-write is fine here because
-		// rate limiting tolerates ~1-row skew at the minute boundary.
-		await db.transaction(async (tx) => {
-			const existing = await tx
-				.select({ id: authAttempts.id })
-				.from(authAttempts)
-				.where(and(eq(authAttempts.attemptKey, key), eq(authAttempts.windowStart, windowStart)))
-				.limit(1);
-			if (existing[0]) {
-				await tx
-					.update(authAttempts)
-					.set({ attemptCount: sql`${authAttempts.attemptCount} + 1` })
-					.where(eq(authAttempts.id, existing[0].id));
-			} else {
-				await tx.insert(authAttempts).values({
-					attemptKey: key,
-					windowStart,
-					attemptCount: 1,
-				});
-			}
-		});
+		await db
+			.insert(authAttempts)
+			.values({ attemptKey: key, windowStart, attemptCount: 1 })
+			.onConflictDoUpdate({
+				target: [authAttempts.attemptKey, authAttempts.windowStart],
+				set: { attemptCount: sql`${authAttempts.attemptCount} + 1` },
+			});
 	} catch {
 		// intentionally ignored — see header
 	}

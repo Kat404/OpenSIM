@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `uq_auth_attempts_key_window` ON `auth_attempts` (`attempt_key`,`window_start`);

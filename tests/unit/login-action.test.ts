@@ -135,14 +135,17 @@ describe("login action — rejections before any D1 traffic", () => {
 });
 
 describe("login action — rate limiting", () => {
-	// Counters are seeded with raw SQL, not `recordFailedAttempt`: that
-	// helper is currently a no-op against D1 (see the KNOWN DEFECT test
-	// below), so routing the seed through it would test nothing.
+	// Counters are seeded with raw SQL so the threshold tests pin the
+	// boundary rather than the increment itself; the increment has its
+	// own regression tests below.
+	// REPLACE rather than INSERT: uq_auth_attempts_key_window is now a real
+	// constraint (the upsert needs it), so re-seeding the same minute
+	// bucket for a key would otherwise violate uniqueness.
 	function seedAttempts(key: string, count: number): void {
 		const windowStart = Math.floor(Date.now() / 60_000) * 60;
 		raw
 			.prepare(
-				`INSERT INTO auth_attempts (attempt_key, window_start, attempt_count)
+				`INSERT OR REPLACE INTO auth_attempts (attempt_key, window_start, attempt_count)
 				 VALUES (?, ?, ?)`,
 			)
 			.run(key, windowStart, count);
@@ -171,8 +174,8 @@ describe("login action — rate limiting", () => {
 	});
 
 	it("blocks at five recorded attempts and allows four", async () => {
-		// Threshold pinning without relying on the action's own
-		// increment, which cannot write (KNOWN DEFECT below).
+		// Threshold pinning without relying on the action's own increment,
+		// which has its own regression tests below.
 		seedAttempts(`control:${CONTROL}`, 4);
 		const under = await post({
 			formData: { controlNumber: CONTROL, password: "no-es-la-clave" },
@@ -200,19 +203,33 @@ describe("login action — rate limiting", () => {
 		expect(attemptsFor(ipKey)).toBe(0);
 	});
 
-	it("KNOWN DEFECT: recordFailedAttempt writes nothing against D1", async () => {
-		// `recordFailedAttempt` (src/lib/server/auth.ts:112) wraps its
-		// read-then-write in `db.transaction`, which issues `BEGIN` /
-		// SAVEPOINT. D1 rejects both ("To execute a transaction, please
-		// use the state.storage.transaction() APIs instead"), the helper
-		// swallows the error at line 142, and the counter is silently
-		// dropped — so the R8-9 / P0-2 rate limiter never trips in
-		// production. Characterization test: it passes today because the
-		// current (broken) behaviour is a no-op. Fix = replace the
-		// transaction with a single INSERT ... ON CONFLICT DO UPDATE,
-		// and add the unique index the upsert needs.
-		await recordFailedAttempt(db, "control:12345678");
-		expect(attemptsFor("control:12345678")).toBe(0);
+	it("recordFailedAttempt accumulates against the same minute bucket", async () => {
+		// Regression guard for a defect this suite's D1-faithful harness
+		// exposed: the helper used to wrap its read-then-write in
+		// `db.transaction`, which issues BEGIN / SAVEPOINT. D1 rejects
+		// both, the catch block swallowed it, and the counter was silently
+		// dropped — so the R8-9 / P0-2 lockout never tripped in
+		// production while sqlite-proxy-based tests reported it working.
+		// Now a single INSERT ... ON CONFLICT DO UPDATE against the
+		// uq_auth_attempts_key_window unique index.
+		const key = "control:99999999";
+		await recordFailedAttempt(db, key);
+		expect(attemptsFor(key)).toBe(1);
+
+		await recordFailedAttempt(db, key);
+		expect(attemptsFor(key)).toBe(2);
+
+		await recordFailedAttempt(db, key);
+		expect(attemptsFor(key)).toBe(3);
+	});
+
+	it("recordFailedAttempt keeps separate buckets per key", async () => {
+		await recordFailedAttempt(db, "control:uno");
+		await recordFailedAttempt(db, "control:dos");
+		await recordFailedAttempt(db, "control:uno");
+
+		expect(attemptsFor("control:uno")).toBe(2);
+		expect(attemptsFor("control:dos")).toBe(1);
 	});
 });
 
@@ -227,16 +244,16 @@ describe("login action — credential failure", () => {
 	it("counts the miss against both the control number and the IP bucket", async () => {
 		// Counting only the control bucket would let an attacker enumerate
 		// control numbers without ever tripping their own IP cap.
-		// Blocked by the KNOWN DEFECT above: `recordFailedAttempt` cannot
-		// write to D1, so the counters stay at zero.
+		// The counter persists now — see the recordFailedAttempt regression
+		// tests in the rate-limiting describe block.
 		const { hashIp } = await import("../../src/lib/server/auth");
 		const ipKey = `ip:${await hashIp("203.0.113.7")}`;
 
 		const result = await post({ formData: { controlNumber: "99999999", password: PASSWORD } });
 
 		expect(result.status).toBe(401);
-		expect(attemptsFor("control:99999999")).toBe(0);
-		expect(attemptsFor(ipKey)).toBe(0);
+		expect(attemptsFor("control:99999999")).toBe(1);
+		expect(attemptsFor(ipKey)).toBe(1);
 	});
 
 	it("returns 401 with the same generic error for a wrong password", async () => {
@@ -253,9 +270,10 @@ describe("login action — credential failure", () => {
 		const result = await post({ formData: { controlNumber: CONTROL, password: "no-es-la-clave" } });
 
 		expect(result.status).toBe(401);
-		// See KNOWN DEFECT: `recordFailedAttempt` is a D1 no-op today.
-		expect(attemptsFor(`control:${CONTROL}`)).toBe(0);
-		expect(attemptsFor(ipKey)).toBe(0);
+		// The counter persists now — see the recordFailedAttempt regression
+		// tests in the rate-limiting describe block.
+		expect(attemptsFor(`control:${CONTROL}`)).toBe(1);
+		expect(attemptsFor(ipKey)).toBe(1);
 	});
 
 	it("burns the decoy credential's PBKDF2 cost for an unknown control number", async () => {
