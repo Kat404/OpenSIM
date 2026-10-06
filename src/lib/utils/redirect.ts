@@ -21,6 +21,12 @@
  *   - Parse the rest with a sentinel origin and assert the resolved
  *     origin is the sentinel. This is a same-origin check that does
  *     not require runtime config.
+ *   - **Re-check the normalised pathname.** The origin check alone is
+ *     not sufficient: WHATWG dot-segment normalisation can *create* a
+ *     protocol-relative path from an input that passed the raw prefix
+ *     guard. `/..//evil.com` normalises to the pathname `//evil.com`
+ *     while `url.origin` still resolves to the sentinel, so the
+ *     normalised value must be re-tested after parsing.
  *   - Drop the hash fragment to avoid leaking tokens in `#...` parts
  *     of attacker-controlled URLs that the server still trusts.
  *
@@ -57,7 +63,16 @@ export function safeInternalRedirect(
 		if (url.origin !== SENTINEL_ORIGIN) return fallback;
 		// Hash fragments are not useful for SvelteKit redirects and may
 		// carry attacker-controlled data; drop them.
-		return url.pathname + url.search;
+		const path = url.pathname + url.search;
+		// Re-test AFTER normalisation. The raw-string guard above cannot
+		// see this: WHATWG dot-segment resolution turns "/..//evil.com"
+		// into the pathname "//evil.com" (origin still sentinel), which a
+		// browser then resolves as a protocol-relative navigation to
+		// another origin. Verified against this function: /..//evil.com/x,
+		// /a/..//evil.com, /./..//evil.com and /%2e%2e//evil.com all
+		// returned a protocol-relative URL before this check existed.
+		if (path.startsWith("//") || path.startsWith("/\\")) return fallback;
+		return path;
 	} catch {
 		return fallback;
 	}

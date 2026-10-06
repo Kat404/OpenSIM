@@ -26,7 +26,7 @@
  * See: odd/tasks/opensim.md §5.1 (schema), §9 (CF-3), §16.2 (A3 fix).
  */
 
-import { and, eq, gte, lt, sql } from "drizzle-orm";
+import { and, eq, gt, gte, lt, sql } from "drizzle-orm";
 import { type Database, getDb } from "./db";
 import {
 	authAttempts,
@@ -255,6 +255,24 @@ export interface PasswordHashResult {
 }
 
 /**
+ * A syntactically valid but unmatchable credential, used to burn the
+ * same CPU as a real verification when no credential exists. Returns
+ * fresh random material each call so it cannot be mistaken for a
+ * stored row, and uses PRODUCTION iteration count and salt/derived
+ * sizes — the previous literal `verifyPassword(pw, "AAAA", "AAAA",
+ * 100_000)` did neither, running 10x the work while decoding a 3-byte
+ * salt, so the branches differed measurably despite the "similar"
+ * comment.
+ */
+export async function decoyCredential(): Promise<PasswordHashResult> {
+	return {
+		hash: bytesToBase64Url(randomBytes(DERIVED_KEY_BITS / 8)),
+		salt: bytesToBase64Url(randomBytes(SALT_BYTES)),
+		iterations: PBKDF2_ITERATIONS,
+	};
+}
+
+/**
  * Derives a 32-byte PBKDF2-HMAC-SHA-256 key from `password` and a
  * freshly generated 16-byte salt. Returns base64url-encoded hash and
  * salt plus the iteration count used (so the verifier can match).
@@ -423,6 +441,44 @@ export async function invalidateSession(db: Database, token: string): Promise<vo
 	await db.delete(authSessions).where(eq(authSessions.id, id));
 }
 
+/**
+ * Invalidates EVERY session for a student, using
+ * `idx_auth_sessions_student`. This is the "log out all devices"
+ * capability the schema comment at `schema.ts` describes but that no
+ * code path implemented: until this existed, a stolen token stayed
+ * valid for its full lifetime even after the owner logged out
+ * elsewhere.
+ *
+ * Returns the number of rows removed (best-effort, same caveat as
+ * `pruneExpiredSessions`).
+ */
+export async function invalidateAllSessions(db: Database, controlNumber: string): Promise<number> {
+	const result = await db
+		.delete(authSessions)
+		.where(eq(authSessions.studentControlNumber, controlNumber));
+	return extractAffectedRows(result);
+}
+
+/**
+ * Extends a session's expiry by `SESSION_LIFETIME_MS` from now and
+ * returns the new value. Without this a student is hard-logged-out at
+ * exactly 30 days from login with no renewal, even though the cookie
+ * is presented on every request in that window.
+ *
+ * `db.update` on a row selected by the hashed token id, so the caller
+ * cannot widen the blast radius to another student's rows.
+ */
+export async function extendSession(db: Database, token: string): Promise<Date | null> {
+	const id = await hashToken(token);
+	const expiresAt = new Date(Date.now() + SESSION_LIFETIME_MS);
+	const result = await db
+		.update(authSessions)
+		.set({ expiresAt })
+		.where(and(eq(authSessions.id, id), gt(authSessions.expiresAt, new Date())));
+	if (extractAffectedRows(result) === 0) return null;
+	return expiresAt;
+}
+
 // ---------- User lookup ----------
 
 /**
@@ -467,11 +523,24 @@ export async function getCredential(
 // ---------- IP hashing ----------
 
 /**
- * Hashes a raw IP address (or any string) with SHA-256 and returns
- * the hex digest. We do not store the raw IP for privacy reasons.
+ * Hashes a raw IP address (or any string) with SHA-256 and returns the
+ * hex digest, so the raw address never lands in the database.
+ *
+ * PRIVACY CLAIM — read this before relying on it. An unsalted SHA-256
+ * of an IPv4 address is brute-forceable over the entire 2^32 space in
+ * seconds, so a D1 dump still yields the original addresses. This is
+ * pseudonymisation, not anonymisation.
+ *
+ * `pepper` is an optional per-deployment secret mixed into the digest.
+ * With it, recovering an address from a dump additionally requires the
+ * secret, which a leaked database cannot provide on its own. When it is
+ * absent the function still works, so existing rows stay comparable —
+ * but a deployment that wants the stronger guarantee must supply it
+ * consistently or the hashes become non-comparable.
  */
-export async function hashIp(ip: string): Promise<string> {
-	const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ip));
+export async function hashIp(ip: string, pepper?: string): Promise<string> {
+	const message = pepper ? `${pepper}:${ip}` : ip;
+	const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(message));
 	const bytes = new Uint8Array(digest);
 	let hex = "";
 	for (let i = 0; i < bytes.length; i++) {
@@ -502,6 +571,20 @@ export const clearSessionCookieOptions = {
 	path: "/",
 	maxAge: 0,
 };
+
+/**
+ * Cookie attributes for an existing session whose expiry was just
+ * renewed. Identical to `sessionCookieOptions` today; taking the
+ * `expiresAt` parameter keeps the cookie and the D1 row in sync if the
+ * two ever diverge, which is the whole point of sliding sessions.
+ */
+export function renewedSessionCookieOptions(expiresAt: Date) {
+	return {
+		...sessionCookieOptions,
+		maxAge: SESSION_MAX_AGE_SECONDS,
+		expires: expiresAt,
+	};
+}
 
 // ---------- Re-export for tests / ergonomics ----------
 

@@ -212,14 +212,18 @@ export const studentCredentials = sqliteTable("student_credentials", {
 // a one-way digest so a D1 dump does not yield usable tokens.
 // Rows are invalidated by DELETE on logout or expiry. userAgent /
 // ipHash are stored as opaque strings; ipHash is a SHA-256 of the
-// source IP for privacy (the raw IP never lands in the database).
+// source IP, optionally peppered with a per-deployment secret — the raw
+// IP never lands in the database, but note that an UNPEPPERED digest is
+// brute-forceable across the whole IPv4 space, so it is pseudonymisation
+// rather than anonymisation. See `hashIp` in src/lib/server/auth.ts.
 //
 // The FK to `student_profiles` is `ON DELETE CASCADE`: when a student
 // profile is removed (egreso, control-number correction), every
 // session row for that student goes with it. Pruning of expired
 // sessions is supported by the `idx_auth_sessions_expires_at` index;
 // "log out all devices" for a given student is supported by the
-// `idx_auth_sessions_student` index.
+// `idx_auth_sessions_student` index and implemented as
+// `invalidateAllSessions` in src/lib/server/auth.ts.
 export const authSessions = sqliteTable(
 	"auth_sessions",
 	{

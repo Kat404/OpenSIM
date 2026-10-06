@@ -57,4 +57,43 @@ describe("safeInternalRedirect", () => {
 	it("drops hash fragments (no client-side state leaks via redirect)", () => {
 		expect(safeInternalRedirect("/dashboard#token=abc")).toBe("/dashboard");
 	});
+
+	// WHATWG dot-segment normalisation can CREATE a protocol-relative path
+	// from input that passes the raw `//` prefix guard. These all
+	// normalised to the pathname "//evil.com" (origin still sentinel)
+	// before the post-parse re-check existed, so the browser would have
+	// resolved them as a cross-origin navigation.
+	it("returns fallback when normalisation yields a protocol-relative path", () => {
+		for (const vector of [
+			"/..//evil.com",
+			"/..//evil.com/x",
+			"/a/..//evil.com",
+			"/./..//evil.com",
+			"/%2e%2e//evil.com",
+			"/../..//evil.com",
+		]) {
+			expect(safeInternalRedirect(vector)).toBe("/dashboard");
+		}
+	});
+
+	it("never returns a value a browser could resolve cross-origin", () => {
+		// Invariant, not a vector list: whatever the input, the result must
+		// be safe to hand to redirect().
+		for (const vector of [
+			"//evil.com",
+			"/\\evil.com",
+			"\\evil.com",
+			"https://evil.com",
+			"/..//evil.com/x",
+			"/a/..//evil.com",
+			"/./..//evil.com",
+			"/%2e%2e//evil.com",
+			"/dashboard",
+			"/a/../b",
+		]) {
+			const out = safeInternalRedirect(vector);
+			expect(out.startsWith("//")).toBe(false);
+			expect(out.includes("evil.com")).toBe(false);
+		}
+	});
 });

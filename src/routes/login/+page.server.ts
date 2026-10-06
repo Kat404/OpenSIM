@@ -23,6 +23,7 @@ import * as v from "valibot";
 import {
 	clearRateLimit,
 	createSession,
+	decoyCredential,
 	getCredential,
 	hashIp,
 	isRateLimited,
@@ -113,8 +114,12 @@ export const actions: Actions = {
 
 		const credential = await getCredential(db, controlNumber);
 		if (!credential) {
-			// Run a dummy verify to keep timing similar across branches.
-			await verifyPassword(password, "AAAA", "AAAA", 100_000).catch(() => false);
+			// Burn the same CPU as a real verification so a missing
+			// control number is not distinguishable from a wrong
+			// password by timing. Uses production iteration count and
+			// salt/derived sizes; see `decoyCredential`.
+			const decoy = await decoyCredential();
+			await verifyPassword(password, decoy.hash, decoy.salt, decoy.iterations).catch(() => false);
 			// Count against BOTH keys so an attacker can't enumerate by
 			// trying many control numbers (control: miss) without
 			// tripping their own IP cap, and a legitimate user mistyping

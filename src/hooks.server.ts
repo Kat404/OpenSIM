@@ -44,7 +44,13 @@ const SECURITY_HEADERS: Readonly<Record<string, string>> = Object.freeze({
 // interface (see src/cloudflare-workers.d.ts).
 import { env as workerEnv } from "cloudflare:workers";
 import type { Handle } from "@sveltejs/kit/hooks";
-import { getUserFromSessionToken, invalidateSession, SESSION_COOKIE_NAME } from "#lib/server/auth";
+import {
+	extendSession,
+	getUserFromSessionToken,
+	invalidateSession,
+	renewedSessionCookieOptions,
+	SESSION_COOKIE_NAME,
+} from "#lib/server/auth";
 import { getDb } from "#lib/server/db";
 import type { OpenSimWorkerEnv } from "./cloudflare-workers";
 
@@ -62,6 +68,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const user = await getUserFromSessionToken(db, token);
 		if (user) {
 			event.locals.user = user;
+			// Sliding session: refresh the DB expiry for active users.
+			// Without it a student is hard-logged-out at exactly 30 days
+			// from login even though the cookie is presented on every
+			// request in that window. Best-effort — a failed refresh must
+			// never reject a currently-valid session.
+			const renewed = await extendSession(db, token).catch(() => null);
+			if (renewed) {
+				event.cookies.set(SESSION_COOKIE_NAME, token, renewedSessionCookieOptions(renewed));
+			}
 		} else {
 			// Stale or invalid session — clear the cookie so the client
 			// does not keep presenting a dead token.
