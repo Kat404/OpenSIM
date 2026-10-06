@@ -24,7 +24,8 @@
  * Idempotent: a marker comment lets re-runs no-op without producing
  * duplicate `scheduled` methods.
  */
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 
 const WORKER_PATH = ".svelte-kit/cloudflare/_worker.js";
 
@@ -78,8 +79,34 @@ if (closeIdx === -1) {
 	process.exit(1);
 }
 
+// The adapter emits `fetch` as object method shorthand (`async fetch() {}`),
+// which carries NO trailing comma. A second shorthand property therefore
+// needs one, or the output is a syntax error — "Expected } but found async"
+// — and `wrangler deploy` fails AFTER the build step already reported
+// success. Append the comma to the property we are inserting after.
+const prevIdx = closeIdx - 1;
+if (lines[prevIdx].trimEnd().endsWith("}") && !lines[prevIdx].trimEnd().endsWith(",")) {
+	lines[prevIdx] = `${lines[prevIdx].replace(/\s+$/, "")},`;
+}
+
 lines.splice(closeIdx, 0, MARKER, SCHEDULED_BODY);
 writeFileSync(WORKER_PATH, lines.join("\n"));
+
+// Fail loudly here rather than let `wrangler deploy` be the one to report a
+// syntax error against a worker we just claimed to have patched.
+const checkPath = `${WORKER_PATH}.check.mjs`;
+writeFileSync(checkPath, readFileSync(WORKER_PATH, "utf8"), "utf8");
+try {
+	execFileSync(process.execPath, ["--check", checkPath], { stdio: "pipe" });
+} catch (err) {
+	console.error("[inject-scheduled] patched output is NOT valid JavaScript:");
+	console.error(String(err.stderr ?? err.message));
+	console.error("[inject-scheduled] refusing to leave a broken worker in place.");
+	process.exit(1);
+} finally {
+	rmSync(checkPath, { force: true });
+}
+
 console.log(
 	`[inject-scheduled] patched ${WORKER_PATH} — scheduled handler added to default export.`,
 );
