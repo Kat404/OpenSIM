@@ -178,6 +178,24 @@ clean:
 nuke:
     rm -rf node_modules pnpm-lock.yaml .svelte-kit build .wrangler dist node_modules/.cache .vite
 
+# Remove Playwright run artefacts: failed-test screenshots/traces
+# (test-results/, ~2.4 MB), the HTML report (~5.3 MB) and the regenerated
+# JSON runs (results.json alone reaches ~19 MB of pure telemetry). The
+# durable a11y narrative lives in docs/a11y-audit.md, not in these files.
+#
+# Separate from `clean` on purpose: `clean` removes regenerable build
+# output that carries no information, while this dir holds audit evidence.
+# Fusing them makes `just clean` silently destroy the a11y trail.
+#
+# Deliberately NOT `playwright/`: that holds .auth/storage.json, the
+# session state protected specs load via `test.use({ storageState })`.
+# It regenerates on the next auth.setup run, but deleting it breaks a bare
+# `playwright test` invocation, and at ~8 KB it is not an accumulation
+# problem. Separate `clean-e2e` is the build-artifact cleanup; this is the
+# test-artifact one.
+clean-e2e:
+    rm -rf test-results tests/e2e/reports/html tests/e2e/reports/*.json
+
 # ===== Pipelines =====
 
 # Full pre-push QA gate: check + biome-check + test + build
