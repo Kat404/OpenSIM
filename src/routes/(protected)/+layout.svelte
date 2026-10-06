@@ -27,6 +27,10 @@ const paletteRoutes: PaletteRoute[] = [
 ];
 </script>
 
+<svelte:head>
+	<title>OpenSIM</title>
+</svelte:head>
+
 {#if data.user}
 	{@const subjects = (data.paletteSubjects ?? []).map((s) => ({
 		label: `${s.code} — ${s.name}`,

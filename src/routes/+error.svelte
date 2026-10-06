@@ -127,4 +127,21 @@ const isNotFound = $derived(status === 404);
 .error__actions .btn {
 	text-decoration: none;
 }
+
+/* The link in the 404/error page uses the global `.btn` modifier
+ * classes from Button.svelte, but Button.svelte's CSS is scoped to
+ * its own template — it does not match elements rendered from
+ * other files. Recreate the .btn--primary look here so the link
+ * is visible against the page surface (background --brand-700 +
+ * color --brand-fg = 5.36:1, WCAG AA pass). Same recipe as
+ * src/lib/components/ui/Button.svelte:107-109. */
+.error__actions .btn--primary {
+	background-color: var(--brand-700);
+	color: var(--brand-fg);
+	border-color: var(--brand-700);
+}
+.error__actions .btn--primary:hover:not(:disabled) {
+	background-color: var(--brand-900);
+	border-color: var(--brand-900);
+}
 </style>

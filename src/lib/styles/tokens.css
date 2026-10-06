@@ -46,12 +46,17 @@
 	--fg-disabled: #9ca3af; /* disabled controls */
 	--fg-inverse: #ffffff; /* text on inverse surface */
 
-	/* Brand accent (teal-cyan, AA on both light & dark surfaces) */
+	/* Brand accent (teal-cyan, AA on both light & dark surfaces)
+	 * brand-600 = #0f6f85 (verified 5.78:1 on white, AA pass); the
+	 * previous #0891b2 was 3.68:1 and failed axe-core's color-contrast
+	 * check on every primary link and brand mark. brand-700 is
+	 * distinct (still #0e7490) so the hover/dark-state progression
+	 * 500 -> 600 -> 700 -> 900 keeps its visual identity. */
 	--brand-50: #ecfeff;
 	--brand-100: #cffafe;
 	--brand-300: #67e8f9;
 	--brand-500: #06b6d4;
-	--brand-600: #0891b2;
+	--brand-600: #0f6f85;
 	--brand-700: #0e7490;
 	--brand-900: #164e63;
 	--brand-fg: #ffffff; /* foreground for solid brand backgrounds */

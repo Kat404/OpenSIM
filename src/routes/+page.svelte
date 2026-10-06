@@ -52,6 +52,10 @@ function notify() {
 }
 </script>
 
+<svelte:head>
+	<title>OpenSIM</title>
+</svelte:head>
+
 <main class="page">
 	<header class="page__header">
 		<h1>OpenSIM — Inventario de componentes UI</h1>
