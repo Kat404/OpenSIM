@@ -2,13 +2,19 @@
 
 Fecha: 2026-10-03
 Target: Cloudflare Workers (no Pages) con D1 binding + assets estáticos.
-Branch: `feat/phase-1-foundation` @ 51 commits, working tree limpio.
+Branch: `main` (esta línea se escribió antes del cierre de Phase 6 + 7; el estado de commits vigente está en `odd/tasks/opensim.md` §7).
 
 ---
 
 ## Estado del config
 
-`wrangler.jsonc` está listo para deploy salvo por `database_id` (placeholder) y la autenticación.
+`wrangler.jsonc` está listo para deploy. El `database_id` **ya es real** (no placeholder) y
+la base de datos `opensim` **ya existe** — verificado 2026-10-06.
+
+> **Actualizado 2026-10-06.** Este bloque decía que `database_id` era un placeholder
+> (`00000000-…`) y que había que correr `wrangler d1 create`. Ambas cosas son falsas: el ID
+> real está commiteado en `wrangler.jsonc` y la base ya fue creada. **No corras
+> `wrangler d1 create` — crearía una base nueva, sin nombre en la config y sin uso.**
 
 ```jsonc
 {
@@ -18,11 +24,11 @@ Branch: `feat/phase-1-foundation` @ 51 commits, working tree limpio.
 	"main": ".svelte-kit/cloudflare/_worker.js",
 	"assets": { "binding": "ASSETS", "directory": ".svelte-kit/cloudflare" },
 	"workers_dev": true,
-	"preview_urls": true,
+	"preview_urls": false,
 	"d1_databases": [{
 		"binding": "DB",
 		"database_name": "opensim",
-		"database_id": "00000000-0000-0000-0000-000000000000",  // ← reemplazar
+		"database_id": "390df78e-c4c2-4ace-94f4-6baebf1eb88f",
 		"migrations_dir": "drizzle"
 	}]
 }
@@ -50,17 +56,23 @@ export CLOUDFLARE_API_TOKEN="<token-with-D1-Edit-Workers-Edit-scopes>"
 wrangler whoami  # confirma que estás autenticado
 ```
 
-### 2. Crear la base de datos D1 de producción
+### 2. Base de datos D1 — YA EXISTE, no la crees
 
-```bash
-wrangler d1 create opensim
-# Output:
-#   Created D1 database: opensim (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
-```
+> **Obsoleto — eliminado 2026-10-06.** Esta sección pedía `wrangler d1 create opensim`.
+> La base ya fue creada y su `database_id` real está en `wrangler.jsonc`. Correr el
+> `create` otra vez genera una base huérfana que la config no referencia. **Saltar.**
+>
+> Verificá el estado real con:
+> ```bash
+> wrangler d1 migrations list opensim --remote
+> ```
 
-Tomá el UUID del output y reemplazalo en `wrangler.jsonc` línea `database_id`. **NO commitear el UUID con tu cuenta personal al repo público** — usar una variable de entorno o un archivo `.prod/wrangler.override.jsonc` con `wrangler deploy -c .prod/wrangler.override.jsonc`.
+Sobre el UUID: `docs/deploy.md` antes advertía no commitearlo al repo público. Ese
+`database_id` ya está commiteado — no es una credencial (D1 no es escribible sin auth),
+así que el riesgo real es otro: **nunca commitees un `CLOUDFLARE_API_TOKEN`**, que sí es
+una credencial. Para overrides de config usá `.prod/wrangler.override.jsonc` (gitignored).
 
-Para mantener el repo limpio, una opción es:
+Config alternativa si mantenés el repo limpio:
 
 ```jsonc
 // wrangler.production.jsonc (gitignored)
@@ -78,12 +90,16 @@ Para mantener el repo limpio, una opción es:
 
 Y deployar con `wrangler deploy -c wrangler.production.jsonc`.
 
-### 3. Aplicar las 5 migraciones
+### 3. Verificar/aplicar las 6 migraciones
 
 ```bash
-wrangler d1 migrations apply opensim --remote
-# Aplica: 0000, 0001, 0002, 0003, 0004
+wrangler d1 migrations list opensim --remote    # inspeccionar primero
+just db-migrate-remote                          # aplica solo lo pendiente
+# Hay 6 migraciones: 0000, 0001, 0002, 0003, 0004, 0005_uneven_whizzer
 ```
+
+D1 registra las aplicadas en `d1_migrations`, así que `apply` es idempotente. El operador
+ya corrió `just db-migrate-remote` al menos una vez; listar primero evita repetir a ciegas.
 
 ### 4. Aplicar el seed (catálogo, sin estudiantes)
 

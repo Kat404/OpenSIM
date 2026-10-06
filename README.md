@@ -21,16 +21,16 @@ Visit `http://localhost:5173`, log in with the test credentials above, and `/das
 
 ## Scripts
 
-| Script | What it does |
-| --- | --- |
-| `just dev` | Vite dev server |
-| `just build` | Wrangler types check + Vite production build for Cloudflare |
-| `just preview` | Wrangler dev against the built Worker |
-| `just check` | svelte-kit sync + svelte-check + wrangler types |
-| `just test` | Vitest unit tests (single run) |
-| `just db-generate` | Drizzle Kit — generate SQL migrations from schema diff (codegen only) |
-| `just db-seed` | Generate + apply `seed.sql` in one step (Drizzle codegen + `wrangler d1 execute --file`) |
-| `just db-set-password` | Provision test student credential (dev only) |
+| Script                 | What it does                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| `just dev`             | Vite dev server                                                                          |
+| `just build`           | Wrangler types check + Vite production build for Cloudflare                              |
+| `just preview`         | Wrangler dev against the built Worker                                                    |
+| `just check`           | svelte-kit sync + svelte-check + wrangler types                                          |
+| `just test`            | Vitest unit tests (single run)                                                           |
+| `just db-generate`     | Drizzle Kit — generate SQL migrations from schema diff (codegen only)                    |
+| `just db-seed`         | Generate + apply `seed.sql` in one step (Drizzle codegen + `wrangler d1 execute --file`) |
+| `just db-set-password` | Provision test student credential (dev only)                                             |
 
 > **Deprecated / dead code:** `pnpm db:migrate` (Drizzle Kit) is intentionally NOT the canonical path. The canonical migrator is `wrangler d1 migrations apply` (via `just db-migrate`). See `docs/drizzle-migrations-and-data.md` for the rationale.
 
@@ -45,7 +45,7 @@ Run `just` (or `just --list`) to see all 30+ recipes. Key ones:
 
 ## Project layout
 
-```
+```text
 src/
   app.html
   app.d.ts
@@ -79,9 +79,10 @@ src/
       logout/
         +server.ts                       # POST logout endpoint
 odd/
-  tasks/opensim.md        # Canonical spec (v2.2)
-  audit.md                # Pre-implementation audit
-  cf-3-auth-comparison.md # Auth library analysis
+  README.md                # Index: phase table, current state, open task, review ledger
+  tasks/opensim.md         # Canonical spec (v2.2)
+  audit.md                 # Pre-implementation audit (SUPERSEDED — banner at top)
+  cf-3-auth-comparison.md  # Auth library analysis (SUPERSEDED — closed as single-file native)
 docs/
   drizzle-migrations-and-data.md  # Canonical D1 + Drizzle workflow
   odd-protocol.md                  # Full ODD reference
@@ -127,7 +128,7 @@ DO NOT use these credentials in any deployed environment. The seed-password scri
 
 - English: code, components, props, types, comments, commits
 - Spanish: UI copy (button labels, error messages)
-- Conventional Commits on `feat/phase-1-foundation` (current branch)
+- Conventional Commits on `main` (current branch)
 - No Tailwind, no Lenis, no Motion.dev — pure Svelte 5 + CSS tokens
 - WCAG 2.1 AA contrast on text
 - Subpath imports `#lib/*` (SvelteKit 3 future); `$lib/*` still works as fallback
