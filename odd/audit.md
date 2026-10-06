@@ -1,8 +1,13 @@
 # OpenSIM Spec Audit — Pre-Implementation Review
 
+> [!WARNING]
+> **PRE-IMPLEMENTATION RECORD — SUPERSEDED BY SPEC v2.2.** This audit ran 2026-10-01 against the *pre-v2* spec (SvelteKit 2, no implementation). Every finding below was either resolved during v2.0–v2.2 or re-decided; the spec is now at v2.2 (`odd/tasks/opensim.md`). The findings (AG-1…AG-22, CF-1…CF-5) are preserved verbatim as the historical decision record — **do not read them as current state.** For current status see `odd/README.md` and `odd/tasks/opensim.md`.
+>
+> Since resolved: **CF-1** dual identity (`canonicalId` + `subjectAliases`), **CF-2** Cloudflare D1 + Drizzle, **CF-3** auth single-file native (`opensim.md:18`), **CF-4** budgets explicit in §12, **CF-5** screenshot count corrected to 55.
+
 **Date:** 2026-10-01
 **Source spec:** OpenSIM — SvelteKit 2 + Svelte 5 runes + native CSS tokens + DAG
-**Status:** ~75% implementation-ready for Phase 1. **4 critical findings** + **3 imprecise sub-claims** + **22 architecture gaps** to resolve.
+**Status (original, superseded):** ~75% implementation-ready for Phase 1. **4 critical findings** + **3 imprecise sub-claims** + **22 architecture gaps** to resolve.
 
 ---
 

@@ -3,7 +3,16 @@
 **Feature:** `phase-6-ui-polish`
 **Branch:** `feat/phase-1-foundation` (continuing — same default as Phase 5)
 **Goal:** Resolve 4 UI/UX issues observed by el maintainer on the live production deployment (`https://opensim.jose-luis-rs.workers.dev`) on 2026-10-03. All 4 are **non-blocking** but visibly degrade the first-impression polish.
-**Status:** In progress — U1 closed via P0-1.1 (token parity), U2 and U4 implemented. U3 deferred pending spec rewrite (M3.1 round 8 found that the original U3 spec would introduce a serious ARIA violation and a redundant prop that already exists).
+**Status:** CLOSED 2026-10-06 (bookkeeping sync). U1 closed via `1294c91`, U2 via `5d7ac9c`, U4 via `e7facd3`, U3 via the Phase 6.1 cycle (`a90ba55`/`2531434`/`3608369`/`281b9b5`/`d789930` + `7007561`/`d7d0a45`/`ccd490f`). Tooling + audit closure recorded in `odd/tasks/opensim.md` §6.5, hardening in §7.
+
+> **UNRESOLVED CONTRADICTION — deploy state (bookkeeping sync 2026-10-06).** Two facts are both true and must not be silently reconciled:
+>
+> - This doc's Context says the app is **live at `https://opensim.jose-luis-rs.workers.dev`** as of 2026-10-03.
+> - Canonical Task 5.2 (`odd/tasks/opensim.md:419`) is the **only unchecked box in the spec**, and the deploy checklist `odd/tasks/phase-5.md:80-98` (5.2.1–5.2.5) **never ran**.
+>
+> **Operator question that settles it:** which deploy actually happened, and does a **production D1 with a real `database_id`** exist in `wrangler.jsonc`? Until that is answered, Task 5.2 stays open. **Do not mark it complete from this doc.**
+
+> **Acceptance-criteria bookkeeping (bookkeeping sync 2026-10-06):** the 4 ticked ACs rest on the Progress blocks below — U1-A1 on `1294c91`, U2-A1/U2-A3 on `5d7ac9c` (700ms cubic-bezier, honors `prefers-reduced-motion`), U4-A1 on `e7facd3` (`.btn__icon` flex wrapper). The 7 boxes left unchecked have **no evidence anywhere in this file**: the `MapPin` icon (U1-A2 — never implemented; the real U1 fix was in `tokens.css`), the U1 contrast measurement (A3) and U1 test run (A4), the U2 visual "no jumps" check (A2), and all four U4 coverage/regression claims (A2–A4). They are visual or matrix criteria that the recorded verification runs (`just check` / `just test` / axe) do not assert.
 
 ---
 
@@ -32,7 +41,7 @@
 - Add a `MapPin` icon from `lucide-svelte` before the label (per user request) so the badge carries semantic weight, not just text
 
 **Acceptance criteria:**
-- [ ] Badge background matches the active theme (no pure white in dark)
+- [x] Badge background matches the active theme (no pure white in dark)
 - [ ] Map pin icon visible to the left of the label, using `currentColor` so it inherits the brand hue
 - [ ] AA contrast ≥ 4.5:1 in both light and dark
 - [ ] `just test` still green; no new Vitest required (visual only)
@@ -54,9 +63,9 @@
 - Add a subtle pulsing glow at the leading edge (optional, see Notion's pattern)
 
 **Acceptance criteria:**
-- [ ] Bar transitions from 0% to 100% over ~600-800ms with `cubic-bezier(0.4, 0, 0.2, 1)`
+- [x] Bar transitions from 0% to 100% over ~600-800ms with `cubic-bezier(0.4, 0, 0.2, 1)`
 - [ ] No visible "jumps" when value updates
-- [ ] Honors `prefers-reduced-motion` (instant transition for users with reduced motion preference)
+- [x] Honors `prefers-reduced-motion` (instant transition for users with reduced motion preference)
 
 **Effort:** ~10 lines (CSS transition + reduced-motion media query), 1 file.
 
@@ -206,7 +215,7 @@ AC1–AC5 are axe-detectable. AC6–AC8 are the actual overlap tests. AC9 verifi
 - The most robust solution: wrap the icon in `<span class="btn__icon">` with `.btn__icon { display: inline-flex; align-items: center; }` so the SVG centers within its own box and the box centers within the button
 
 **Acceptance criteria:**
-- [ ] Icon vertical center is within 1px of the text x-height center in both light and dark
+- [x] Icon vertical center is within 1px of the text x-height center in both light and dark
 - [ ] Works across all button variants (primary, secondary, ghost, danger)
 - [ ] Works in both horizontal (`[icon] [label]`) and icon-only (`[icon]`) button modes
 - [ ] No regression in click target size (the alignment fix shouldn't change `padding`)

@@ -3,7 +3,7 @@
 **Feature:** `phase-6.5-closure-and-just-adoption`
 **Branch:** `main` (continuing — same default as Phase 6)
 **Goal:** (1) close the U3 audit-cycle (R11/R12/R13) formally with a traceability doc; (2) bring `just` to full coverage in ODD recipes, reports, and the README; (3) eliminate the GitHub Actions workflow entirely (user-pivot: no cloud CI) and replace with **local Podman CI** recipes; (4) adopt **Biome 2.5.15** with explicit **domains** for svelte/drizzle/playwright/test — these domains were surfaced by the user mid-session as features worth verifying, and verification via official Biome docs confirms they apply to OpenSIM and add value.
-**Status:** Plan v5, refined per mcode R16 + Biome docs verification. Ready to implement pending user OK on domain choices.
+**Status:** CLOSED 2026-10-04 — shipped as 7 work-unit commits on `main`: `72cddf5`, `d5e2109`, `dcd3e9e`, `6e67534`, `338ad07`, `0baf00b`, `cc0f8ee`. Spec record: `odd/tasks/opensim.md` §6.5 `:451-472` (Tasks 6.5.1–6.5.7). Plan body, the v4→v5 pivot rationale, and the Biome domain findings below are preserved verbatim as the historical record.
 
 ---
 

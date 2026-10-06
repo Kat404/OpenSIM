@@ -3,7 +3,7 @@
 **Feature:** `phase-6-u3-cosmetic-followups`
 **Branch:** `main` (continuing — same default as Phase 6 U3)
 **Goal:** Resolve the cosmetic items mcode flagged across R11 + R12, plus the `initials()` dead-code bug R12 surfaced by re-running the function. All items are **non-blocking** for U3 closeout but cheap enough to land in one focused cycle.
-**Status:** Plan written, R11 cross-audited, R12 cross-audited and refined. Pending user approval to implement.
+**Status:** CLOSED. Implemented across 4 commits on `main` — `5b05166` (C1+C2+C5), `7fb89a7` (C3), `e43caae` (C4), `482a00e` (C5 spec defect + C3 offline symmetry + CSS-comment strip, post-mcode-R13). Plan was R11/R12 cross-audited and refined before implementation.
 
 ---
 

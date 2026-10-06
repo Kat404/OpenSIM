@@ -3,7 +3,7 @@
 **Feature:** `phase-6.1-avatar-test-loop`
 **Branch:** `main` (continuing — same default as Phase 6)
 **Goal:** Close the 6 open acceptance criteria (AC6-AC11) for the U3 Avatar status dot. AC1-AC5 (axe-detectable) already pass via `tests/e2e/axe/*.spec.ts`. AC6-AC11 require Playwright geometry + contrast + box-shadow assertions, none of which exist yet.
-**Status:** Plan v2, refined per mcode R18 (4 blockers caught + 5 minor corrections applied). Pending user approval.
+**Status:** CLOSED 2026-10-05 — shipped as 3 work-unit commits on `main`: `7007561` (80-matrix overlap suite), `d7d0a45` (`just test-e2e-avatar` recipe + docs), `ccd490f` (closeout doc, post-mcode-R19). Spec record: `odd/tasks/opensim.md` §6.1 `:436-459` (the spec's own Phase 6.1 slot) + Progress block `odd/tasks/phase-6-ui-polish.md:342-370`. Plan body, the R18 blocker table, and the R19 verdict below are preserved verbatim as the historical record.
 
 ---
 

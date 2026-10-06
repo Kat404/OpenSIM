@@ -40,38 +40,42 @@
 
 ## Tasks (one work-unit commit per task)
 
+> **Evidence for the checked boxes below (bookkeeping sync 2026-10-06):** every tick maps to the work-unit commit table in **Evidence (filled in at close)** at the bottom of this file — Task 1 → `59ef4f7`, Task 2 → `1660256`, Task 3 → `d703a93`, Task 4 → `01984e6` + `b447598`, Task 5 → `be1f65f` — plus the verification snapshot recording `just check` 0/0 and `just test` 115/115 (Task 6). Task 1 is independently corroborated by `odd/tasks/opensim.md:400-414`, where Phase 4.0 and Tasks 4.1–4.3 are `[x]`.
+>
+> **Two boxes intentionally left unchecked:** the Task 6 manual smoke (the Evidence snapshot records it as "deferred to user") and the Task 6 verify-pass commit (`chore(phase-5-prep): verify pass + work-unit close` does not appear in the commit table — the box itself allowed folding it into Task 5, which is where `be1f65f` landed).
+
 ### Task 1 — Spec sync: close Phase 4.0 / 4.1 / 4.2 / 4.3 in `odd/tasks/opensim.md`
-- [ ] Mark `Task 4.1`, `4.2`, `4.3` as `[x]` in §8.
-- [ ] Add a short sub-block "Phase 4.0 hardening" with the 7 pre-Phase-4 commits.
-- [ ] Add a short sub-block "Phase 4 implementation" with the 4 Phase 4 commits + 1 N1 fix commit.
-- [ ] Conventional Commit: `docs(spec): close Phase 4.0 + 4 tasks in §8 (work-unit)`.
+- [x] Mark `Task 4.1`, `4.2`, `4.3` as `[x]` in §8.
+- [x] Add a short sub-block "Phase 4.0 hardening" with the 7 pre-Phase-4 commits.
+- [x] Add a short sub-block "Phase 4 implementation" with the 4 Phase 4 commits + 1 N1 fix commit.
+- [x] Conventional Commit: `docs(spec): close Phase 4.0 + 4 tasks in §8 (work-unit)`.
 
 ### Task 2 — Theme system hardening (N2 + N3 + N4 + N5)
-- [ ] `src/app.html`: only set `data-theme` if `localStorage.getItem('opensim-theme')` returned a valid stored value; otherwise leave the attribute unset and let the CSS `@media` block decide. Update the inline comment.
-- [ ] `src/lib/utils/theme.svelte.ts`: register a `matchMedia('(prefers-color-scheme: dark)')` listener. When the OS theme flips AND no manual override is stored, update `data-theme` (which the existing `MutationObserver` already mirrors into the rune).
-- [ ] `src/lib/components/layout/LayoutHeader.svelte`: drop the redundant `onMount` re-read; render both `Sun` and `Moon` icons unconditionally; toggle visibility via `header:has([data-theme="dark"]) .header__theme-sun { display: inline-flex }` and the inverse for moon. The click handler remains.
-- [ ] Conventional Commit: `fix(theme): prefers-color-scheme symmetry + OS reactivity + SSR icon (audit N2/N3/N4/N5)`.
+- [x] `src/app.html`: only set `data-theme` if `localStorage.getItem('opensim-theme')` returned a valid stored value; otherwise leave the attribute unset and let the CSS `@media` block decide. Update the inline comment.
+- [x] `src/lib/utils/theme.svelte.ts`: register a `matchMedia('(prefers-color-scheme: dark)')` listener. When the OS theme flips AND no manual override is stored, update `data-theme` (which the existing `MutationObserver` already mirrors into the rune).
+- [x] `src/lib/components/layout/LayoutHeader.svelte`: drop the redundant `onMount` re-read; render both `Sun` and `Moon` icons unconditionally; toggle visibility via `header:has([data-theme="dark"]) .header__theme-sun { display: inline-flex }` and the inverse for moon. The click handler remains.
+- [x] Conventional Commit: `fix(theme): prefers-color-scheme symmetry + OS reactivity + SSR icon (audit N2/N3/N4/N5)`.
 
 ### Task 3 — Cmd+K palette polish (M4 + M6)
-- [ ] `src/lib/components/layout/CmdKPalette.svelte`: ensure `inputEl?.focus()` runs on every `open` flip (the current `$effect` does this, but verify the queueMicrotask isn't racing the dialog mount in slow browsers). Add a test note in the comment.
-- [ ] `src/routes/(protected)/reticula/+page.svelte`: subscribe to `page.url.hash` reactively so hash changes within the same route (e.g. Cmd+K → `reticula#calculo` → user types again in Cmd+K → `reticula#algebra`) update `focusedCanonicalId`. Also clear the hash when navigating away from `/reticula` so back-button returns to the un-focused DAG.
-- [ ] Conventional Commit: `fix(palette): focus re-entry + retícula hash round-trip (audit M4/M6)`.
+- [x] `src/lib/components/layout/CmdKPalette.svelte`: ensure `inputEl?.focus()` runs on every `open` flip (the current `$effect` does this, but verify the queueMicrotask isn't racing the dialog mount in slow browsers). Add a test note in the comment.
+- [x] `src/routes/(protected)/reticula/+page.svelte`: subscribe to `page.url.hash` reactively so hash changes within the same route (e.g. Cmd+K → `reticula#calculo` → user types again in Cmd+K → `reticula#algebra`) update `focusedCanonicalId`. Also clear the hash when navigating away from `/reticula` so back-button returns to the un-focused DAG.
+- [x] Conventional Commit: `fix(palette): focus re-entry + retícula hash round-trip (audit M4/M6)`.
 
 ### Task 4 — Schedule + Kardex polish (N7 + L3 + N8)
-- [ ] `src/lib/components/schedule/TimeGridSchedule.svelte`: audit the `day` / numeric index flow. Drop any unused variable. If `i` from `{#each DAY_LETTERS as letter, i}` is dropped intentionally, replace `(letter)` with `(i)` to keep the keyed-each contract.
-- [ ] `src/lib/utils/status-labels.ts`: add `export const EVALUATION_LABEL: Record<EvaluationType, string> = { ORDINARIO: 'Ordinario', REPETICION: 'Repetición', ESPECIAL: 'Especial' }`.
-- [ ] `src/lib/components/kardex/KardexTable.svelte`: replace the inline `evalCell` map with `EVALUATION_LABEL[t]`. Replace the inline `{#each [...] as opt}` filter buttons with a shared `EVALUATION_OPTIONS` constant (same source as the labels) so the filter UI and the cell renderer can never drift.
-- [ ] `src/lib/components/tramites/ProcedureStepper.svelte`, `TramiteFormTitulacion.svelte`, `TramiteFormResidencia.svelte`, `TramiteFormServicioSocial.svelte`, `src/lib/components/layout/LayoutSidebar.svelte`: replace hard-coded "Disponible"/"Bloqueado" with a shared `PROCEDURE_STATE_LABEL` constant in `lib/utils/status-labels.ts` (or co-locate in `tramites/` if the labels are feature-specific — decide on first encounter).
-- [ ] Conventional Commit: `refactor(labels): single-source EVALUATION_LABEL + PROCEDURE_STATE_LABEL (audit L3/N8)`.
+- [x] `src/lib/components/schedule/TimeGridSchedule.svelte`: audit the `day` / numeric index flow. Drop any unused variable. If `i` from `{#each DAY_LETTERS as letter, i}` is dropped intentionally, replace `(letter)` with `(i)` to keep the keyed-each contract.
+- [x] `src/lib/utils/status-labels.ts`: add `export const EVALUATION_LABEL: Record<EvaluationType, string> = { ORDINARIO: 'Ordinario', REPETICION: 'Repetición', ESPECIAL: 'Especial' }`.
+- [x] `src/lib/components/kardex/KardexTable.svelte`: replace the inline `evalCell` map with `EVALUATION_LABEL[t]`. Replace the inline `{#each [...] as opt}` filter buttons with a shared `EVALUATION_OPTIONS` constant (same source as the labels) so the filter UI and the cell renderer can never drift.
+- [x] `src/lib/components/tramites/ProcedureStepper.svelte`, `TramiteFormTitulacion.svelte`, `TramiteFormResidencia.svelte`, `TramiteFormServicioSocial.svelte`, `src/lib/components/layout/LayoutSidebar.svelte`: replace hard-coded "Disponible"/"Bloqueado" with a shared `PROCEDURE_STATE_LABEL` constant in `lib/utils/status-labels.ts` (or co-locate in `tramites/` if the labels are feature-specific — decide on first encounter).
+- [x] Conventional Commit: `refactor(labels): single-source EVALUATION_LABEL + PROCEDURE_STATE_LABEL (audit L3/N8)`.
 
 ### Task 5 — Docs sync (L1)
-- [ ] `src/app.html`: rewrite the inline comment block above the IIFE to describe the new contract: "If the user has a stored override we apply it; otherwise we let the CSS `@media (prefers-color-scheme)` block own the initial paint, and the JS side mirrors the OS theme thereafter via `matchMedia`."
-- [ ] `src/lib/styles/tokens.css`: update the "Auto-detect on first load when no explicit data-theme is set" comment to read "Auto-detect on first load when no explicit data-theme is set; JS overrides only when localStorage has a stored value." Adjust the four lines accordingly.
-- [ ] Conventional Commit: `docs(theme): align comments with prefers-color-scheme symmetry fix (audit L1)`.
+- [x] `src/app.html`: rewrite the inline comment block above the IIFE to describe the new contract: "If the user has a stored override we apply it; otherwise we let the CSS `@media (prefers-color-scheme)` block own the initial paint, and the JS side mirrors the OS theme thereafter via `matchMedia`."
+- [x] `src/lib/styles/tokens.css`: update the "Auto-detect on first load when no explicit data-theme is set" comment to read "Auto-detect on first load when no explicit data-theme is set; JS overrides only when localStorage has a stored value." Adjust the four lines accordingly.
+- [x] Conventional Commit: `docs(theme): align comments with prefers-color-scheme symmetry fix (audit L1)`.
 
 ### Task 6 — Verify
-- [ ] `just check` (svelte-kit sync + svelte-check + wrangler types).
-- [ ] `just test` (Vitest 115/115 still green).
+- [x] `just check` (svelte-kit sync + svelte-check + wrangler types).
+- [x] `just test` (Vitest 115/115 still green).
 - [ ] Manual smoke: `just dev`, log in, toggle theme, change OS theme, open Cmd+K, deep-link a subject, reload the retícula, navigate away. No FOUC, no stale icon, no stuck focus, no lost hash.
 - [ ] Conventional Commit: `chore(phase-5-prep): verify pass + work-unit close` (or fold into Task 5 if a small README line lands).
 
