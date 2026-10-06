@@ -134,6 +134,17 @@ db-seed:
 db-set-password:
     pnpm run db:set-password
 
+# Set the test student password on the REMOTE D1 (⚠ production).
+#
+# Reads OPENSIM_TEST_PASSWORD from .env — `dotenv-load := true` is set at the
+# top of this file, so no inline env var is needed:
+#     just db-set-password-remote
+# seed-password.ts refuses the dev default ("opensim-dev-2026") when
+# OPENSIM_D1_TARGET=remote, so .env must define the key. An inline
+# `OPENSIM_TEST_PASSWORD=...` still works as a one-off override.
+db-set-password-remote:
+    OPENSIM_D1_TARGET=remote pnpm run db:set-password
+
 # Drizzle Studio (visual DB explorer at localhost:4983)
 db-studio:
     pnpm run db:studio

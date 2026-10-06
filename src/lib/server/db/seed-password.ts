@@ -12,9 +12,16 @@
  *   4. Pipes the generated SQL into `wrangler d1 execute --local`.
  *
  * Usage:
- *   pnpm run db:set-password                 # uses defaults
+ *   pnpm run db:set-password                 # uses defaults (local D1)
  *   pnpm run db:set-password <NUMERO DE CONTROL PURGADO>        # custom control number
  *   OPENSIM_TEST_PASSWORD=foo pnpm run db:set-password
+ *   just db-set-password-remote              # REMOTE D1 (⚠ production)
+ *
+ * Remote targeting is env-driven (`OPENSIM_D1_TARGET=remote`), not a
+ * positional flag: the positional args are control number, password, name
+ * and curp, so a `--remote` in args[0] would be parsed as the control
+ * number. Remote mode REFUSES the default password — set
+ * OPENSIM_TEST_PASSWORD explicitly.
  *
  * DEFAULT CREDENTIALS — DO NOT USE IN PRODUCTION:
  *   control_number: <NUMERO DE CONTROL PURGADO>
@@ -104,6 +111,8 @@ function buildSql(controlNumber: string, password: string, fullName: string, cur
 
 function main(): void {
 	const args = process.argv.slice(2);
+	// Env-driven, not a positional flag — see the usage note in the header.
+	const REMOTE = process.env.OPENSIM_D1_TARGET === "remote";
 	const controlNumber =
 		args[0] ?? process.env.OPENSIM_TEST_CONTROL_NUMBER ?? DEFAULT_CONTROL_NUMBER;
 	const password = args[1] ?? process.env.OPENSIM_TEST_PASSWORD ?? DEFAULT_PASSWORD;
@@ -117,6 +126,17 @@ function main(): void {
 		throw new Error("Password must be non-empty");
 	}
 
+	// The default credential is documented as DO NOT USE IN PRODUCTION.
+	// Refuse it on the remote target rather than trusting the operator to
+	// remember: a weak dev password reaching D1 is exactly the failure this
+	// gate exists to prevent.
+	if (REMOTE && args[1] === undefined && !process.env.OPENSIM_TEST_PASSWORD) {
+		throw new Error(
+			"Remote mode requires an explicit password. Set OPENSIM_TEST_PASSWORD (the " +
+				`default "${DEFAULT_PASSWORD}" is refused on --remote).`,
+		);
+	}
+
 	const sql = buildSql(controlNumber, password, fullName, curp);
 	mkdirSync(dirname(SEED_SQL_PATH), { recursive: true });
 	writeFileSync(SEED_SQL_PATH, sql, "utf8");
@@ -124,9 +144,11 @@ function main(): void {
 	console.log(`Control number: ${controlNumber}`);
 	console.log(`Password:        ${"*".repeat(password.length)} (not echoed)`);
 
-	// Apply via wrangler to the local D1 instance.
-	const cmd = `pnpm exec wrangler d1 execute opensim --local --file=${SEED_SQL_PATH}`;
+	// Apply via wrangler to the local or remote D1 instance.
+	const target = REMOTE ? "--remote" : "--local";
+	const cmd = `pnpm exec wrangler d1 execute opensim ${target} --file=${SEED_SQL_PATH}`;
 	console.log(`Applying via: ${cmd}`);
+	if (REMOTE) console.warn("⚠  REMOTE (production) D1 target.");
 	execSync(cmd, { stdio: "inherit", cwd: resolve(here, "../../..") });
 	console.log("Done.");
 }
