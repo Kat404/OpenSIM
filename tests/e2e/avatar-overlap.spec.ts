@@ -147,21 +147,15 @@ test.describe("dark", () => {
 	// rewrites the attribute to `light` and our dark tokens never
 	// apply.
 	//
-	// Three things have to land for the dark theme to actually paint:
-	//   1. CSP has to allow our injected script. The repo's CSP hash
-	//      in hooks.server.ts:51 is stale (it was computed against an
-	//      older version of the theme bootstrap in app.html) so every
-	//      inline-script-shaped injection is blocked — `addInitScript`
-	//      scripts, `page.evaluate`-hosted inline scripts, and the
-	//      app.html bootstrap itself. We strip the
-	//      `Content-Security-Policy` header via `page.route` for the
-	//      test only; the production CSP is unchanged.
+	// Two things have to land for the dark theme to actually paint:
+	//   1. CSP must allow our injected script. Since Phase 7 F1 v2,
+	//      SvelteKit's kit.csp.mode: 'nonce' (vite.config.ts)
+	//      auto-allows the theme bootstrap via a per-request nonce,
+	//      so `addInitScript` scripts land without further work.
 	//   2. The localStorage override has to be set BEFORE the document
-	//      runs the theme bootstrap. We set it in `addInitScript` now
-	//      that CSP is out of the way.
-	//   3. After hydration, the `followOs` call in theme.svelte.ts has
-	//      to see the stored override and return early. It does,
-	//      because localStorage is read on every call.
+	//      runs the theme bootstrap. We set it in `addInitScript`,
+	//      then `followOs` sees the stored override and returns early
+	//      (localStorage is read on every call).
 	//
 	// The dark describe is project-scoped via Playwright's test
 	// filtering in the justfile (`--project=chromium-data-theme-dark`),
@@ -169,29 +163,13 @@ test.describe("dark", () => {
 	// `chromium` light project runs the same suite above with no
 	// theme override.
 	test.beforeEach(async ({ page }) => {
-		// The repo's CSP hash in hooks.server.ts:51 is stale (it was
-		// computed against an older version of the app.html theme
-		// bootstrap), so every inline-script-shaped injection is
-		// blocked. Strip the CSP header for the HTML document only,
-		// letting every other request (vite dev module graph,
-		// sourcemaps, HMR, etc.) pass through unchanged so the
-		// dev-server throughput stays normal. With CSP out of the way
-		// the addInitScript lands and the app.html bootstrap runs and
-		// reads the stored override; the `followOs` call on hydration
-		// then sees the stored override and returns early.
-		await page.route("**/*", async (route) => {
-			const url = route.request().url();
-			if (url.endsWith("/_dev/avatars") || url.endsWith("/_dev/avatars/")) {
-				const response = await route.fetch();
-				const body = await response.body();
-				const headers = { ...response.headers() };
-				delete headers["content-security-policy"];
-				delete headers["Content-Security-Policy"];
-				await route.fulfill({ status: response.status(), headers, body });
-			} else {
-				await route.continue();
-			}
-		});
+		// Phase 7 F1 v2: SvelteKit's kit.csp.mode: 'nonce' (see
+		// vite.config.ts) auto-allows the theme bootstrap via a
+		// per-request nonce, so no page.route CSP bypass is needed.
+		// The localStorage override is set in addInitScript so it
+		// lands before app.html's bootstrap script reads it; the
+		// `followOs` call in theme.svelte.ts then sees the stored
+		// override and returns early without stomping `data-theme`.
 		await page.addInitScript(() => {
 			localStorage.setItem("opensim-theme", "dark");
 		});

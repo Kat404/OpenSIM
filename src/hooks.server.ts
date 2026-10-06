@@ -24,42 +24,16 @@
  * module, not `event.platform`.
  */
 
-/**
- * Security headers applied to every response. CSP notes:
- *   - `script-src` includes the SHA-256 of the app.html theme bootstrap
- *     (the only static inline script in the document) PLUS 'unsafe-inline'
- *     because SvelteKit's body hydration script is also inline and its
- *     content varies per build (no stable hash). Follow-up: migrate to
- *     SvelteKit's `kit.csp.mode: 'nonce'` for per-request nonces and
- *     drop 'unsafe-inline'.
- *   - `style-src 'unsafe-inline'` — Svelte 5 dev mode injects inline
- *     <style data-sveltekit> blocks; production externalises to
- *     /_app/immutable/assets/*.css, so 'self' would suffice there.
- *     'unsafe-inline' keeps dev working without per-request nonces.
- *   - `frame-ancestors 'none'` is the modern equivalent of
- *     `X-Frame-Options: DENY`; both are set for legacy-client coverage.
- */
+// CSP is configured in vite.config.ts via kit.csp.mode: 'nonce'
+// (auto-generates per-request nonces; see F1 v2 in
+// odd/tasks/phase-7-hardening.md). The remaining security headers
+// (X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy,
+// COOP, CORP) are still set on every response below.
 const SECURITY_HEADERS: Readonly<Record<string, string>> = Object.freeze({
 	"X-Frame-Options": "DENY",
 	"X-Content-Type-Options": "nosniff",
 	"Referrer-Policy": "strict-origin-when-cross-origin",
 	"Permissions-Policy": "interest-cohort=(), document-domain=()",
-	"Content-Security-Policy": [
-		"default-src 'self'",
-		// Inline scripts: bootstrap (head) is hashed; body hydration is
-		// SvelteKit's per-build inline start() shim. Replace 'unsafe-inline'
-		// with a nonce when migrating to kit.csp.mode:'nonce'.
-		"script-src 'self' 'sha256-uRamoX8SrAH+C1i4O7qcN2EyAkHyTeutWXw/moQFDIY=' 'unsafe-inline'",
-		// Inline styles allowed for Svelte 5 dev mode (data-sveltekit
-		// <style> blocks). Production externalises CSS.
-		"style-src 'self' 'unsafe-inline'",
-		"img-src 'self' data: https:",
-		"font-src 'self' data:",
-		"connect-src 'self'",
-		"frame-ancestors 'none'",
-		"base-uri 'self'",
-		"form-action 'self'",
-	].join("; "),
 	"Cross-Origin-Opener-Policy": "same-site",
 	"Cross-Origin-Resource-Policy": "same-site",
 });
