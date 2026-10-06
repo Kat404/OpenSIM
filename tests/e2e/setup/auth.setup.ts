@@ -25,7 +25,13 @@ import { expect, test as setup } from "@playwright/test";
 
 const AUTH_FILE = "playwright/.auth/storage.json";
 
-const CONTROL_NUMBER = process.env.OPENSIM_TEST_CONTROL_NUMBER ?? "12345678";
+// Must match seed-password.ts's DEFAULT_CONTROL_NUMBER. The credential's
+// control number is deliberately distinct from the catalog student's
+// (12345678 in seed.sql) so a catalog re-seed cannot displace it via the
+// ON DELETE CASCADE on student_credentials — see seed-password.ts.
+// Defaulting to the old shared key made every test-e2e run fail auth with
+// a 15 s waitForURL timeout.
+const CONTROL_NUMBER = process.env.OPENSIM_TEST_CONTROL_NUMBER ?? "99999999";
 const PASSWORD = process.env.OPENSIM_TEST_PASSWORD ?? "opensim-dev-2026";
 
 setup(`authenticate as test student ${CONTROL_NUMBER}`, async ({ page }) => {

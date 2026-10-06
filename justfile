@@ -100,6 +100,12 @@ test-e2e-avatar:
     pnpm exec playwright test tests/e2e/avatar-overlap.spec.ts
 
 # End-to-end tests (Playwright + axe-core).
+#
+# Order matters and is already correct: `just` runs recipe dependencies
+# sequentially in written order, so `db-reset` (which re-runs `db-seed`)
+# completes before `db-set-password` writes the credential. The
+# credential's control number is distinct from the catalog student's, so
+# a later re-seed cannot displace it either — see seed-password.ts.
 [doc('Full pipeline: reset D1, provision the test student credential, then run the Playwright + axe-core suite. The webServer block auto-spawns pnpm dev and tears it down on exit.')]
 test-e2e: db-reset db-set-password
     pnpm exec playwright test

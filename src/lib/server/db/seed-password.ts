@@ -53,7 +53,22 @@ const SALT_BYTES = 16;
 // 256-bit derived key produced by src/lib/server/auth.ts.
 const DERIVED_KEY_BYTES = 32;
 
-const DEFAULT_CONTROL_NUMBER = "12345678";
+/**
+ * The credential's own control number — deliberately NOT the catalog
+ * student's `12345678`.
+ *
+ * `seed.sql` re-seeds `student_profiles` with `INSERT OR REPLACE`, which
+ * deletes the existing profile row and re-inserts it. Because
+ * `student_credentials` carries `ON DELETE CASCADE` on
+ * `student_control_number`, that replace wiped the credential and the
+ * next login timed out waiting for a redirect. Sharing a key with the
+ * catalog made the race deterministic on every `db-seed`.
+ *
+ * A distinct key means a catalog re-seed replaces only the catalog
+ * student; this credential survives, and `db-set-password` stays
+ * idempotent under any ordering.
+ */
+const DEFAULT_CONTROL_NUMBER = "99999999";
 const DEFAULT_PASSWORD = "opensim-dev-2026";
 const DEFAULT_CAREER_CODE = "ISIC-2010-224";
 const DEFAULT_FULL_NAME = "Estudiante de Prueba OpenSIM";
