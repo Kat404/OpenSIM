@@ -129,7 +129,7 @@ test.describe("light", () => {
 		for (const shape of SHAPES) {
 			for (const status of STATUSES) {
 				test(`${size} ${shape} ${status}: AC6/AC7/AC8/AC9/AC10`, async ({ page }) => {
-					await page.goto("/_dev/avatars");
+					await page.goto("/.dev/avatars");
 					await assertAvatarCell(page, size, shape, status);
 				});
 			}
@@ -173,7 +173,7 @@ test.describe("dark", () => {
 		await page.addInitScript(() => {
 			localStorage.setItem("opensim-theme", "dark");
 		});
-		await page.goto("/_dev/avatars");
+		await page.goto("/.dev/avatars");
 		await page.reload();
 	});
 
