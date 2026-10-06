@@ -43,14 +43,14 @@ import {
 	studentProgress,
 	subjects,
 } from "#lib/server/db/schema";
-import { getCurrentPeriod } from "#lib/server/enrollment";
+import { currentAcademicPeriod, getLatestProgressPeriod } from "#lib/server/enrollment";
 import { findConflicts } from "#lib/utils/schedule-conflict";
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 import type { PageServerLoad } from "./$types";
 
 const env = workerEnv as OpenSimWorkerEnv;
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, url }) => {
 	// The (protected) layout's middleware is what normally populates
 	// `locals.user`; the layout already redirects unauthenticated
 	// visitors to /login. The non-null assertion is safe in
@@ -77,18 +77,21 @@ export const load: PageServerLoad = async ({ locals }) => {
 		};
 	}
 	const db = getDb(env.DB);
-	const period = await getCurrentPeriod(db, u.controlNumber);
-
-	// No period yet → student is brand-new; render an empty state.
-	if (!period) {
-		return {
-			period: null,
-			groups: [] as OfferGroup[],
-			blocks: [] as OfferBlock[],
-			enrolledCanonicalIds: [] as string[],
-			enrolledBlocks: [] as OfferBlock[],
-		};
-	}
+	// Target period for a NEW enrollment. `getCurrentPeriod` reads the
+	// student's existing ENROLLED rows, so it returns null for exactly
+	// the students who most need to enrol (T10.4) — which deadlocked the
+	// route: an empty catalog plus a 400 from the action, with no way to
+	// create a first enrollment.
+	//
+	// Derive the term from the student's own academic history instead.
+	// A student with prior progress gets their most recent recorded
+	// period; a brand-new one gets the current calendar term. An
+	// explicit `?period=` always wins so a link can target a term.
+	const requestedPeriod = url.searchParams.get("period");
+	const period =
+		requestedPeriod ??
+		(await getLatestProgressPeriod(db, u.controlNumber)) ??
+		currentAcademicPeriod();
 
 	// 1. Already-enrolled canonicalIds for this period (so the UI can
 	//    render those groups as "already taken").
@@ -168,7 +171,7 @@ export const actions: Actions = {
 	 * set of groups whose schedule blocks overlap, the action
 	 * returns a `fail()` payload the page can render.
 	 */
-	enroll: async ({ request, locals }) => {
+	enroll: async ({ request, locals, url }) => {
 		// Explicit guard — SvelteKit 3's action lifecycle runs
 		// before any layout `load`, so the layout middleware does
 		// NOT cover form actions. An anonymous POST to
@@ -183,6 +186,12 @@ export const actions: Actions = {
 		}
 		const form = await request.formData();
 		const raw = form.getAll("groupId").map((v) => String(v));
+		// Dedupe the submitted groups AND the subjects they resolve to
+		// (T10.2). Two distinct groups can share one subject — a theory
+		// block and its lab — and the multi-value INSERT below is keyed
+		// on (student, subject, period). Dedupe by group id alone let
+		// that submission through to an unhandled PRIMARY KEY
+		// violation, which surfaced as a 500 rather than a fail().
 		const unique = Array.from(new Set(raw)).filter((s) => s.length > 0);
 
 		if (unique.length === 0) {
@@ -190,10 +199,13 @@ export const actions: Actions = {
 		}
 
 		const db = getDb(env.DB);
-		const period = await getCurrentPeriod(db, u.controlNumber);
-		if (!period) {
-			return fail(400, { error: "No hay un periodo activo para inscribir." });
-		}
+		// Same resolution as `load` (T10.4): explicit query param, then the
+		// student's most recent recorded period, then the current calendar
+		// term. `getCurrentPeriod` alone returns null for a student with
+		// no ENROLLED rows — precisely the student who needs to enrol.
+		const requested = url.searchParams.get("period");
+		const period =
+			requested ?? (await getLatestProgressPeriod(db, u.controlNumber)) ?? currentAcademicPeriod();
 
 		// Look up the candidate groups + their subjects.
 		const candidates = await db
@@ -207,9 +219,24 @@ export const actions: Actions = {
 			return fail(400, { error: "Uno o más grupos seleccionados no existen." });
 		}
 
+		// Collapse groups that resolve to the same subject (T10.2). The
+		// PRIMARY KEY is (student_control_number, subject_canonical_id,
+		// period) — one row per subject per period — so the insert below
+		// must not receive the same subject twice. Keep the first group so
+		// the schedule block the student picked is the one honoured.
+		const bySubject = new Map<string, (typeof candidates)[number]>();
+		for (const c of candidates) {
+			if (!bySubject.has(c.subjectCanonicalId)) {
+				bySubject.set(c.subjectCanonicalId, c);
+			}
+		}
+		const toEnrol = [...bySubject.values()];
+
 		// Reject groups whose subject the student is already enrolled
 		// in this period — the UI already filters them out, but a
 		// stale form post could still submit them.
+		// Reject subjects already enrolled THIS period (a stale form post can
+		// bypass the UI's filter). (T10.1)
 		const alreadyEnrolled = await db
 			.select({ subjectCanonicalId: studentProgress.subjectCanonicalId })
 			.from(studentProgress)
@@ -221,7 +248,7 @@ export const actions: Actions = {
 				),
 			);
 		const taken = new Set(alreadyEnrolled.map((r) => r.subjectCanonicalId));
-		for (const c of candidates) {
+		for (const c of toEnrol) {
 			if (taken.has(c.subjectCanonicalId)) {
 				return fail(409, {
 					error: "Una materia seleccionada ya está inscrita este periodo.",
@@ -275,6 +302,20 @@ export const actions: Actions = {
 			});
 		}
 
+		// Candidate-vs-candidate (T10.3). The check above only compares the
+		// new blocks against what the student already has, so a single
+		// submission containing two mutually-overlapping new groups
+		// passed — despite the JSDoc claiming the action fails on
+		// overlap. `SchedulePreview.svelte` already performs this
+		// comparison client-side; the same pure helper runs here so the
+		// rule is enforced once, server-side, where it cannot be skipped.
+		const selfOverlap = findConflicts(candidateBlocks, candidateBlocks);
+		if (selfOverlap.size > 0) {
+			return fail(409, {
+				error: "Dos de las materias seleccionadas se traslapan entre sí.",
+			});
+		}
+
 		// Insert all rows in a single multi-value INSERT. SQLite
 		// executes a single `INSERT INTO ... VALUES (...), (...), ...`
 		// atomically: a mid-flight failure does not leave the
@@ -282,7 +323,7 @@ export const actions: Actions = {
 		// requires a non-empty tuple, which is awkward for a
 		// dynamic N — the multi-value insert is the right primitive.
 		await db.insert(studentProgress).values(
-			candidates.map((c) => ({
+			toEnrol.map((c) => ({
 				studentControlNumber: u.controlNumber,
 				subjectCanonicalId: c.subjectCanonicalId,
 				status: "ENROLLED" as const,

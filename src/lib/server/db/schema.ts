@@ -134,8 +134,14 @@ export const studentProgress = sqliteTable(
 		period: text("period").notNull(),
 	},
 	(table) => ({
+		// `period` is part of the key: a student holds one row per subject
+		// PER PERIOD, not per subject for all time. Without it a student
+		// can never re-take a failed subject nor re-enrol the same subject
+		// in a later term — and the enrol action's multi-value INSERT
+		// raises an unhandled PRIMARY KEY violation (500) whenever the
+		// subject already has a row from a prior period.
 		pk: primaryKey({
-			columns: [table.studentControlNumber, table.subjectCanonicalId],
+			columns: [table.studentControlNumber, table.subjectCanonicalId, table.period],
 		}),
 	}),
 );
