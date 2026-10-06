@@ -50,9 +50,43 @@ The only currently-red checks: `color-contrast`, ratio **3.97**, on `/horario`,
 `/reinscripcion`, `/tramites` under `chromium-dark`. WCAG AA needs 4.5:1. Recorded in
 `odd/README.md` as Phase 8 filed-not-started; this phase gives it a doc.
 
-- [ ] **T8.1** — Locate the failing foreground/background pair per route
-- [ ] **T8.2** — Raise `--fg-secondary` (or the offending token) to ≥4.5:1 in dark only
-- [ ] **T8.3** — Verify: `just test-e2e` reaches **114/114, 0 failed**
+- [x] **T8.1** — Locate the failing foreground/background pair per route.
+      Two distinct causes, not one:
+      (a) `getSubjectColor()` in `src/lib/utils/color.ts` — the file's JSDoc claimed
+      lightness 28/88 holds ≥4.5:1 for every hue. **False.** At fixed 60% saturation,
+      relative luminance is not constant across hue. Worst case is hue 60 (yellow) in
+      dark, hue 0 in light. Measured minimum against `--fg-secondary` at L=28 was
+      **3.416:1** — *worse* than the 3.97 axe reported, because the seed's hues (80, 96)
+      are not the worst case. Special-casing the reported hues would have shipped the bug.
+      Also: the offending node is `.class-block__meta`, not the `.class-block` div the
+      brief named.
+- [x] **T8.2** — Fix the model, not the reported instances. `SUBJECT_LIGHTNESS.dark`
+      28 → **20** (saturation unchanged at 60). Measured 5.491:1 against
+      `--fg-secondary`, 7.672:1 against `--fg-primary`. Chose 20 over the razor-thin 23
+      (which measures 4.578) for ~22% headroom. `LIGHT_LIGHTNESS = 88` verified already
+      passing at 6.242:1 and left untouched. The phase brief's T8.2 ("raise
+      `--fg-secondary`") would have **broken** the invariant — darkening the text pushes
+      the ratio down in the yellow band where the minimum lives. The background model is
+      the correct lever.
+- [x] **T8.3** — Verify: `just test-e2e` reaches **114/114, 0 failed**.
+
+      The third failure had an unrelated cause: `.proc__nav-meta` in
+      `ProcedureStepper.svelte` painted `--fg-tertiary` on the active button's
+      `--brand-50` (#164e63 dark) = 3.55:1. Fixed in the component rather than the
+      token — changing `--brand-50` or `--fg-tertiary` would have repainted six other
+      consumers (Tabs, Badge, Sidebar, KardexTable) to fix one span.
+
+      Commits: `0768e8a` (subject blocks), `99e5028` (procedure nav).
+
+## Latent finding — NOT fixed, carried forward
+
+`--fg-tertiary` **cannot be made AA-compliant** against the generated subject-block
+background at 60% saturation: measured 3.17:1 (light) and 3.18:1 (dark), and no lightness
+value fixes it — a mid grey only clears AA against near-white or near-black.
+`SubjectNode.svelte:118` does exactly this in `/retícula` (`.node__meta` filled with
+`--fg-tertiary` over `<rect fill={colorHsl}>`). axe does not report it today, so it is
+not in the 27; recorded here rather than silently dropped. Resolving it needs a token or
+component decision, not a lightness change.
 
 **Gate for the whole program: e2e must be fully green before any later phase starts.**
 
