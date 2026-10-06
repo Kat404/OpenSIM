@@ -32,8 +32,21 @@ export function initials(n: string): string {
 
 <script lang="ts">
 import type { Snippet } from "svelte";
+import type { HTMLAttributes } from "svelte/elements";
 
-interface Props {
+// Spread the standard HTML span attributes onto the .avatar-frame
+// root so callers can pass `data-*`, `aria-*`, `id`, etc. without
+// an opt-in prop per attribute. The Omit removes `src`, `alt`, and
+// `children` because we re-define those with our own typed shape
+// (Snipped children, our own alt composer, src is an image URL
+// distinct from the HTMLImageElement.src semantics).
+//
+// Previously Avatar had a custom `dataTestid?: string` opt-in prop.
+// That was an anti-pattern: the test id is just a `data-testid`
+// attribute and HTMLAttributes already provides it. Callers now
+// pass `data-testid="..."` directly and the spread forwards it.
+// (Phase 7 F5 v2.)
+interface Props extends Omit<HTMLAttributes<HTMLSpanElement>, "src" | "alt" | "children"> {
 	name?: string;
 	src?: string;
 	size?: "xs" | "sm" | "md" | "lg" | "xl";
@@ -41,12 +54,6 @@ interface Props {
 	alt?: string;
 	status?: AvatarStatus;
 	children?: Snippet;
-	/**
-	 * Optional testid forwarded to the outer `.avatar-frame` so e2e specs
-	 * can locate a specific cell deterministically. Opt-in: callers that
-	 * don't pass it see no attribute change in the DOM.
-	 */
-	dataTestid?: string;
 }
 
 let {
@@ -57,14 +64,14 @@ let {
 	alt,
 	status,
 	children,
-	dataTestid,
+	...rest
 }: Props = $props();
 
 const initialsText = $derived(initials(name));
 const altText = $derived(composeAltText(name, status, alt));
 </script>
 
-<span class="avatar-frame" data-testid={dataTestid}>
+<span class="avatar-frame" {...rest}>
 	<span class="avatar avatar--{size} avatar--{shape}" role="img" aria-label={altText}>
 		{#if src}
 			<img {src} alt="" class="avatar__img">

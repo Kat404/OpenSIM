@@ -89,13 +89,15 @@ test:
 test-watch:
     pnpm run test:unit
 
-# Run Playwright AC6-AC11 avatar overlap suite (light + dark; uses
-# dev fixture page). Public spec — no auth required.
+# Run Playwright AC6-AC11 avatar overlap suite (40 light + 40 dark;
+# uses dev fixture page). Public spec — no auth required. The per-
+# describe test.skip in the spec scopes light to chromium and dark
+# to chromium-data-theme-dark, so the just recipe no longer needs
+# --project flags.
 [group('test')]
-[doc('Run Playwright AC6-AC11 avatar overlap suite (light + dark; uses dev fixture page).')]
+[doc('Run Playwright AC6-AC11 avatar overlap suite (40 light + 40 dark; total 80 honest runs).')]
 test-e2e-avatar:
-    pnpm exec playwright test tests/e2e/avatar-overlap.spec.ts \
-        --project=chromium --project=chromium-data-theme-dark
+    pnpm exec playwright test tests/e2e/avatar-overlap.spec.ts
 
 # End-to-end tests (Playwright + axe-core).
 [doc('Full pipeline: reset D1, provision the test student credential, then run the Playwright + axe-core suite. The webServer block auto-spawns pnpm dev and tears it down on exit.')]

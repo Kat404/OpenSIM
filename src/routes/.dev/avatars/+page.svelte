@@ -2,9 +2,10 @@
 	OpenSIM — Dev-only fixture rendering all 80 avatar cells required by
 	the Phase 6.1 overlap Playwright suite (5 sizes × 2 shapes × 4 statuses).
 
-	Each cell receives an opt-in `dataTestid` prop (Avatar.svelte) so the
-	spec can locate it via `page.getByTestId(...)`. The page itself has no
-	visually distinctive layout — it is a pure fixture for headless tests.
+	Each cell receives a `data-testid` HTML attribute (via the spread
+	on Avatar.svelte's Props) so the spec can locate it via
+	`page.getByTestId(...)`. The page itself has no visually
+	distinctive layout — it is a pure fixture for headless tests.
 
 	Production: the parent `+page.server.ts` returns 404 when !dev, so
 	this component never ships in the prod bundle.
@@ -41,7 +42,7 @@ const STATUSES = ["online", "offline", "busy", "away"] as const;
 							{size}
 							{shape}
 							{status}
-							dataTestid="avatar-{size}-{shape}-{status}"
+							data-testid="avatar-{size}-{shape}-{status}"
 						/>
 					{/each}
 				</div>

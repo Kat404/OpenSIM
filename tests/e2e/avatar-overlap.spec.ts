@@ -125,6 +125,34 @@ async function assertAvatarCell(
 }
 
 test.describe("light", () => {
+	// Light cells only exercise the chromium project. The chromium-dark
+	// and chromium-data-theme-dark projects are skipped here so the
+	// light matrix runs once per (size, shape, status) instead of three
+	// times. The 1:1 scoping matches the dark describe below.
+	//
+	// Implementation note: Playwright v1.63's `test.skip(callback)`
+	// signature is `(args: TestArgs & WorkerArgs) => boolean` — it does
+	// NOT receive `testInfo`, so the project name (which lives on
+	// `testInfo.project`) is unreachable from a describe-level skip.
+	// `test.beforeEach` DOES receive `testInfo` as the second arg, and
+	// `test.skip()` called from there skips the about-to-run test. This
+	// is the v1.63-correct path; the `({ testInfo }) =>` form in the
+	// plan only works in newer Playwright typings.
+	// Playwright v1.63 requires the object-destructuring form for the
+	// first arg of test.beforeEach (no parameter is read here; we only
+	// need testInfo). biome's noEmptyPattern rule is suppressed via an
+	// inline ignore on the `{}` destructure.
+	test.beforeEach(
+		(
+			// biome-ignore lint/correctness/noEmptyPattern: required by Playwright beforeEach signature
+			{},
+			testInfo,
+		) => {
+			if (testInfo.project.name !== "chromium") {
+				test.skip(true, "light tests only run on the chromium project");
+			}
+		},
+	);
 	for (const size of SIZES) {
 		for (const shape of SHAPES) {
 			for (const status of STATUSES) {
@@ -138,6 +166,23 @@ test.describe("light", () => {
 });
 
 test.describe("dark", () => {
+	// Dark cells only exercise the chromium-data-theme-dark project.
+	// chromium-dark is skipped because it only sets the OS colorScheme
+	// and the chromium project is taken by the light describe above.
+	// Total honest runs: 40 (light) + 40 (dark) = 80, not 161.
+	// See comment on the light describe above for why the empty
+	// destructure is required and how it's suppressed.
+	test.beforeEach(
+		(
+			// biome-ignore lint/correctness/noEmptyPattern: required by Playwright beforeEach signature
+			{},
+			testInfo,
+		) => {
+			if (testInfo.project.name !== "chromium-data-theme-dark") {
+				test.skip(true, "dark tests only run on the chromium-data-theme-dark project");
+			}
+		},
+	);
 	// Defeat theme.svelte.ts:53-65's `followOs` stomp. The follower
 	// checks `localStorage.getItem("opensim-theme")` (NOT the
 	// `data-theme` attribute) and, with no stored override,

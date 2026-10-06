@@ -58,8 +58,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN chromium --version
 
-# Pin pnpm to match host contract (per TallerAgentes precedent)
-RUN npm install -g pnpm@10.0.0 \
+# Pin pnpm to match host contract (per TallerAgentes precedent).
+# Mirrors packageManager: pnpm@11.28.4 in package.json:6 so the
+# bind-mount of host node_modules into the container uses matching
+# pnpm major. If Corepack is installed in the base image it will
+# rewrite this binary at runtime; the version line below still
+# documents the expected pinned version.
+RUN npm install -g pnpm@11.28.4 \
 	&& pnpm --version
 
 WORKDIR /repo
