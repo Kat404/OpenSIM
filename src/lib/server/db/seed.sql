@@ -232,84 +232,84 @@ INSERT OR IGNORE INTO subject_prerequisites (subject_canonical_id, prerequisite_
 --> statement-breakpoint
 --> statement-breakpoint
 -- student_profiles (test student)
-INSERT OR REPLACE INTO student_profiles (control_number, full_name, curp, birth_state, career_code, specialty_code, current_semester, certified_average, arithmetic_average, passed_average, approved_credits, remaining_credits, completed_credits, in_progress_credits, advance_percentage, status, health_service, enrollment_period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'Ana Gabriela Hernández Ruiz', 'HERA000615MMNRZNA3', 'Michoacán', 'ISIC-2010-224', 'ISIE-TDS-2024-01', 7, 8.7, 8.6, 8.5, 175, 85, 175, 24, 67.3, 'Activo regular', 'IMSS', 'AGOSTO-DICIEMBRE/2026');
+INSERT OR REPLACE INTO student_profiles (control_number, full_name, curp, birth_state, career_code, specialty_code, current_semester, certified_average, arithmetic_average, passed_average, approved_credits, remaining_credits, completed_credits, in_progress_credits, advance_percentage, status, health_service, enrollment_period) VALUES ('12345678', 'Ana Gabriela Hernández Ruiz', 'HERA000615MMNRZNA3', 'Michoacán', 'ISIC-2010-224', 'ISIE-TDS-2024-01', 7, 8.7, 8.6, 8.5, 175, 85, 175, 24, 67.3, 'Activo regular', 'IMSS', 'AGOSTO-DICIEMBRE/2026');
 --> statement-breakpoint
--- student_progress (38 rows for <NUMERO DE CONTROL PURGADO>)
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'calculo-diferencial', 'APPROVED', 8.5, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2022');
+-- student_progress (38 rows for 12345678)
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'calculo-diferencial', 'APPROVED', 8.5, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2022');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'fundamentos-programacion', 'APPROVED', 9, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2022');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'fundamentos-programacion', 'APPROVED', 9, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2022');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'introduccion-ingenieria-sistemas', 'APPROVED', 9.2, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2022');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'introduccion-ingenieria-sistemas', 'APPROVED', 9.2, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2022');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'matematicas-discretas', 'APPROVED', 7.8, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2022');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'matematicas-discretas', 'APPROVED', 7.8, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2022');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'taller-etica', 'APPROVED', 9.5, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2022');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'taller-etica', 'APPROVED', 9.5, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2022');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'fundamentos-investigacion', 'APPROVED', 8, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2022');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'fundamentos-investigacion', 'APPROVED', 8, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2022');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'calculo-integral', 'APPROVED', 7.5, 'ORDINARIO', 'ENERO-JUNIO/2023');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'calculo-integral', 'APPROVED', 7.5, 'ORDINARIO', 'ENERO-JUNIO/2023');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'algebra-lineal', 'APPROVED', 8, 'ORDINARIO', 'ENERO-JUNIO/2023');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'algebra-lineal', 'APPROVED', 8, 'ORDINARIO', 'ENERO-JUNIO/2023');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'programacion-orientada-objetos', 'APPROVED', 8.7, 'ORDINARIO', 'ENERO-JUNIO/2023');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'programacion-orientada-objetos', 'APPROVED', 8.7, 'ORDINARIO', 'ENERO-JUNIO/2023');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'estructura-datos', 'APPROVED', 7, 'REPETICION', 'ENERO-JUNIO/2023');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'estructura-datos', 'APPROVED', 7, 'REPETICION', 'ENERO-JUNIO/2023');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'contabilidad-financiera', 'APPROVED', 8.5, 'ORDINARIO', 'ENERO-JUNIO/2023');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'contabilidad-financiera', 'APPROVED', 8.5, 'ORDINARIO', 'ENERO-JUNIO/2023');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'calculo-vectorial', 'APPROVED', 8.2, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2023');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'calculo-vectorial', 'APPROVED', 8.2, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2023');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'analisis-algoritmos', 'APPROVED', 8.8, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2023');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'analisis-algoritmos', 'APPROVED', 8.8, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2023');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'programacion-visual', 'APPROVED', 9, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2023');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'programacion-visual', 'APPROVED', 9, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2023');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'fisica-general', 'APPROVED', 7.2, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2023');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'fisica-general', 'APPROVED', 7.2, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2023');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'arquitectura-computadoras', 'APPROVED', 8, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2023');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'arquitectura-computadoras', 'APPROVED', 8, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2023');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'ecuaciones-diferenciales', 'APPROVED', 7.8, 'ORDINARIO', 'ENERO-JUNIO/2024');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'ecuaciones-diferenciales', 'APPROVED', 7.8, 'ORDINARIO', 'ENERO-JUNIO/2024');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'metodos-numericos', 'APPROVED', 8.5, 'ORDINARIO', 'ENERO-JUNIO/2024');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'metodos-numericos', 'APPROVED', 8.5, 'ORDINARIO', 'ENERO-JUNIO/2024');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'base-datos', 'APPROVED', 9, 'ORDINARIO', 'ENERO-JUNIO/2024');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'base-datos', 'APPROVED', 9, 'ORDINARIO', 'ENERO-JUNIO/2024');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'circuitos-electricos', 'APPROVED', 7.5, 'ORDINARIO', 'ENERO-JUNIO/2024');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'circuitos-electricos', 'APPROVED', 7.5, 'ORDINARIO', 'ENERO-JUNIO/2024');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'sistemas-operativos', 'APPROVED', 8.8, 'ORDINARIO', 'ENERO-JUNIO/2024');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'sistemas-operativos', 'APPROVED', 8.8, 'ORDINARIO', 'ENERO-JUNIO/2024');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'variable-compleja', 'APPROVED', 7, 'REPETICION', 'AGOSTO-DICIEMBRE/2024');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'variable-compleja', 'APPROVED', 7, 'REPETICION', 'AGOSTO-DICIEMBRE/2024');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'programacion-logica-funcional', 'APPROVED', 8.5, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2024');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'programacion-logica-funcional', 'APPROVED', 8.5, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2024');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'redes-computadoras', 'APPROVED', 8.7, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2024');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'redes-computadoras', 'APPROVED', 8.7, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2024');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'lenguajes-automatas', 'APPROVED', 8, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2024');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'lenguajes-automatas', 'APPROVED', 8, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2024');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'ingenieria-software', 'APPROVED', 9.2, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2024');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'ingenieria-software', 'APPROVED', 9.2, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2024');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'probabilidad-estadistica', 'APPROVED', 8, 'ESPECIAL', 'ENERO-JUNIO/2025');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'probabilidad-estadistica', 'APPROVED', 8, 'ESPECIAL', 'ENERO-JUNIO/2025');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'inteligencia-artificial', 'APPROVED', 8.8, 'ORDINARIO', 'ENERO-JUNIO/2025');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'inteligencia-artificial', 'APPROVED', 8.8, 'ORDINARIO', 'ENERO-JUNIO/2025');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'sistemas-informacion', 'APPROVED', 8.5, 'ORDINARIO', 'ENERO-JUNIO/2025');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'sistemas-informacion', 'APPROVED', 8.5, 'ORDINARIO', 'ENERO-JUNIO/2025');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'diseno-interfaces', 'APPROVED', 9, 'ORDINARIO', 'ENERO-JUNIO/2025');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'diseno-interfaces', 'APPROVED', 9, 'ORDINARIO', 'ENERO-JUNIO/2025');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'graficacion', 'ENROLLED', NULL, NULL, 'AGOSTO-DICIEMBRE/2026');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'graficacion', 'ENROLLED', NULL, NULL, 'AGOSTO-DICIEMBRE/2026');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'administracion-bases-datos', 'ENROLLED', NULL, NULL, 'AGOSTO-DICIEMBRE/2026');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'administracion-bases-datos', 'ENROLLED', NULL, NULL, 'AGOSTO-DICIEMBRE/2026');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'taller-investigacion-1', 'ENROLLED', NULL, NULL, 'AGOSTO-DICIEMBRE/2026');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'taller-investigacion-1', 'ENROLLED', NULL, NULL, 'AGOSTO-DICIEMBRE/2026');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'programacion-web', 'ENROLLED', NULL, NULL, 'AGOSTO-DICIEMBRE/2026');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'programacion-web', 'ENROLLED', NULL, NULL, 'AGOSTO-DICIEMBRE/2026');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'gestion-proyectos-software', 'ENROLLED', NULL, NULL, 'AGOSTO-DICIEMBRE/2026');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'gestion-proyectos-software', 'ENROLLED', NULL, NULL, 'AGOSTO-DICIEMBRE/2026');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'taller-investigacion-2', 'ENROLLED', NULL, NULL, 'AGOSTO-DICIEMBRE/2026');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'taller-investigacion-2', 'ENROLLED', NULL, NULL, 'AGOSTO-DICIEMBRE/2026');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'servicio-social', 'LOCKED', NULL, NULL, 'ENERO-JUNIO/2027');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'servicio-social', 'LOCKED', NULL, NULL, 'ENERO-JUNIO/2027');
 --> statement-breakpoint
-INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('<NUMERO DE CONTROL PURGADO>', 'residencia-profesional', 'LOCKED', NULL, NULL, 'AGOSTO-DICIEMBRE/2027');
+INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'residencia-profesional', 'LOCKED', NULL, NULL, 'AGOSTO-DICIEMBRE/2027');
 --> statement-breakpoint
 --> statement-breakpoint
 -- course_groups (8 groups)

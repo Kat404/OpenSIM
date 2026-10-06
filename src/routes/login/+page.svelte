@@ -72,7 +72,7 @@ function toggleTheme() {
 				<Input
 					name="controlNumber"
 					label="Número de control"
-					placeholder="<NUMERO DE CONTROL PURGADO>"
+					placeholder="12345678"
 					autocomplete="username"
 					inputmode="numeric"
 					required

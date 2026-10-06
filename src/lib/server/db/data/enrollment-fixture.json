@@ -1,8 +1,8 @@
 {
 	"version": "ENROLLMENT-2026-AGO",
-	"controlNumber": "<NUMERO DE CONTROL PURGADO>",
+	"controlNumber": "12345678",
 	"student_profile": {
-		"controlNumber": "<NUMERO DE CONTROL PURGADO>",
+		"controlNumber": "12345678",
 		"fullName": "Ana Gabriela Hernández Ruiz",
 		"curp": "HERA000615MMNRZNA3",
 		"birthState": "Michoacán",

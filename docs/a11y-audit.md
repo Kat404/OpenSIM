@@ -3,7 +3,7 @@
 Fecha: 2026-10-03
 Metodología: `@axe-core/playwright 4.13.0` + revisión externa con `mcode` (M3.1-Flash-Preview) en `--effort max` / `--prompt-mode work`.
 Branch auditado: `feat/phase-1-foundation` @ 50 commits.
-Dev credential: `controlNumber=<NUMERO DE CONTROL PURGADO>` / `password=opensim-dev-2026`.
+Dev credential: `controlNumber=12345678` / `password=opensim-dev-2026`.
 
 ---
 

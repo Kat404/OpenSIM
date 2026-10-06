@@ -13,7 +13,7 @@
  *
  * Usage:
  *   pnpm run db:set-password                 # uses defaults (local D1)
- *   pnpm run db:set-password <NUMERO DE CONTROL PURGADO>        # custom control number
+ *   pnpm run db:set-password 12345678        # custom control number
  *   OPENSIM_TEST_PASSWORD=foo pnpm run db:set-password
  *   just db-set-password-remote              # REMOTE D1 (⚠ production)
  *
@@ -24,7 +24,7 @@
  * OPENSIM_TEST_PASSWORD explicitly.
  *
  * DEFAULT CREDENTIALS — DO NOT USE IN PRODUCTION:
- *   control_number: <NUMERO DE CONTROL PURGADO>
+ *   control_number: 12345678
  *   password:       opensim-dev-2026
  *
  * The defaults are documented in odd/tasks/opensim.md (Tarea 2.5) so a
@@ -53,7 +53,7 @@ const SALT_BYTES = 16;
 // 256-bit derived key produced by src/lib/server/auth.ts.
 const DERIVED_KEY_BYTES = 32;
 
-const DEFAULT_CONTROL_NUMBER = "<NUMERO DE CONTROL PURGADO>";
+const DEFAULT_CONTROL_NUMBER = "12345678";
 const DEFAULT_PASSWORD = "opensim-dev-2026";
 const DEFAULT_CAREER_CODE = "ISIC-2010-224";
 const DEFAULT_FULL_NAME = "Estudiante de Prueba OpenSIM";

@@ -117,7 +117,7 @@ The recipe:
 pnpm run db:set-password
 ```
 
-to restore the default test credential (`<NUMERO DE CONTROL PURGADO>` / `opensim-dev-2026`). Without this step, the login flow will fail with "Número de control o contraseña incorrectos" — not because the auth is broken, but because the credential row is gone.
+to restore the default test credential (`12345678` / `opensim-dev-2026`). Without this step, the login flow will fail with "Número de control o contraseña incorrectos" — not because the auth is broken, but because the credential row is gone.
 
 `db-reset` is a **recovery action**, not a workflow. The workflow is `db-generate` → `db-migrate` → `db-seed`. Reach for `db-reset` only when local D1 has drifted beyond what the canonical flow can repair.
 

@@ -21,7 +21,7 @@ import { generateCargaPdf } from "../../src/lib/server/pdf/carga";
 
 const fixture = {
 	profile: {
-		controlNumber: "<NUMERO DE CONTROL PURGADO>",
+		controlNumber: "12345678",
 		fullName: "Ana Gabriela Hernández Ruiz",
 		careerCode: "ISIC-2010-224",
 		currentSemester: 7,

@@ -238,13 +238,13 @@ describe("rate limiting (audit R8-9 / P0-2)", () => {
 
 	it("isRateLimited returns not-limited on a key with no history", async () => {
 		const { db } = makeSqliteDb();
-		const result = await isRateLimited(db, "control:<NUMERO DE CONTROL PURGADO>");
+		const result = await isRateLimited(db, "control:12345678");
 		expect(result.limited).toBe(false);
 	});
 
 	it("records five failed attempts and then marks the key limited", async () => {
 		const { db } = makeSqliteDb();
-		const key = "control:<NUMERO DE CONTROL PURGADO>";
+		const key = "control:12345678";
 		for (let i = 0; i < 5; i++) {
 			await recordFailedAttempt(db, key);
 		}
@@ -258,7 +258,7 @@ describe("rate limiting (audit R8-9 / P0-2)", () => {
 
 	it("still allows up to four failed attempts before limiting", async () => {
 		const { db } = makeSqliteDb();
-		const key = "control:<NUMERO DE CONTROL PURGADO>";
+		const key = "control:12345678";
 		for (let i = 0; i < 4; i++) {
 			await recordFailedAttempt(db, key);
 		}
@@ -268,7 +268,7 @@ describe("rate limiting (audit R8-9 / P0-2)", () => {
 
 	it("different keys do not share a counter", async () => {
 		const { db } = makeSqliteDb();
-		const a = "control:<NUMERO DE CONTROL PURGADO>";
+		const a = "control:12345678";
 		const b = "control:99999999";
 		for (let i = 0; i < 5; i++) {
 			await recordFailedAttempt(db, a);
@@ -281,7 +281,7 @@ describe("rate limiting (audit R8-9 / P0-2)", () => {
 
 	it("clearRateLimit resets the counter for a key", async () => {
 		const { db } = makeSqliteDb();
-		const key = "control:<NUMERO DE CONTROL PURGADO>";
+		const key = "control:12345678";
 		for (let i = 0; i < 5; i++) {
 			await recordFailedAttempt(db, key);
 		}
@@ -292,7 +292,7 @@ describe("rate limiting (audit R8-9 / P0-2)", () => {
 
 	it("clearRateLimit only touches the targeted key", async () => {
 		const { db } = makeSqliteDb();
-		const a = "control:<NUMERO DE CONTROL PURGADO>";
+		const a = "control:12345678";
 		const b = "control:99999999";
 		for (let i = 0; i < 5; i++) {
 			await recordFailedAttempt(db, a);
@@ -314,7 +314,7 @@ describe("rate limiting (audit R8-9 / P0-2)", () => {
 			.prepare(
 				"INSERT INTO auth_attempts (attempt_key, window_start, attempt_count) VALUES (?, ?, ?)",
 			)
-			.run("control:<NUMERO DE CONTROL PURGADO>", Math.floor((Date.now() - 20 * 60 * 1000) / 1000), 3);
+			.run("control:12345678", Math.floor((Date.now() - 20 * 60 * 1000) / 1000), 3);
 		const removed = await pruneExpiredAttempts(db);
 		expect(removed).toBe(1);
 		const remaining = raw.prepare("SELECT COUNT(*) as c FROM auth_attempts").get() as { c: number };

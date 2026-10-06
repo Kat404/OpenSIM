@@ -13,7 +13,7 @@ FOSS rewrite of TecNM Morelia's academic management system.
 ```bash
 pnpm install
 just db-reset            # nuke local D1 state, apply all migrations, reseed
-just db-set-password     # provision test student credential (controlNumber <NUMERO DE CONTROL PURGADO> / password opensim-dev-2026)
+just db-set-password     # provision test student credential (controlNumber 12345678 / password opensim-dev-2026)
 just dev                  # SvelteKit + local D1 via wrangler
 ```
 
@@ -118,7 +118,7 @@ The rule: **`wrangler d1 execute --file` is for DATA only; DDL always goes throu
 For local development:
 
 ```
-controlNumber: <NUMERO DE CONTROL PURGADO>
+controlNumber: 12345678
 password:      opensim-dev-2026
 ```
 

@@ -55,7 +55,7 @@ function makeMockDb(results: unknown[]): Database {
 describe("getCurrentPeriod", () => {
 	it("returns null when the student has no progress rows", async () => {
 		const db = makeMockDb([[]]);
-		const period = await getCurrentPeriod(db, "<NUMERO DE CONTROL PURGADO>");
+		const period = await getCurrentPeriod(db, "12345678");
 		expect(period).toBeNull();
 	});
 
@@ -64,7 +64,7 @@ describe("getCurrentPeriod", () => {
 		// returns the first row; the mock pretends the DB already sorted
 		// and already filtered to ENROLLED.
 		const db = makeMockDb([[{ period: "AGOSTO-DICIEMBRE/2026" }]]);
-		const period = await getCurrentPeriod(db, "<NUMERO DE CONTROL PURGADO>");
+		const period = await getCurrentPeriod(db, "12345678");
 		expect(period).toBe("AGOSTO-DICIEMBRE/2026");
 	});
 
@@ -74,7 +74,7 @@ describe("getCurrentPeriod", () => {
 		// the contract: a future LOCKED row (next year's Servicio
 		// Social, say) must not flip "current" to next year.
 		const db = makeMockDb([[{ period: "AGOSTO-DICIEMBRE/2026" }]]);
-		const period = await getCurrentPeriod(db, "<NUMERO DE CONTROL PURGADO>");
+		const period = await getCurrentPeriod(db, "12345678");
 		expect(period).toBe("AGOSTO-DICIEMBRE/2026");
 	});
 });
@@ -86,7 +86,7 @@ describe("getCurrentEnrollment with explicit period", () => {
 		//    and goes straight to the enrollment query).
 		// 2) The enrollment query returns zero rows → empty result.
 		const db = makeMockDb([[]]);
-		const out = await getCurrentEnrollment(db, "<NUMERO DE CONTROL PURGADO>", "AGOSTO-DICIEMBRE/2026");
+		const out = await getCurrentEnrollment(db, "12345678", "AGOSTO-DICIEMBRE/2026");
 		expect(out.groups).toEqual([]);
 		expect(out.schedule).toEqual([]);
 		expect(out.period).toBe("AGOSTO-DICIEMBRE/2026");
@@ -114,7 +114,7 @@ describe("getCurrentEnrollment with explicit period", () => {
 			},
 		];
 		const db = makeMockDb([enrolledRows, groups, blocks]);
-		const out = await getCurrentEnrollment(db, "<NUMERO DE CONTROL PURGADO>", "AGOSTO-DICIEMBRE/2026");
+		const out = await getCurrentEnrollment(db, "12345678", "AGOSTO-DICIEMBRE/2026");
 		expect(out.groups).toEqual(groups);
 		expect(out.schedule).toEqual(blocks);
 		expect(out.period).toBe("AGOSTO-DICIEMBRE/2026");
@@ -150,7 +150,7 @@ describe("getCurrentEnrollment without explicit period", () => {
 				},
 			],
 		]);
-		const out = await getCurrentEnrollment(db, "<NUMERO DE CONTROL PURGADO>");
+		const out = await getCurrentEnrollment(db, "12345678");
 		expect(out.period).toBe("AGOSTO-DICIEMBRE/2026");
 		expect(out.groups).toHaveLength(1);
 		expect(out.schedule).toHaveLength(1);
@@ -159,7 +159,7 @@ describe("getCurrentEnrollment without explicit period", () => {
 	it("returns empty arrays when the student has no progress at all", async () => {
 		// 1) getCurrentPeriod → null → return early before any other query.
 		const db = makeMockDb([[]]);
-		const out = await getCurrentEnrollment(db, "<NUMERO DE CONTROL PURGADO>");
+		const out = await getCurrentEnrollment(db, "12345678");
 		expect(out.groups).toEqual([]);
 		expect(out.schedule).toEqual([]);
 		expect(out.period).toBeNull();
