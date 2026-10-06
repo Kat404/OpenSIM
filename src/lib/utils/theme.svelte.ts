@@ -33,11 +33,55 @@ const state = $state<{ value: Theme }>({ value: "light" });
 // check is sufficient: the rune module is only ever executed on the
 // server (SSR) or in the browser, never in pure node tests.
 if (typeof document !== "undefined" && typeof MutationObserver !== "undefined") {
-	const sync = () => {
-		const next = document.documentElement.getAttribute("data-theme");
-		state.value = next === "dark" ? "dark" : "light";
+	/** The user's explicit choice, or null when they have not chosen. */
+	const storedOverride = (): Theme | null => {
+		try {
+			const v = localStorage.getItem("opensim-theme");
+			return v === "dark" ? "dark" : v === "light" ? "light" : null;
+		} catch {
+			return null; // private mode / storage disabled
+		}
 	};
+
+	const prefersDark = (): boolean =>
+		typeof window !== "undefined" && typeof window.matchMedia === "function"
+			? window.matchMedia("(prefers-color-scheme: dark)").matches
+			: false;
+
+	/**
+	 * Resolve the effective theme from the SAME inputs the DOM does, in
+	 * the same precedence: explicit override, then the `data-theme`
+	 * attribute, then the OS preference.
+	 *
+	 * The previous version read only `data-theme` and defaulted to
+	 * "light" when it was absent. That made `state.value` a
+	 * half-initialised value for the whole window between boot and the
+	 * first `data-theme` mutation: `followOs` below sets the attribute,
+	 * but the MutationObserver delivers on a microtask, so a caller
+	 * could observe "light" while the CSS already painted dark.
+	 *
+	 * That divergence is observable, not theoretical — components that
+	 * pick a colour from `getTheme()` (the schedule blocks, which use
+	 * `getSubjectColor`) rendered light-theme backgrounds under dark
+	 * tokens, and the axe suite caught the resulting contrast failure
+	 * intermittently on the `chromium-dark` project. Reading
+	 * `matchMedia` directly closes the race by construction: the rune
+	 * is correct on the very first call, without waiting for an
+	 * observer callback.
+	 */
+	const resolve = (): Theme => {
+		const attr = document.documentElement.getAttribute("data-theme");
+		if (attr === "dark") return "dark";
+		if (attr === "light") return "light";
+		return storedOverride() ?? (prefersDark() ? "dark" : "light");
+	};
+
+	const sync = () => {
+		state.value = resolve();
+	};
+	// Boot: resolve synchronously, before any component reads the rune.
 	sync();
+
 	const observer = new MutationObserver(sync);
 	observer.observe(document.documentElement, {
 		attributes: true,
@@ -51,14 +95,11 @@ if (typeof document !== "undefined" && typeof MutationObserver !== "undefined") 
 	if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
 		const mq = window.matchMedia("(prefers-color-scheme: dark)");
 		const followOs = (e: MediaQueryListEvent | MediaQueryList) => {
-			let stored: string | null = null;
-			try {
-				stored = localStorage.getItem("opensim-theme");
-			} catch {
-				// localStorage unavailable; fall through and follow the OS.
-			}
-			if (stored === "light" || stored === "dark") return; // user override wins
+			if (storedOverride() !== null) return; // user override wins
 			document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
+			// setAttribute queues the observer callback on a microtask.
+			// Apply now so `getTheme()` is never briefly stale.
+			sync();
 		};
 		followOs(mq); // sync on boot in case app.html didn't set the attribute
 		mq.addEventListener("change", followOs);
