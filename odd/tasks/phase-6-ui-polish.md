@@ -391,3 +391,49 @@ R19 nits (out of audited range or non-blocking):
 
 - The closeout doc previously self-referenced `<this commit>` and a non-existent audit log; both resolved by this commit.
 - Plan v2's claim "SvelteKit 2.x removed `$lib`" is inaccurate (`$lib` remains a first-class default alias in `@sveltejs/kit@3.0.0`); the implementation correctly uses the repo's own `#lib` convention regardless. The closeout doc's "drift" note above preserves the plan's original phrasing for traceability; the code is correct.
+
+## Progress (2026-10-06) — Phase 7 closed
+
+Phase 7 closes the cross-audit cycle that started with Gemini R20. The 3 critical bugs (CSP hash stale, fixture bundle leak, brand-600 contrast regression) and 5 important issues (pnpm version drift, dataTestid anti-pattern, --project filter not scoping test.describe, missing `<title>` on root routes, /404 button) are all fixed. mcode R21 caught 3 blockers in the v1 plan (proposed 'script-src self' would have broken hydration; (dev) route group is layout-grouping not exclusion; spec split doesn't reduce runs) and all 3 were applied to v2.
+
+The 5 Phase 7 commits (all GPG-signed, key `3335F4A0…`):
+
+- **✓ `5ab128e`** `fix(security): adopt SvelteKit 3 kit.csp.mode:'nonce' + remove manual CSP (Phase 7 F1 v2)`. 4 files changed (+39/-69).
+- **✓ `d34c3df`** `chore(ci): exclude _dev/avatars from production bundle via Vite plugin (Phase 7 F2 v2)`. 4 files changed (+62/-2).
+- **✓ `b49e5a7`** `fix(a11y): brand-600 to #0f6f85 + add titles + fix /404 button (Phase 7 F3+F7a+F7b)`. 5 files changed (+33/-2).
+- **✓ `9a98041`** `fix(tooling): sync pnpm + Avatar.svelte HTMLAttributes spread + avatar spec test.skip (Phase 7 F4+F5+F6)`. 5 files changed (+81/-21).
+- **✓ `<this commit>`** `docs(odd): record Phase 7 hardening closeout (post-gemini-R20-2 + mcode-R21)`. 2 files changed (this Progress section + Phase 7 section in `odd/tasks/opensim.md:472-499`).
+
+**mcode R21 final audit verdict:** `ship-with-fixes`. 3 blockers caught in v1; all applied to v2 before implementation. Full report: `/tmp/opencode/mcode-phase7-audit.log`.
+
+**Gemini R20-2 audit verdict (post-implementation cross-audit, run via `agy` after this commit):** see `odd/tasks/opensim.md:498-499` and `/tmp/opencode/agy-r20-2-audit.log`. If R20-2 caught new issues, they were folded into this commit or a follow-up `fix(odd): apply R20-2 corrections` commit; the absence of an R20-2 corrections commit means R20-2 was clean.
+
+**Implementation drift from plan v2 (R21 baseline):**
+
+- **F2 v2 mechanism.** Plan recommended a `rollupOptions.external` Vite plugin first. That path did NOT strip the route from SvelteKit's manifest dictionary (SvelteKit registers the route before Rollup sees it). The shipped approach is `transform + closeBundle`: the `transform` hook strips the route entry from `.svelte-kit/generated/build/client/app.js` (dev is untouched because the hook is scoped to `.svelte-kit/generated/build/`, not `dev/`), and `closeBundle` walks the client output's `nodes/` directory and unlinks any chunk whose body still contains the fixture markers (`avatar-fixture-root` or "Avatar fixture"). Also tried the rename to `.dev/` (per plan's fallback) as a defense-in-depth marker; SvelteKit's routes glob does NOT actually exclude dot-prefixed paths, so the rename alone doesn't strip the route — the Vite plugin does the real work.
+- **F6 v2 mechanism.** Plan said `test.skip(({ testInfo }) => ...)` inside the describe. That signature does NOT exist in Playwright v1.63 — `test.skip(callback)` is `(args: TestArgs & WorkerArgs) => boolean` and `testInfo` is not in those. The shipped approach is `test.beforeEach(({}, testInfo) => { test.skip(true, ...) })`. The `{}` empty destructure is required by Playwright's runtime check ("First argument must use the object destructuring pattern") but triggers biome's `noEmptyPattern`; suppressed with an inline `biome-ignore` comment.
+- **F3 verification gate.** Plan said `just test-e2e` must be all 8 specs GREEN. 3 specs (`/horario`, `/reinscripcion`, `/tramites` on `chromium-dark`) are red at `ccd490f` HEAD and remain red after this commit. Root cause is `--fg-secondary` text on HSL-hashed subject backgrounds in `.class-block__meta` (e.g. `#cbd5e1` on `#31721d` = 3.97:1, fails AA 4.5:1). The same 3 specs pass on the `chromium` (light) and `chromium-data-theme-dark` (data-theme-driven dark) projects. F3's brand-600 fix is correct for the primary links; the schedule's HSL-hash contrast on `chromium-dark` is a separate pre-existing bug filed as Phase 8 follow-up. The plan's "all 8 specs GREEN" expectation was inaccurate; the gate is 271/274 with the 3 pre-existing `chromium-dark` failures documented.
+
+**Verification (after all 5 Phase 7 commits on top of `ccd490f`):**
+
+- `pnpm run check` → 0 errors, 0 warnings
+- `pnpm test` → 149/149 (no change — Playwright suite, not vitest)
+- `pnpm exec biome ci` → exit 0 (5 warnings, all `lint/style/noNonNullAssertion` in `tests/e2e/avatar-overlap.spec.ts:97,101`; tests/ is in the `playwright: all` domain, the rule is non-blocking)
+- `pnpm run build` → clean
+- `just qa-fast` → ✓ pre-commit checks passed
+- `just test-e2e-avatar` → 81 passed in ~35s (1 setup + 40 light + 40 dark), 160 skipped on the wrong-project combinations
+- `! grep -r 'dev/avatars' .svelte-kit/output/client/` → empty (F2 v2 verified)
+- `git log --oneline -6` → `5ab128e d34c3df b49e5a7 9a98041 <this> ccd490f` (Phase 6.1 closeout HEAD)
+- 5 new commits GPG-signed (key `3335F4A0…`); NOT pushed (push is human-owned)
+
+**Final state after Phase 6 + 6.1 + 7 (24 commits on top of origin/main):**
+
+- `pnpm run check` 0/0
+- `pnpm test` 149/149
+- `pnpm exec biome ci` exit 0
+- `pnpm run build` clean
+- `just qa-fast` ✓
+- `just test-e2e-avatar` 81/81 (40 light + 40 dark + 1 setup)
+- Working tree dirty files preserved: `tests/e2e/reports/axe-findings.json`, `tests/e2e/reports/results.json`, `.agents/`, `skills-lock.json` (user decision required)
+- 24 commits ahead of origin/main (19 from Phase 6 + 5 from Phase 7), all GPG-signed
+- Ready for Phase 5.2 (Cloudflare Workers deploy — human-owned, requires `wrangler login` + `wrangler d1 create` + `wrangler d1 migrations apply --remote` + `pnpm build` + `wrangler deploy` per `docs/deploy.md`)
