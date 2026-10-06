@@ -210,6 +210,9 @@ const active = $derived(procedures[current] ?? null);
 .proc__nav-meta {
 	font-family: var(--font-mono);
 	font-size: var(--text-xs);
-	color: var(--fg-tertiary);
+	/* --fg-tertiary fails AA on the active button's --brand-50
+	   background (3.55:1 in dark, axe violation "serious"). Tertiary
+	   text on a filled surface needs the primary ramp. */
+	color: var(--fg-secondary);
 }
 </style>
