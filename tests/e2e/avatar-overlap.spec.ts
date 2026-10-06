@@ -55,7 +55,7 @@ async function assertAvatarCell(
 ): Promise<void> {
 	const testId = `avatar-${size}-${shape}-${status}`;
 	const frame: Locator = page.getByTestId(testId);
-	const { dotBox, avatarBox } = await getDotBox(page, frame);
+	const { dotBox, avatarBox } = await getDotBox(frame);
 
 	// AC6: dotBox.right - avatarBox.right === dotBox.width / 2 (±1px)
 	// The dot's center is the avatar's lower-right corner; the dot's
@@ -84,7 +84,15 @@ async function assertAvatarCell(
 		dotBox.x + dotBox.width / 2,
 		dotBox.y + dotBox.height / 2,
 	);
-	expect(probed, `AC8: ${testId} probe point is outside the document`).not.toBeNull();
+	// A plain throw rather than `expect(...).not.toBeNull()`: it aborts the
+	// test with the same message AND narrows the type through control flow,
+	// which removes the four non-null assertions below. Playwright reports a
+	// thrown Error as the test failure. (`@playwright/test` exports no
+	// `assert` with an `asserts value` signature, so there is no narrower
+	// helper available here.)
+	if (probed === null) {
+		throw new Error(`AC8: ${testId} probe point is outside the document`);
+	}
 
 	// AC8 relaxed per R13: the dot's 2px box-shadow halo is not
 	// hit-testable, so the strict `probed === dot` form would always
@@ -93,12 +101,11 @@ async function assertAvatarCell(
 	// current load-bearing form; the descendant relaxation is the
 	// future-proofing for the spec, not a current looseness.
 	const dotSelector = `[data-testid="${testId}"] .avatar__status--${status}`;
-	const isMatch =
-		probed!.tagName === "SPAN" && probed!.classes.includes(`avatar__status--${status}`);
+	const isMatch = probed.tagName === "SPAN" && probed.classes.includes(`avatar__status--${status}`);
 
 	expect(
 		isMatch,
-		`AC8: ${testId} probed element <${probed!.tagName} class="${probed!.classes}"> is not the status dot`,
+		`AC8: ${testId} probed element <${probed.tagName} class="${probed.classes}"> is not the status dot`,
 	).toBeTruthy();
 
 	// AC9: getComputedStyle(dot).boxShadow contains the resolved

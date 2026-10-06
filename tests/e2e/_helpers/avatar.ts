@@ -63,7 +63,7 @@ export interface AvatarOverlapBoxes {
  * instead, which guarantees the entire dot (and its centre) is fully
  * inside the viewport.
  */
-export async function getDotBox(page: Page, avatar: Locator): Promise<AvatarOverlapBoxes> {
+export async function getDotBox(avatar: Locator): Promise<AvatarOverlapBoxes> {
 	const dot = avatar.locator(".avatar__status");
 	await dot.scrollIntoViewIfNeeded();
 	return avatar.evaluate((frame) => {
