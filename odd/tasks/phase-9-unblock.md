@@ -4,11 +4,12 @@
 kind: phase-plan
 status: active
 last-verified: 2026-10-08
-reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
-sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
+reconciled-against: feat/phase-9-verified-curriculum@2ac464f (main@fee9d60)
+sha-warning: los SHA 697c1c9, 0cafef1, 6ca7c12, 8f40837, ffcd595 y b3fef41 citados en el cuerpo de este archivo predicen la reescritura de firmas GPG del 2026-10-08 y están MUERTOS; los vivos verificados con `git cat-file -e` son 18de1a5 (T9.1), b6a1d8a (T9.2) y 159b2bc (T9.7)
 -->
 
-**Estado:** plan aprobado para ejecutar · creado 2026-10-08 · **reconciliado 2026-10-08: B1, B6, B7 y B8 cerradas**
+**Estado:** Onda 2 **ejecutada por completo** · creado 2026-10-08 ·
+**reconciliado 2026-10-08: B1, B2, B3, B6, B7 y B8 cerradas. B4 parcial. B5 cerrada.**
 **Objetivo:** eliminar todo lo que bloquea la entrega de Phase 9 y cerrar el ciclo de
 revisión antes de tocar T9.3.
 **Rama:** `feat/phase-9-verified-curriculum` — T9.1 y T9.2 ya están
@@ -17,28 +18,35 @@ revisión antes de tocar T9.3.
 > `0cafef1` (T9.2). **Ambos están muertos**: la reescritura de firmas GPG del 2026-10-08 cambió
 > cada SHA del repositorio. Los actuales, verificados con `git cat-file -e`, son:
 >
-> | Tarea | SHA muerto (plan original) | SHA actual verificado |
+> | Tarea | SHA muerto (plan original) | SHA vivo verificado con `git cat-file -e` |
 > | --- | --- | --- |
-> | T9.1 — dataset curricular verificado | `697c1c9` | **`6ca7c12`** — `feat(data): verified ISIC-2010-224 curriculum dataset` |
-> | T9.2 — seriación + columnas de componente | `0cafef1` | **`8f40837`** — `feat(db): subject seriation tri-state and component columns` |
+> | T9.1 — dataset curricular verificado | `697c1c9` (luego `6ca7c12`, también muerto) | **`18de1a5`** — `feat(data): verified ISIC-2010-224 curriculum dataset` |
+> | T9.2 — seriación + columnas de componente | `0cafef1` (luego `8f40837`, también muerto) | **`b6a1d8a`** — `feat(db): subject seriation tri-state and component columns` |
+> | T9.7 + T9.8 — seed verificado + fixture | — | **`159b2bc`** — `feat(db): seed the verified curriculum and relax the unknown-column constraint` |
+>
+> **HEAD al 2026-10-08:** `main` = `fee9d60` (126 commits, **126/126 firmados** `G`); rama de
+> fase `feat/phase-9-verified-curriculum` = `2ac464f` (132 commits, **132/132 firmados** `G`).
+> La tabla original decía `main`=`ffcd595` y rama=`8f40837` con "128/128 firmados"; los tres
+> datos quedaron desfasados. Verificado con `git log <ref> --format='%G?' | sort | uniq -c`.
 
 ---
 
 ## Estado de los bloqueos al 2026-10-08
 
-Cuatro de los ocho quedaron cerrados hoy. La tabla de §El conjunto bloqueante conserva el estado
-del plan original; ésta es la tabla vigente.
+**Seis de los ocho cerrados** (B1, B2, B3, B5, B6, B7, B8 — siete en total, B4 parcial).
+La Onda 2 **se ejecutó completa** y B3 quedó desbloqueada por ello. La tabla de §El conjunto
+bloqueante conserva el estado del plan original; ésta es la tabla vigente.
 
 | ID | Bloqueo | Estado 2026-10-08 | Evidencia |
 | --- | --- | --- | --- |
 | **B1** | La revisión de recibos RDD se rechaza en el runtime opencode | **CERRADA — por decisión, no por arreglo** | RDD deshabilitado en scope de clon: `gentle-ai review mode status --cwd .` → `receipt-driven development: off (decided by clone_local)`, `global: on`. `gentle-ai 4.0.0` es la última release; OpenCode no es un runtime elegible de revisión inmutable en ese build. Decisión explícita del operador: deshabilitar en vez de perseguir la elegibilidad. **U3 queda cancelado, no pendiente.** |
-| **B2** | `subjects.area` → NULL no es aplicable en D1 | **DESBLOQUEADA por U5** | El experimento U5 probó que **la forma del plan era incorrecta**: `defer_foreign_keys` por sí solo pospone la violación al `COMMIT` en vez de prevenirla. La forma correcta es respaldar las filas **antes** de soltar la tabla padre y reponerlas antes del commit. Orden verificado sobre D1 local con el esquema real. Detalle en §U5 y §U6. |
-| **B3** | `pnpm db:seed:gen` rojo desde T9.1 | **BLOQUEADA** | Sin cambios. Depende de B2. |
+| **B2** | `subjects.area` → NULL no es aplicable en D1 | **CERRADA 2026-10-08** | El experimento U5 probó que **la forma del plan era incorrecta**: `defer_foreign_keys` por sí solo pospone la violación al `COMMIT` en vez de prevenirla. Se aplicó el **respaldo alternativo** ya descrito en §U6 — vaciar las hijas primero — que no necesita ni pragma ni tabla de respaldo. `drizzle/0009_subjects-rebuild.sql`, aplicada a la D1 de producción: `wrangler d1 migrations list opensim --remote` → `✅ No migrations to apply!`. **Matiz post-ejecución:** relajar sólo `area` no bastaba — ver §Lo que la ejecución cambió. |
+| **B3** | `pnpm db:seed:gen` rojo desde T9.1 | **CERRADA 2026-10-08** | El seed corre contra el dataset verificado. `seed.sql` regenerado y **aplicado en la D1 de producción** `390df78e-c4c2-4ace-94f4-6baebf1eb88f`: 68 subjects, 14 aristas, 3 especialidades, 1 carrera, 49 progress, 7 grupos, 14 bloques, 0 `subject_units`. `PRAGMA foreign_key_check` vacío. Commit `159b2bc`. |
 | **B4** | 29 blobs con PII vivos en `refs/pull/1/head` | **PARCIALMENTE INVACUA** | `gh pr list --state all` → `[]`. `gh issue list --state all` → `[]`. Codeberg `api/v1/.../issues?state=all` → `[]`. **No existe ningún PR que cerrar**, así que el paso "cerrar el PR #1" ya no aplica: el repo fue recreado y los refs de PR desaparecieron con él. Queda sólo confirmar con GitHub Support que no queden objetos inalcanzables con PII. |
 | **B5** | La redacción de docentes es un paso manual | **CERRADA 2026-10-08** | `redact_teachers()` + `load_docs()` en `scripts/build-verified-curriculum.py`. Determinista, idempotente, mismo nombre → mismo alias entre ficheros. `raise SystemExit` si queda un nombre sin redactar. 468/468 y 7/7 filas ya son alias `DOC-NNN`; unión real = **121** nombres distintos, no 114. Dataset generado **byte-idéntico** (`4d6f8a28…` antes y después). `ruff check`, `ruff format --check` y `ty check` en verde. |
 | **B6** | La D1 remota estaba 3 migraciones atrás | **CERRADA 2026-10-08** | `wrangler d1 migrations apply opensim --remote` aplicó `0006`, `0007`, `0008`. `wrangler d1 migrations list opensim --remote` → `✅ No migrations to apply!`; 9 entradas en `d1_migrations`. **Cero pérdida de filas**: `subjects` 42, `student_progress` 38, `course_groups` 8, `student_credentials` 1, `student_profiles` 1 — idénticos antes y después. Puerta G1: autorizada y ejecutada. |
 | **B7** | Workers Builds quedó huérfano al borrar y recrear el repo | **CERRADA 2026-10-08** | Relink hecho por el operador. **El Worker nunca se borró**: `https://opensim.jose-luis-rs.workers.dev` sigue vivo. |
-| **B8** | Los commits estaban sin firmar tras la reescritura de PII | **CERRADA 2026-10-08** | Los 128 commits se refirmaron con `git filter-branch`, clave `3335F4A0D9DBBA95`. 126/126 `G` en `main` (`ffcd595`), 128/128 `G` en la rama de fase (`8f40837`). Push a GitHub y Codeberg confirmado; force-push post-reescritura. **Cada SHA del repositorio cambió.** |
+| **B8** | Los commits estaban sin firmar tras la reescritura de PII | **CERRADA 2026-10-08** | Los 128 commits se refirmaron con `git filter-branch`, clave `3335F4A0D9DBBA95`. 126/126 `G` en `main` (`ffcd595`), 128/128 `G` en la rama de fase (`8f40837`). Push a GitHub y Codeberg confirmado; force-push post-reescritura. **Cada SHA del repositorio cambió.**<br>**Corrección 2026-10-08 (segunda reconciliación):** el conteo y los SHAs de esta fila quedaron desfasados al aterrizar los commits posteriores. Hoy `main` = `fee9d60` con **126/126 `G`**, y la rama de fase = `2ac464f` con **132/132 `G`** (132 = 126 de `main` + 6 de la rama). Verificado con `git log <ref> --format='%G?' | sort \| uniq -c`. La afirmación original **128/128** no se borra: era correcta en el momento en que se escribió. |
 
 **Consecuencia no obvia de B8:** las 54 referencias SHA únicas en `odd/` quedaron muertas.
 Ninguna resuelve con `git cat-file -e`. Los *subjects* sí sobrevivieron, así que el camino de
@@ -209,12 +217,15 @@ La cifra real de retraso es 3, no 1.
 
 ### Onda 2 — la columna vertebral de datos. Serializable, con dependencias duras
 
-| ID | Tarea | Depende de | Superficie |
-| --- | --- | --- | --- |
-| **U5** | Probar `defer_foreign_keys` en una D1 descartable | — | `/tmp` sólo |
-| **U6** | `area` → NULL con migración `0009` escrita a mano | U5 | `src/lib/server/db/schema.ts`, `drizzle/0009_*.sql` |
-| **U7** | `seed.ts` a la forma nueva + reconstrucción de `subjects` a 68 filas (= **T9.7**) | U6 | `src/lib/server/db/seed.ts`, `drizzle/0009` o `0010` |
-| **U8** | Rehacer `enrollment-fixture.json` (= **T9.8**) | U7 | `src/lib/server/db/data/enrollment-fixture.json` |
+**Toda la Onda 2 está ejecutada (2026-10-08).** La columna de estado se añade aquí; el
+plan original se conserva intacto.
+
+| ID | Tarea | Depende de | Superficie | Estado |
+| --- | --- | --- | --- | --- |
+| **U5** | Probar `defer_foreign_keys` en una D1 descartable | — | `/tmp` sólo | ✅ ejecutado |
+| **U6** | `area` → NULL con migración `0009` escrita a mano | U5 | `src/lib/server/db/schema.ts`, `drizzle/0009_*.sql` | ✅ `0009_subjects-rebuild.sql` |
+| **U7** | `seed.ts` a la forma nueva + reconstrucción de `subjects` a 68 filas (= **T9.7**) | U6 | `src/lib/server/db/seed.ts`, `drizzle/0009` o `0010` | ✅ `159b2bc` |
+| **U8** | Rehacer `enrollment-fixture.json` (= **T9.8**) | U7 | `src/lib/server/db/data/enrollment-fixture.json` | ✅ dentro de `159b2bc` |
 
 **Puerta de decisión de Onda 2.** U6 y U7 compiten por la misma migración: U6 reconstruye
 `subjects` para soltar el `NOT NULL`; U7 tiene que vaciar las hijas y escribir los
@@ -407,10 +418,77 @@ U1, U3 y U4 no producen commits: son operaciones. U2 y U6–U8 producen uno cada
 
 ## Próximo paso
 
+> **Cerrado 2026-10-08 (tercera reconciliación).** U6 y U7 **están hechas**, en una sola
+> migración `0009` como el plan decía, y U8 también. La Onda 2 está completa. Este bloque
+> se conserva como registro del punto en el que se estaba.
+
 **U6 + U7 en una sola migración `0009`.** U5 ya respondió la pregunta que las gating, y la
 respuesta cambió la forma del trabajo: no es la reconstrucción de 12 pasos que este plan
 prescribía, sino respaldar → crear → soltar → renombrar → reponer → tirar el respaldo.
 U2 ya está hecha, así que la Onda 1 queda vacía salvo U4.
+
+**Lo que realmente se ejecutó, y la diferencia con lo de arriba:** ni `defer_foreign_keys`
+ni tabla de respaldo. Se tomó el **respaldo alternativo** que el propio §U6 ya preveía —
+vaciar **12 tablas** antes del `DROP TABLE`: las cinco hijas de `subjects`
+(`course_groups`, `student_progress`, `subject_prerequisites`, `subject_aliases`,
+`subject_units`), más `course_schedule_blocks` (hija de `course_groups`) y las seis del
+resto de la cadena (`subjects`, `auth_sessions`, `student_credentials`,
+`student_profiles`, `specialties`, `careers`). El plan ya describía
+esa forma; lo que no anticipaba era que **fuera la única que funciona**, porque no queda
+nada que preservar.
+
+Estado final de la Onda 2:
+
+| Tarea | Estado | Evidencia |
+| --- | --- | --- |
+| **U5** | ✅ ejecutado | Veredicto en §U5: el pragma pospone, no previene |
+| **U6** | ✅ ejecutada | `drizzle/0009_subjects-rebuild.sql`, escrita a mano, aplicada en remoto |
+| **U7** | ✅ ejecutada | `159b2bc`; `seed.sql` regenerado y aplicado |
+| **U8** | ✅ ejecutada | Fixture reconstruido dentro de `159b2bc` (absorbió T9.8) |
+| **U4** | ⚪ parcial | Depende del operador — ver §B4 |
+
+## Lo que la ejecución cambió que el plan se equivocó
+
+Dos cosas. Ninguna se borra del plan; las dos se anotan aquí.
+
+### 1. Relajar sólo `area` no bastaba
+
+Todo el plan gira alrededor de una columna. El dataset verificado trae **cuatro** columnas en
+`null`, no una:
+
+| Columna | Por qué es `null` | Filas |
+| --- | --- | --- |
+| `area` | H4 — ninguna fuente clasifica áreas curriculares | 68 de 68 |
+| `semester` | H8 — no se publica el semestre de un módulo de especialidad | 16 |
+| `ht` | H8, mismo corte | 16 |
+| `hp` | H8, mismo corte | 16 |
+
+Si `0009` se hubiera escrito como el plan decía — relajar `area` únicamente — el seed
+habría seguido fallando al insertar las 16 materias de especialidad. Se corrigió en la misma
+migración, antes de aplicarla. **`subjects` tiene 11 columnas, cuatro nullable**; el plan
+sabía de una.
+
+### 2. "30 filas approved sumando 175 cr" es aritméticamente imposible
+
+El plan derivó el fixture como "30 filas APPROVED que suman los 175 crás del perfil". Esa
+combinación no puede existir: los **30 valores de crédito más altos del plan verificado
+suman 161 cr**, así que ningún conjunto de 30 asignaturas alcanza 175.
+
+Medido sobre el catálogo de 68:
+
+| Conjunto | Suma de créditos |
+| --- | --- |
+| 30 valores de crédito más altos | **161** — imposible llegar a 175 |
+| 41 valores más altos | 216 — sí alcanza |
+| Las 41 filas `APPROVED` que hay en el fixture | **175** ✅ |
+
+**Gana la invariante de créditos.** El fixture tiene **41 filas `APPROVED` / 175 cr** y **6
+filas `ENROLLED` / 24 cr**, que es exactamente lo que declara el perfil del estudiante. El
+número de filas se ajustó a la aritmética; el perfil no se tocó para acomodar el
+número de filas.
+
+Nota: el "30" no venía de la nada — el catálogo viejo tenía 42 materias y el fixture viejo
+tenía 38 filas. Sobrevivió como número heredado al pasar al plan de 68.
 
 > **Actualizado 2026-10-08 (segunda pasada).** U5 **corrió y produjo un resultado que
 > invalida el orden de U6**: `defer_foreign_keys` por sí solo no alcanza. La Onda 1 queda
@@ -426,9 +504,20 @@ U2 ya está hecha, así que la Onda 1 queda vacía salvo U4.
 
 | Tarea | Depende de | Estado |
 | --- | --- | --- |
-| **U6+U7** | Nada. Todo local | **Siguiente.** Migración `0009` a mano + `seed.ts` |
-| **U8** | U7 | Fixture con los `canonicalId` nuevos |
-| **U4** | El operador | Sin PR ni issues que cerrar. Sólo queda confirmar con GitHub Support que no queden objetos con PII |
+| **U6+U7** | Nada. Todo local | ✅ **HECHO** — `drizzle/0009_subjects-rebuild.sql` + `seed.ts`, commit `159b2bc`, aplicado en la D1 de producción |
+| **U8** | U7 | ✅ **HECHO** dentro de U7 — el fixture se reconstruyó, no se remapeó (0 de 38 filas viejas sobreviven) |
+| **U4** | El operador | ⚪ **PARCIAL** — sin PR ni issues que cerrar. Sólo queda confirmar con GitHub Support que no queden objetos con PII |
 | **H6** | Fuente externa | Nube suma 265, no 260. ¿Módulo de 30 cr o el alumno elige 5 de 6? |
-| **H8** | El operador | Semestre de las 16 materias de especialidad |
+| **H8** | El operador | Semestre de las 16 materias de especialidad. **Sigue abierta y ya tiene impacto visible:** `/retícula` muestra 52 de 68 módulos sin explicarlo. Decisión de bandeja o contador en T9.10 |
 | **H3 / H4 / H9** | Catálogo del TecNM o coordinación | Temarios, áreas, seriación de 8 materias |
+| **Defecto** | Nadie — pre-existente | `course_schedule_blocks` no tiene clave natural: `INSERT OR REPLACE` **duplica** los bloques en cada corrida del seed. Confirmado en HEAD sin modificar (28 filas antes del wipe de `0009`, 14 ahora). **No se arregla en v1.** Detalle en `phase-9-curriculum-data-foundation.md` |
+
+### Verificación de esta reconciliación
+
+| Comprobación | Resultado |
+| --- | --- |
+| `pnpm check` | svelte-check **0 errores, 0 warnings** |
+| `pnpm test` | **272/272**, 16 ficheros |
+| Suite **e2e** | **`NOT VERIFIED`** — no corrida en esta sesión |
+| `wrangler d1 migrations list opensim --remote` | `✅ No migrations to apply!` |
+| Docentes | **0** nombres reales; el seed emite `DOC-001`…`DOC-007` |

@@ -4,14 +4,16 @@
 kind: index
 status: active
 last-verified: 2026-10-08
-reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
-sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
+reconciled-against: feat/phase-9-verified-curriculum@2ac464f (main@fee9d60)
+sha-warning: los SHA ffcd595, 8f40837, 6ca7c12 y b3fef41 citados en el cuerpo de este archivo predicen la reescritura de firmas GPG del 2026-10-08 y están MUERTOS; los SHA vivos verificados con `git cat-file -e` son 18de1a5, b6a1d8a, 159b2bc, 2ac464f y fee9d60
 -->
 
 OpenSIM (Open Source — Sistema Integral Modular) reached **Phase 7 complete**. The build,
 the WCAG audit, the U1–U4 polish cycle and the hardening cycle are all closed and recorded
-with commit SHAs. **Phase 9 (curriculum data foundation) is the active phase: T9.1 and T9.2 are
-closed, T9.3–T9.14 are open.** This file is the index; `tasks/opensim.md` is the canonical spec.
+with commit SHAs. **Phase 9 (curriculum data foundation) is the active phase: T9.1, T9.2 and
+T9.7 are closed — T9.7 absorbed T9.8 — and T9.3–T9.6 plus T9.9–T9.14 are open.** The
+production D1 is at migration `0009` and the remote catalogue is now the verified 68-subject
+plan. This file is the index; `tasks/opensim.md` is the canonical spec.
 
 > **Reconciled 2026-10-08.** Task 5.2 (production deploy) and the filed-not-started Phase 8
 > item are both **closed** — see "Resolved 2026-10-08" below. Nothing is left waiting on an
@@ -21,11 +23,13 @@ closed, T9.3–T9.14 are open.** This file is the index; `tasks/opensim.md` is t
 
 | Question | Answer |
 | --- | --- |
-| **What is done?** | Phases 1, 2, 3, 4.0, 4, 5, 6, 6.1, 6.2, 6.5, 7, 8 (a11y dark-theme contrast), 9.1–9.2. |
-| **What is open?** | **Phase 9, T9.3–T9.14** — gated by blockers B2–B5 (see `tasks/phase-9-unblock.md`). |
-| **What is next?** | **U5**, the `defer_foreign_keys` experiment in a throwaway D1 under `/tmp`. It decides the shape of U6–U8 and mutates nothing in the repo. |
-| **Pushed?** | **Yes — both remotes.** `main` (`ffcd595`, 126 commits) and `feat/phase-9-verified-curriculum` (`8f40837`, 128 commits, +2 over `main`) are on GitHub and Codeberg. Force-pushed after the 2026-10-08 re-sign rewrite. |
-| **Signed?** | **Yes — 126/126 on `main`, 128/128 on the feature branch**, GPG key `3335F4A0D9DBBA95`. Every SHA changed in the rewrite, so older SHAs cited anywhere in `odd/` are dead. |
+| **What is done?** | Phases 1, 2, 3, 4.0, 4, 5, 6, 6.1, 6.2, 6.5, 7, 8 (a11y dark-theme contrast), and in Phase 9: **T9.1, T9.2, T9.7** (T9.7 absorbed T9.8, and T9.5 shipped inside it). |
+| **What is open?** | **Phase 9, T9.3–T9.6 and T9.9–T9.14.** No blocker gates them any more: B2 and B3 closed on 2026-10-08. B4 (PII in GitHub refs) is the only one still pending, and it depends on the operator, not on the plan. |
+| **What is next?** | **T9.3** — `subject_units`: 4 columns + 32 units / 223 subtopics across 7 subjects. It is the next open task and unblocks T9.12. In parallel, the operator has an open decision in T9.10: 16 specialty subjects have no semester, so `/retícula` shows 52 of 68 modules with no explanation. |
+| **Pushed?** | **Yes — both remotes.** `main` (`fee9d60`, 126 commits) and `feat/phase-9-verified-curriculum` (`2ac464f`, 132 commits, +6 over `main`) are on GitHub and Codeberg. Force-pushed after the 2026-10-08 re-sign rewrite. |
+| **Signed?** | **Yes — 126/126 `G` on `main`, 132/132 `G` on the feature branch**, GPG key `3335F4A0D9DBBA95`. Verified with `git log <ref> --format='%G?' \| sort \| uniq -c`. Every SHA changed in the rewrite, so older SHAs cited anywhere in `odd/` are dead. |
+| **Production data?** | **Migration `0009` applied** to `390df78e-c4c2-4ace-94f4-6baebf1eb88f`, plus the regenerated seed. The remote catalogue is now the **verified 68**: 68 subjects (all with `area` NULL, 16 with `semester`/`ht`/`hp` NULL), 14 prerequisite edges, 3 specialties, 1 career, 49 progress rows, 7 course groups, 14 schedule blocks, 0 `subject_units`. `PRAGMA foreign_key_check` empty. |
+| **Green?** | `pnpm check` → 0 errors, 0 warnings. `pnpm test` → **272/272**, 16 files. Teacher names → **0** occurrences in the working tree or any blob; the seed emits `DOC-001`…`DOC-007`. **The e2e suite has NOT been run this session** — `NOT VERIFIED`. |
 
 ## Phase table
 
@@ -35,11 +39,11 @@ closed, T9.3–T9.14 are open.** This file is the index; `tasks/opensim.md` is t
 | 2 — Core Algorithms & Design System | Closed | 18 atomic UI components, DAG traversal + credit thresholds, HSL color hash, native single-file auth (0 npm auth deps). | `opensim.md` §8 Tasks 2.1–2.5 |
 | 3 — Layout & Interactive Modules | Closed | Collapsible sidebar + Cmd+K, dashboard, proportional TimeGrid, interactive Bézier DAG retícula, unified kardex. | `opensim.md` §8 Tasks 3.1–3.5 |
 | 4 — Simulator, Procedures & PDF | Closed | `/reinscripcion` split simulator with global signature, `/tramites` stepper with 182/208 credit gates, vectorial Carga Académica PDF. Preceded by the 7-correction 4.0 hardening block. | `opensim.md` §8 Tasks 4.0.1–4.0.7 + 4.1–4.3 |
-| 5 — Audit, A11y & Edge Deploy | **Closed** | 5.1: axe-core WCAG 2.1 AA sweep, 14/14 specs green (7 routes × 2 themes), findings N9–N19 + N21–N22 closed. **5.2 resolved 2026-10-08** — Worker live, production D1 real, remote at `0008`. | `opensim.md` §8 Tasks 5.1–5.2; `tasks/phase-5.md` |
+| 5 — Audit, A11y & Edge Deploy | **Closed** | 5.1: axe-core WCAG 2.1 AA sweep, 14/14 specs green (7 routes × 2 themes), findings N9–N19 + N21–N22 closed. **5.2 resolved 2026-10-08** — Worker live, production D1 real. Remote was at `0008` when this row was written; it is now at **`0009`** (see Phase 9). | `opensim.md` §8 Tasks 5.1–5.2; `tasks/phase-5.md` |
 | 6 — UI/UX Polish + Audit + Tooling | Closed | U1–U4 shipped (`1294c91`, `5d7ac9c`, `e7facd3`, U3 in 6.1); mcode R11–R17 audit chain closed; Biome 2.5.15 adopted; GitHub Actions dropped for local Podman CI; `just qa`/`just qa-fast` naming. Tests 149/149 (Phase 6 closeout snapshot — **NOT VERIFIED** today). | `opensim.md` §6.0–6.5; `tasks/phase-6-ui-polish.md` |
 | 7 — Hardening | Closed | CSP moved to SvelteKit `kit.csp.mode:'nonce'`; avatar fixture excluded from the production bundle; `--brand-600` contrast fix; `<title>` on root routes; `/404` button restored; pnpm pin synced. | `opensim.md` §7 (`5ab128e`, `d34c3df`, `b49e5a7`, `9a98041`, `92ed2d0`) |
 | 8 — a11y dark-theme contrast | **Closed 2026-10-06** | The 3 `chromium-dark` axe contrast failures are fixed at the source, not per-hue. `SUBJECT_LIGHTNESS.dark` 28 → 20 (`e2708a1`), plus `--fg-tertiary` on the stepper's active button (`99c366a`). Gate is **114/114, 0 failed**. | `tasks/findings-remediation.md` §Phase 8 |
-| 9 — Curriculum data foundation | **Active** | T9.1 + T9.2 closed (`6ca7c12`, `8f40837`): verified `ISIC-2010-224` dataset (68 subjects, 468 course groups, 32 units) + `seriation_state`/`component` columns. T9.3–T9.14 open, gated by B2–B5. | `tasks/phase-9-curriculum-data-foundation.md`; `tasks/phase-9-unblock.md` |
+| 9 — Curriculum data foundation | **Active** | T9.1, T9.2 and T9.7 closed (`18de1a5`, `b6a1d8a`, `159b2bc`): verified `ISIC-2010-224` dataset (68 subjects) + `seriation_state`/`component` columns + `0009_subjects-rebuild.sql` and the regenerated seed, **applied to production**. T9.7 absorbed T9.8 and T9.5. Note the 468 course groups and 32 units are still **targets**, not rows — production has 7 groups and 0 units. T9.3–T9.6 and T9.9–T9.14 open, ungated. | `tasks/phase-9-curriculum-data-foundation.md`; `tasks/phase-9-unblock.md` |
 
 ## Resolved 2026-10-08 — Task 5.2 (production deploy) and Phase 8
 
@@ -60,7 +64,7 @@ closed, T9.3–T9.14 are open.** This file is the index; `tasks/opensim.md` is t
 | --- | --- | --- |
 | Is there a real production D1? | **Yes.** | `wrangler.jsonc:36` → `"database_id": "390df78e-c4c2-4ace-94f4-6baebf1eb88f"`. Never the placeholder. `tasks/phase-5.md:83-85` already recorded this on 2026-10-06 — **this file was the stale one.** |
 | Is the Worker live? | **Yes.** The production Worker URL is recorded in the Context block of `tasks/phase-6-ui-polish.md`. Workers Builds was relinked by the operator on 2026-10-08 after the repo was deleted and recreated; **the Worker itself was never deleted**. |
-| Is the remote D1 current? | **Yes — B6 closed.** | `wrangler d1 migrations list opensim --remote` → `✅ No migrations to apply!`; `0006`–`0008` registered in `d1_migrations` (9 total). Row counts unchanged: subjects 42, `student_progress` 38, `course_groups` 8, `student_credentials` 1, `student_profiles` 1. |
+| Is the remote D1 current? | **Yes — B6 closed, and Phase 9 moved it further.** | `wrangler d1 migrations list opensim --remote` → `✅ No migrations to apply!`; `0006`–`0008` registered in `d1_migrations` (9 total). Row counts unchanged: subjects 42, `student_progress` 38, `course_groups` 8, `student_credentials` 1, `student_profiles` 1.<br>**Superseded 2026-10-08:** those counts described the *fabricated* catalogue. `0009` plus the regenerated seed replaced it — see "Production data?" in Quick answer. |
 | Which deploy produced the URL? | **A Workers deploy from outside the Phase 5 checklist**, and the checklist was effectively run piecemeal by the operator. | B7 (relink) closed 2026-10-08. |
 
 **Still `NOT VERIFIED`:** the production **axe sweep against prod** (step 5.2.5) — no record of
@@ -106,11 +110,11 @@ Full detail in `tasks/phase-9-unblock.md`. Summary as of 2026-10-08:
 | ID | Blocker | Status |
 | --- | --- | --- |
 | B1 | RDD review rejected on the opencode runtime | **Resolved by decision** — RDD disabled at clone scope (`receipt-driven development: off (decided by clone_local)`); global still `on`. `gentle-ai 4.0.0` is the latest release; OpenCode is not an eligible immutable-review runtime for this build. |
-| B2 | `subjects.area` → NULL is not applicable in D1 as-is | **Blocked, deferred** — needs the U5 `defer_foreign_keys` experiment first. |
-| B3 | `pnpm db:seed:gen` red since T9.1 | **Blocked** — depends on B2. |
-| B4 | 29 PII blobs alive in `refs/pull/1/head` | **Open** — GitHub Support only. |
-| B5 | Teacher redaction is a manual step | **Open** — U2. |
-| B6 | Remote D1 was 3 migrations behind | **Closed 2026-10-08** — `0006`–`0008` applied, zero row loss. |
+| B2 | `subjects.area` → NULL is not applicable in D1 as-is | **Closed 2026-10-08** — `drizzle/0009_subjects-rebuild.sql`, hand-written, applied to production. No `defer_foreign_keys` and no backup table needed: emptying the child tables removes the FK problem outright. Caveat found in execution: relaxing **only** `area` was insufficient — `semester`, `ht` and `hp` also had to become nullable. |
+| B3 | `pnpm db:seed:gen` red since T9.1 | **Closed 2026-10-08** — the seed runs against the verified dataset; `seed.sql` regenerated and applied. Production now holds the verified 68. |
+| B4 | 29 PII blobs alive in `refs/pull/1/head` | **Partially moot** — the repo was recreated, so no PR ref survives to close. Only GitHub Support can confirm no unreachable PII objects remain. Operator-dependent. |
+| B5 | Teacher redaction is a manual step | **Closed 2026-10-08** — `redact_teachers()` is a pipeline step in the generator; deterministic and idempotent. 468/468 and 7/7 rows are `DOC-NNN` aliases, union of 121 distinct names. |
+| B6 | Remote D1 was 3 migrations behind | **Closed 2026-10-08** — `0006`–`0008` applied, zero row loss. Later extended to `0009` by T9.7. |
 | B7 | Cloudflare Workers Builds relink | **Closed 2026-10-08** — relinked by the operator; the Worker was never deleted. |
 | B8 | GPG signatures missing after the PII rewrite | **Closed 2026-10-08** — all 128 commits back-signed; 126/126 on `main`, 128/128 on the feature branch. |
 
@@ -139,7 +143,7 @@ catch the 8 Gemini R20 issues — cross-model review is what surfaced them.
 | `tasks/opensim.md` | **Canonical spec v2.2** — §8 is the source of truth per task | Current |
 | `audit.md` | Pre-implementation audit (2026-10-01). AG-1…AG-22, CF-1…CF-5. | **Superseded** — banner added, findings preserved verbatim |
 | `cf-3-auth-comparison.md` | 4-option auth analysis | **Superseded/closed** — shipped as native single-file, Resend leg dropped |
-| `tasks/phase-5.md` | Phase 5.1 axe audit + 5.2 deploy checklist | Closed. **5.2 resolved 2026-10-08** — deploy exists, `database_id` real, remote at `0008`. |
+| `tasks/phase-5.md` | Phase 5.1 axe audit + 5.2 deploy checklist | Closed. **5.2 resolved 2026-10-08** — deploy exists, `database_id` real. Remote has since moved past `0008` to `0009`. |
 | `tasks/phase-5-prep.md` | 10-finding audit backlog | Closed; 2 boxes left open (manual smoke, verify commit) |
 | `tasks/phase-6-ui-polish.md` | U1–U4 feature doc + all Progress blocks | Closed. Its "UNRESOLVED CONTRADICTION" banner is resolved 2026-10-08 — history preserved, resolution appended. |
 | `tasks/phase-6.1-avatar-test-loop.md` | AC6–AC11 80-matrix Playwright loop | Closed |
@@ -150,8 +154,8 @@ catch the 8 Gemini R20 issues — cross-model review is what surfaced them.
 | `tasks/phase-5-mcode-reviews/` | External review captures | Frozen archive. Has its own `README.md` since 2026-10-08. |
 | `tasks/odd-bookkeeping-sync.md` | The 2026-10-06 bookkeeping pass (this index's own plan) | Closed |
 | `tasks/findings-remediation.md` | 27-findings remediation plan, Phases 1–10 | **Active.** Phase 8 shipped 2026-10-06 (114/114). Its header "Plan v1 — awaiting go-ahead" and its Progress "Not started" are stale. |
-| `tasks/phase-9-curriculum-data-foundation.md` | Phase 9 data-foundation plan (T9.1–T9.14) | **Active** — T9.1, T9.2 closed |
-| `tasks/phase-9-unblock.md` | Phase 9 unblock plan B1–B8 | **Active** — B1, B6, B7, B8 closed; B2–B5 open. Untracked as of 2026-10-08. |
+| `tasks/phase-9-curriculum-data-foundation.md` | Phase 9 data-foundation plan (T9.1–T9.14) | **Active** — T9.1, T9.2, T9.7 closed (T9.7 absorbed T9.8 and T9.5); T9.3–T9.6 and T9.9–T9.14 open. Contains the blast radius of the four nullable `subjects` columns. |
+| `tasks/phase-9-unblock.md` | Phase 9 unblock plan B1–B8 | **Onda 2 executed** — B1, B2, B3, B5, B6, B7, B8 closed; B4 partial. Records what execution got wrong about the plan. |
 
 ## Canonical spec
 
@@ -169,6 +173,7 @@ resolved on 2026-10-08 and the original claim is preserved above.
 > **SHA warning, applies to every row above.** The 2026-10-08 re-sign rewrite changed **every**
 > commit SHA in the repository. All 54 unique 7-hex SHAs cited in `odd/` before that date are
 > dead — `git cat-file -e <sha>` fails on every one of them. Old `main` HEAD was `285475d`; the
-> current `main` is `ffcd595`. **Do not trust any SHA in this tree without re-deriving it:**
+> current `main` is `ffcd595` — itself now dead; as of 2026-10-08 `main` is `fee9d60` and the
+> feature branch is `2ac464f`. **Do not trust any SHA in this tree without re-deriving it:**
 > `git log --oneline --grep='<subject>'` is the reliable way back, since the subjects survived
 > and only the hashes changed.
