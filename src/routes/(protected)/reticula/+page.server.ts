@@ -1,11 +1,15 @@
 /**
  * OpenSIM — Retícula académica loader (Phase 3 Tarea 3.4).
  *
- * Loads the 42-subject catalog + the 57 prerequisite edges + the
- * student's `student_progress` (so each subject node can be colored
- * APPROVED / ENROLLED / AVAILABLE / LOCKED on the SVG). All three
+ * Loads the verified 68-subject catalog, the 14 verified prerequisite
+ * edges and the student's `student_progress` (so each subject node can be
+ * colored APPROVED / ENROLLED / AVAILABLE / LOCKED on the SVG). All three
  * queries share the same D1 binding and we batch into a single
  * `db.batch()` so the page renders after one network round-trip.
+ *
+ * Since T9.9 every subject also carries its stored seriation tri-state and
+ * curricular component, so the DAG can show the third state ("not
+ * established from a source") instead of guessing it from the edge list.
  *
  * PII trim (audit NEW-1) is preserved: we never serialize the full
  * `StudentProfile` row, only the fields the retícula needs.
@@ -16,6 +20,8 @@ import { asc, eq } from "drizzle-orm";
 import { getDb } from "#lib/server/db";
 import {
 	type StudentProgressStatus,
+	type SubjectComponent,
+	type SubjectSeriationState,
 	studentProgress,
 	subjectPrerequisites,
 	subjects,
@@ -33,6 +39,10 @@ export interface RetSubject {
 	// record (gap H8). ReticulaDag filters them out before grid placement.
 	semester: number | null;
 	credits: number;
+	/** Stored tri-state. `UNKNOWN` means "not established from a source",
+	 * NOT "not serialized" — never collapse the three into a boolean. */
+	seriationState: SubjectSeriationState;
+	component: SubjectComponent;
 }
 
 export interface RetEdge {
@@ -69,6 +79,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 				name: subjects.name,
 				semester: subjects.semester,
 				credits: subjects.credits,
+				seriationState: subjects.seriationState,
+				component: subjects.component,
 			})
 			.from(subjects)
 			.orderBy(asc(subjects.semester), asc(subjects.code)),
@@ -114,7 +126,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	return {
-		subjects: subjectRows,
+		subjects: subjectRows.map((s) => ({
+			...s,
+			// SQLite stores TEXT; the domain unions are enforced here.
+			seriationState: s.seriationState as SubjectSeriationState,
+			component: s.component as SubjectComponent,
+		})),
 		edges: edgeRows,
 		statusByCanonicalId,
 	};
