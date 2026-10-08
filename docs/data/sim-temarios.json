@@ -1,0 +1,1989 @@
+{
+	"source": "SIM TecNM Morelia · /estudiante/datos/calificaciones-curso",
+	"retrieved": "2026-10-07",
+	"terminology": {
+		"Tema": "unidad del curso (equivale a 'unidad' en el esquema de OpenSIM)",
+		"Subtema": "tema dentro de la unidad (subtopicsJson)",
+		"calificacion": "AC acreditó / NA no acreditó / NP no presentó"
+	},
+	"coverage": {
+		"subjects": 7,
+		"units": 32,
+		"subtopics": 223,
+		"limit": "el selector sólo ofrece las materias del periodo en curso (semestre 7)"
+	},
+	"subjects": [
+		{
+			"code": "SCC-1019",
+			"name": "PROGRAMACION LOGICA Y FUNCIONAL",
+			"group": "B",
+			"teacher": "DOC-079",
+			"diagnosticExam": "NA",
+			"period": "AGOSTO-DICIEMBRE/2026",
+			"units": [
+				{
+					"unitNumber": 1,
+					"title": "CONCEPTOS FUNDAMENTALES.",
+					"evalFrom": "14/09/2026",
+					"evalTo": "18/09/2026",
+					"subtopics": [
+						{
+							"index": "1.1",
+							"title": "1.1. DIFERENTES ESTILOS DE PROGRAMACIÓN.",
+							"evalFrom": "24/08/2026",
+							"evalTo": "28/08/2026"
+						},
+						{
+							"index": "1.2",
+							"title": "1.2.ANALIZANDO DIFERENTES DE ESTILOS DE PROGRAMACIÓN",
+							"evalFrom": "24/08/2026",
+							"evalTo": "28/08/2026"
+						},
+						{
+							"index": "1.3",
+							"title": "1.2.1 EVALUACIÓN DE EXPRESIONES.",
+							"evalFrom": "31/08/2026",
+							"evalTo": "04/09/2026"
+						},
+						{
+							"index": "1.4",
+							"title": "1.2.2 TIPOS DE DATOS.",
+							"evalFrom": "31/08/2026",
+							"evalTo": "04/09/2026"
+						},
+						{
+							"index": "1.5",
+							"title": "1.2.3 DISCIPLINA TIPOS.",
+							"evalFrom": "07/09/2026",
+							"evalTo": "11/09/2026"
+						},
+						{
+							"index": "1.6",
+							"title": "1.2.4 FUNCIONES.",
+							"evalFrom": "07/09/2026",
+							"evalTo": "11/09/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"DEBATES/DISCUSIÓN",
+						"INVESTIGACIÓN DOCUMENTAL"
+					],
+					"criteria": [
+						"EVALUACIÓN ESCRITA",
+						"ELABORACIÓN-PRESENTACIÓN PROYECTO",
+						"ASISTENCIA A CLASES"
+					]
+				},
+				{
+					"unitNumber": 2,
+					"title": "MODELO DE PROGRAMACIÓN FUNCIONAL.",
+					"evalFrom": "12/10/2026",
+					"evalTo": "16/10/2026",
+					"subtopics": [
+						{
+							"index": "2.1",
+							"title": "2.1 INTRODUCCIÓN AL MODELO DE PROGRAMACIÓN FUNCIONAL.",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						},
+						{
+							"index": "2.2",
+							"title": "2.1. EL TIPO DE DATOS.",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						},
+						{
+							"index": "2.3",
+							"title": "2.2. FUNCIONES.",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						},
+						{
+							"index": "2.4",
+							"title": "2.3. INTERVALOS.",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "2.5",
+							"title": "2.4. OPERADORES.",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "2.6",
+							"title": "2.5. APLICACIONES DE LAS LISTAS.",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "2.7",
+							"title": "2.6. ÁRBOLES.",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "2.8",
+							"title": "2.7. EVALUACIÓN PEREZOSA.",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						}
+					],
+					"instruments": [
+						"PRACTICAS DE LABORATORIO",
+						"CÁTEDRA DOCENTE",
+						"DEBATES/DISCUSIÓN"
+					],
+					"criteria": [
+						"EVALUACIÓN TEÓRICO-PRÁCTICA",
+						"PRÁCTICAS EN LABORATORIO",
+						"ELABORACIÓN-PRESENTACIÓN PROYECTO"
+					]
+				},
+				{
+					"unitNumber": 3,
+					"title": "PROGRAMACIÓN LÓGICA.",
+					"evalFrom": "09/11/2026",
+					"evalTo": "13/11/2026",
+					"subtopics": [
+						{
+							"index": "3.1",
+							"title": "3.1. REPASO DE LA LÓGICA DE PRIMER ORDEN.",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "3.2",
+							"title": "3.2. UNIFICACIÓN Y RESOLUCIÓN.",
+							"evalFrom": "26/10/2026",
+							"evalTo": "30/10/2026"
+						},
+						{
+							"index": "3.3",
+							"title": "3.3. CLÁUSULAS DE HORN, RESOLUCIÓN SLD.",
+							"evalFrom": "26/10/2026",
+							"evalTo": "30/10/2026"
+						},
+						{
+							"index": "3.4",
+							"title": "3.4. PROGRAMACIÓN LÓGICA CON CLÁUSULAS DE HORN.",
+							"evalFrom": "02/11/2026",
+							"evalTo": "06/11/2026"
+						}
+					],
+					"instruments": [
+						"PRACTICAS DE LABORATORIO",
+						"CÁTEDRA DOCENTE",
+						"PROYECTO"
+					],
+					"criteria": [
+						"EVALUACIÓN TEÓRICO-PRÁCTICA",
+						"SOLUCIÓN DE EJERCICIOS EXTRA CLASE",
+						"PRÁCTICAS EN LABORATORIO"
+					]
+				},
+				{
+					"unitNumber": 4,
+					"title": "MODELO DE PROGRAMACIÓN LÓGICA.",
+					"evalFrom": "07/12/2026",
+					"evalTo": "11/12/2026",
+					"subtopics": [
+						{
+							"index": "4.1",
+							"title": "4.1 INTRODUCCIÓN AL MODELO DE PROGRAMACIÓN LÓGICA.",
+							"evalFrom": "16/11/2026",
+							"evalTo": "20/11/2026"
+						},
+						{
+							"index": "4.2",
+							"title": "4.2. SEMÁNTICA DE LOS PROGRAMAS LÓGICOS.",
+							"evalFrom": "16/11/2026",
+							"evalTo": "20/11/2026"
+						},
+						{
+							"index": "4.3",
+							"title": "4.3. REPRESENTACIÓN CLAUSADA DEL CONOCIMIENTO.",
+							"evalFrom": "16/11/2026",
+							"evalTo": "20/11/2026"
+						},
+						{
+							"index": "4.4",
+							"title": "4.4. CONSULTA DE UNA BASE DE CLÁUSULAS.",
+							"evalFrom": "23/11/2026",
+							"evalTo": "27/11/2026"
+						},
+						{
+							"index": "4.5",
+							"title": "4.5. ESPACIOS DE BÚSQUEDA.",
+							"evalFrom": "23/11/2026",
+							"evalTo": "27/11/2026"
+						},
+						{
+							"index": "4.6",
+							"title": "4.6. PROGRAMACIÓN LÓGICA CON NÚMEROS, LISTAS Y ÁRBOLES.",
+							"evalFrom": "23/11/2026",
+							"evalTo": "27/11/2026"
+						},
+						{
+							"index": "4.7",
+							"title": "4.7. CONTROL DE BÚSQUEDA EN PROGRAMAS LÓGICOS",
+							"evalFrom": "30/11/2026",
+							"evalTo": "04/12/2026"
+						},
+						{
+							"index": "4.8",
+							"title": "4.8. MANIPULACIÓN DE TÉRMINOS.",
+							"evalFrom": "30/11/2026",
+							"evalTo": "04/12/2026"
+						},
+						{
+							"index": "4.9",
+							"title": "4.9 PREDICADOS MITOLÓGICOS.",
+							"evalFrom": "30/11/2026",
+							"evalTo": "04/12/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"PRACTICAS DE LABORATORIO",
+						"PROYECTO"
+					],
+					"criteria": [
+						"PRÁCTICAS EN LABORATORIO",
+						"EVALUACIÓN TEÓRICO-PRÁCTICA",
+						"DOCUMENTO MULTIMEDIA/USO DE SOFTWARE"
+					]
+				}
+			]
+		},
+		{
+			"code": "SCD-1003",
+			"name": "ARQUITECTURA DE COMPUTADORAS",
+			"group": "C",
+			"teacher": "DOC-042",
+			"diagnosticExam": "",
+			"period": "AGOSTO-DICIEMBRE/2026",
+			"units": [
+				{
+					"unitNumber": 1,
+					"title": "ARQUITECTURAS DE CÓMPUTO",
+					"evalFrom": "28/09/2026",
+					"evalTo": "02/10/2026",
+					"subtopics": [
+						{
+							"index": "1.1",
+							"title": "MODELOS DE ARQUITECTURAS DE CÓMPUTO",
+							"evalFrom": "24/08/2026",
+							"evalTo": "28/08/2026"
+						},
+						{
+							"index": "1.2",
+							"title": "ANÁLISIS DE LOS COMPONENTES.",
+							"evalFrom": "31/08/2026",
+							"evalTo": "04/09/2026"
+						},
+						{
+							"index": "1.3",
+							"title": "MEMORIA.",
+							"evalFrom": "07/09/2026",
+							"evalTo": "11/09/2026"
+						},
+						{
+							"index": "1.4",
+							"title": "MANEJO DE LA ENTRADA/SALIDA.",
+							"evalFrom": "14/09/2026",
+							"evalTo": "18/09/2026"
+						},
+						{
+							"index": "1.5",
+							"title": "BUSES",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"PRACTICAS DE LABORATORIO",
+						"RESOLUCIÓN DE EJERCICIOS"
+					],
+					"criteria": [
+						"EVALUACIÓN PRÁCTICA",
+						"PRÁCTICAS EN LABORATORIO",
+						"SOLUCIÓN DE EJERCICIOS EXTRA CLASE"
+					]
+				},
+				{
+					"unitNumber": 2,
+					"title": "ESTRUCTURA Y FUNCIONAMIENTO DE LA CPU",
+					"evalFrom": "26/10/2026",
+					"evalTo": "30/10/2026",
+					"subtopics": [
+						{
+							"index": "2.1",
+							"title": "ORGANIZACIÓN DEL PROCESADOR.",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "2.2",
+							"title": "ESTRUCTURA DE REGISTROS.",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "2.3",
+							"title": "EL CICLO DE INSTRUCCIÓN.",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"PRACTICAS DE LABORATORIO",
+						"USO DE MULTIMEDIA/SOFTWARE"
+					],
+					"criteria": [
+						"EVALUACIÓN TEÓRICO-PRÁCTICA",
+						"PRÁCTICAS EN LABORATORIO",
+						"SOLUCIÓN DE EJERCICIOS EXTRA CLASE"
+					]
+				},
+				{
+					"unitNumber": 3,
+					"title": "SELECCIÓN DE COMPONENTES PARA ENSAMBLE DE EQUIPO DE CÓMPUTO.",
+					"evalFrom": "23/11/2026",
+					"evalTo": "27/11/2026",
+					"subtopics": [
+						{
+							"index": "3.1",
+							"title": "CHIP SET.",
+							"evalFrom": "26/10/2026",
+							"evalTo": "30/10/2026"
+						},
+						{
+							"index": "3.2",
+							"title": "APLICACIONES.",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "3.3",
+							"title": "AMBIENTES DE SERVICIO.",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"PRACTICAS DE LABORATORIO",
+						"USO DE MULTIMEDIA/SOFTWARE"
+					],
+					"criteria": [
+						"EVALUACIÓN TEÓRICO-PRÁCTICA",
+						"PRÁCTICAS EN LABORATORIO",
+						"SOLUCIÓN DE EJERCICIOS EXTRA CLASE"
+					]
+				},
+				{
+					"unitNumber": 4,
+					"title": "PROCESAMIENTO PARALELO",
+					"evalFrom": "07/12/2026",
+					"evalTo": "11/12/2026",
+					"subtopics": [
+						{
+							"index": "4.1",
+							"title": "TIPOS DE PROCESAMIENTO PARALELO",
+							"evalFrom": "23/11/2026",
+							"evalTo": "27/11/2026"
+						},
+						{
+							"index": "4.2",
+							"title": "TAXONIMIA DE FLINT",
+							"evalFrom": "30/11/2026",
+							"evalTo": "04/12/2026"
+						},
+						{
+							"index": "4.3",
+							"title": "APLICACIONES DEL PROCESAMIENTO PARALELO",
+							"evalFrom": "07/12/2026",
+							"evalTo": "11/12/2026"
+						}
+					],
+					"instruments": [
+						"INVESTIGACIÓN DOCUMENTAL",
+						"PRACTICAS DE LABORATORIO",
+						"PROYECTO"
+					],
+					"criteria": [
+						"EXPOSICIÓN DE TEMAS",
+						"PARTICIPACIÓN EN CLASE",
+						"EVALUACIÓN ESCRITA"
+					]
+				}
+			]
+		},
+		{
+			"code": "SCC-1007",
+			"name": "FUNDAMENTOS DE INGENIERIA DE SOFTWARE",
+			"group": "B",
+			"teacher": "DOC-102",
+			"diagnosticExam": "",
+			"period": "AGOSTO-DICIEMBRE/2026",
+			"units": [
+				{
+					"unitNumber": 1,
+					"title": "FUNDAMENTOS DE INGENIERÍA DE SOFTWARE",
+					"evalFrom": "14/09/2026",
+					"evalTo": "18/09/2026",
+					"subtopics": [
+						{
+							"index": "1.1",
+							"title": "1.1. CONCEPTOS BÁSICOS",
+							"evalFrom": "24/08/2026",
+							"evalTo": "28/08/2026"
+						},
+						{
+							"index": "1.2",
+							"title": "1.2. FASES DE LA INGENIERÍA DE SOFTWARE.",
+							"evalFrom": "24/08/2026",
+							"evalTo": "28/08/2026"
+						},
+						{
+							"index": "1.3",
+							"title": "1.3 METODOLOGÍAS DE DESARROLLO DE SOFTWARE",
+							"evalFrom": "31/08/2026",
+							"evalTo": "04/09/2026"
+						},
+						{
+							"index": "1.4",
+							"title": "1.3.1 CLÁSICAS",
+							"evalFrom": "31/08/2026",
+							"evalTo": "04/09/2026"
+						},
+						{
+							"index": "1.5",
+							"title": "1.3.2 AGILES",
+							"evalFrom": "31/08/2026",
+							"evalTo": "04/09/2026"
+						},
+						{
+							"index": "1.6",
+							"title": "1.3.3 OTRAS FILOSOFÍAS",
+							"evalFrom": "07/09/2026",
+							"evalTo": "11/09/2026"
+						},
+						{
+							"index": "1.7",
+							"title": "1.4. IMPORTANCIA DE LAS HERRAMIENTAS CASE EN LA INGENIERÍA DE SOFTWARE.",
+							"evalFrom": "07/09/2026",
+							"evalTo": "11/09/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"CÁTEDRA DOCENTE",
+						"DEBATES/DISCUSIÓN"
+					],
+					"criteria": [
+						"EVALUACIÓN ESCRITA",
+						"PARTICIPACIÓN EN CLASE",
+						"PARTICIPACIÓN EN CLASE"
+					]
+				},
+				{
+					"unitNumber": 2,
+					"title": "EL MODELO DE NEGOCIO",
+					"evalFrom": "28/09/2026",
+					"evalTo": "02/10/2026",
+					"subtopics": [
+						{
+							"index": "2.1",
+							"title": "2.1 DEFINICIÓN",
+							"evalFrom": "07/09/2026",
+							"evalTo": "11/09/2026"
+						},
+						{
+							"index": "2.2",
+							"title": "2.2 COMPONENTES",
+							"evalFrom": "14/09/2026",
+							"evalTo": "18/09/2026"
+						},
+						{
+							"index": "2.3",
+							"title": "2.3 ESTÁNDARES",
+							"evalFrom": "14/09/2026",
+							"evalTo": "18/09/2026"
+						},
+						{
+							"index": "2.4",
+							"title": "2.4 DIAGRAMAS",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"USO DE MULTIMEDIA/SOFTWARE",
+						"RESOLUCIÓN DE EJERCICIOS"
+					],
+					"criteria": [
+						"EVALUACIÓN ESCRITA",
+						"SOLUCIÓN DE EJERCICIOS EXTRA CLASE",
+						"PARTICIPACIÓN EN CLASE"
+					]
+				},
+				{
+					"unitNumber": 3,
+					"title": "INGENIERÍA DE REQUISITOS",
+					"evalFrom": "26/10/2026",
+					"evalTo": "30/10/2026",
+					"subtopics": [
+						{
+							"index": "3.1",
+							"title": "3.1 CARACTERÍSTICAS DE LOS REQUISITOS.",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						},
+						{
+							"index": "3.2",
+							"title": "3.2 TIPOS DE REQUISITOS.",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "3.3",
+							"title": "3.2.1 FUNCIONALES",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "3.4",
+							"title": "3.2.2 NO FUNCIONALES",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "3.5",
+							"title": "3.2.3 DE DOMINIO",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "3.6",
+							"title": "3.3 TAREAS Y TÉCNICAS DE LA INGENIERÍA DE REQUISITOS.",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "3.7",
+							"title": "3.4 OBTENCIÓN DE REQUISITOS",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "3.8",
+							"title": "3.4.1 TÉCNICAS DE RECOPILACIÓN DE INFORMACIÓN.",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "3.9",
+							"title": "3.4.2 REPRESENTACIÓN DE REQUISITOS.",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "3.10",
+							"title": "3.5 HERRAMIENTAS CASE PARA LA INGENIERÍA DE REQUISITOS.",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "3.11",
+							"title": "3.6 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE.",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"USO DE MULTIMEDIA/SOFTWARE",
+						"DEBATES/DISCUSIÓN"
+					],
+					"criteria": [
+						"EVALUACIÓN ESCRITA",
+						"SOLUCIÓN DE EJERCICIOS EXTRA CLASE",
+						"DOCUMENTO MULTIMEDIA/USO DE SOFTWARE"
+					]
+				},
+				{
+					"unitNumber": 4,
+					"title": "MODELO DE ANÁLISIS",
+					"evalFrom": "09/11/2026",
+					"evalTo": "13/11/2026",
+					"subtopics": [
+						{
+							"index": "4.1",
+							"title": "4.1. CLASES",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "4.2",
+							"title": "4.2. OBJETOS",
+							"evalFrom": "26/10/2026",
+							"evalTo": "30/10/2026"
+						},
+						{
+							"index": "4.3",
+							"title": "4.3. MODELO DE REQUISITOS",
+							"evalFrom": "26/10/2026",
+							"evalTo": "30/10/2026"
+						},
+						{
+							"index": "4.4",
+							"title": "4.4. MODELO DE CASOS DE USO",
+							"evalFrom": "02/11/2026",
+							"evalTo": "06/11/2026"
+						},
+						{
+							"index": "4.5",
+							"title": "4.5. MODELO DE DOMINIO",
+							"evalFrom": "02/11/2026",
+							"evalTo": "06/11/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"RESOLUCIÓN DE EJERCICIOS",
+						"USO DE MULTIMEDIA/SOFTWARE"
+					],
+					"criteria": [
+						"EVALUACIÓN TEÓRICO-PRÁCTICA",
+						"PARTICIPACIÓN EN CLASE",
+						"SOLUCIÓN DE EJERCICIOS EXTRA CLASE"
+					]
+				},
+				{
+					"unitNumber": 5,
+					"title": "CALIDAD DE SOFTWARE",
+					"evalFrom": "07/12/2026",
+					"evalTo": "11/12/2026",
+					"subtopics": [
+						{
+							"index": "5.1",
+							"title": "5.1 DEFINICIÓN DE CALIDAD.",
+							"evalFrom": "02/11/2026",
+							"evalTo": "06/11/2026"
+						},
+						{
+							"index": "5.2",
+							"title": "5.2 IMPORTANCIA DE LA CALIDAD.",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "5.3",
+							"title": "5.3 FACTORES DE CALIDAD.",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "5.4",
+							"title": "5.4 ASEGURAMIENTO DE LA CALIDAD.",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "5.5",
+							"title": "5.5 ESTÁNDARES Y MÉTRICAS DE CALIDAD.",
+							"evalFrom": "16/11/2026",
+							"evalTo": "20/11/2026"
+						},
+						{
+							"index": "5.6",
+							"title": "5.6 MODELOS DE MADUREZ.",
+							"evalFrom": "16/11/2026",
+							"evalTo": "20/11/2026"
+						},
+						{
+							"index": "5.7",
+							"title": "5.6.1 ENFOQUE DE PROCESOS.",
+							"evalFrom": "23/11/2026",
+							"evalTo": "27/11/2026"
+						},
+						{
+							"index": "5.8",
+							"title": "5.6.2 PSP Y TSP.",
+							"evalFrom": "23/11/2026",
+							"evalTo": "27/11/2026"
+						},
+						{
+							"index": "5.9",
+							"title": "5.6.3 SPICE",
+							"evalFrom": "30/11/2026",
+							"evalTo": "04/12/2026"
+						},
+						{
+							"index": "5.10",
+							"title": "5.6.4 CMMI.",
+							"evalFrom": "30/11/2026",
+							"evalTo": "04/12/2026"
+						},
+						{
+							"index": "5.11",
+							"title": "5.6.5 MOPROSOFT.",
+							"evalFrom": "30/11/2026",
+							"evalTo": "04/12/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"INVESTIGACIÓN DOCUMENTAL",
+						"DEBATES/DISCUSIÓN"
+					],
+					"criteria": [
+						"EVALUACIÓN ESCRITA",
+						"PARTICIPACIÓN EN CLASE",
+						"PARTICIPACIÓN EN CLASE"
+					]
+				}
+			]
+		},
+		{
+			"code": "SCA-1025",
+			"name": "TALLER DE BASE DE DATOS",
+			"group": "A",
+			"teacher": "DOC-024",
+			"diagnosticExam": "",
+			"period": "AGOSTO-DICIEMBRE/2026",
+			"units": [
+				{
+					"unitNumber": 1,
+					"title": "LENGUAJE DE DEFINICIÓN DE DATOS",
+					"evalFrom": "07/09/2026",
+					"evalTo": "11/09/2026",
+					"subtopics": [
+						{
+							"index": "1.1",
+							"title": "1.1 INSTALACIÓN DE UN SGBD",
+							"evalFrom": "24/08/2026",
+							"evalTo": "28/08/2026"
+						},
+						{
+							"index": "1.2",
+							"title": "1.2 CREACIÓN DEL ESQUEMA DE LA BASE DE DATOS A. MODIFICACIÓN DEL ESQUEMA DE LA BASE DE DATOS. B. APLICACIÓN DE CONSTRAINTS",
+							"evalFrom": "07/09/2026",
+							"evalTo": "11/09/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"USO DE MULTIMEDIA/SOFTWARE",
+						"PRACTICAS DE LABORATORIO"
+					],
+					"criteria": [
+						"PRÁCTICAS EN LABORATORIO",
+						"DOCUMENTO MULTIMEDIA/USO DE SOFTWARE",
+						"EVALUACIÓN PRÁCTICA"
+					]
+				},
+				{
+					"unitNumber": 2,
+					"title": "LENGUAJE DE MANIPULACIÓN DE DATOS",
+					"evalFrom": "28/09/2026",
+					"evalTo": "02/10/2026",
+					"subtopics": [
+						{
+							"index": "2.1",
+							"title": "2.1 INSERCIÓN, ELIMINACIÓN Y MODIFICACIÓN DE REGISTROS",
+							"evalFrom": "14/09/2026",
+							"evalTo": "18/09/2026"
+						},
+						{
+							"index": "2.2",
+							"title": "2.2 CONSULTAS",
+							"evalFrom": "14/09/2026",
+							"evalTo": "18/09/2026"
+						},
+						{
+							"index": "2.3",
+							"title": "2.3 FUNCIONES, CONVERSIÓN, AGRUPAMIENTO, ORDENAMIENTO",
+							"evalFrom": "14/09/2026",
+							"evalTo": "18/09/2026"
+						},
+						{
+							"index": "2.4",
+							"title": "2.4 JOINS",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						},
+						{
+							"index": "2.5",
+							"title": "2.5 SUBCONSULTAS",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						},
+						{
+							"index": "2.6",
+							"title": "2.6 OPERADORES SET",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "2.7",
+							"title": "2.7 VISTAS",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"USO DE MULTIMEDIA/SOFTWARE",
+						"RESOLUCIÓN DE EJERCICIOS"
+					],
+					"criteria": [
+						"DOCUMENTO MULTIMEDIA/USO DE SOFTWARE",
+						"PRÁCTICAS EN LABORATORIO",
+						"EVALUACIÓN PRÁCTICA"
+					]
+				},
+				{
+					"unitNumber": 3,
+					"title": "CONTROL DE ACCESO",
+					"evalFrom": "12/10/2026",
+					"evalTo": "16/10/2026",
+					"subtopics": [
+						{
+							"index": "3.1",
+							"title": "3.1 TIPOS DE USUARIO",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "3.2",
+							"title": "3.2 CREACIÓN DE USUARIOS",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "3.3",
+							"title": "3.3 PRIVILEGIOS A USUARIOS",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "3.4",
+							"title": "3.4 ROLES",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"USO DE MULTIMEDIA/SOFTWARE",
+						"PRACTICAS DE LABORATORIO"
+					],
+					"criteria": [
+						"DOCUMENTO MULTIMEDIA/USO DE SOFTWARE",
+						"EVALUACIÓN PRÁCTICA",
+						"PRÁCTICAS EN LABORATORIO"
+					]
+				},
+				{
+					"unitNumber": 4,
+					"title": "CONCURRENCIA",
+					"evalFrom": "19/10/2026",
+					"evalTo": "23/10/2026",
+					"subtopics": [
+						{
+							"index": "4.1",
+							"title": "4.1 CONCEPTOS",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "4.2",
+							"title": "4.2 PROPIEDADES DE LAS TRANSACCIONES",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "4.3",
+							"title": "4.3 GRADOS DE CONSISTENCIA",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "4.4",
+							"title": "4.4 NIVELES DE AISLAMIENTO",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "4.5",
+							"title": "4.5 COMMIT Y ROLLBACK",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						}
+					],
+					"instruments": [
+						"USO DE MULTIMEDIA/SOFTWARE",
+						"PRACTICAS DE LABORATORIO",
+						"CÁTEDRA DOCENTE"
+					],
+					"criteria": [
+						"PRÁCTICAS EN LABORATORIO",
+						"EVALUACIÓN PRÁCTICA",
+						"PRÁCTICAS EN LABORATORIO"
+					]
+				},
+				{
+					"unitNumber": 5,
+					"title": "SQL PROCEDURAL",
+					"evalFrom": "23/11/2026",
+					"evalTo": "27/11/2026",
+					"subtopics": [
+						{
+							"index": "5.1",
+							"title": "5.1 STORED PROCEDURES",
+							"evalFrom": "26/10/2026",
+							"evalTo": "30/10/2026"
+						},
+						{
+							"index": "5.2",
+							"title": "5.2 FUNCTIONS",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "5.3",
+							"title": "5.3 TRIGGERS",
+							"evalFrom": "23/11/2026",
+							"evalTo": "27/11/2026"
+						}
+					],
+					"instruments": [
+						"USO DE MULTIMEDIA/SOFTWARE",
+						"CÁTEDRA DOCENTE",
+						"PRACTICAS DE LABORATORIO"
+					],
+					"criteria": [
+						"DOCUMENTO MULTIMEDIA/USO DE SOFTWARE",
+						"EVALUACIÓN PRÁCTICA",
+						"PRÁCTICAS EN LABORATORIO"
+					]
+				},
+				{
+					"unitNumber": 6,
+					"title": "CONECTIVIDAD DE BASES DE DATOS",
+					"evalFrom": "07/12/2026",
+					"evalTo": "11/12/2026",
+					"subtopics": [
+						{
+							"index": "6.1",
+							"title": "6.1 ODBC, ADO.NET, JDBC",
+							"evalFrom": "30/11/2026",
+							"evalTo": "04/12/2026"
+						},
+						{
+							"index": "6.2",
+							"title": "6.2 CONECTIVIDAD DESDE UN LENGUAJE HUÉSPED O EN DISPOSITIVOS MÓVILES",
+							"evalFrom": "07/12/2026",
+							"evalTo": "11/12/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"USO DE MULTIMEDIA/SOFTWARE",
+						"PRACTICAS DE LABORATORIO"
+					],
+					"criteria": [
+						"DOCUMENTO MULTIMEDIA/USO DE SOFTWARE",
+						"EVALUACIÓN PRÁCTICA",
+						"PRÁCTICAS EN LABORATORIO"
+					]
+				}
+			]
+		},
+		{
+			"code": "SCD-1016",
+			"name": "LENGUAJES Y AUTOMATAS II",
+			"group": "A",
+			"teacher": "DOC-110",
+			"diagnosticExam": "AC",
+			"period": "AGOSTO-DICIEMBRE/2026",
+			"units": [
+				{
+					"unitNumber": 1,
+					"title": "ANÁLISIS SEMÁNTICO.",
+					"evalFrom": "28/09/2026",
+					"evalTo": "02/10/2026",
+					"subtopics": [
+						{
+							"index": "1.1",
+							"title": "1.1 ÁRBOLES DE EXPRESIONES.",
+							"evalFrom": "24/08/2026",
+							"evalTo": "28/08/2026"
+						},
+						{
+							"index": "1.2",
+							"title": "1.2 ACCIONES SEMÁNTICAS DE UN ANALIZADOR SINTÁCTICO",
+							"evalFrom": "31/08/2026",
+							"evalTo": "04/09/2026"
+						},
+						{
+							"index": "1.3",
+							"title": "1.3 COMPROBACIONES DE TIPOS EN EXPRE",
+							"evalFrom": "31/08/2026",
+							"evalTo": "04/09/2026"
+						},
+						{
+							"index": "1.4",
+							"title": "1.4 PILA SEMÁNTICA EN UN ANALIZADOR SINTÁCTICO.",
+							"evalFrom": "07/09/2026",
+							"evalTo": "11/09/2026"
+						},
+						{
+							"index": "1.5",
+							"title": "1.5 ESQUEMA DE TRADUCCIÓN.",
+							"evalFrom": "07/09/2026",
+							"evalTo": "11/09/2026"
+						},
+						{
+							"index": "1.6",
+							"title": "1.6 GENERACIÓN DE LA TABLA DE SÍMBOLO Y TABLA DE DIRECCIONES.",
+							"evalFrom": "14/09/2026",
+							"evalTo": "18/09/2026"
+						},
+						{
+							"index": "1.7",
+							"title": "1.7 MANEJO DE ERRORES SEMÁNTICOS.",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						}
+					],
+					"instruments": [
+						"PROYECTO",
+						"PRACTICAS DE LABORATORIO",
+						"CÁTEDRA DOCENTE"
+					],
+					"criteria": [
+						"ELABORACIÓN-PRESENTACIÓN PROYECTO",
+						"EVALUACIÓN PRÁCTICA",
+						"EVALUACIÓN ESCRITA"
+					]
+				},
+				{
+					"unitNumber": 2,
+					"title": "GENERACIÓN DE CÓDIGO INTERMEDIO.",
+					"evalFrom": "19/10/2026",
+					"evalTo": "23/10/2026",
+					"subtopics": [
+						{
+							"index": "2.1",
+							"title": "2.1 NOTACIONES.",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "2.2",
+							"title": "2.1.1 PREFIJA.",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "2.3",
+							"title": "2.1.2 INFIJA.",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "2.4",
+							"title": "2.2.3 POSTFIJA.",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "2.5",
+							"title": "2.2 REPRESENTACIONES DE CÓDIGO.INTERMEDIO.",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "2.6",
+							"title": "2.2.1 NOTACIÓN POLACA.",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "2.7",
+							"title": "2.2.2 CÓDIGO P.",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "2.8",
+							"title": "2.2.3 TRIPLOS.",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "2.9",
+							"title": "2.2.4 CUÁDRUPLOS.",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "2.10",
+							"title": "2.3 ESQUEMA DE GENERACIÓN.",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "2.11",
+							"title": "2.3.1 VARIABLES Y CONSTANTES.",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "2.12",
+							"title": "2.3.2 EXPRESIONES.",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "2.13",
+							"title": "2.3.3 INSTRUCCIÓN DE ASIGNACIÓN.",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "2.14",
+							"title": "2.3.4 INSTRUCCIONES DE CONTROL.",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "2.15",
+							"title": "2.3.5 FUNCIONES.",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "2.16",
+							"title": "2.3.6 ESTRUCTURAS.",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						}
+					],
+					"instruments": [
+						"PROYECTO",
+						"CÁTEDRA DOCENTE",
+						"PRACTICAS DE LABORATORIO"
+					],
+					"criteria": [
+						"ELABORACIÓN-PRESENTACIÓN PROYECTO",
+						"EVALUACIÓN ESCRITA",
+						"EVALUACIÓN PRÁCTICA"
+					]
+				},
+				{
+					"unitNumber": 3,
+					"title": "OPTIMIZACIÓN.",
+					"evalFrom": "09/11/2026",
+					"evalTo": "13/11/2026",
+					"subtopics": [
+						{
+							"index": "3.1",
+							"title": "3.1 TIPOS DE OPTIMIZACIÓN.",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "3.2",
+							"title": "3.1.1 LOCALES.",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "3.3",
+							"title": "3.1.2 CICLOS.",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "3.4",
+							"title": "3.1.3 GLOBALES.",
+							"evalFrom": "26/10/2026",
+							"evalTo": "30/10/2026"
+						},
+						{
+							"index": "3.5",
+							"title": "3.1.4 DE MIRILLA.",
+							"evalFrom": "26/10/2026",
+							"evalTo": "30/10/2026"
+						},
+						{
+							"index": "3.6",
+							"title": "3.2 COSTOS.",
+							"evalFrom": "02/11/2026",
+							"evalTo": "06/11/2026"
+						},
+						{
+							"index": "3.7",
+							"title": "3.2.1 COSTO DE EJECUCIÓN. (MEMORIA, REGISTROS, PILAS).",
+							"evalFrom": "02/11/2026",
+							"evalTo": "06/11/2026"
+						},
+						{
+							"index": "3.8",
+							"title": "3.2.2 CRITERIOS PARA MEJORAR EL CÓDIGO.",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "3.9",
+							"title": "3.2.3 HERRAMIENTAS PARA EL ANÁLISIS DEL FLUJO DE DATOS.",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						}
+					],
+					"instruments": [
+						"PROYECTO",
+						"CÁTEDRA DOCENTE",
+						"PRACTICAS DE LABORATORIO"
+					],
+					"criteria": [
+						"ELABORACIÓN-PRESENTACIÓN PROYECTO",
+						"EVALUACIÓN ESCRITA",
+						"EVALUACIÓN PRÁCTICA"
+					]
+				},
+				{
+					"unitNumber": 4,
+					"title": "GENERACIÓN DE CÓDIGO OBJETO.",
+					"evalFrom": "07/12/2026",
+					"evalTo": "11/12/2026",
+					"subtopics": [
+						{
+							"index": "4.1",
+							"title": "4.1 REGISTROS.",
+							"evalFrom": "16/11/2026",
+							"evalTo": "20/11/2026"
+						},
+						{
+							"index": "4.2",
+							"title": "4.2 LENGUAJE ENSAMBLADOR.",
+							"evalFrom": "23/11/2026",
+							"evalTo": "27/11/2026"
+						},
+						{
+							"index": "4.3",
+							"title": "4.3 LENGUAJE MÁQUINA.",
+							"evalFrom": "30/11/2026",
+							"evalTo": "04/12/2026"
+						},
+						{
+							"index": "4.4",
+							"title": "4.4 ADMINISTRACIÓN DE MEMORIA.",
+							"evalFrom": "07/12/2026",
+							"evalTo": "11/12/2026"
+						}
+					],
+					"instruments": [
+						"PROYECTO",
+						"CÁTEDRA DOCENTE",
+						"PRACTICAS DE LABORATORIO"
+					],
+					"criteria": [
+						"ELABORACIÓN-PRESENTACIÓN PROYECTO",
+						"EVALUACIÓN ESCRITA",
+						"EVALUACIÓN PRÁCTICA"
+					]
+				}
+			]
+		},
+		{
+			"code": "AEC-1034",
+			"name": "FUNDAMENTOS DE TELECOMUNICACIONES",
+			"group": "C",
+			"teacher": "DOC-099",
+			"diagnosticExam": "",
+			"period": "AGOSTO-DICIEMBRE/2026",
+			"units": [
+				{
+					"unitNumber": 1,
+					"title": "SISTEMA DE COMUNICACIÓN",
+					"evalFrom": "07/09/2026",
+					"evalTo": "11/09/2026",
+					"subtopics": [
+						{
+							"index": "1.1",
+							"title": "1.1. IMPACTO DE LAS TELECOMUNICACIONES.",
+							"evalFrom": "24/08/2026",
+							"evalTo": "28/08/2026"
+						},
+						{
+							"index": "1.2",
+							"title": "1.2. COMPONENTES. EMISOR, RECEPTOR, MEDIOS, 1.2.1 CÓDIGOS Y PROTOCOLOS.",
+							"evalFrom": "24/08/2026",
+							"evalTo": "28/08/2026"
+						},
+						{
+							"index": "1.3",
+							"title": "1.3. SEÑALES Y CLASIFICACIÓN.",
+							"evalFrom": "24/08/2026",
+							"evalTo": "28/08/2026"
+						},
+						{
+							"index": "1.4",
+							"title": "1.3.1 ANALÓGICAS, DIGITALES, ELÉCTRICAS Y ÓPTICAS.",
+							"evalFrom": "31/08/2026",
+							"evalTo": "04/09/2026"
+						},
+						{
+							"index": "1.5",
+							"title": "1.4. MODELO MATEMÁTICO DE UNA SEÑAL.",
+							"evalFrom": "31/08/2026",
+							"evalTo": "04/09/2026"
+						},
+						{
+							"index": "1.6",
+							"title": "1.4.1 SERIE DE FOURIER.",
+							"evalFrom": "07/09/2026",
+							"evalTo": "11/09/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"USO DE MULTIMEDIA/SOFTWARE"
+					],
+					"criteria": [
+						"EVALUACIÓN ESCRITA"
+					]
+				},
+				{
+					"unitNumber": 2,
+					"title": "MEDIOS DE TRANSMISIÓN",
+					"evalFrom": "05/10/2026",
+					"evalTo": "09/10/2026",
+					"subtopics": [
+						{
+							"index": "2.1",
+							"title": "2.1 GUIADOS.",
+							"evalFrom": "07/09/2026",
+							"evalTo": "11/09/2026"
+						},
+						{
+							"index": "2.2",
+							"title": "2.1.1 PAR TRENZADO, COAXIAL Y FIBRA ÓPTICA.",
+							"evalFrom": "07/09/2026",
+							"evalTo": "11/09/2026"
+						},
+						{
+							"index": "2.3",
+							"title": "2.2 NO GUIADOS.",
+							"evalFrom": "14/09/2026",
+							"evalTo": "18/09/2026"
+						},
+						{
+							"index": "2.4",
+							"title": "2.2.1 RADIOFRECUENCIA, MICROONDAS, SATÉLITE E INFRARROJO.",
+							"evalFrom": "14/09/2026",
+							"evalTo": "18/09/2026"
+						},
+						{
+							"index": "2.5",
+							"title": "2.3 MÉTODOS PARA LA DETECCIÓN Y CORRECCIÓN DE ERRORES.",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						},
+						{
+							"index": "2.6",
+							"title": "2.3.1 VERIFICACIÓN DE REDUNDANCIA VERTICAL (VRC), VERIFICACIÓN DE REDUNDANCIA LONGITUDINAL (LRC) Y VERIFICACIÓN DE REDUNDANCIA CÍCLICA (CRC).",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						},
+						{
+							"index": "2.7",
+							"title": "2.4 CONTROL DE FLUJO.",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "2.8",
+							"title": "2.4.1 TIPOS: ASENTIMIENTO, VENTANAS DESLIZANTES. POR HARDWARE O SOFTWARE, DE LAZO ABIERTO O CERRADO.",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"USO DE MULTIMEDIA/SOFTWARE"
+					],
+					"criteria": [
+						"EVALUACIÓN ESCRITA"
+					]
+				},
+				{
+					"unitNumber": 3,
+					"title": "MODULACIÓN",
+					"evalFrom": "26/10/2026",
+					"evalTo": "30/10/2026",
+					"subtopics": [
+						{
+							"index": "3.1",
+							"title": "3.1 TÉCNICAS DE MODULACIÓN ANALÓGICA.",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "3.2",
+							"title": "3.1.1 MODULACIÓN EN AMPLITUD (AM) Y MODULACIÓN EN FRECUENCIA (FM).",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "3.3",
+							"title": "3.2 TÉCNICAS DE MODULACIÓN DIGITAL.",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "3.4",
+							"title": "3.2.1 MODULACIÓN POR DESPLAZAMIENTO DE AMPLITUD (ASK), MODULACIÓN POR DESPLAZAMIENTO DE FRECUENCIA (FSK), MODULACIÓN POR DESPLAZAMIENTO DE FASE (PSK) Y MODULACIÓN DE AMPLITUD EN CUADRATURA (QAM).",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "3.5",
+							"title": "3.3 CONVERSIÓN ANALÓGICO – DIGITAL:",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "3.6",
+							"title": "3.3.1 MUESTREO, CUANTIZACIÓN Y CODIFICACIÓN.",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "3.7",
+							"title": "3.4 CÓDIGOS DE LÍNEA.",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "3.8",
+							"title": "3.4.1 RZ, NRZ, NRZ-L, AMI, PSEUDOTERNARIA, MANCHESTER, MANCHESTER DIFERENCIAL, B8ZS, HDB3, ENTRE OTROS.",
+							"evalFrom": "26/10/2026",
+							"evalTo": "30/10/2026"
+						},
+						{
+							"index": "3.9",
+							"title": "3.5 MODEM, ESTÁNDARES Y PROTOCOLOS.",
+							"evalFrom": "26/10/2026",
+							"evalTo": "30/10/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"USO DE MULTIMEDIA/SOFTWARE",
+						"PRACTICAS DE LABORATORIO"
+					],
+					"criteria": [
+						"EVALUACIÓN ESCRITA"
+					]
+				},
+				{
+					"unitNumber": 4,
+					"title": "TÉCNICAS DE CONMUTACIÓN Y MULTIPLEXACIÓN",
+					"evalFrom": "16/11/2026",
+					"evalTo": "20/11/2026",
+					"subtopics": [
+						{
+							"index": "4.1",
+							"title": "4.1 CONMUTACIÓN.",
+							"evalFrom": "02/11/2026",
+							"evalTo": "06/11/2026"
+						},
+						{
+							"index": "4.2",
+							"title": "4.1.1 CONMUTACIÓN DE CIRCUITOS (RED TELEFÓNICA PÚBLICA).",
+							"evalFrom": "02/11/2026",
+							"evalTo": "06/11/2026"
+						},
+						{
+							"index": "4.3",
+							"title": "4.1.2 CONMUTACIÓN DE PAQUETES (X.25, FRAME RELAY).",
+							"evalFrom": "02/11/2026",
+							"evalTo": "06/11/2026"
+						},
+						{
+							"index": "4.4",
+							"title": "4.1.3 ENTRAMADO: STORE AND FORWARD.",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "4.5",
+							"title": "4.1.4 CELDAS: ATM.",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "4.6",
+							"title": "4.2 MULTIPLEXACIÓN.",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "4.7",
+							"title": "4.2.1 TDM DIVISIÓN DE TIEMPO.",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "4.8",
+							"title": "4.2.2 FDM DIVISIÓN DE FRECUENCIA.",
+							"evalFrom": "16/11/2026",
+							"evalTo": "20/11/2026"
+						},
+						{
+							"index": "4.9",
+							"title": "4.2.3 WDM DIVISIÓN DE LONGITUD DE ONDA.",
+							"evalFrom": "16/11/2026",
+							"evalTo": "20/11/2026"
+						},
+						{
+							"index": "4.10",
+							"title": "4.2.4 CDM DIVISIÓN DE CÓDIGO.",
+							"evalFrom": "16/11/2026",
+							"evalTo": "20/11/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"USO DE MULTIMEDIA/SOFTWARE",
+						"PRACTICAS DE LABORATORIO"
+					],
+					"criteria": [
+						"EVALUACIÓN PRÁCTICA"
+					]
+				},
+				{
+					"unitNumber": 5,
+					"title": "MODELOS Y DISPOSITIVOS DE COMUNICACIÓN",
+					"evalFrom": "07/12/2026",
+					"evalTo": "11/12/2026",
+					"subtopics": [
+						{
+							"index": "5.1",
+							"title": "5.1 INTRODUCCIÓN AL MODELO DE REFERENCIA OSI.",
+							"evalFrom": "23/11/2026",
+							"evalTo": "27/11/2026"
+						},
+						{
+							"index": "5.2",
+							"title": "5.2 PROTOCOLOS Y ESTÁNDARES.",
+							"evalFrom": "23/11/2026",
+							"evalTo": "27/11/2026"
+						},
+						{
+							"index": "5.3",
+							"title": "5.3 CARACTERÍSTICAS FUNCIONALES DE LOS DISPOSITIVOS.",
+							"evalFrom": "30/11/2026",
+							"evalTo": "04/12/2026"
+						},
+						{
+							"index": "5.4",
+							"title": "5.4 ESTÁNDARES DE INTERFACES.",
+							"evalFrom": "30/11/2026",
+							"evalTo": "04/12/2026"
+						},
+						{
+							"index": "5.5",
+							"title": "5.5 MECANISMOS DE DETECCIÓN Y CORRECCIÓN DE ERRORES.",
+							"evalFrom": "07/12/2026",
+							"evalTo": "11/12/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"USO DE MULTIMEDIA/SOFTWARE"
+					],
+					"criteria": [
+						"EVALUACIÓN ESCRITA"
+					]
+				}
+			]
+		},
+		{
+			"code": "SCA-1026",
+			"name": "TALLER DE SISTEMAS OPERATIVOS",
+			"group": "B",
+			"teacher": "DOC-047",
+			"diagnosticExam": "AC",
+			"period": "AGOSTO-DICIEMBRE/2026",
+			"units": [
+				{
+					"unitNumber": 1,
+					"title": "INTRODUCCIÓN A LOS SISTEMAS OPERATIVOS",
+					"evalFrom": "14/09/2026",
+					"evalTo": "18/09/2026",
+					"subtopics": [
+						{
+							"index": "1.1",
+							"title": "1.1.CLASIFICACIÓN Y ESTRUCTURAS GENÉRICAS DE LOS SISTEMAS OPERATIVAS VIGENTES",
+							"evalFrom": "24/08/2026",
+							"evalTo": "28/08/2026"
+						},
+						{
+							"index": "1.2",
+							"title": "1.2. PROCESOS Y MULTIPROGRAMACIÓN",
+							"evalFrom": "31/08/2026",
+							"evalTo": "04/09/2026"
+						},
+						{
+							"index": "1.3",
+							"title": "1.3. VIRTUALIZACIÓN",
+							"evalFrom": "31/08/2026",
+							"evalTo": "04/09/2026"
+						},
+						{
+							"index": "1.4",
+							"title": "1.3.1. COMPONENTES Y NIVELES DE VIRTUALIZACIÓN",
+							"evalFrom": "07/09/2026",
+							"evalTo": "11/09/2026"
+						},
+						{
+							"index": "1.5",
+							"title": "1.3.2. VPS (VIRTUAL PRIVATE SERVER)",
+							"evalFrom": "14/09/2026",
+							"evalTo": "18/09/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"PRACTICAS DE LABORATORIO",
+						"CÁTEDRA DOCENTE"
+					],
+					"criteria": [
+						"DOCUMENTO MULTIMEDIA/USO DE SOFTWARE",
+						"DOCUMENTO MULTIMEDIA/USO DE SOFTWARE",
+						"EVALUACIÓN PRÁCTICA"
+					]
+				},
+				{
+					"unitNumber": 2,
+					"title": "SISTEMAS OPERATIVOS PROPIETARIOS PARA SERVIDORES",
+					"evalFrom": "19/10/2026",
+					"evalTo": "23/10/2026",
+					"subtopics": [
+						{
+							"index": "2.1",
+							"title": "2.1. CARACTERÍSTICAS Y ANÁLISIS DE LOS SISTEMAS OPERATIVOS PROPIETARIOS",
+							"evalFrom": "14/09/2026",
+							"evalTo": "18/09/2026"
+						},
+						{
+							"index": "2.2",
+							"title": "2.2. REQUERIMIENTOS DE INSTALACIÓN",
+							"evalFrom": "14/09/2026",
+							"evalTo": "18/09/2026"
+						},
+						{
+							"index": "2.3",
+							"title": "2.3.CONFIGURACIÓN BÁSICA",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						},
+						{
+							"index": "2.4",
+							"title": "2.3.1. MÉTODOS DE INSTALACIÓN",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						},
+						{
+							"index": "2.5",
+							"title": "2.3.2. INSTALACIÓN DEL SISTEMA OPERATIVO",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						},
+						{
+							"index": "2.6",
+							"title": "2.3.3. CONFIGURACIÓN DEL SISTEMA Y ÁMBITO DEL SERVIDOR",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						},
+						{
+							"index": "2.7",
+							"title": "2.3.4. CONFIGURACIÓN DE SEGURIDAD BASE Y RED",
+							"evalFrom": "21/09/2026",
+							"evalTo": "25/09/2026"
+						},
+						{
+							"index": "2.8",
+							"title": "2.4. COMANDOS BÁSICOS Y APLICACIONES",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "2.9",
+							"title": "2.4.1. MANEJO DE ARCHIVOS Y DIRECTORIOS",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "2.10",
+							"title": "2.4.2. INSTALACIÓN Y CONFIGURACIÓN DE APLICACIONES",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "2.11",
+							"title": "2.5. ADMINISTRACIÓN DEL SISTEMA",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "2.12",
+							"title": "2.5.1. TIPOS DE RECURSOS",
+							"evalFrom": "28/09/2026",
+							"evalTo": "02/10/2026"
+						},
+						{
+							"index": "2.13",
+							"title": "2.5.2. ADMINISTRACIÓN Y MONITORIZACIÓN DE PROCESOS, RED, MEMORIA, SISTEMAS DE ARCHIVOS, SERVICIOS (IMPRESIÓN, ETC.), USUARIOS, GRUPOS Y PERMISOS.",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "2.14",
+							"title": "2.6. MEDICIÓN Y DESEMPEÑO DEL SISTEMA OPERATIVO",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "2.15",
+							"title": "2.7. SEGURIDAD E INTEGRIDAD",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "2.16",
+							"title": "2.7.1. PLANIFICACIÓN DE SEGURIDAD",
+							"evalFrom": "05/10/2026",
+							"evalTo": "09/10/2026"
+						},
+						{
+							"index": "2.17",
+							"title": "2.7.2. PLANIFICACIÓN Y EJECUCIÓN DE MANTENIMIENTO",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "2.18",
+							"title": "2.7.3. MECANISMOS DE RECUPERACIÓN ANTE FALLOS (FS, PROCESADORES, MEMORIA)",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						},
+						{
+							"index": "2.19",
+							"title": "2.8. NORMATIVIDAD Y POLÍTICAS DE USO",
+							"evalFrom": "12/10/2026",
+							"evalTo": "16/10/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"PROYECTO",
+						"CÁTEDRA DOCENTE"
+					],
+					"criteria": [
+						"PRÁCTICAS EN LABORATORIO",
+						"ELABORACIÓN-PRESENTACIÓN PROYECTO",
+						"ELABORACIÓN-PRESENTACIÓN PROYECTO"
+					]
+				},
+				{
+					"unitNumber": 3,
+					"title": "SISTEMAS OPERATIVOS DE SOFTWARE LIBRE PARA SERVIDORES",
+					"evalFrom": "16/11/2026",
+					"evalTo": "20/11/2026",
+					"subtopics": [
+						{
+							"index": "3.1",
+							"title": "3.1. CARACTERÍSTICAS Y ANÁLISIS DE LOS SISTEMAS OPERATIVOS PROPIETARIOS",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "3.2",
+							"title": "3.2. REQUERIMIENTOS DE INSTALACIÓN",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "3.3",
+							"title": "3.3.CONFIGURACIÓN BÁSICA",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "3.4",
+							"title": "3.3.1. MÉTODOS DE INSTALACIÓN",
+							"evalFrom": "19/10/2026",
+							"evalTo": "23/10/2026"
+						},
+						{
+							"index": "3.5",
+							"title": "3.3.2. INSTALACIÓN DEL SISTEMA OPERATIVO",
+							"evalFrom": "26/10/2026",
+							"evalTo": "30/10/2026"
+						},
+						{
+							"index": "3.6",
+							"title": "3.3.3. CONFIGURACIÓN DEL SISTEMA Y ÁMBITO DEL SERVIDOR",
+							"evalFrom": "26/10/2026",
+							"evalTo": "30/10/2026"
+						},
+						{
+							"index": "3.7",
+							"title": "3.3.4. CONFIGURACIÓN DE SEGURIDAD BASE Y RED",
+							"evalFrom": "26/10/2026",
+							"evalTo": "30/10/2026"
+						},
+						{
+							"index": "3.8",
+							"title": "3.4. COMANDOS BÁSICOS Y APLICACIONES",
+							"evalFrom": "26/10/2026",
+							"evalTo": "30/10/2026"
+						},
+						{
+							"index": "3.9",
+							"title": "3.4.1. MANEJO DE ARCHIVOS Y DIRECTORIOS",
+							"evalFrom": "02/11/2026",
+							"evalTo": "06/11/2026"
+						},
+						{
+							"index": "3.10",
+							"title": "3.4.2. NIVELES DE EJECUCIÓN",
+							"evalFrom": "02/11/2026",
+							"evalTo": "06/11/2026"
+						},
+						{
+							"index": "3.11",
+							"title": "3.4.3. INSTALACIÓN Y CONFIGURACIÓN DE APLICACIONES",
+							"evalFrom": "02/11/2026",
+							"evalTo": "06/11/2026"
+						},
+						{
+							"index": "3.12",
+							"title": "3.5. ADMINISTRACIÓN DEL SISTEMA",
+							"evalFrom": "02/11/2026",
+							"evalTo": "06/11/2026"
+						},
+						{
+							"index": "3.13",
+							"title": "3.5.1. TIPOS DE RECURSOS",
+							"evalFrom": "02/11/2026",
+							"evalTo": "06/11/2026"
+						},
+						{
+							"index": "3.14",
+							"title": "3.5.2. ADMINISTRACIÓN Y MONITORIZACIÓN DE PROCESOS, RED, MEMORIA, SISTEMAS DE ARCHIVOS, SERVICIOS (IMPRESIÓN, ETC.), USUARIOS, GRUPOS Y PERMISOS.",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "3.15",
+							"title": "3.6. MEDICIÓN Y DESEMPEÑO DEL SISTEMA OPERATIVO",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "3.16",
+							"title": "3.7. SEGURIDAD E INTEGRIDAD",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "3.17",
+							"title": "3.7.1. PLANIFICACIÓN DE SEGURIDAD",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "3.18",
+							"title": "3.7.2. PLANIFICACIÓN Y EJECUCIÓN DE MANTENIMIENTO",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "3.19",
+							"title": "3.7.3. MECANISMOS DE RECUPERACIÓN ANTE FALLOS (FS, PROCESADORES, MEMORIA)",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						},
+						{
+							"index": "3.20",
+							"title": "3.8. NORMATIVIDAD Y POLÍTICAS DE USO",
+							"evalFrom": "09/11/2026",
+							"evalTo": "13/11/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"PROYECTO",
+						"USO DE MULTIMEDIA/SOFTWARE"
+					],
+					"criteria": [
+						"ELABORACIÓN-PRESENTACIÓN PROYECTO",
+						"ELABORACIÓN-PRESENTACIÓN PROYECTO",
+						"EVALUACIÓN PRÁCTICA"
+					]
+				},
+				{
+					"unitNumber": 4,
+					"title": "INTEROPERABILIDAD ENTRE SISTEMAS OPERATIVOS",
+					"evalFrom": "07/12/2026",
+					"evalTo": "11/12/2026",
+					"subtopics": [
+						{
+							"index": "4.1",
+							"title": "4.1.INTEROPERABILIDAD ENTRE SISTEMAS OPERATIVOS",
+							"evalFrom": "16/11/2026",
+							"evalTo": "20/11/2026"
+						},
+						{
+							"index": "4.2",
+							"title": "4.1.1. SISTEMAS DE ARCHIVOS Y RECURSOS (NFS, IMPRESORAS )",
+							"evalFrom": "23/11/2026",
+							"evalTo": "27/11/2026"
+						},
+						{
+							"index": "4.3",
+							"title": "4.1.2. COMUNICACIÓN ENTRE PROCESOS (SOCKETS, RPC)",
+							"evalFrom": "30/11/2026",
+							"evalTo": "04/12/2026"
+						}
+					],
+					"instruments": [
+						"CÁTEDRA DOCENTE",
+						"PROYECTO",
+						"CÁTEDRA DOCENTE"
+					],
+					"criteria": [
+						"EVALUACIÓN PRÁCTICA",
+						"ELABORACIÓN-PRESENTACIÓN PROYECTO",
+						"ELABORACIÓN-PRESENTACIÓN PROYECTO"
+					]
+				}
+			]
+		}
+	],
+	"redaction": "teacher = alias sintético DOC-NNN. Los 114 nombres reales del SIM se redaccionaron antes de versionar: el repo es público y ningún código consume el campo. Alias ordenados alfabéticamente sobre el nombre real."
+}

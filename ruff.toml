@@ -1,0 +1,13 @@
+line-length = 100
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF", "T20", "PTH"]
+ignore = [
+    "E501",   # la longitud la controla el formateador
+    "RUF001", # caracteres Unicode ambiguos: el código y los datos delTecNM los necesitan
+]
+
+[lint.per-file-ignores]
+# Los scripts de scripts/ son CLI: su salida ES un informe por stdout.
+"scripts/*.py" = ["T201"]
