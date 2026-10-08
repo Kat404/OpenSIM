@@ -277,6 +277,11 @@ export const actions: Actions = {
 					studentProgress,
 					and(
 						eq(studentProgress.subjectCanonicalId, courseGroups.subjectCanonicalId),
+						// Without this the subject-only join returns every
+						// offering group of an enrolled subject, so the conflict
+						// baseline below compared the candidate against the whole
+						// catalogue instead of the student's own schedule.
+						eq(courseGroups.studentControlNumber, u.controlNumber),
 						eq(studentProgress.studentControlNumber, u.controlNumber),
 						eq(studentProgress.status, "ENROLLED"),
 						eq(studentProgress.period, period),

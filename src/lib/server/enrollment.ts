@@ -113,10 +113,19 @@ export async function getCurrentEnrollment(
 	}
 
 	const enrolledIds = enrolled.map((r) => r.subjectCanonicalId);
+	// The subject filter alone also matches the SIM offering catalogue,
+	// which shares this table: a student in one subject of a semester would
+	// be handed every offering group of it. `student_control_number` is the
+	// discriminator — NULL there, this student's control number here.
 	const groups = await db
 		.select()
 		.from(courseGroups)
-		.where(inArray(courseGroups.subjectCanonicalId, enrolledIds));
+		.where(
+			and(
+				eq(courseGroups.studentControlNumber, controlNumber),
+				inArray(courseGroups.subjectCanonicalId, enrolledIds),
+			),
+		);
 
 	if (groups.length === 0) {
 		return { groups: [], schedule: [], period: effectivePeriod };

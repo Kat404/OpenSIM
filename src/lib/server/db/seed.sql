@@ -5,6 +5,7 @@
 -- Plan version: ISIC-2010-224-VERIFIED-2026-10-07
 -- Total subjects: 68
 -- Total credits (target): 260
+-- Complementary credits required: 5
 -- Idempotent: catalog INSERTs use OR IGNORE; test-student
 -- rows use OR REPLACE so the fixture is deterministic on rerun.
 
@@ -191,6 +192,1008 @@ INSERT OR IGNORE INTO subject_prerequisites (subject_canonical_id, prerequisite_
 --> statement-breakpoint
 INSERT OR IGNORE INTO subject_prerequisites (subject_canonical_id, prerequisite_canonical_id) VALUES ('scd-1016', 'scd-1015');
 --> statement-breakpoint
+-- subject_units
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scc-1019', 1, 'CONCEPTOS FUNDAMENTALES.', '[{"index":"1.1","title":"1.1. DIFERENTES ESTILOS DE PROGRAMACIÓN.","evalFrom":"24/08/2026","evalTo":"28/08/2026"},{"index":"1.2","title":"1.2.ANALIZANDO DIFERENTES DE ESTILOS DE PROGRAMACIÓN","evalFrom":"24/08/2026","evalTo":"28/08/2026"},{"index":"1.3","title":"1.2.1 EVALUACIÓN DE EXPRESIONES.","evalFrom":"31/08/2026","evalTo":"04/09/2026"},{"index":"1.4","title":"1.2.2 TIPOS DE DATOS.","evalFrom":"31/08/2026","evalTo":"04/09/2026"},{"index":"1.5","title":"1.2.3 DISCIPLINA TIPOS.","evalFrom":"07/09/2026","evalTo":"11/09/2026"},{"index":"1.6","title":"1.2.4 FUNCIONES.","evalFrom":"07/09/2026","evalTo":"11/09/2026"}]', '14/09/2026', '18/09/2026', '["CÁTEDRA DOCENTE","DEBATES/DISCUSIÓN","INVESTIGACIÓN DOCUMENTAL"]', '["EVALUACIÓN ESCRITA","ELABORACIÓN-PRESENTACIÓN PROYECTO","ASISTENCIA A CLASES"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scc-1019', 2, 'MODELO DE PROGRAMACIÓN FUNCIONAL.', '[{"index":"2.1","title":"2.1 INTRODUCCIÓN AL MODELO DE PROGRAMACIÓN FUNCIONAL.","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.2","title":"2.1. EL TIPO DE DATOS.","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.3","title":"2.2. FUNCIONES.","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.4","title":"2.3. INTERVALOS.","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.5","title":"2.4. OPERADORES.","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.6","title":"2.5. APLICACIONES DE LAS LISTAS.","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"2.7","title":"2.6. ÁRBOLES.","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"2.8","title":"2.7. EVALUACIÓN PEREZOSA.","evalFrom":"05/10/2026","evalTo":"09/10/2026"}]', '12/10/2026', '16/10/2026', '["PRACTICAS DE LABORATORIO","CÁTEDRA DOCENTE","DEBATES/DISCUSIÓN"]', '["EVALUACIÓN TEÓRICO-PRÁCTICA","PRÁCTICAS EN LABORATORIO","ELABORACIÓN-PRESENTACIÓN PROYECTO"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scc-1019', 3, 'PROGRAMACIÓN LÓGICA.', '[{"index":"3.1","title":"3.1. REPASO DE LA LÓGICA DE PRIMER ORDEN.","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"3.2","title":"3.2. UNIFICACIÓN Y RESOLUCIÓN.","evalFrom":"26/10/2026","evalTo":"30/10/2026"},{"index":"3.3","title":"3.3. CLÁUSULAS DE HORN, RESOLUCIÓN SLD.","evalFrom":"26/10/2026","evalTo":"30/10/2026"},{"index":"3.4","title":"3.4. PROGRAMACIÓN LÓGICA CON CLÁUSULAS DE HORN.","evalFrom":"02/11/2026","evalTo":"06/11/2026"}]', '09/11/2026', '13/11/2026', '["PRACTICAS DE LABORATORIO","CÁTEDRA DOCENTE","PROYECTO"]', '["EVALUACIÓN TEÓRICO-PRÁCTICA","SOLUCIÓN DE EJERCICIOS EXTRA CLASE","PRÁCTICAS EN LABORATORIO"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scc-1019', 4, 'MODELO DE PROGRAMACIÓN LÓGICA.', '[{"index":"4.1","title":"4.1 INTRODUCCIÓN AL MODELO DE PROGRAMACIÓN LÓGICA.","evalFrom":"16/11/2026","evalTo":"20/11/2026"},{"index":"4.2","title":"4.2. SEMÁNTICA DE LOS PROGRAMAS LÓGICOS.","evalFrom":"16/11/2026","evalTo":"20/11/2026"},{"index":"4.3","title":"4.3. REPRESENTACIÓN CLAUSADA DEL CONOCIMIENTO.","evalFrom":"16/11/2026","evalTo":"20/11/2026"},{"index":"4.4","title":"4.4. CONSULTA DE UNA BASE DE CLÁUSULAS.","evalFrom":"23/11/2026","evalTo":"27/11/2026"},{"index":"4.5","title":"4.5. ESPACIOS DE BÚSQUEDA.","evalFrom":"23/11/2026","evalTo":"27/11/2026"},{"index":"4.6","title":"4.6. PROGRAMACIÓN LÓGICA CON NÚMEROS, LISTAS Y ÁRBOLES.","evalFrom":"23/11/2026","evalTo":"27/11/2026"},{"index":"4.7","title":"4.7. CONTROL DE BÚSQUEDA EN PROGRAMAS LÓGICOS","evalFrom":"30/11/2026","evalTo":"04/12/2026"},{"index":"4.8","title":"4.8. MANIPULACIÓN DE TÉRMINOS.","evalFrom":"30/11/2026","evalTo":"04/12/2026"},{"index":"4.9","title":"4.9 PREDICADOS MITOLÓGICOS.","evalFrom":"30/11/2026","evalTo":"04/12/2026"}]', '07/12/2026', '11/12/2026', '["CÁTEDRA DOCENTE","PRACTICAS DE LABORATORIO","PROYECTO"]', '["PRÁCTICAS EN LABORATORIO","EVALUACIÓN TEÓRICO-PRÁCTICA","DOCUMENTO MULTIMEDIA/USO DE SOFTWARE"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scd-1003', 1, 'ARQUITECTURAS DE CÓMPUTO', '[{"index":"1.1","title":"MODELOS DE ARQUITECTURAS DE CÓMPUTO","evalFrom":"24/08/2026","evalTo":"28/08/2026"},{"index":"1.2","title":"ANÁLISIS DE LOS COMPONENTES.","evalFrom":"31/08/2026","evalTo":"04/09/2026"},{"index":"1.3","title":"MEMORIA.","evalFrom":"07/09/2026","evalTo":"11/09/2026"},{"index":"1.4","title":"MANEJO DE LA ENTRADA/SALIDA.","evalFrom":"14/09/2026","evalTo":"18/09/2026"},{"index":"1.5","title":"BUSES","evalFrom":"21/09/2026","evalTo":"25/09/2026"}]', '28/09/2026', '02/10/2026', '["CÁTEDRA DOCENTE","PRACTICAS DE LABORATORIO","RESOLUCIÓN DE EJERCICIOS"]', '["EVALUACIÓN PRÁCTICA","PRÁCTICAS EN LABORATORIO","SOLUCIÓN DE EJERCICIOS EXTRA CLASE"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scd-1003', 2, 'ESTRUCTURA Y FUNCIONAMIENTO DE LA CPU', '[{"index":"2.1","title":"ORGANIZACIÓN DEL PROCESADOR.","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.2","title":"ESTRUCTURA DE REGISTROS.","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"2.3","title":"EL CICLO DE INSTRUCCIÓN.","evalFrom":"19/10/2026","evalTo":"23/10/2026"}]', '26/10/2026', '30/10/2026', '["CÁTEDRA DOCENTE","PRACTICAS DE LABORATORIO","USO DE MULTIMEDIA/SOFTWARE"]', '["EVALUACIÓN TEÓRICO-PRÁCTICA","PRÁCTICAS EN LABORATORIO","SOLUCIÓN DE EJERCICIOS EXTRA CLASE"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scd-1003', 3, 'SELECCIÓN DE COMPONENTES PARA ENSAMBLE DE EQUIPO DE CÓMPUTO.', '[{"index":"3.1","title":"CHIP SET.","evalFrom":"26/10/2026","evalTo":"30/10/2026"},{"index":"3.2","title":"APLICACIONES.","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"3.3","title":"AMBIENTES DE SERVICIO.","evalFrom":"09/11/2026","evalTo":"13/11/2026"}]', '23/11/2026', '27/11/2026', '["CÁTEDRA DOCENTE","PRACTICAS DE LABORATORIO","USO DE MULTIMEDIA/SOFTWARE"]', '["EVALUACIÓN TEÓRICO-PRÁCTICA","PRÁCTICAS EN LABORATORIO","SOLUCIÓN DE EJERCICIOS EXTRA CLASE"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scd-1003', 4, 'PROCESAMIENTO PARALELO', '[{"index":"4.1","title":"TIPOS DE PROCESAMIENTO PARALELO","evalFrom":"23/11/2026","evalTo":"27/11/2026"},{"index":"4.2","title":"TAXONIMIA DE FLINT","evalFrom":"30/11/2026","evalTo":"04/12/2026"},{"index":"4.3","title":"APLICACIONES DEL PROCESAMIENTO PARALELO","evalFrom":"07/12/2026","evalTo":"11/12/2026"}]', '07/12/2026', '11/12/2026', '["INVESTIGACIÓN DOCUMENTAL","PRACTICAS DE LABORATORIO","PROYECTO"]', '["EXPOSICIÓN DE TEMAS","PARTICIPACIÓN EN CLASE","EVALUACIÓN ESCRITA"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scc-1007', 1, 'FUNDAMENTOS DE INGENIERÍA DE SOFTWARE', '[{"index":"1.1","title":"1.1. CONCEPTOS BÁSICOS","evalFrom":"24/08/2026","evalTo":"28/08/2026"},{"index":"1.2","title":"1.2. FASES DE LA INGENIERÍA DE SOFTWARE.","evalFrom":"24/08/2026","evalTo":"28/08/2026"},{"index":"1.3","title":"1.3 METODOLOGÍAS DE DESARROLLO DE SOFTWARE","evalFrom":"31/08/2026","evalTo":"04/09/2026"},{"index":"1.4","title":"1.3.1 CLÁSICAS","evalFrom":"31/08/2026","evalTo":"04/09/2026"},{"index":"1.5","title":"1.3.2 AGILES","evalFrom":"31/08/2026","evalTo":"04/09/2026"},{"index":"1.6","title":"1.3.3 OTRAS FILOSOFÍAS","evalFrom":"07/09/2026","evalTo":"11/09/2026"},{"index":"1.7","title":"1.4. IMPORTANCIA DE LAS HERRAMIENTAS CASE EN LA INGENIERÍA DE SOFTWARE.","evalFrom":"07/09/2026","evalTo":"11/09/2026"}]', '14/09/2026', '18/09/2026', '["CÁTEDRA DOCENTE","CÁTEDRA DOCENTE","DEBATES/DISCUSIÓN"]', '["EVALUACIÓN ESCRITA","PARTICIPACIÓN EN CLASE","PARTICIPACIÓN EN CLASE"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scc-1007', 2, 'EL MODELO DE NEGOCIO', '[{"index":"2.1","title":"2.1 DEFINICIÓN","evalFrom":"07/09/2026","evalTo":"11/09/2026"},{"index":"2.2","title":"2.2 COMPONENTES","evalFrom":"14/09/2026","evalTo":"18/09/2026"},{"index":"2.3","title":"2.3 ESTÁNDARES","evalFrom":"14/09/2026","evalTo":"18/09/2026"},{"index":"2.4","title":"2.4 DIAGRAMAS","evalFrom":"21/09/2026","evalTo":"25/09/2026"}]', '28/09/2026', '02/10/2026', '["CÁTEDRA DOCENTE","USO DE MULTIMEDIA/SOFTWARE","RESOLUCIÓN DE EJERCICIOS"]', '["EVALUACIÓN ESCRITA","SOLUCIÓN DE EJERCICIOS EXTRA CLASE","PARTICIPACIÓN EN CLASE"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scc-1007', 3, 'INGENIERÍA DE REQUISITOS', '[{"index":"3.1","title":"3.1 CARACTERÍSTICAS DE LOS REQUISITOS.","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"3.2","title":"3.2 TIPOS DE REQUISITOS.","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"3.3","title":"3.2.1 FUNCIONALES","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"3.4","title":"3.2.2 NO FUNCIONALES","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"3.5","title":"3.2.3 DE DOMINIO","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"3.6","title":"3.3 TAREAS Y TÉCNICAS DE LA INGENIERÍA DE REQUISITOS.","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"3.7","title":"3.4 OBTENCIÓN DE REQUISITOS","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"3.8","title":"3.4.1 TÉCNICAS DE RECOPILACIÓN DE INFORMACIÓN.","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"3.9","title":"3.4.2 REPRESENTACIÓN DE REQUISITOS.","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"3.10","title":"3.5 HERRAMIENTAS CASE PARA LA INGENIERÍA DE REQUISITOS.","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"3.11","title":"3.6 ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE.","evalFrom":"19/10/2026","evalTo":"23/10/2026"}]', '26/10/2026', '30/10/2026', '["CÁTEDRA DOCENTE","USO DE MULTIMEDIA/SOFTWARE","DEBATES/DISCUSIÓN"]', '["EVALUACIÓN ESCRITA","SOLUCIÓN DE EJERCICIOS EXTRA CLASE","DOCUMENTO MULTIMEDIA/USO DE SOFTWARE"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scc-1007', 4, 'MODELO DE ANÁLISIS', '[{"index":"4.1","title":"4.1. CLASES","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"4.2","title":"4.2. OBJETOS","evalFrom":"26/10/2026","evalTo":"30/10/2026"},{"index":"4.3","title":"4.3. MODELO DE REQUISITOS","evalFrom":"26/10/2026","evalTo":"30/10/2026"},{"index":"4.4","title":"4.4. MODELO DE CASOS DE USO","evalFrom":"02/11/2026","evalTo":"06/11/2026"},{"index":"4.5","title":"4.5. MODELO DE DOMINIO","evalFrom":"02/11/2026","evalTo":"06/11/2026"}]', '09/11/2026', '13/11/2026', '["CÁTEDRA DOCENTE","RESOLUCIÓN DE EJERCICIOS","USO DE MULTIMEDIA/SOFTWARE"]', '["EVALUACIÓN TEÓRICO-PRÁCTICA","PARTICIPACIÓN EN CLASE","SOLUCIÓN DE EJERCICIOS EXTRA CLASE"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scc-1007', 5, 'CALIDAD DE SOFTWARE', '[{"index":"5.1","title":"5.1 DEFINICIÓN DE CALIDAD.","evalFrom":"02/11/2026","evalTo":"06/11/2026"},{"index":"5.2","title":"5.2 IMPORTANCIA DE LA CALIDAD.","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"5.3","title":"5.3 FACTORES DE CALIDAD.","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"5.4","title":"5.4 ASEGURAMIENTO DE LA CALIDAD.","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"5.5","title":"5.5 ESTÁNDARES Y MÉTRICAS DE CALIDAD.","evalFrom":"16/11/2026","evalTo":"20/11/2026"},{"index":"5.6","title":"5.6 MODELOS DE MADUREZ.","evalFrom":"16/11/2026","evalTo":"20/11/2026"},{"index":"5.7","title":"5.6.1 ENFOQUE DE PROCESOS.","evalFrom":"23/11/2026","evalTo":"27/11/2026"},{"index":"5.8","title":"5.6.2 PSP Y TSP.","evalFrom":"23/11/2026","evalTo":"27/11/2026"},{"index":"5.9","title":"5.6.3 SPICE","evalFrom":"30/11/2026","evalTo":"04/12/2026"},{"index":"5.10","title":"5.6.4 CMMI.","evalFrom":"30/11/2026","evalTo":"04/12/2026"},{"index":"5.11","title":"5.6.5 MOPROSOFT.","evalFrom":"30/11/2026","evalTo":"04/12/2026"}]', '07/12/2026', '11/12/2026', '["CÁTEDRA DOCENTE","INVESTIGACIÓN DOCUMENTAL","DEBATES/DISCUSIÓN"]', '["EVALUACIÓN ESCRITA","PARTICIPACIÓN EN CLASE","PARTICIPACIÓN EN CLASE"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('sca-1025', 1, 'LENGUAJE DE DEFINICIÓN DE DATOS', '[{"index":"1.1","title":"1.1 INSTALACIÓN DE UN SGBD","evalFrom":"24/08/2026","evalTo":"28/08/2026"},{"index":"1.2","title":"1.2 CREACIÓN DEL ESQUEMA DE LA BASE DE DATOS A. MODIFICACIÓN DEL ESQUEMA DE LA BASE DE DATOS. B. APLICACIÓN DE CONSTRAINTS","evalFrom":"07/09/2026","evalTo":"11/09/2026"}]', '07/09/2026', '11/09/2026', '["CÁTEDRA DOCENTE","USO DE MULTIMEDIA/SOFTWARE","PRACTICAS DE LABORATORIO"]', '["PRÁCTICAS EN LABORATORIO","DOCUMENTO MULTIMEDIA/USO DE SOFTWARE","EVALUACIÓN PRÁCTICA"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('sca-1025', 2, 'LENGUAJE DE MANIPULACIÓN DE DATOS', '[{"index":"2.1","title":"2.1 INSERCIÓN, ELIMINACIÓN Y MODIFICACIÓN DE REGISTROS","evalFrom":"14/09/2026","evalTo":"18/09/2026"},{"index":"2.2","title":"2.2 CONSULTAS","evalFrom":"14/09/2026","evalTo":"18/09/2026"},{"index":"2.3","title":"2.3 FUNCIONES, CONVERSIÓN, AGRUPAMIENTO, ORDENAMIENTO","evalFrom":"14/09/2026","evalTo":"18/09/2026"},{"index":"2.4","title":"2.4 JOINS","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.5","title":"2.5 SUBCONSULTAS","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.6","title":"2.6 OPERADORES SET","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.7","title":"2.7 VISTAS","evalFrom":"28/09/2026","evalTo":"02/10/2026"}]', '28/09/2026', '02/10/2026', '["CÁTEDRA DOCENTE","USO DE MULTIMEDIA/SOFTWARE","RESOLUCIÓN DE EJERCICIOS"]', '["DOCUMENTO MULTIMEDIA/USO DE SOFTWARE","PRÁCTICAS EN LABORATORIO","EVALUACIÓN PRÁCTICA"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('sca-1025', 3, 'CONTROL DE ACCESO', '[{"index":"3.1","title":"3.1 TIPOS DE USUARIO","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"3.2","title":"3.2 CREACIÓN DE USUARIOS","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"3.3","title":"3.3 PRIVILEGIOS A USUARIOS","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"3.4","title":"3.4 ROLES","evalFrom":"12/10/2026","evalTo":"16/10/2026"}]', '12/10/2026', '16/10/2026', '["CÁTEDRA DOCENTE","USO DE MULTIMEDIA/SOFTWARE","PRACTICAS DE LABORATORIO"]', '["DOCUMENTO MULTIMEDIA/USO DE SOFTWARE","EVALUACIÓN PRÁCTICA","PRÁCTICAS EN LABORATORIO"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('sca-1025', 4, 'CONCURRENCIA', '[{"index":"4.1","title":"4.1 CONCEPTOS","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"4.2","title":"4.2 PROPIEDADES DE LAS TRANSACCIONES","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"4.3","title":"4.3 GRADOS DE CONSISTENCIA","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"4.4","title":"4.4 NIVELES DE AISLAMIENTO","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"4.5","title":"4.5 COMMIT Y ROLLBACK","evalFrom":"19/10/2026","evalTo":"23/10/2026"}]', '19/10/2026', '23/10/2026', '["USO DE MULTIMEDIA/SOFTWARE","PRACTICAS DE LABORATORIO","CÁTEDRA DOCENTE"]', '["PRÁCTICAS EN LABORATORIO","EVALUACIÓN PRÁCTICA","PRÁCTICAS EN LABORATORIO"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('sca-1025', 5, 'SQL PROCEDURAL', '[{"index":"5.1","title":"5.1 STORED PROCEDURES","evalFrom":"26/10/2026","evalTo":"30/10/2026"},{"index":"5.2","title":"5.2 FUNCTIONS","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"5.3","title":"5.3 TRIGGERS","evalFrom":"23/11/2026","evalTo":"27/11/2026"}]', '23/11/2026', '27/11/2026', '["USO DE MULTIMEDIA/SOFTWARE","CÁTEDRA DOCENTE","PRACTICAS DE LABORATORIO"]', '["DOCUMENTO MULTIMEDIA/USO DE SOFTWARE","EVALUACIÓN PRÁCTICA","PRÁCTICAS EN LABORATORIO"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('sca-1025', 6, 'CONECTIVIDAD DE BASES DE DATOS', '[{"index":"6.1","title":"6.1 ODBC, ADO.NET, JDBC","evalFrom":"30/11/2026","evalTo":"04/12/2026"},{"index":"6.2","title":"6.2 CONECTIVIDAD DESDE UN LENGUAJE HUÉSPED O EN DISPOSITIVOS MÓVILES","evalFrom":"07/12/2026","evalTo":"11/12/2026"}]', '07/12/2026', '11/12/2026', '["CÁTEDRA DOCENTE","USO DE MULTIMEDIA/SOFTWARE","PRACTICAS DE LABORATORIO"]', '["DOCUMENTO MULTIMEDIA/USO DE SOFTWARE","EVALUACIÓN PRÁCTICA","PRÁCTICAS EN LABORATORIO"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scd-1016', 1, 'ANÁLISIS SEMÁNTICO.', '[{"index":"1.1","title":"1.1 ÁRBOLES DE EXPRESIONES.","evalFrom":"24/08/2026","evalTo":"28/08/2026"},{"index":"1.2","title":"1.2 ACCIONES SEMÁNTICAS DE UN ANALIZADOR SINTÁCTICO","evalFrom":"31/08/2026","evalTo":"04/09/2026"},{"index":"1.3","title":"1.3 COMPROBACIONES DE TIPOS EN EXPRE","evalFrom":"31/08/2026","evalTo":"04/09/2026"},{"index":"1.4","title":"1.4 PILA SEMÁNTICA EN UN ANALIZADOR SINTÁCTICO.","evalFrom":"07/09/2026","evalTo":"11/09/2026"},{"index":"1.5","title":"1.5 ESQUEMA DE TRADUCCIÓN.","evalFrom":"07/09/2026","evalTo":"11/09/2026"},{"index":"1.6","title":"1.6 GENERACIÓN DE LA TABLA DE SÍMBOLO Y TABLA DE DIRECCIONES.","evalFrom":"14/09/2026","evalTo":"18/09/2026"},{"index":"1.7","title":"1.7 MANEJO DE ERRORES SEMÁNTICOS.","evalFrom":"21/09/2026","evalTo":"25/09/2026"}]', '28/09/2026', '02/10/2026', '["PROYECTO","PRACTICAS DE LABORATORIO","CÁTEDRA DOCENTE"]', '["ELABORACIÓN-PRESENTACIÓN PROYECTO","EVALUACIÓN PRÁCTICA","EVALUACIÓN ESCRITA"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scd-1016', 2, 'GENERACIÓN DE CÓDIGO INTERMEDIO.', '[{"index":"2.1","title":"2.1 NOTACIONES.","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.2","title":"2.1.1 PREFIJA.","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.3","title":"2.1.2 INFIJA.","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.4","title":"2.2.3 POSTFIJA.","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.5","title":"2.2 REPRESENTACIONES DE CÓDIGO.INTERMEDIO.","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"2.6","title":"2.2.1 NOTACIÓN POLACA.","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"2.7","title":"2.2.2 CÓDIGO P.","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"2.8","title":"2.2.3 TRIPLOS.","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"2.9","title":"2.2.4 CUÁDRUPLOS.","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"2.10","title":"2.3 ESQUEMA DE GENERACIÓN.","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"2.11","title":"2.3.1 VARIABLES Y CONSTANTES.","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"2.12","title":"2.3.2 EXPRESIONES.","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"2.13","title":"2.3.3 INSTRUCCIÓN DE ASIGNACIÓN.","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"2.14","title":"2.3.4 INSTRUCCIONES DE CONTROL.","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"2.15","title":"2.3.5 FUNCIONES.","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"2.16","title":"2.3.6 ESTRUCTURAS.","evalFrom":"12/10/2026","evalTo":"16/10/2026"}]', '19/10/2026', '23/10/2026', '["PROYECTO","CÁTEDRA DOCENTE","PRACTICAS DE LABORATORIO"]', '["ELABORACIÓN-PRESENTACIÓN PROYECTO","EVALUACIÓN ESCRITA","EVALUACIÓN PRÁCTICA"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scd-1016', 3, 'OPTIMIZACIÓN.', '[{"index":"3.1","title":"3.1 TIPOS DE OPTIMIZACIÓN.","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"3.2","title":"3.1.1 LOCALES.","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"3.3","title":"3.1.2 CICLOS.","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"3.4","title":"3.1.3 GLOBALES.","evalFrom":"26/10/2026","evalTo":"30/10/2026"},{"index":"3.5","title":"3.1.4 DE MIRILLA.","evalFrom":"26/10/2026","evalTo":"30/10/2026"},{"index":"3.6","title":"3.2 COSTOS.","evalFrom":"02/11/2026","evalTo":"06/11/2026"},{"index":"3.7","title":"3.2.1 COSTO DE EJECUCIÓN. (MEMORIA, REGISTROS, PILAS).","evalFrom":"02/11/2026","evalTo":"06/11/2026"},{"index":"3.8","title":"3.2.2 CRITERIOS PARA MEJORAR EL CÓDIGO.","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"3.9","title":"3.2.3 HERRAMIENTAS PARA EL ANÁLISIS DEL FLUJO DE DATOS.","evalFrom":"09/11/2026","evalTo":"13/11/2026"}]', '09/11/2026', '13/11/2026', '["PROYECTO","CÁTEDRA DOCENTE","PRACTICAS DE LABORATORIO"]', '["ELABORACIÓN-PRESENTACIÓN PROYECTO","EVALUACIÓN ESCRITA","EVALUACIÓN PRÁCTICA"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scd-1016', 4, 'GENERACIÓN DE CÓDIGO OBJETO.', '[{"index":"4.1","title":"4.1 REGISTROS.","evalFrom":"16/11/2026","evalTo":"20/11/2026"},{"index":"4.2","title":"4.2 LENGUAJE ENSAMBLADOR.","evalFrom":"23/11/2026","evalTo":"27/11/2026"},{"index":"4.3","title":"4.3 LENGUAJE MÁQUINA.","evalFrom":"30/11/2026","evalTo":"04/12/2026"},{"index":"4.4","title":"4.4 ADMINISTRACIÓN DE MEMORIA.","evalFrom":"07/12/2026","evalTo":"11/12/2026"}]', '07/12/2026', '11/12/2026', '["PROYECTO","CÁTEDRA DOCENTE","PRACTICAS DE LABORATORIO"]', '["ELABORACIÓN-PRESENTACIÓN PROYECTO","EVALUACIÓN ESCRITA","EVALUACIÓN PRÁCTICA"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('aec-1034', 1, 'SISTEMA DE COMUNICACIÓN', '[{"index":"1.1","title":"1.1. IMPACTO DE LAS TELECOMUNICACIONES.","evalFrom":"24/08/2026","evalTo":"28/08/2026"},{"index":"1.2","title":"1.2. COMPONENTES. EMISOR, RECEPTOR, MEDIOS, 1.2.1 CÓDIGOS Y PROTOCOLOS.","evalFrom":"24/08/2026","evalTo":"28/08/2026"},{"index":"1.3","title":"1.3. SEÑALES Y CLASIFICACIÓN.","evalFrom":"24/08/2026","evalTo":"28/08/2026"},{"index":"1.4","title":"1.3.1 ANALÓGICAS, DIGITALES, ELÉCTRICAS Y ÓPTICAS.","evalFrom":"31/08/2026","evalTo":"04/09/2026"},{"index":"1.5","title":"1.4. MODELO MATEMÁTICO DE UNA SEÑAL.","evalFrom":"31/08/2026","evalTo":"04/09/2026"},{"index":"1.6","title":"1.4.1 SERIE DE FOURIER.","evalFrom":"07/09/2026","evalTo":"11/09/2026"}]', '07/09/2026', '11/09/2026', '["CÁTEDRA DOCENTE","USO DE MULTIMEDIA/SOFTWARE"]', '["EVALUACIÓN ESCRITA"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('aec-1034', 2, 'MEDIOS DE TRANSMISIÓN', '[{"index":"2.1","title":"2.1 GUIADOS.","evalFrom":"07/09/2026","evalTo":"11/09/2026"},{"index":"2.2","title":"2.1.1 PAR TRENZADO, COAXIAL Y FIBRA ÓPTICA.","evalFrom":"07/09/2026","evalTo":"11/09/2026"},{"index":"2.3","title":"2.2 NO GUIADOS.","evalFrom":"14/09/2026","evalTo":"18/09/2026"},{"index":"2.4","title":"2.2.1 RADIOFRECUENCIA, MICROONDAS, SATÉLITE E INFRARROJO.","evalFrom":"14/09/2026","evalTo":"18/09/2026"},{"index":"2.5","title":"2.3 MÉTODOS PARA LA DETECCIÓN Y CORRECCIÓN DE ERRORES.","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.6","title":"2.3.1 VERIFICACIÓN DE REDUNDANCIA VERTICAL (VRC), VERIFICACIÓN DE REDUNDANCIA LONGITUDINAL (LRC) Y VERIFICACIÓN DE REDUNDANCIA CÍCLICA (CRC).","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.7","title":"2.4 CONTROL DE FLUJO.","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.8","title":"2.4.1 TIPOS: ASENTIMIENTO, VENTANAS DESLIZANTES. POR HARDWARE O SOFTWARE, DE LAZO ABIERTO O CERRADO.","evalFrom":"05/10/2026","evalTo":"09/10/2026"}]', '05/10/2026', '09/10/2026', '["CÁTEDRA DOCENTE","USO DE MULTIMEDIA/SOFTWARE"]', '["EVALUACIÓN ESCRITA"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('aec-1034', 3, 'MODULACIÓN', '[{"index":"3.1","title":"3.1 TÉCNICAS DE MODULACIÓN ANALÓGICA.","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"3.2","title":"3.1.1 MODULACIÓN EN AMPLITUD (AM) Y MODULACIÓN EN FRECUENCIA (FM).","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"3.3","title":"3.2 TÉCNICAS DE MODULACIÓN DIGITAL.","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"3.4","title":"3.2.1 MODULACIÓN POR DESPLAZAMIENTO DE AMPLITUD (ASK), MODULACIÓN POR DESPLAZAMIENTO DE FRECUENCIA (FSK), MODULACIÓN POR DESPLAZAMIENTO DE FASE (PSK) Y MODULACIÓN DE AMPLITUD EN CUADRATURA (QAM).","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"3.5","title":"3.3 CONVERSIÓN ANALÓGICO – DIGITAL:","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"3.6","title":"3.3.1 MUESTREO, CUANTIZACIÓN Y CODIFICACIÓN.","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"3.7","title":"3.4 CÓDIGOS DE LÍNEA.","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"3.8","title":"3.4.1 RZ, NRZ, NRZ-L, AMI, PSEUDOTERNARIA, MANCHESTER, MANCHESTER DIFERENCIAL, B8ZS, HDB3, ENTRE OTROS.","evalFrom":"26/10/2026","evalTo":"30/10/2026"},{"index":"3.9","title":"3.5 MODEM, ESTÁNDARES Y PROTOCOLOS.","evalFrom":"26/10/2026","evalTo":"30/10/2026"}]', '26/10/2026', '30/10/2026', '["CÁTEDRA DOCENTE","USO DE MULTIMEDIA/SOFTWARE","PRACTICAS DE LABORATORIO"]', '["EVALUACIÓN ESCRITA"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('aec-1034', 4, 'TÉCNICAS DE CONMUTACIÓN Y MULTIPLEXACIÓN', '[{"index":"4.1","title":"4.1 CONMUTACIÓN.","evalFrom":"02/11/2026","evalTo":"06/11/2026"},{"index":"4.2","title":"4.1.1 CONMUTACIÓN DE CIRCUITOS (RED TELEFÓNICA PÚBLICA).","evalFrom":"02/11/2026","evalTo":"06/11/2026"},{"index":"4.3","title":"4.1.2 CONMUTACIÓN DE PAQUETES (X.25, FRAME RELAY).","evalFrom":"02/11/2026","evalTo":"06/11/2026"},{"index":"4.4","title":"4.1.3 ENTRAMADO: STORE AND FORWARD.","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"4.5","title":"4.1.4 CELDAS: ATM.","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"4.6","title":"4.2 MULTIPLEXACIÓN.","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"4.7","title":"4.2.1 TDM DIVISIÓN DE TIEMPO.","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"4.8","title":"4.2.2 FDM DIVISIÓN DE FRECUENCIA.","evalFrom":"16/11/2026","evalTo":"20/11/2026"},{"index":"4.9","title":"4.2.3 WDM DIVISIÓN DE LONGITUD DE ONDA.","evalFrom":"16/11/2026","evalTo":"20/11/2026"},{"index":"4.10","title":"4.2.4 CDM DIVISIÓN DE CÓDIGO.","evalFrom":"16/11/2026","evalTo":"20/11/2026"}]', '16/11/2026', '20/11/2026', '["CÁTEDRA DOCENTE","USO DE MULTIMEDIA/SOFTWARE","PRACTICAS DE LABORATORIO"]', '["EVALUACIÓN PRÁCTICA"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('aec-1034', 5, 'MODELOS Y DISPOSITIVOS DE COMUNICACIÓN', '[{"index":"5.1","title":"5.1 INTRODUCCIÓN AL MODELO DE REFERENCIA OSI.","evalFrom":"23/11/2026","evalTo":"27/11/2026"},{"index":"5.2","title":"5.2 PROTOCOLOS Y ESTÁNDARES.","evalFrom":"23/11/2026","evalTo":"27/11/2026"},{"index":"5.3","title":"5.3 CARACTERÍSTICAS FUNCIONALES DE LOS DISPOSITIVOS.","evalFrom":"30/11/2026","evalTo":"04/12/2026"},{"index":"5.4","title":"5.4 ESTÁNDARES DE INTERFACES.","evalFrom":"30/11/2026","evalTo":"04/12/2026"},{"index":"5.5","title":"5.5 MECANISMOS DE DETECCIÓN Y CORRECCIÓN DE ERRORES.","evalFrom":"07/12/2026","evalTo":"11/12/2026"}]', '07/12/2026', '11/12/2026', '["CÁTEDRA DOCENTE","USO DE MULTIMEDIA/SOFTWARE"]', '["EVALUACIÓN ESCRITA"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('sca-1026', 1, 'INTRODUCCIÓN A LOS SISTEMAS OPERATIVOS', '[{"index":"1.1","title":"1.1.CLASIFICACIÓN Y ESTRUCTURAS GENÉRICAS DE LOS SISTEMAS OPERATIVAS VIGENTES","evalFrom":"24/08/2026","evalTo":"28/08/2026"},{"index":"1.2","title":"1.2. PROCESOS Y MULTIPROGRAMACIÓN","evalFrom":"31/08/2026","evalTo":"04/09/2026"},{"index":"1.3","title":"1.3. VIRTUALIZACIÓN","evalFrom":"31/08/2026","evalTo":"04/09/2026"},{"index":"1.4","title":"1.3.1. COMPONENTES Y NIVELES DE VIRTUALIZACIÓN","evalFrom":"07/09/2026","evalTo":"11/09/2026"},{"index":"1.5","title":"1.3.2. VPS (VIRTUAL PRIVATE SERVER)","evalFrom":"14/09/2026","evalTo":"18/09/2026"}]', '14/09/2026', '18/09/2026', '["CÁTEDRA DOCENTE","PRACTICAS DE LABORATORIO","CÁTEDRA DOCENTE"]', '["DOCUMENTO MULTIMEDIA/USO DE SOFTWARE","DOCUMENTO MULTIMEDIA/USO DE SOFTWARE","EVALUACIÓN PRÁCTICA"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('sca-1026', 2, 'SISTEMAS OPERATIVOS PROPIETARIOS PARA SERVIDORES', '[{"index":"2.1","title":"2.1. CARACTERÍSTICAS Y ANÁLISIS DE LOS SISTEMAS OPERATIVOS PROPIETARIOS","evalFrom":"14/09/2026","evalTo":"18/09/2026"},{"index":"2.2","title":"2.2. REQUERIMIENTOS DE INSTALACIÓN","evalFrom":"14/09/2026","evalTo":"18/09/2026"},{"index":"2.3","title":"2.3.CONFIGURACIÓN BÁSICA","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.4","title":"2.3.1. MÉTODOS DE INSTALACIÓN","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.5","title":"2.3.2. INSTALACIÓN DEL SISTEMA OPERATIVO","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.6","title":"2.3.3. CONFIGURACIÓN DEL SISTEMA Y ÁMBITO DEL SERVIDOR","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.7","title":"2.3.4. CONFIGURACIÓN DE SEGURIDAD BASE Y RED","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.8","title":"2.4. COMANDOS BÁSICOS Y APLICACIONES","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.9","title":"2.4.1. MANEJO DE ARCHIVOS Y DIRECTORIOS","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.10","title":"2.4.2. INSTALACIÓN Y CONFIGURACIÓN DE APLICACIONES","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.11","title":"2.5. ADMINISTRACIÓN DEL SISTEMA","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.12","title":"2.5.1. TIPOS DE RECURSOS","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.13","title":"2.5.2. ADMINISTRACIÓN Y MONITORIZACIÓN DE PROCESOS, RED, MEMORIA, SISTEMAS DE ARCHIVOS, SERVICIOS (IMPRESIÓN, ETC.), USUARIOS, GRUPOS Y PERMISOS.","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"2.14","title":"2.6. MEDICIÓN Y DESEMPEÑO DEL SISTEMA OPERATIVO","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"2.15","title":"2.7. SEGURIDAD E INTEGRIDAD","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"2.16","title":"2.7.1. PLANIFICACIÓN DE SEGURIDAD","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"2.17","title":"2.7.2. PLANIFICACIÓN Y EJECUCIÓN DE MANTENIMIENTO","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"2.18","title":"2.7.3. MECANISMOS DE RECUPERACIÓN ANTE FALLOS (FS, PROCESADORES, MEMORIA)","evalFrom":"12/10/2026","evalTo":"16/10/2026"},{"index":"2.19","title":"2.8. NORMATIVIDAD Y POLÍTICAS DE USO","evalFrom":"12/10/2026","evalTo":"16/10/2026"}]', '19/10/2026', '23/10/2026', '["CÁTEDRA DOCENTE","PROYECTO","CÁTEDRA DOCENTE"]', '["PRÁCTICAS EN LABORATORIO","ELABORACIÓN-PRESENTACIÓN PROYECTO","ELABORACIÓN-PRESENTACIÓN PROYECTO"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('sca-1026', 3, 'SISTEMAS OPERATIVOS DE SOFTWARE LIBRE PARA SERVIDORES', '[{"index":"3.1","title":"3.1. CARACTERÍSTICAS Y ANÁLISIS DE LOS SISTEMAS OPERATIVOS PROPIETARIOS","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"3.2","title":"3.2. REQUERIMIENTOS DE INSTALACIÓN","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"3.3","title":"3.3.CONFIGURACIÓN BÁSICA","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"3.4","title":"3.3.1. MÉTODOS DE INSTALACIÓN","evalFrom":"19/10/2026","evalTo":"23/10/2026"},{"index":"3.5","title":"3.3.2. INSTALACIÓN DEL SISTEMA OPERATIVO","evalFrom":"26/10/2026","evalTo":"30/10/2026"},{"index":"3.6","title":"3.3.3. CONFIGURACIÓN DEL SISTEMA Y ÁMBITO DEL SERVIDOR","evalFrom":"26/10/2026","evalTo":"30/10/2026"},{"index":"3.7","title":"3.3.4. CONFIGURACIÓN DE SEGURIDAD BASE Y RED","evalFrom":"26/10/2026","evalTo":"30/10/2026"},{"index":"3.8","title":"3.4. COMANDOS BÁSICOS Y APLICACIONES","evalFrom":"26/10/2026","evalTo":"30/10/2026"},{"index":"3.9","title":"3.4.1. MANEJO DE ARCHIVOS Y DIRECTORIOS","evalFrom":"02/11/2026","evalTo":"06/11/2026"},{"index":"3.10","title":"3.4.2. NIVELES DE EJECUCIÓN","evalFrom":"02/11/2026","evalTo":"06/11/2026"},{"index":"3.11","title":"3.4.3. INSTALACIÓN Y CONFIGURACIÓN DE APLICACIONES","evalFrom":"02/11/2026","evalTo":"06/11/2026"},{"index":"3.12","title":"3.5. ADMINISTRACIÓN DEL SISTEMA","evalFrom":"02/11/2026","evalTo":"06/11/2026"},{"index":"3.13","title":"3.5.1. TIPOS DE RECURSOS","evalFrom":"02/11/2026","evalTo":"06/11/2026"},{"index":"3.14","title":"3.5.2. ADMINISTRACIÓN Y MONITORIZACIÓN DE PROCESOS, RED, MEMORIA, SISTEMAS DE ARCHIVOS, SERVICIOS (IMPRESIÓN, ETC.), USUARIOS, GRUPOS Y PERMISOS.","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"3.15","title":"3.6. MEDICIÓN Y DESEMPEÑO DEL SISTEMA OPERATIVO","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"3.16","title":"3.7. SEGURIDAD E INTEGRIDAD","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"3.17","title":"3.7.1. PLANIFICACIÓN DE SEGURIDAD","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"3.18","title":"3.7.2. PLANIFICACIÓN Y EJECUCIÓN DE MANTENIMIENTO","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"3.19","title":"3.7.3. MECANISMOS DE RECUPERACIÓN ANTE FALLOS (FS, PROCESADORES, MEMORIA)","evalFrom":"09/11/2026","evalTo":"13/11/2026"},{"index":"3.20","title":"3.8. NORMATIVIDAD Y POLÍTICAS DE USO","evalFrom":"09/11/2026","evalTo":"13/11/2026"}]', '16/11/2026', '20/11/2026', '["CÁTEDRA DOCENTE","PROYECTO","USO DE MULTIMEDIA/SOFTWARE"]', '["ELABORACIÓN-PRESENTACIÓN PROYECTO","ELABORACIÓN-PRESENTACIÓN PROYECTO","EVALUACIÓN PRÁCTICA"]');
+--> statement-breakpoint
+INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('sca-1026', 4, 'INTEROPERABILIDAD ENTRE SISTEMAS OPERATIVOS', '[{"index":"4.1","title":"4.1.INTEROPERABILIDAD ENTRE SISTEMAS OPERATIVOS","evalFrom":"16/11/2026","evalTo":"20/11/2026"},{"index":"4.2","title":"4.1.1. SISTEMAS DE ARCHIVOS Y RECURSOS (NFS, IMPRESORAS )","evalFrom":"23/11/2026","evalTo":"27/11/2026"},{"index":"4.3","title":"4.1.2. COMUNICACIÓN ENTRE PROCESOS (SOCKETS, RPC)","evalFrom":"30/11/2026","evalTo":"04/12/2026"}]', '07/12/2026', '11/12/2026', '["CÁTEDRA DOCENTE","PROYECTO","CÁTEDRA DOCENTE"]', '["EVALUACIÓN PRÁCTICA","ELABORACIÓN-PRESENTACIÓN PROYECTO","ELABORACIÓN-PRESENTACIÓN PROYECTO"]');
+--> statement-breakpoint
+-- course_groups (468 offering groups)
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-104-A-NA-DOC-053', 'itm-104', 'A', 'DOC-053', 0, NULL, 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-104-B-NA-DOC-074', 'itm-104', 'B', 'DOC-074', 0, NULL, 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-104-C-NA-DOC-085', 'itm-104', 'C', 'DOC-085', 0, NULL, 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-104-D-NA-DOC-056', 'itm-104', 'D', 'DOC-056', 0, NULL, 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-2301-A-NA-DOC-083', 'acf-0901', 'A', 'DOC-083', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-2301-B-NA-DOC-059', 'acf-0901', 'B', 'DOC-059', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-2301-C-NA-DOC-028', 'acf-0901', 'C', 'DOC-028', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-2301-D-NA-DOC-026', 'acf-0901', 'D', 'DOC-026', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-2301-REP1-NA-DOC-037', 'acf-0901', 'REP1', 'DOC-037', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-2301-REP2-NA-DOC-025', 'acf-0901', 'REP2', 'DOC-025', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-2301-rep2-NA-DOC-084', 'acf-0901', 'rep2', 'DOC-084', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACC-0906-A-NA-DOC-115', 'acc-0906', 'A', 'DOC-115', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACC-0906-B-NA-DOC-115', 'acc-0906', 'B', 'DOC-115', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACC-0906-C-NA-DOC-115', 'acc-0906', 'C', 'DOC-115', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACC-0906-D-NA-DOC-073', 'acc-0906', 'D', 'DOC-073', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACC-0906-E-NA-DOC-049', 'acc-0906', 'E', 'DOC-049', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-A-NA-DOC-080', 'aed-1285', 'A', 'DOC-080', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-B-NA-DOC-080', 'aed-1285', 'B', 'DOC-080', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-C-NA-DOC-113', 'aed-1285', 'C', 'DOC-113', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-D-NA-DOC-113', 'aed-1285', 'D', 'DOC-113', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-E-NA-DOC-073', 'aed-1285', 'E', 'DOC-073', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-F-NA-DOC-006', 'aed-1285', 'F', 'DOC-006', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-G-NA-DOC-017', 'aed-1285', 'G', 'DOC-017', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-REP-NA-DOC-096', 'aed-1285', 'REP', 'DOC-096', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1041-A-NA-DOC-103', 'aef-1041', 'A', 'DOC-103', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1041-B-NA-DOC-082', 'aef-1041', 'B', 'DOC-082', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1041-C-NA-DOC-035', 'aef-1041', 'C', 'DOC-035', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1041-D-NA-DOC-103', 'aef-1041', 'D', 'DOC-103', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1041-E-NA-DOC-016', 'aef-1041', 'E', 'DOC-016', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCH-1024-A-NA-DOC-060', 'sch-1024', 'A', 'DOC-060', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCH-1024-B-NA-DOC-060', 'sch-1024', 'B', 'DOC-060', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCH-1024-C-NA-DOC-089', 'sch-1024', 'C', 'DOC-089', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCH-1024-D-NA-DOC-021', 'sch-1024', 'D', 'DOC-021', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCH-1024-E-NA-DOC-076', 'sch-1024', 'E', 'DOC-076', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACH-2307-A-NA-DOC-103', 'aca-0907', 'A', 'DOC-103', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACH-2307-B-NA-DOC-035', 'aca-0907', 'B', 'DOC-035', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACH-2307-C-NA-DOC-092', 'aca-0907', 'C', 'DOC-092', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACH-2307-D-NA-DOC-069', 'aca-0907', 'D', 'DOC-069', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACH-2307-E-NA-DOC-109', 'aca-0907', 'E', 'DOC-109', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-100-A-NA-DOC-115', 'itm-100', 'A', 'DOC-115', 0, NULL, 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-100-B-NA-DOC-036', 'itm-100', 'B', 'DOC-036', 0, NULL, 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-100-C-NA-DOC-118', 'itm-100', 'C', 'DOC-118', 0, NULL, 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-100-D-NA-DOC-013', 'itm-100', 'D', 'DOC-013', 0, NULL, 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0903-A-NA-DOC-084', 'acf-0903', 'A', 'DOC-084', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0903-B-NA-DOC-030', 'acf-0903', 'B', 'DOC-030', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0903-C-NA-DOC-004', 'acf-0903', 'C', 'DOC-004', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0903-E-NA-DOC-025', 'acf-0903', 'E', 'DOC-025', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-105-A-NA-DOC-068', 'itm-105', 'A', 'DOC-068', 0, NULL, 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-105-B-NA-DOC-068', 'itm-105', 'B', 'DOC-068', 0, NULL, 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-105-C-NA-DOC-091', 'itm-105', 'C', 'DOC-091', 0, NULL, 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0902-A-NA-DOC-045', 'acf-0902', 'A', 'DOC-045', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0902-B-NA-DOC-100', 'acf-0902', 'B', 'DOC-100', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0902-C-NA-DOC-043', 'acf-0902', 'C', 'DOC-043', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0902-D-NA-DOC-045', 'acf-0902', 'D', 'DOC-045', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0902-E-NA-DOC-120', 'acf-0902', 'E', 'DOC-120', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1008-A-NA-DOC-111', 'aec-1008', 'A', 'DOC-111', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1008-B-NA-DOC-023', 'aec-1008', 'B', 'DOC-023', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1008-C-NA-DOC-011', 'aec-1008', 'C', 'DOC-011', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1052-A-NA-DOC-112', 'aef-1052', 'A', 'DOC-112', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1052-B-NA-DOC-112', 'aef-1052', 'B', 'DOC-112', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1052-C-NA-DOC-097', 'aef-1052', 'C', 'DOC-097', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1286-A-NA-DOC-055', 'aed-1286', 'A', 'DOC-055', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1286-B-NA-DOC-036', 'aed-1286', 'B', 'DOC-036', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1286-C-NA-DOC-055', 'aed-1286', 'C', 'DOC-055', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1058-A-NA-DOC-108', 'aec-1058', 'A', 'DOC-108', 1, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B2L4-AA-NA-DOC-012', 'aec-1058', 'AA', 'DOC-012', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B2L4-AB-NA-DOC-088', 'aec-1058', 'AB', 'DOC-088', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B2L4-APR-NA-DOC-119', 'aec-1058', 'APR', 'DOC-119', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B2L4-BA-NA-DOC-108', 'aec-1058', 'BA', 'DOC-108', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B2L4-BB-NA-DOC-020', 'aec-1058', 'BB', 'DOC-020', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1058-B-NA-DOC-020', 'aec-1058', 'B', 'DOC-020', 1, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1058-C-NA-DOC-003', 'aec-1058', 'C', 'DOC-003', 1, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0904-A-NA-DOC-070', 'acf-0904', 'A', 'DOC-070', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0904-B-NA-DOC-072', 'acf-0904', 'B', 'DOC-072', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0904-C-NA-DOC-050', 'acf-0904', 'C', 'DOC-050', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0904-D-NA-DOC-007', 'acf-0904', 'D', 'DOC-007', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0904-E-NA-DOC-072', 'acf-0904', 'E', 'DOC-072', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0904-E-NA-DOC-090', 'acf-0904', 'E', 'DOC-090', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1005-A-NA-DOC-060', 'scc-1005', 'A', 'DOC-060', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1005-B-NA-DOC-098', 'scc-1005', 'B', 'DOC-098', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1005-C-NA-DOC-018', 'scc-1005', 'C', 'DOC-018', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1005-D-NA-DOC-029', 'scc-1005', 'D', 'DOC-029', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACD-0908-A-NA-DOC-032', 'acd-0908', 'A', 'DOC-032', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACD-0908-B-NA-DOC-058', 'acd-0908', 'B', 'DOC-058', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACD-0908-C-NA-DOC-009', 'acd-0908', 'C', 'DOC-009', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACD-0908-D-NA-DOC-014', 'acd-0908', 'D', 'DOC-014', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACD-0908-E-NA-DOC-093', 'acd-0908', 'E', 'DOC-093', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACD-0908-E-NA-DOC-032', 'acd-0908', 'E', 'DOC-032', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACD-0908-F-NA-DOC-019', 'acd-0908', 'F', 'DOC-019', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1026-A-NA-DOC-006', 'aed-1026', 'A', 'DOC-006', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1026-B-NA-DOC-036', 'aed-1026', 'B', 'DOC-036', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1026-C-NA-DOC-038', 'aed-1026', 'C', 'DOC-038', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1026-D-NA-DOC-036', 'aed-1026', 'D', 'DOC-036', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCF-1006-A-NA-DOC-037', 'scf-1006', 'A', 'DOC-037', 1, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B3LA-AA-NA-DOC-044', 'scf-1006', 'AA', 'DOC-044', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B3LA-AB-NA-DOC-027', 'scf-1006', 'AB', 'DOC-027', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B3LA-APR-NA-DOC-119', 'scf-1006', 'APR', 'DOC-119', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B3LA-BA-NA-DOC-044', 'scf-1006', 'BA', 'DOC-044', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B3LA-BB-NA-DOC-044', 'scf-1006', 'BB', 'DOC-044', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B3LA-BC-NA-DOC-106', 'scf-1006', 'BC', 'DOC-106', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B3LA-CA-NA-DOC-086', 'scf-1006', 'CA', 'DOC-086', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCF-1006-B-NA-DOC-095', 'scf-1006', 'B', 'DOC-095', 1, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCF-1006-C-NA-DOC-026', 'scf-1006', 'C', 'DOC-026', 1, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCF-1006-D-NA-DOC-037', 'scf-1006', 'D', 'DOC-037', 1, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1013-A-NA-DOC-101', 'scc-1013', 'A', 'DOC-101', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1013-B-NA-DOC-101', 'scc-1013', 'B', 'DOC-101', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1013-C-NA-DOC-121', 'scc-1013', 'C', 'DOC-121', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1013-D-NA-DOC-121', 'scc-1013', 'D', 'DOC-121', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0905-A-NA-DOC-043', 'acf-0905', 'A', 'DOC-043', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0905-B-NA-DOC-067', 'acf-0905', 'B', 'DOC-067', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0905-C-NA-DOC-117', 'acf-0905', 'C', 'DOC-117', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1031-A-NA-DOC-065', 'aef-1031', 'A', 'DOC-065', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1031-B-NA-DOC-063', 'aef-1031', 'B', 'DOC-063', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1031-C-NA-DOC-063', 'aef-1031', 'C', 'DOC-063', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1017-A-NA-DOC-105', 'scc-1017', 'A', 'DOC-105', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1017-B-NA-DOC-116', 'scc-1017', 'B', 'DOC-116', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1017-C-NA-DOC-062', 'scc-1017', 'C', 'DOC-062', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1017-D-NA-DOC-052', 'scc-1017', 'D', 'DOC-052', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1018-A-NA-DOC-048', 'scd-1018', 'A', 'DOC-048', 1, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B4LA-AA-NA-DOC-048', 'scd-1018', 'AA', 'DOC-048', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B4LA-AB-NA-DOC-048', 'scd-1018', 'AB', 'DOC-048', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B4LA-BA-NA-DOC-048', 'scd-1018', 'BA', 'DOC-048', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B4LA-BB-NA-DOC-048', 'scd-1018', 'BB', 'DOC-048', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1018-B-NA-DOC-048', 'scd-1018', 'B', 'DOC-048', 1, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1018-C-NA-DOC-010', 'scd-1018', 'C', 'DOC-010', 1, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B4LA-CA-NA-DOC-010', 'scd-1018', 'CA', 'DOC-010', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1022-A-NA-DOC-112', 'scd-1022', 'A', 'DOC-112', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1022-B-NA-DOC-097', 'scd-1022', 'B', 'DOC-097', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1022-C-NA-DOC-066', 'scd-1022', 'C', 'DOC-066', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1027-A-NA-DOC-005', 'scd-1027', 'A', 'DOC-005', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1027-B-NA-DOC-005', 'scd-1027', 'B', 'DOC-005', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1027-C-NA-DOC-118', 'scd-1027', 'C', 'DOC-118', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1003-A-NA-DOC-048', 'scd-1003', 'A', 'DOC-048', 1, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LB-AA-NA-DOC-048', 'scd-1003', 'AA', 'DOC-048', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LB-AB-NA-DOC-048', 'scd-1003', 'AB', 'DOC-048', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1003-B-NA-DOC-054', 'scd-1003', 'B', 'DOC-054', 1, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LB-BA-NA-DOC-048', 'scd-1003', 'BA', 'DOC-048', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LB-BB-NA-DOC-001', 'scd-1003', 'BB', 'DOC-001', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1003-C-NA-DOC-001', 'scd-1003', 'C', 'DOC-001', 1, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LB-CA-NA-DOC-001', 'scd-1003', 'CA', 'DOC-001', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1007-A-NA-DOC-039', 'scc-1007', 'A', 'DOC-039', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1007-B-NA-DOC-008', 'scc-1007', 'B', 'DOC-008', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1007-C-NA-DOC-039', 'scc-1007', 'C', 'DOC-039', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1034-A-NA-DOC-077', 'aec-1034', 'A', 'DOC-077', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1034-B-NA-DOC-061', 'aec-1034', 'B', 'DOC-061', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1034-C-NA-DOC-065', 'aec-1034', 'C', 'DOC-065', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1010-A-NA-DOC-061', 'scc-1010', 'A', 'DOC-061', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1010-B-NA-DOC-069', 'scc-1010', 'B', 'DOC-069', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1010-C-NA-DOC-069', 'scc-1010', 'C', 'DOC-069', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1061-A-NA-DOC-016', 'aec-1061', 'A', 'DOC-016', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1061-B-NA-DOC-016', 'aec-1061', 'B', 'DOC-016', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1061-C-NA-DOC-051', 'aec-1061', 'C', 'DOC-051', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1025-A-NA-DOC-013', 'sca-1025', 'A', 'DOC-013', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1025-B-NA-DOC-017', 'sca-1025', 'B', 'DOC-017', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1025-C-NA-DOC-038', 'sca-1025', 'C', 'DOC-038', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCB-1001-A-NA-DOC-113', 'scb-1001', 'A', 'DOC-113', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCB-1001-B-NA-DOC-041', 'scb-1001', 'B', 'DOC-041', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCB-1001-C-NA-DOC-063', 'scb-1001', 'C', 'DOC-063', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1011-A-NA-DOC-033', 'scd-1011', 'A', 'DOC-033', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1011-B-NA-DOC-022', 'scd-1011', 'B', 'DOC-022', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1011-C-NA-DOC-008', 'scd-1011', 'C', 'DOC-008', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1014-A-NA-DOC-064', 'scc-1014', 'A', 'DOC-064', 1, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B6LE-AA-NA-DOC-064', 'scc-1014', 'AA', 'DOC-064', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B6LE-AB-NA-DOC-064', 'scc-1014', 'AB', 'DOC-064', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B6LE-BA-NA-DOC-064', 'scc-1014', 'BA', 'DOC-064', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B6LE-BB-NA-DOC-064', 'scc-1014', 'BB', 'DOC-064', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B6LE-CA-NA-DOC-064', 'scc-1014', 'CA', 'DOC-064', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1014-B-NA-DOC-064', 'scc-1014', 'B', 'DOC-064', 1, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1014-C-NA-DOC-064', 'scc-1014', 'C', 'DOC-064', 1, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEB-1055-A-NA-DOC-041', 'aeb-1055', 'A', 'DOC-041', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEB-1055-B-NA-DOC-008', 'aeb-1055', 'B', 'DOC-008', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEB-1055-C-NA-DOC-008', 'aeb-1055', 'C', 'DOC-008', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1021-A-NA-DOC-015', 'scd-1021', 'A', 'DOC-015', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1021-B-NA-DOC-114', 'scd-1021', 'B', 'DOC-114', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1021-C-NA-DOC-015', 'scd-1021', 'C', 'DOC-015', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1021-D-NA-DOC-031', 'scd-1021', 'D', 'DOC-031', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1026-A-NA-DOC-016', 'sca-1026', 'A', 'DOC-016', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1026-B-NA-DOC-016', 'sca-1026', 'B', 'DOC-016', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1026-C-NA-DOC-114', 'sca-1026', 'C', 'DOC-114', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1004-A-NA-DOC-002', 'scd-1004', 'A', 'DOC-002', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1004-B-NA-DOC-002', 'scd-1004', 'B', 'DOC-002', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1004-C-NA-DOC-002', 'scd-1004', 'C', 'DOC-002', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1004-D-NA-DOC-002', 'scd-1004', 'D', 'DOC-002', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCG-1009-A-NA-DOC-046', 'scg-1009', 'A', 'DOC-046', 0, NULL, 6, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCG-1009-B-NA-DOC-046', 'scg-1009', 'B', 'DOC-046', 0, NULL, 6, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCG-1009-C-NA-DOC-046', 'scg-1009', 'C', 'DOC-046', 0, NULL, 6, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TND-2301-A-NA-DOC-005', 'tnd-2301', 'A', 'DOC-005', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1015-A-NA-DOC-069', 'scd-1015', 'A', 'DOC-069', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1015-B-NA-DOC-063', 'scd-1015', 'B', 'DOC-063', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1015-C-NA-DOC-038', 'scd-1015', 'C', 'DOC-038', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SID-2301-A-NA-DOC-036', 'sid-2301', 'A', 'DOC-036', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1023-A-NA-DOC-081', 'scc-1023', 'A', 'DOC-081', 1, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LA-AA-NA-DOC-081', 'scc-1023', 'AA', 'DOC-081', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LA-AB-NA-DOC-081', 'scc-1023', 'AB', 'DOC-081', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1023-B-NA-DOC-087', 'scc-1023', 'B', 'DOC-087', 1, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LA-BA-NA-DOC-087', 'scc-1023', 'BA', 'DOC-087', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LA-BB-NA-DOC-087', 'scc-1023', 'BB', 'DOC-087', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1023-C-NA-DOC-107', 'scc-1023', 'C', 'DOC-107', 1, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LA-CA-NA-DOC-107', 'scc-1023', 'CA', 'DOC-107', 1, NULL, NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACA-0909-A-NA-DOC-069', 'aca-0909', 'A', 'DOC-069', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACA-0909-B-NA-DOC-034', 'aca-0909', 'B', 'DOC-034', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACA-0909-C-NA-DOC-051', 'aca-0909', 'C', 'DOC-051', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2301-A-NA-DOC-094', 'tdd-2301', 'A', 'DOC-094', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2301-B-NA-DOC-046', 'tdd-2301', 'B', 'DOC-046', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1002-A-NA-DOC-031', 'sca-1002', 'A', 'DOC-031', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1002-B-NA-DOC-031', 'sca-1002', 'B', 'DOC-031', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1002-C-NA-DOC-065', 'sca-1002', 'C', 'DOC-065', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TND-2302-A-NA-DOC-055', 'tnd-2302', 'A', 'DOC-055', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TND-2303-A-NA-DOC-013', 'tnd-2303', 'A', 'DOC-013', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2303-A-NA-DOC-022', 'tdd-2303', 'A', 'DOC-022', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SID-2303-A-NA-DOC-075', 'sid-2303', 'A', 'DOC-075', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1016-A-NA-DOC-055', 'scd-1016', 'A', 'DOC-055', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1016-B-NA-DOC-008', 'scd-1016', 'B', 'DOC-008', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1016-C-NA-DOC-073', 'scd-1016', 'C', 'DOC-073', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1019-A-NA-DOC-057', 'scc-1019', 'A', 'DOC-057', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1019-B-NA-DOC-114', 'scc-1019', 'B', 'DOC-114', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1019-C-NA-DOC-038', 'scc-1019', 'C', 'DOC-038', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2302-A-NA-DOC-094', 'tdd-2302', 'A', 'DOC-094', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SID-2302-A-NA-DOC-040', 'sid-2302', 'A', 'DOC-040', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-102-A-NA-DOC-119', 'itm-102', 'A', 'DOC-119', 0, NULL, 10, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACA-0910-A-NA-DOC-115', 'aca-0910', 'A', 'DOC-115', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACA-0910-B-NA-DOC-078', 'aca-0910', 'B', 'DOC-078', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACA-0910-C-NA-DOC-069', 'aca-0910', 'C', 'DOC-069', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SID-2305-A-NA-DOC-075', 'sid-2305', 'A', 'DOC-075', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TND-2305-A-NA-DOC-113', 'tnd-2305', 'A', 'DOC-113', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1012-A-NA-DOC-057', 'scc-1012', 'A', 'DOC-057', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1012-B-NA-DOC-057', 'scc-1012', 'B', 'DOC-057', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1012-C-NA-DOC-061', 'scc-1012', 'C', 'DOC-061', 0, NULL, 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TND-2304-A-NA-DOC-075', 'tnd-2304', 'A', 'DOC-075', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TND-2306-A-NA-DOC-071', 'tnd-2306', 'A', 'DOC-071', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-103-A-NA-DOC-119', 'itm-103', 'A', 'DOC-119', 0, NULL, 10, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SID-2304-A-NA-DOC-114', 'sid-2304', 'A', 'DOC-114', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2305-A-NA-DOC-104', 'tdd-2305', 'A', 'DOC-104', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2304-A-NA-DOC-057', 'tdd-2304', 'A', 'DOC-057', 0, NULL, 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-104-A-1-DOC-053', 'itm-104', 'A', 'DOC-053', 0, '1', 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-104-B-1-DOC-074', 'itm-104', 'B', 'DOC-074', 0, '1', 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-104-C-1-DOC-085', 'itm-104', 'C', 'DOC-085', 0, '1', 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-104-D-1-DOC-056', 'itm-104', 'D', 'DOC-056', 0, '1', 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-2301-A-1-DOC-083', 'acf-0901', 'A', 'DOC-083', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-2301-B-1-DOC-059', 'acf-0901', 'B', 'DOC-059', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-2301-C-1-DOC-028', 'acf-0901', 'C', 'DOC-028', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-2301-D-1-DOC-026', 'acf-0901', 'D', 'DOC-026', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-2301-REP1-1-DOC-037', 'acf-0901', 'REP1', 'DOC-037', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-2301-REP2-1-DOC-025', 'acf-0901', 'REP2', 'DOC-025', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-2301-rep2-1-DOC-084', 'acf-0901', 'rep2', 'DOC-084', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACC-0906-A-1-DOC-115', 'acc-0906', 'A', 'DOC-115', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACC-0906-B-1-DOC-115', 'acc-0906', 'B', 'DOC-115', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACC-0906-C-1-DOC-115', 'acc-0906', 'C', 'DOC-115', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACC-0906-D-1-DOC-073', 'acc-0906', 'D', 'DOC-073', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACC-0906-E-1-DOC-049', 'acc-0906', 'E', 'DOC-049', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-A-1-DOC-080', 'aed-1285', 'A', 'DOC-080', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-B-1-DOC-080', 'aed-1285', 'B', 'DOC-080', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-C-1-DOC-113', 'aed-1285', 'C', 'DOC-113', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-D-1-DOC-113', 'aed-1285', 'D', 'DOC-113', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-E-1-DOC-073', 'aed-1285', 'E', 'DOC-073', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-F-1-DOC-006', 'aed-1285', 'F', 'DOC-006', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-G-1-DOC-017', 'aed-1285', 'G', 'DOC-017', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1285-REP-1-DOC-096', 'aed-1285', 'REP', 'DOC-096', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1041-A-1-DOC-103', 'aef-1041', 'A', 'DOC-103', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1041-B-1-DOC-082', 'aef-1041', 'B', 'DOC-082', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1041-C-1-DOC-035', 'aef-1041', 'C', 'DOC-035', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1041-D-1-DOC-103', 'aef-1041', 'D', 'DOC-103', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1041-E-1-DOC-016', 'aef-1041', 'E', 'DOC-016', 0, '1', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCH-1024-A-1-DOC-060', 'sch-1024', 'A', 'DOC-060', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCH-1024-B-1-DOC-060', 'sch-1024', 'B', 'DOC-060', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCH-1024-C-1-DOC-089', 'sch-1024', 'C', 'DOC-089', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCH-1024-D-1-DOC-021', 'sch-1024', 'D', 'DOC-021', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCH-1024-E-1-DOC-076', 'sch-1024', 'E', 'DOC-076', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACH-2307-A-1-DOC-103', 'aca-0907', 'A', 'DOC-103', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACH-2307-B-1-DOC-035', 'aca-0907', 'B', 'DOC-035', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACH-2307-C-1-DOC-092', 'aca-0907', 'C', 'DOC-092', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACH-2307-D-1-DOC-069', 'aca-0907', 'D', 'DOC-069', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACH-2307-E-1-DOC-109', 'aca-0907', 'E', 'DOC-109', 0, '1', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-100-A-1-DOC-115', 'itm-100', 'A', 'DOC-115', 0, '1', 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-100-B-1-DOC-036', 'itm-100', 'B', 'DOC-036', 0, '1', 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-100-C-1-DOC-118', 'itm-100', 'C', 'DOC-118', 0, '1', 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-100-D-1-DOC-013', 'itm-100', 'D', 'DOC-013', 0, '1', 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0903-A-2-DOC-084', 'acf-0903', 'A', 'DOC-084', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0903-B-2-DOC-030', 'acf-0903', 'B', 'DOC-030', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0903-C-2-DOC-004', 'acf-0903', 'C', 'DOC-004', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0903-E-2-DOC-025', 'acf-0903', 'E', 'DOC-025', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-105-A-2-DOC-068', 'itm-105', 'A', 'DOC-068', 0, '2', 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-105-B-2-DOC-068', 'itm-105', 'B', 'DOC-068', 0, '2', 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-105-C-2-DOC-091', 'itm-105', 'C', 'DOC-091', 0, '2', 0, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0902-A-2-DOC-045', 'acf-0902', 'A', 'DOC-045', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0902-B-2-DOC-100', 'acf-0902', 'B', 'DOC-100', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0902-C-2-DOC-043', 'acf-0902', 'C', 'DOC-043', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0902-D-2-DOC-045', 'acf-0902', 'D', 'DOC-045', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0902-E-2-DOC-120', 'acf-0902', 'E', 'DOC-120', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1008-A-2-DOC-111', 'aec-1008', 'A', 'DOC-111', 0, '2', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1008-B-2-DOC-023', 'aec-1008', 'B', 'DOC-023', 0, '2', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1008-C-2-DOC-011', 'aec-1008', 'C', 'DOC-011', 0, '2', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1052-A-2-DOC-112', 'aef-1052', 'A', 'DOC-112', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1052-B-2-DOC-112', 'aef-1052', 'B', 'DOC-112', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1052-C-2-DOC-097', 'aef-1052', 'C', 'DOC-097', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1286-A-2-DOC-055', 'aed-1286', 'A', 'DOC-055', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1286-B-2-DOC-036', 'aed-1286', 'B', 'DOC-036', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1286-C-2-DOC-055', 'aed-1286', 'C', 'DOC-055', 0, '2', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1058-A-2-DOC-108', 'aec-1058', 'A', 'DOC-108', 1, '2', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B2L4-AA-2-DOC-012', 'aec-1058', 'AA', 'DOC-012', 1, '2', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B2L4-AB-2-DOC-088', 'aec-1058', 'AB', 'DOC-088', 1, '2', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B2L4-APR-2-DOC-119', 'aec-1058', 'APR', 'DOC-119', 1, '2', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B2L4-BA-2-DOC-108', 'aec-1058', 'BA', 'DOC-108', 1, '2', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B2L4-BB-2-DOC-020', 'aec-1058', 'BB', 'DOC-020', 1, '2', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1058-B-2-DOC-020', 'aec-1058', 'B', 'DOC-020', 1, '2', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1058-C-2-DOC-003', 'aec-1058', 'C', 'DOC-003', 1, '2', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0904-A-3-DOC-070', 'acf-0904', 'A', 'DOC-070', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0904-B-3-DOC-072', 'acf-0904', 'B', 'DOC-072', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0904-C-3-DOC-050', 'acf-0904', 'C', 'DOC-050', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0904-D-3-DOC-007', 'acf-0904', 'D', 'DOC-007', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0904-E-3-DOC-072', 'acf-0904', 'E', 'DOC-072', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0904-E-3-DOC-090', 'acf-0904', 'E', 'DOC-090', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1005-A-3-DOC-060', 'scc-1005', 'A', 'DOC-060', 0, '3', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1005-B-3-DOC-098', 'scc-1005', 'B', 'DOC-098', 0, '3', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1005-C-3-DOC-018', 'scc-1005', 'C', 'DOC-018', 0, '3', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1005-D-3-DOC-029', 'scc-1005', 'D', 'DOC-029', 0, '3', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACD-0908-A-3-DOC-032', 'acd-0908', 'A', 'DOC-032', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACD-0908-B-3-DOC-058', 'acd-0908', 'B', 'DOC-058', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACD-0908-C-3-DOC-009', 'acd-0908', 'C', 'DOC-009', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACD-0908-D-3-DOC-014', 'acd-0908', 'D', 'DOC-014', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACD-0908-E-3-DOC-093', 'acd-0908', 'E', 'DOC-093', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACD-0908-E-3-DOC-032', 'acd-0908', 'E', 'DOC-032', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACD-0908-F-3-DOC-019', 'acd-0908', 'F', 'DOC-019', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1026-A-3-DOC-006', 'aed-1026', 'A', 'DOC-006', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1026-B-3-DOC-036', 'aed-1026', 'B', 'DOC-036', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1026-C-3-DOC-038', 'aed-1026', 'C', 'DOC-038', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AED-1026-D-3-DOC-036', 'aed-1026', 'D', 'DOC-036', 0, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCF-1006-A-3-DOC-037', 'scf-1006', 'A', 'DOC-037', 1, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B3LA-AA-3-DOC-044', 'scf-1006', 'AA', 'DOC-044', 1, '3', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B3LA-AB-3-DOC-027', 'scf-1006', 'AB', 'DOC-027', 1, '3', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B3LA-APR-3-DOC-119', 'scf-1006', 'APR', 'DOC-119', 1, '3', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B3LA-BA-3-DOC-044', 'scf-1006', 'BA', 'DOC-044', 1, '3', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B3LA-BB-3-DOC-044', 'scf-1006', 'BB', 'DOC-044', 1, '3', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B3LA-BC-3-DOC-106', 'scf-1006', 'BC', 'DOC-106', 1, '3', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B3LA-CA-3-DOC-086', 'scf-1006', 'CA', 'DOC-086', 1, '3', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCF-1006-B-3-DOC-095', 'scf-1006', 'B', 'DOC-095', 1, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCF-1006-C-3-DOC-026', 'scf-1006', 'C', 'DOC-026', 1, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCF-1006-D-3-DOC-037', 'scf-1006', 'D', 'DOC-037', 1, '3', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1013-A-3-DOC-101', 'scc-1013', 'A', 'DOC-101', 0, '3', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1013-B-3-DOC-101', 'scc-1013', 'B', 'DOC-101', 0, '3', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1013-C-3-DOC-121', 'scc-1013', 'C', 'DOC-121', 0, '3', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1013-D-3-DOC-121', 'scc-1013', 'D', 'DOC-121', 0, '3', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0905-A-4-DOC-043', 'acf-0905', 'A', 'DOC-043', 0, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0905-B-4-DOC-067', 'acf-0905', 'B', 'DOC-067', 0, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACF-0905-C-4-DOC-117', 'acf-0905', 'C', 'DOC-117', 0, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1031-A-4-DOC-065', 'aef-1031', 'A', 'DOC-065', 0, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1031-B-4-DOC-063', 'aef-1031', 'B', 'DOC-063', 0, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEF-1031-C-4-DOC-063', 'aef-1031', 'C', 'DOC-063', 0, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1017-A-4-DOC-105', 'scc-1017', 'A', 'DOC-105', 0, '4', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1017-B-4-DOC-116', 'scc-1017', 'B', 'DOC-116', 0, '4', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1017-C-4-DOC-062', 'scc-1017', 'C', 'DOC-062', 0, '4', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1017-D-4-DOC-052', 'scc-1017', 'D', 'DOC-052', 0, '4', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1018-A-4-DOC-048', 'scd-1018', 'A', 'DOC-048', 1, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B4LA-AA-4-DOC-048', 'scd-1018', 'AA', 'DOC-048', 1, '4', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B4LA-AB-4-DOC-048', 'scd-1018', 'AB', 'DOC-048', 1, '4', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B4LA-BA-4-DOC-048', 'scd-1018', 'BA', 'DOC-048', 1, '4', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B4LA-BB-4-DOC-048', 'scd-1018', 'BB', 'DOC-048', 1, '4', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1018-B-4-DOC-048', 'scd-1018', 'B', 'DOC-048', 1, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1018-C-4-DOC-010', 'scd-1018', 'C', 'DOC-010', 1, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B4LA-CA-4-DOC-010', 'scd-1018', 'CA', 'DOC-010', 1, '4', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1022-A-4-DOC-112', 'scd-1022', 'A', 'DOC-112', 0, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1022-B-4-DOC-097', 'scd-1022', 'B', 'DOC-097', 0, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1022-C-4-DOC-066', 'scd-1022', 'C', 'DOC-066', 0, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1027-A-4-DOC-005', 'scd-1027', 'A', 'DOC-005', 0, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1027-B-4-DOC-005', 'scd-1027', 'B', 'DOC-005', 0, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1027-C-4-DOC-118', 'scd-1027', 'C', 'DOC-118', 0, '4', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1003-A-5-DOC-048', 'scd-1003', 'A', 'DOC-048', 1, '5', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LB-AA-5-DOC-048', 'scd-1003', 'AA', 'DOC-048', 1, '5', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LB-AB-5-DOC-048', 'scd-1003', 'AB', 'DOC-048', 1, '5', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1003-B-5-DOC-054', 'scd-1003', 'B', 'DOC-054', 1, '5', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LB-BA-5-DOC-048', 'scd-1003', 'BA', 'DOC-048', 1, '5', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LB-BB-5-DOC-001', 'scd-1003', 'BB', 'DOC-001', 1, '5', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1003-C-5-DOC-001', 'scd-1003', 'C', 'DOC-001', 1, '5', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LB-CA-5-DOC-001', 'scd-1003', 'CA', 'DOC-001', 1, '5', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1007-A-5-DOC-039', 'scc-1007', 'A', 'DOC-039', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1007-B-5-DOC-008', 'scc-1007', 'B', 'DOC-008', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1007-C-5-DOC-039', 'scc-1007', 'C', 'DOC-039', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1034-A-5-DOC-077', 'aec-1034', 'A', 'DOC-077', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1034-B-5-DOC-061', 'aec-1034', 'B', 'DOC-061', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1034-C-5-DOC-065', 'aec-1034', 'C', 'DOC-065', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1010-A-5-DOC-061', 'scc-1010', 'A', 'DOC-061', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1010-B-5-DOC-069', 'scc-1010', 'B', 'DOC-069', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1010-C-5-DOC-069', 'scc-1010', 'C', 'DOC-069', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1061-A-5-DOC-016', 'aec-1061', 'A', 'DOC-016', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1061-B-5-DOC-016', 'aec-1061', 'B', 'DOC-016', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEC-1061-C-5-DOC-051', 'aec-1061', 'C', 'DOC-051', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1025-A-5-DOC-013', 'sca-1025', 'A', 'DOC-013', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1025-B-5-DOC-017', 'sca-1025', 'B', 'DOC-017', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1025-C-5-DOC-038', 'sca-1025', 'C', 'DOC-038', 0, '5', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCB-1001-A-6-DOC-113', 'scb-1001', 'A', 'DOC-113', 0, '6', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCB-1001-B-6-DOC-041', 'scb-1001', 'B', 'DOC-041', 0, '6', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCB-1001-C-6-DOC-063', 'scb-1001', 'C', 'DOC-063', 0, '6', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1011-A-6-DOC-033', 'scd-1011', 'A', 'DOC-033', 0, '6', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1011-B-6-DOC-022', 'scd-1011', 'B', 'DOC-022', 0, '6', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1011-C-6-DOC-008', 'scd-1011', 'C', 'DOC-008', 0, '6', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1014-A-6-DOC-064', 'scc-1014', 'A', 'DOC-064', 1, '6', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B6LE-AA-6-DOC-064', 'scc-1014', 'AA', 'DOC-064', 1, '6', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B6LE-AB-6-DOC-064', 'scc-1014', 'AB', 'DOC-064', 1, '6', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B6LE-BA-6-DOC-064', 'scc-1014', 'BA', 'DOC-064', 1, '6', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B6LE-BB-6-DOC-064', 'scc-1014', 'BB', 'DOC-064', 1, '6', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B6LE-CA-6-DOC-064', 'scc-1014', 'CA', 'DOC-064', 1, '6', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1014-B-6-DOC-064', 'scc-1014', 'B', 'DOC-064', 1, '6', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1014-C-6-DOC-064', 'scc-1014', 'C', 'DOC-064', 1, '6', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEB-1055-A-6-DOC-041', 'aeb-1055', 'A', 'DOC-041', 0, '6', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEB-1055-B-6-DOC-008', 'aeb-1055', 'B', 'DOC-008', 0, '6', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-AEB-1055-C-6-DOC-008', 'aeb-1055', 'C', 'DOC-008', 0, '6', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1021-A-6-DOC-015', 'scd-1021', 'A', 'DOC-015', 0, '6', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1021-B-6-DOC-114', 'scd-1021', 'B', 'DOC-114', 0, '6', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1021-C-6-DOC-015', 'scd-1021', 'C', 'DOC-015', 0, '6', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1021-D-6-DOC-031', 'scd-1021', 'D', 'DOC-031', 0, '6', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1026-A-6-DOC-016', 'sca-1026', 'A', 'DOC-016', 0, '6', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1026-B-6-DOC-016', 'sca-1026', 'B', 'DOC-016', 0, '6', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1026-C-6-DOC-114', 'sca-1026', 'C', 'DOC-114', 0, '6', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1004-A-7-DOC-002', 'scd-1004', 'A', 'DOC-002', 0, '7', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1004-B-7-DOC-002', 'scd-1004', 'B', 'DOC-002', 0, '7', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1004-C-7-DOC-002', 'scd-1004', 'C', 'DOC-002', 0, '7', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1004-D-7-DOC-002', 'scd-1004', 'D', 'DOC-002', 0, '7', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCG-1009-A-7-DOC-046', 'scg-1009', 'A', 'DOC-046', 0, '7', 6, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCG-1009-B-7-DOC-046', 'scg-1009', 'B', 'DOC-046', 0, '7', 6, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCG-1009-C-7-DOC-046', 'scg-1009', 'C', 'DOC-046', 0, '7', 6, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TND-2301-A-7-DOC-005', 'tnd-2301', 'A', 'DOC-005', 0, '7', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1015-A-7-DOC-069', 'scd-1015', 'A', 'DOC-069', 0, '7', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1015-B-7-DOC-063', 'scd-1015', 'B', 'DOC-063', 0, '7', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1015-C-7-DOC-038', 'scd-1015', 'C', 'DOC-038', 0, '7', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SID-2301-A-7-DOC-036', 'sid-2301', 'A', 'DOC-036', 0, '7', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1023-A-7-DOC-081', 'scc-1023', 'A', 'DOC-081', 1, '7', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LA-AA-7-DOC-081', 'scc-1023', 'AA', 'DOC-081', 1, '7', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LA-AB-7-DOC-081', 'scc-1023', 'AB', 'DOC-081', 1, '7', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1023-B-7-DOC-087', 'scc-1023', 'B', 'DOC-087', 1, '7', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LA-BA-7-DOC-087', 'scc-1023', 'BA', 'DOC-087', 1, '7', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LA-BB-7-DOC-087', 'scc-1023', 'BB', 'DOC-087', 1, '7', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1023-C-7-DOC-107', 'scc-1023', 'C', 'DOC-107', 1, '7', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-B5LA-CA-7-DOC-107', 'scc-1023', 'CA', 'DOC-107', 1, '7', NULL, 1);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACA-0909-A-7-DOC-069', 'aca-0909', 'A', 'DOC-069', 0, '7', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACA-0909-B-7-DOC-034', 'aca-0909', 'B', 'DOC-034', 0, '7', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACA-0909-C-7-DOC-051', 'aca-0909', 'C', 'DOC-051', 0, '7', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2301-A-7-DOC-094', 'tdd-2301', 'A', 'DOC-094', 0, '7', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2301-B-7-DOC-046', 'tdd-2301', 'B', 'DOC-046', 0, '7', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1002-A-8-DOC-031', 'sca-1002', 'A', 'DOC-031', 0, '8', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1002-B-8-DOC-031', 'sca-1002', 'B', 'DOC-031', 0, '8', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCA-1002-C-8-DOC-065', 'sca-1002', 'C', 'DOC-065', 0, '8', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TND-2302-A-8-DOC-055', 'tnd-2302', 'A', 'DOC-055', 0, '8', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TND-2303-A-8-DOC-013', 'tnd-2303', 'A', 'DOC-013', 0, '8', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2303-A-8-DOC-022', 'tdd-2303', 'A', 'DOC-022', 0, '8', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SID-2303-A-8-DOC-075', 'sid-2303', 'A', 'DOC-075', 0, '8', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1016-A-8-DOC-055', 'scd-1016', 'A', 'DOC-055', 0, '8', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1016-B-8-DOC-008', 'scd-1016', 'B', 'DOC-008', 0, '8', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCD-1016-C-8-DOC-073', 'scd-1016', 'C', 'DOC-073', 0, '8', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1019-A-8-DOC-057', 'scc-1019', 'A', 'DOC-057', 0, '8', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1019-B-8-DOC-114', 'scc-1019', 'B', 'DOC-114', 0, '8', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1019-C-8-DOC-038', 'scc-1019', 'C', 'DOC-038', 0, '8', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2302-A-8-DOC-094', 'tdd-2302', 'A', 'DOC-094', 0, '8', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SID-2302-A-8-DOC-040', 'sid-2302', 'A', 'DOC-040', 0, '8', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-102-A-8-DOC-119', 'itm-102', 'A', 'DOC-119', 0, '8', 10, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACA-0910-A-8-DOC-115', 'aca-0910', 'A', 'DOC-115', 0, '8', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACA-0910-B-8-DOC-078', 'aca-0910', 'B', 'DOC-078', 0, '8', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ACA-0910-C-8-DOC-069', 'aca-0910', 'C', 'DOC-069', 0, '8', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SID-2305-A-9-DOC-075', 'sid-2305', 'A', 'DOC-075', 0, '9', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TND-2305-A-9-DOC-113', 'tnd-2305', 'A', 'DOC-113', 0, '9', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1012-A-9-DOC-057', 'scc-1012', 'A', 'DOC-057', 0, '9', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1012-B-9-DOC-057', 'scc-1012', 'B', 'DOC-057', 0, '9', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SCC-1012-C-9-DOC-061', 'scc-1012', 'C', 'DOC-061', 0, '9', 4, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TND-2304-A-9-DOC-075', 'tnd-2304', 'A', 'DOC-075', 0, '9', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TND-2306-A-9-DOC-071', 'tnd-2306', 'A', 'DOC-071', 0, '9', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-ITM-103-A-9-DOC-119', 'itm-103', 'A', 'DOC-119', 0, '9', 10, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-SID-2304-A-9-DOC-114', 'sid-2304', 'A', 'DOC-114', 0, '9', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2305-A-9-DOC-104', 'tdd-2305', 'A', 'DOC-104', 0, '9', 5, 0);
+--> statement-breakpoint
+INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2304-A-9-DOC-057', 'tdd-2304', 'A', 'DOC-057', 0, '9', 5, 0);
+--> statement-breakpoint
 --> statement-breakpoint
 -- student_profiles (test student)
 INSERT OR REPLACE INTO student_profiles (control_number, full_name, curp, birth_state, career_code, specialty_code, current_semester, certified_average, arithmetic_average, passed_average, approved_credits, remaining_credits, completed_credits, in_progress_credits, advance_percentage, status, health_service, enrollment_period) VALUES ('12345678', 'Ana Gabriela Hernández Ruiz', 'HERA000615MMNRZNA3', 'Michoacán', 'ISIC-2010-224', 'ISIE-TDD-2026-01', 7, 8.7, 8.6, 8.5, 175, 85, 175, 24, 67.3, 'Activo regular', 'IMSS', 'AGOSTO-DICIEMBRE/2026');
@@ -295,20 +1298,20 @@ INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonic
 INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'scd-1016', 'LOCKED', NULL, NULL, 'ENERO-JUNIO/2027');
 --> statement-breakpoint
 --> statement-breakpoint
--- course_groups (7 groups)
-INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab) VALUES ('G-SCD1004-1', 'scd-1004', 'B7A', 'DOC-001', 0);
+-- course_groups (7 student groups)
+INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, student_control_number, is_lab_session) VALUES ('G-SCD1004-1', 'scd-1004', 'B7A', 'DOC-001', 0, '12345678', 0);
 --> statement-breakpoint
-INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab) VALUES ('G-SCD1004-2', 'scd-1004', 'B7B', 'DOC-002', 0);
+INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, student_control_number, is_lab_session) VALUES ('G-SCD1004-2', 'scd-1004', 'B7B', 'DOC-002', 0, '12345678', 0);
 --> statement-breakpoint
-INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab) VALUES ('G-SCD1015-1', 'scd-1015', 'B7C', 'DOC-003', 0);
+INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, student_control_number, is_lab_session) VALUES ('G-SCD1015-1', 'scd-1015', 'B7C', 'DOC-003', 0, '12345678', 0);
 --> statement-breakpoint
-INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab) VALUES ('G-ACA0909-1', 'aca-0909', 'B7D', 'DOC-004', 0);
+INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, student_control_number, is_lab_session) VALUES ('G-ACA0909-1', 'aca-0909', 'B7D', 'DOC-004', 0, '12345678', 0);
 --> statement-breakpoint
-INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab) VALUES ('G-SCG1009-1', 'scg-1009', 'B7E', 'DOC-005', 0);
+INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, student_control_number, is_lab_session) VALUES ('G-SCG1009-1', 'scg-1009', 'B7E', 'DOC-005', 0, '12345678', 0);
 --> statement-breakpoint
-INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab) VALUES ('G-SCG1009-2', 'scg-1009', 'B7F', 'DOC-006', 0);
+INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, student_control_number, is_lab_session) VALUES ('G-SCG1009-2', 'scg-1009', 'B7F', 'DOC-006', 0, '12345678', 0);
 --> statement-breakpoint
-INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab) VALUES ('G-SCC1023-1', 'scc-1023', 'B5LA', 'DOC-007', 1);
+INSERT OR REPLACE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, student_control_number, is_lab_session) VALUES ('G-SCC1023-1', 'scc-1023', 'B5LA', 'DOC-007', 1, '12345678', 1);
 --> statement-breakpoint
 --> statement-breakpoint
 -- course_schedule_blocks (14 blocks)
@@ -341,6 +1344,14 @@ INSERT OR REPLACE INTO course_schedule_blocks (group_id, day, start_time, end_ti
 INSERT OR REPLACE INTO course_schedule_blocks (group_id, day, start_time, end_time, classroom) VALUES ('G-SCC1023-1', 'X', '16:00', '18:00', 'Lab. Electrónica');
 --> statement-breakpoint
 --> statement-breakpoint
+-- complementary_credit_activities (3 rows)
+INSERT OR IGNORE INTO complementary_credit_activities (student_control_number, subject_canonical_id, period) VALUES ('12345678', 'itm-100', 'AGOSTO-DICIEMBRE/2022');
+--> statement-breakpoint
+INSERT OR IGNORE INTO complementary_credit_activities (student_control_number, subject_canonical_id, period) VALUES ('12345678', 'itm-104', 'AGOSTO-DICIEMBRE/2022');
+--> statement-breakpoint
+INSERT OR IGNORE INTO complementary_credit_activities (student_control_number, subject_canonical_id, period) VALUES ('12345678', 'itm-105', 'ENERO-JUNIO/2023');
+--> statement-breakpoint
+--> statement-breakpoint
 -- verification queries (informational, no-op)
 SELECT COUNT(*) AS careers FROM careers;
 --> statement-breakpoint
@@ -351,6 +1362,10 @@ SELECT COUNT(*) AS subjects FROM subjects;
 SELECT COUNT(*) AS aliases FROM subject_aliases;
 --> statement-breakpoint
 SELECT COUNT(*) AS prerequisites FROM subject_prerequisites;
+--> statement-breakpoint
+SELECT COUNT(*) AS units FROM subject_units;
+--> statement-breakpoint
+SELECT COUNT(*) AS complementary_activities FROM complementary_credit_activities;
 --> statement-breakpoint
 SELECT COUNT(*) AS progress_rows FROM student_progress;
 --> statement-breakpoint

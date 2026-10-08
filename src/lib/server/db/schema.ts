@@ -99,6 +99,15 @@ export const subjectPrerequisites = sqliteTable(
 );
 
 // 6. Temarios (Unidades y Subtemas)
+//
+// `subtopicsJson` holds the subtopic objects verbatim as the SIM states
+// them: `{ index, title, evalFrom, evalTo }`. The per-subtopic evaluation
+// windows belong to the subtopic, not to the unit, and Phase 9 rejected a
+// separate `subject_subtopics` table — so they stay inside this column
+// rather than being flattened away or promoted to columns of their own.
+//
+// The four evaluation columns are nullable on purpose: a unit whose temario
+// omits a window stores NULL instead of a value no source establishes.
 export const subjectUnits = sqliteTable("subject_units", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
 	subjectCanonicalId: text("subject_canonical_id")
@@ -107,6 +116,12 @@ export const subjectUnits = sqliteTable("subject_units", {
 	unitNumber: integer("unit_number").notNull(),
 	title: text("title").notNull(),
 	subtopicsJson: text("subtopics_json").notNull(),
+	evalFrom: text("eval_from"),
+	evalTo: text("eval_to"),
+	/** JSON string array of evaluation instruments. */
+	instruments: text("instruments"),
+	/** JSON string array of evaluation criteria. */
+	criteria: text("criteria"),
 });
 
 // 7. Perfil de Estudiantes (FIXES v2.0 applied)
@@ -161,7 +176,47 @@ export const studentProgress = sqliteTable(
 	}),
 );
 
-// 9. Oferta de Grupos
+// 9. Actividades Complementarias
+//
+// One row per completed complementary activity, keyed by
+// (student, subject, period) exactly like `student_progress`. The
+// graduation rule is a COUNT against the dataset's
+// `complementaryCredits.requiredForGraduation`, so there is deliberately
+// no `social_service_unlocked` column and no stored total: both are
+// derived, and a stored copy would drift the moment a row is corrected.
+// The four offering subjects already exist with `component = COMPLEMENTARY`;
+// this table records only that a student completed one.
+export const complementaryCreditActivities = sqliteTable(
+	"complementary_credit_activities",
+	{
+		studentControlNumber: text("student_control_number")
+			.notNull()
+			.references(() => studentProfiles.controlNumber, { onDelete: "cascade" }),
+		subjectCanonicalId: text("subject_canonical_id")
+			.notNull()
+			.references(() => subjects.canonicalId),
+		period: text("period").notNull(),
+	},
+	(table) => ({
+		pk: primaryKey({
+			columns: [table.studentControlNumber, table.subjectCanonicalId, table.period],
+		}),
+	}),
+);
+
+// 10. Oferta de Grupos
+//
+// Three distinct meanings live in this table and they must not be conflated:
+//   studentControlNumber NULL  -> a SIM offering catalogue entry that no
+//                                 student has enrolled in; set -> an
+//                                 enrolment, that student's own group.
+//   hasLab       "this group HAS a laboratory"  — the FontAwesome flask
+//                icon on the SIM offering row.
+//   isLabSession "this group IS the laboratory session" — the separate
+//                zero-credit group of the same subject, in its own
+//                classroom and keyed by its own lab group code.
+// Both are true for every lab session group; only hasLab is true for the
+// paired theory group.
 export const courseGroups = sqliteTable(
 	"course_groups",
 	{
@@ -172,16 +227,37 @@ export const courseGroups = sqliteTable(
 		groupCode: text("group_code").notNull(),
 		teacherName: text("teacher_name").notNull(),
 		hasLab: integer("has_lab", { mode: "boolean" }).notNull().default(false),
+		// The discriminator between a catalogue entry and an enrolment.
+		// NULL is a catalogue row: it belongs to no student, so a reader
+		// asking for "this student's groups" must exclude it. Without it
+		// the offering catalogue and the enrolments are indistinguishable
+		// and every subject-only join leaks 468 rows.
+		studentControlNumber: text("student_control_number").references(
+			() => studentProfiles.controlNumber,
+			{ onDelete: "cascade" },
+		),
+		// SIM term number as text ("1".."9"); NULL for the offering rows
+		// the portal publishes without a term filter.
+		period: text("period"),
+		// NULL for the lab sessions: the offering export carries no credit
+		// figure for them, and the 0 of the written rule is not a source.
+		credits: integer("credits"),
+		isLabSession: integer("is_lab_session", { mode: "boolean" }).notNull().default(false),
 	},
 	(table) => ({
-		// Hot path: the enrollment helper joins course_groups on
-		// subjectCanonicalId for the student's enrolled set. Without
-		// this index the join is a full table scan (audit M2, Round 4).
+		// Serves two access paths with opposite predicates:
+		//   1. catalogue reads — "every group of subject X", used by the
+		//      reinscripcion offer list;
+		//   2. enrolment reads — "the groups of subject X this student is
+		//      enrolled in", which now also filter on
+		//      `studentControlNumber` and so this index narrows the
+		//      candidate set before that filter runs.
+		// Either way the predicate is index-backed rather than a scan.
 		subjectCanonicalIdx: index("idx_course_groups_subject_canonical").on(table.subjectCanonicalId),
 	}),
 );
 
-// 10. Bloques de Horario
+// 11. Bloques de Horario
 export const courseScheduleBlocks = sqliteTable(
 	"course_schedule_blocks",
 	{
@@ -207,7 +283,7 @@ export const courseScheduleBlocks = sqliteTable(
 	}),
 );
 
-// 11. Credenciales de Acceso (PBKDF2 / SHA-256 via Web Crypto API)
+// 12. Credenciales de Acceso (PBKDF2 / SHA-256 via Web Crypto API)
 //
 // Stores the PBKDF2-derived key, salt, and iteration count for each
 // student. Hash and salt are base64url-encoded. passwordUpdatedAt is
@@ -226,7 +302,7 @@ export const studentCredentials = sqliteTable("student_credentials", {
 	passwordUpdatedAt: integer("password_updated_at", { mode: "timestamp" }),
 });
 
-// 12. Sesiones de Autenticacion (cookie-backed)
+// 13. Sesiones de Autenticacion (cookie-backed)
 //
 // `id` is the SHA-256 of the random session token (base64url). The
 // raw token is held only in the HttpOnly cookie; the database stores
@@ -263,7 +339,7 @@ export const authSessions = sqliteTable(
 	}),
 );
 
-// 13. Auth Attempts (login rate limiting).
+// 14. Auth Attempts (login rate limiting).
 //
 // Counters for failed login attempts, scoped by `attempt_key`. Keys are
 // two flavors — `control:<8-digit-control>` for per-account throttling
@@ -336,6 +412,9 @@ export type NewStudentProfile = typeof studentProfiles.$inferInsert;
 
 export type StudentProgress = typeof studentProgress.$inferSelect;
 export type NewStudentProgress = typeof studentProgress.$inferInsert;
+
+export type ComplementaryCreditActivity = typeof complementaryCreditActivities.$inferSelect;
+export type NewComplementaryCreditActivity = typeof complementaryCreditActivities.$inferInsert;
 
 export type CourseGroup = typeof courseGroups.$inferSelect;
 export type NewCourseGroup = typeof courseGroups.$inferInsert;
