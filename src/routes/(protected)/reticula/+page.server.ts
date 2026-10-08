@@ -29,7 +29,9 @@ export interface RetSubject {
 	canonicalId: string;
 	code: string;
 	name: string;
-	semester: number;
+	// Nullable since T9.7: the 16 specialty subjects have no semester on
+	// record (gap H8). ReticulaDag filters them out before grid placement.
+	semester: number | null;
 	credits: number;
 }
 
