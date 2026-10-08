@@ -17,6 +17,13 @@ Los campos que no tienen fuente quedan explícitamente marcados, nunca rellenado
 import collections
 import json
 import pathlib
+import re
+from collections.abc import Iterator
+
+DATA_DIR = pathlib.Path(__file__).parent.parent / "docs/data"
+
+# The only teacher value allowed in docs/data: a synthetic alias.
+TEACHER_ALIAS_RE = re.compile(r"\ADOC-\d{3}\Z")
 
 # --------------------------------------------------------------------------
 # Materias del plan.  (código, alias, nombre, semestre, ht, hp, créditos)
@@ -173,12 +180,70 @@ def slug(code: str) -> str:
     return code.lower().replace("-", "-")
 
 
-def load_specialty_subjects():
+def _teacher_rows(doc: dict) -> Iterator[dict]:
+    """Yield every row of a docs/data document that carries a teacher field.
+
+    The SIM exports nest their rows under different keys ("groups",
+    "subjects"), so walk the lists instead of hard-coding one.
+    """
+    for value in doc.values():
+        if isinstance(value, list):
+            for row in value:
+                if isinstance(row, dict) and isinstance(row.get("teacher"), str):
+                    yield row
+
+
+def redact_teachers(docs: list[dict]) -> list[str]:
+    """Replace every teacher value in place with a stable ``DOC-NNN`` alias.
+
+    Aliases are numbered from the alphabetically sorted union of every file, so
+    the same name maps to the same alias in both exports and across runs.
+    Already-aliased values are left untouched, which keeps the pass idempotent.
+    Returns the real names it replaced so the caller can fail strong on them.
+    """
+    real = sorted(
+        {
+            row["teacher"]
+            for doc in docs
+            for row in _teacher_rows(doc)
+            if not TEACHER_ALIAS_RE.match(row["teacher"])
+        }
+    )
+    aliases = dict(zip(real, (f"DOC-{i:03d}" for i in range(1, len(real) + 1)), strict=True))
+    replaced = []
+    for doc in docs:
+        for row in _teacher_rows(doc):
+            name = row["teacher"]
+            if name in aliases:
+                replaced.append(name)
+                row["teacher"] = aliases[name]
+    return sorted(set(replaced))
+
+
+def load_docs() -> dict[str, dict]:
+    """Load every docs/data JSON export with its teacher values redacted.
+
+    Limit: this redacts what this process reads. The committed files on disk are
+    the artifact that actually carries names, so a real name still aborts the run
+    instead of silently flowing into a regenerated dataset.
+    """
+    docs = {
+        path.stem: json.loads(path.read_text(encoding="utf-8"))
+        for path in sorted(DATA_DIR.glob("*.json"))
+    }
+    leaked = redact_teachers(list(docs.values()))
+    if leaked:
+        raise SystemExit(
+            f"docs/data holds {len(leaked)} unredacted teacher value(s): {leaked[:5]} — "
+            "redact the export to DOC-NNN aliases before committing it"
+        )
+    return docs
+
+
+def load_specialty_subjects(groups: dict):
     """Lee las materias de especialidad del catálogo de grupos del SIM."""
-    path = pathlib.Path(__file__).parent.parent / "docs/data/sim-grupos-oferta.json"
-    data = json.loads(path.read_text(encoding="utf-8"))
     seen = {}
-    for g in data["groups"]:
+    for g in groups["groups"]:
         pre = g["code"][:3]
         if pre not in SPECIALTY_CODES:
             continue
@@ -186,7 +251,7 @@ def load_specialty_subjects():
     return [seen[k] for k in sorted(seen)]
 
 
-def build():
+def build(groups: dict):
     subjects, prereqs = [], []
 
     for code, aliases, name, sem, ht, hp, cr in CORE:
@@ -233,7 +298,7 @@ def build():
             }
         )
 
-    for s in load_specialty_subjects():
+    for s in load_specialty_subjects(groups):
         pre = s["code"][:3]
         subjects.append(
             {
@@ -290,7 +355,7 @@ def build():
 
 
 if __name__ == "__main__":
-    doc = build()
+    doc = build(load_docs()["sim-grupos-oferta"])
     out = (
         pathlib.Path(__file__).parent.parent
         / "src/lib/server/db/data/curriculum-isic-2010-224.json"
