@@ -48,7 +48,7 @@ const modalityOptions = [
 
 		<Input
 			label="Asesor interno (TecNM)"
-			placeholder="DOC-007"
+			placeholder="Nombre completo del asesor"
 			name="advisorInternal"
 		/>
 

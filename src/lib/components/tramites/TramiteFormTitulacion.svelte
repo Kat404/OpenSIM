@@ -52,15 +52,15 @@ const modalityOptions = [
 
 		<Input
 			label="Director de tesis (si aplica)"
-			placeholder="DOC-007"
+			placeholder="Nombre completo del asesor"
 			name="director"
 		/>
 
-		<Input label="Sinodal presidente" placeholder="DOC-001" name="reviewer1" />
+		<Input label="Sinodal presidente" placeholder="Nombre completo del sinodal presidente" name="reviewer1" />
 
-		<Input label="Sinodal secretario" placeholder="DOC-002" name="reviewer2" />
+		<Input label="Sinodal secretario" placeholder="Nombre completo del sinodal secretario" name="reviewer2" />
 
-		<Input label="Sinodal vocal" placeholder="DOC-005" name="reviewer3" />
+		<Input label="Sinodal vocal" placeholder="Nombre completo del sinodal vocal" name="reviewer3" />
 
 		<Button type="submit" variant="primary" size="md" disabled={!unlocked}>
 			Programar acto de titulación
