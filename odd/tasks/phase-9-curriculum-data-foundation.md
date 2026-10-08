@@ -80,6 +80,34 @@ reproducible desde un clon limpio.
 4. El temario **no** sirve para detectar laboratorios: 6 de 7 materias declaran
    "PRÁCTICAS DE LABORATORIO" y sólo 1 la tiene. El marcador fiable es el matraz de F3.
 
+### Precedente técnico: relajar NOT NULL en SQLite sobre D1 (T9.2)
+
+`area: NULL` (D1) **no se puede aplicar como migración**. SQLite no tiene
+`ALTER TABLE ... DROP NOT NULL`; el único camino es la reconstrucción de 12 pasos,
+y en D1 falla por dos motivos independientes:
+
+1. **Bug de drizzle-kit 0.31.11.** `SQLiteRecreateTableConvertor` arma el `INSERT`
+   de copia con **todas** las columnas de la tabla *nueva*. Si la migración añade
+   una columna y además dispara la reconstrucción, emite SQL que referencia columnas
+   inexistentes → `Parse error: no such column`.
+2. **D1 bloquea reconstruir tablas padre.** D1 fuerza `foreign_keys=ON` y trata el
+   `PRAGMA foreign_keys=OFF` de la propia migración como no-op dentro de su
+   transacción, así que `DROP TABLE subjects` falla con `SQLITE_CONSTRAINT_FOREIGNKEY`
+   (`subject_aliases`, `subject_prerequisites`, `course_groups`, `student_progress`
+   tienen filas). Las migraciones 0002/0003/0006 pasaron sólo porque esas tablas no
+   tenían hijas.
+
+Sólo las migraciones **puramente aditivas** son seguras. Por eso T9.2 quedó con dos
+`ALTER TABLE ... ADD COLUMN` (`seriation_state`, `component`) y `area` se difiere al
+rebuild de T9.7, que es la tarea que reconstruye `subjects` de todos modos.
+
+Dos trampas de verificación:
+
+- `tests/unit/_helpers/harness.ts` reproduce **todos** los `drizzle/*.sql` en
+  `node:sqlite`: una migración mal formada pone en rojo 117 de 272 tests.
+- Un `sqlite3` local trae `foreign_keys` OFF y **oculta** el rechazo de D1. Hay que
+  prefijar `PRAGMA foreign_keys=ON` para reproducirlo fielmente.
+
 ### Conflictos resueltos
 
 | # | Conflicto | Resolución |
@@ -275,7 +303,7 @@ credencial viva.
 | ID | Tarea | Estado |
 | --- | --- | --- |
 | **T9.1** | Dataset canónico verificado — `scripts/build-verified-curriculum.py` → 68 materias, Δ 0 en los 3 routes | ✅ **cerrada** |
-| **T9.2** | Migración `subjects`: `canonical_id` por slug, `seriation_state`, `component`, `area` NULL | ☐ |
+| **T9.2** | Migración `subjects`: `seriation_state`, `component` (2 `ADD COLUMN`) | ✅ **cerrada** — `area` → NULL se difiere a T9.7 |
 | **T9.3** | Migración `subject_units`: 4 columnas + 32 filas | ☐ |
 | **T9.4** | Migración `course_groups`: `period`, `credits`, `is_lab_session` + 468 filas | ☐ |
 | **T9.5** | Migración `specialties` (3 filas) + `subject_prerequisites` (14 aristas) | ☐ |
@@ -315,4 +343,8 @@ verde. **Nada se empuja ni se abre PR antes de T9.8.**
 
 ## Próximo paso
 
-**T9.2.** Cerrar H10 (cerrar el PR #1 y reportar a soporte) en paralelo.
+**T9.3.** Cerrar H10 (cerrar el PR #1 y reportar a soporte) en paralelo.
+
+**En T9.7:** además del rebuild de `subjects`, hay que poner `area` a NULL y arreglar
+el filtro de `/reinscripcion` (`EnrollmentSimulator` hace `null.localeCompare` y
+revienta si `area` llega `null`).

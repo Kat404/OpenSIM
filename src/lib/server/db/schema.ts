@@ -60,7 +60,14 @@ export const subjects = sqliteTable("subjects", {
 	ht: integer("ht").notNull(),
 	hp: integer("hp").notNull(),
 	credits: integer("credits").notNull(),
+	// D1 wants `area` NULL, but SQLite cannot relax NOT NULL without a rebuild:
+	// drizzle-kit 0.31.11 emits one that cannot apply, and D1 refuses parent-table
+	// rebuilds with populated children. Ships with the T9.7 rebuild instead.
 	area: text("area").notNull(),
+	// 'UNKNOWN' is the honest default: the rows already in the database
+	// were never classified against a seriation source.
+	seriationState: text("seriation_state").notNull().default("UNKNOWN"),
+	component: text("component").notNull().default("GENERIC"),
 	specialtyCode: text("specialty_code").references(() => specialties.code),
 });
 
@@ -346,6 +353,15 @@ export type NewAuthSession = typeof authSessions.$inferInsert;
 
 export const STUDENT_PROGRESS_STATUSES = ["APPROVED", "ENROLLED", "AVAILABLE", "LOCKED"] as const;
 export type StudentProgressStatus = (typeof STUDENT_PROGRESS_STATUSES)[number];
+
+// ---- Subject domain unions (TypeScript-side enforcement; SQLite stores TEXT) ----
+
+// `UNKNOWN` means "not established from a source", NOT "not serialized".
+export const SUBJECT_SERIATION_STATES = ["SERIALIZED", "INDEPENDENT", "UNKNOWN"] as const;
+export type SubjectSeriationState = (typeof SUBJECT_SERIATION_STATES)[number];
+
+export const SUBJECT_COMPONENTS = ["GENERIC", "COMPLEMENTARY", "PRACTICE", "SPECIALTY"] as const;
+export type SubjectComponent = (typeof SUBJECT_COMPONENTS)[number];
 
 // Evaluation types live in `#lib/utils/academic` (client-safe home)
 // so the kardex UI can read the array at runtime without dragging
