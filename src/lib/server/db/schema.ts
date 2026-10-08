@@ -56,14 +56,14 @@ export const subjects = sqliteTable("subjects", {
 	canonicalId: text("canonical_id").primaryKey(),
 	code: text("code").notNull().unique(),
 	name: text("name").notNull(),
-	semester: integer("semester").notNull(),
-	ht: integer("ht").notNull(),
-	hp: integer("hp").notNull(),
+	// NULL where no source establishes the value: `area` is unclassified
+	// across the whole verified plan (H4), and `semester`/`ht`/`hp` are
+	// unknown for the 16 specialty modules (H8).
+	semester: integer("semester"),
+	ht: integer("ht"),
+	hp: integer("hp"),
 	credits: integer("credits").notNull(),
-	// D1 wants `area` NULL, but SQLite cannot relax NOT NULL without a rebuild:
-	// drizzle-kit 0.31.11 emits one that cannot apply, and D1 refuses parent-table
-	// rebuilds with populated children. Ships with the T9.7 rebuild instead.
-	area: text("area").notNull(),
+	area: text("area"),
 	// 'UNKNOWN' is the honest default: the rows already in the database
 	// were never classified against a seriation source.
 	seriationState: text("seriation_state").notNull().default("UNKNOWN"),

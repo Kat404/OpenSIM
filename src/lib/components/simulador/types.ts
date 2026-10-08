@@ -14,7 +14,9 @@ export interface OfferGroup {
 	subjectCanonicalId: string;
 	subjectCode: string;
 	subjectName: string;
-	area: string;
+	/** `null` when the curricular area is not classified — which is every
+	 * subject in v1, since no source establishes the classification (H4). */
+	area: string | null;
 	credits: number;
 	hasLab: boolean;
 	teacherName: string;

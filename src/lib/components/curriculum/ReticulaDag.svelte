@@ -74,9 +74,21 @@ const adjacency = $derived(buildAdjacency(edges));
 // and dropped from the visible grid (audit M7, Round 4) — they
 // were silently missing before, so a typo in the seed would
 // not surface.
+//
+// `semester` is nullable because the plan does not publish the
+// semester a specialty module is taken in (H8) — 16 of the 68
+// subjects have no semester at all. The null case is checked first
+// and reported separately, otherwise `null < 1` evaluates true via
+// coercion and the subject is filed under an unstated reason.
 const subjectsBySemester = $derived.by(() => {
 	const map = new Map<number, SubjectViewModel[]>();
 	for (const s of subjects) {
+		if (s.semester === null) {
+			console.warn(
+				`[ReticulaDag] Subject ${s.canonicalId} (${s.code}) has no semester on record; not rendered.`,
+			);
+			continue;
+		}
 		if (s.semester < 1 || s.semester > MAX_SEMESTER) {
 			console.warn(
 				`[ReticulaDag] Subject ${s.canonicalId} (${s.code}) has semester ${s.semester}, outside 1..${MAX_SEMESTER}; not rendered.`,

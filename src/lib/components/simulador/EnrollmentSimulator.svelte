@@ -54,8 +54,15 @@ let onlyConflicts = $state(false);
 let selectedIds = $state<Set<string>>(new Set());
 
 // ---------- Derived: filter pipeline ----------
+// `area` is nullable (no source classifies curricular areas in v1), so the
+// nulls are dropped before `Set` and `localeCompare` see them — calling
+// `localeCompare` on `null` is a TypeError, not just a type error. With
+// every area null this list is empty, the area select has only its
+// "all areas" option, and `area` can never be set, so the filter is inert.
 const areas = $derived(
-	Array.from(new Set(groups.map((g) => g.area))).sort((a, b) => a.localeCompare(b, "es")),
+	Array.from(new Set(groups.map((g) => g.area).filter((a): a is string => a !== null))).sort(
+		(a, b) => a.localeCompare(b, "es"),
+	),
 );
 
 const groupToEnrolled = $derived(new Set(enrolledCanonicalIds));
@@ -139,6 +146,17 @@ function toggleGroup(groupId: string): void {
 function isSelected(groupId: string): boolean {
 	return selectedIds.has(groupId);
 }
+
+/**
+ * Row metadata, built by joining the parts that exist. A null `area` is
+ * skipped entirely rather than rendered as an empty string, which would
+ * leave the line starting with a bare "·".
+ */
+function rowMeta(g: OfferGroup): string {
+	return [g.area, `${g.credits} créditos`, g.teacherName, g.hasLab ? "Lab" : null]
+		.filter((part): part is string => part !== null)
+		.join(" · ");
+}
 </script>
 
 {#if !period}
@@ -207,11 +225,7 @@ function isSelected(groupId: string): boolean {
 										<span class="simulator__row-name">{g.subjectName}</span>
 									</span>
 									<span class="simulator__row-meta" id={`g-${g.groupId}-meta`}>
-										{g.area}
-										· {g.credits} créditos · {g.teacherName}
-										{#if g.hasLab}
-											· Lab
-										{/if}
+										{rowMeta(g)}
 									</span>
 									{#if conflicts}
 										<Badge variant="danger" size="sm" dot>

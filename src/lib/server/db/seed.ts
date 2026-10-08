@@ -37,15 +37,14 @@ import { execSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { SUBJECT_COMPONENTS, SUBJECT_SERIATION_STATES } from "#lib/server/db/schema";
 
 // ---------- Types matching the dataset JSON ----------
 
-interface CareerDataset {
+interface SpecialtyDataset {
 	code: string;
 	name: string;
-	totalCredits: number;
-	totalSemesters: number;
-	specialties: { code: string; name: string }[];
+	declaredCredits: number | null;
 }
 
 interface SubjectDataset {
@@ -53,23 +52,38 @@ interface SubjectDataset {
 	code: string;
 	aliases: string[];
 	name: string;
-	semester: number;
-	ht: number;
-	hp: number;
+	/** `null` for the specialty modules: the semester they are taken in is
+	 * not published (gap H8). */
+	semester: number | null;
+	ht: number | null;
+	hp: number | null;
 	credits: number;
-	area: string;
-	specialtyCode?: string;
-	prerequisites: string[];
+	/** `null` for every subject: no source classifies curricular areas (gap H4). */
+	area: string | null;
+	specialtyCode: string | null;
+	seriationState: (typeof SUBJECT_SERIATION_STATES)[number];
+	component: (typeof SUBJECT_COMPONENTS)[number];
+}
+
+/** One verified seriation edge. The dataset states both ends by `code`; the
+ * table stores `canonical_id`, so `main()` resolves them before emitting. */
+interface PrerequisiteEdge {
+	subject: string;
+	prerequisite: string;
 }
 
 interface Dataset {
 	version: string;
 	institution: string;
-	program: string;
-	totalSubjects: number;
-	totalCredits: number;
-	careers: CareerDataset[];
+	planName: string;
+	modality: string;
+	careerCode: string;
+	careerName: string;
+	totalSemesters: number;
+	declaredTotalCredits: number;
+	specialties: SpecialtyDataset[];
 	subjects: SubjectDataset[];
+	prerequisites: PrerequisiteEdge[];
 }
 
 // ---------- Types matching the enrollment fixture JSON ----------
@@ -159,19 +173,17 @@ function sqlNullableNum(n: number | null | undefined): string {
 
 // ---------- SQL builders ----------
 
-function insertCareers(careers: CareerDataset[]): string {
+function insertCareers(d: Dataset): string {
 	const lines: string[] = ["-- careers"];
-	for (const c of careers) {
+	lines.push(
+		`INSERT OR IGNORE INTO careers (code, name, total_credits, total_semesters) VALUES (${sqlStr(d.careerCode)}, ${sqlStr(d.careerName)}, ${sqlNum(d.declaredTotalCredits)}, ${sqlNum(d.totalSemesters)});`,
+	);
+	lines.push("--> statement-breakpoint");
+	for (const s of d.specialties) {
 		lines.push(
-			`INSERT OR IGNORE INTO careers (code, name, total_credits, total_semesters) VALUES (${sqlStr(c.code)}, ${sqlStr(c.name)}, ${sqlNum(c.totalCredits)}, ${sqlNum(c.totalSemesters)});`,
+			`INSERT OR IGNORE INTO specialties (code, career_code, name) VALUES (${sqlStr(s.code)}, ${sqlStr(d.careerCode)}, ${sqlStr(s.name)});`,
 		);
 		lines.push("--> statement-breakpoint");
-		for (const s of c.specialties) {
-			lines.push(
-				`INSERT OR IGNORE INTO specialties (code, career_code, name) VALUES (${sqlStr(s.code)}, ${sqlStr(c.code)}, ${sqlStr(s.name)});`,
-			);
-			lines.push("--> statement-breakpoint");
-		}
 	}
 	return lines.join("\n");
 }
@@ -180,7 +192,7 @@ function insertSubjects(subjects: SubjectDataset[]): string {
 	const lines: string[] = ["-- subjects"];
 	for (const s of subjects) {
 		lines.push(
-			`INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, specialty_code) VALUES (${sqlStr(s.canonicalId)}, ${sqlStr(s.code)}, ${sqlStr(s.name)}, ${sqlNum(s.semester)}, ${sqlNum(s.ht)}, ${sqlNum(s.hp)}, ${sqlNum(s.credits)}, ${sqlStr(s.area)}, ${sqlNullableStr(s.specialtyCode)});`,
+			`INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES (${sqlStr(s.canonicalId)}, ${sqlStr(s.code)}, ${sqlStr(s.name)}, ${sqlNullableNum(s.semester)}, ${sqlNullableNum(s.ht)}, ${sqlNullableNum(s.hp)}, ${sqlNum(s.credits)}, ${sqlNullableStr(s.area)}, ${sqlStr(s.seriationState)}, ${sqlStr(s.component)}, ${sqlNullableStr(s.specialtyCode)});`,
 		);
 		lines.push("--> statement-breakpoint");
 		for (const alias of s.aliases ?? []) {
@@ -189,12 +201,22 @@ function insertSubjects(subjects: SubjectDataset[]): string {
 			);
 			lines.push("--> statement-breakpoint");
 		}
-		for (const prereq of s.prerequisites ?? []) {
-			lines.push(
-				`INSERT OR IGNORE INTO subject_prerequisites (subject_canonical_id, prerequisite_canonical_id) VALUES (${sqlStr(s.canonicalId)}, ${sqlStr(prereq)});`,
-			);
-			lines.push("--> statement-breakpoint");
-		}
+	}
+	return lines.join("\n");
+}
+
+/**
+ * The 14 verified seriation edges. They live at the top level of the
+ * dataset (not per subject) because that is where the source states them:
+ * the printed plan draws them as arrows between columns.
+ */
+function insertPrerequisites(edges: { subject: string; prerequisite: string }[]): string {
+	const lines: string[] = ["-- subject_prerequisites"];
+	for (const e of edges) {
+		lines.push(
+			`INSERT OR IGNORE INTO subject_prerequisites (subject_canonical_id, prerequisite_canonical_id) VALUES (${sqlStr(e.subject)}, ${sqlStr(e.prerequisite)});`,
+		);
+		lines.push("--> statement-breakpoint");
 	}
 	return lines.join("\n");
 }
@@ -279,40 +301,76 @@ function main(): void {
 	const dataset = JSON.parse(raw) as Dataset;
 
 	// Sanity assertions (fail loud if the dataset is malformed).
-	if (!Array.isArray(dataset.careers) || dataset.careers.length === 0) {
-		throw new Error("Dataset must contain at least one career.");
+	if (typeof dataset.careerCode !== "string" || dataset.careerCode === "") {
+		throw new Error("Dataset must declare a careerCode.");
+	}
+	if (!Number.isFinite(dataset.declaredTotalCredits)) {
+		throw new Error("Dataset must declare numeric declaredTotalCredits.");
+	}
+	if (!Number.isFinite(dataset.totalSemesters)) {
+		throw new Error("Dataset must declare numeric totalSemesters.");
+	}
+	if (!Array.isArray(dataset.specialties) || dataset.specialties.length === 0) {
+		throw new Error("Dataset must contain at least one specialty.");
 	}
 	if (!Array.isArray(dataset.subjects) || dataset.subjects.length === 0) {
 		throw new Error("Dataset must contain at least one subject.");
 	}
+	if (!Array.isArray(dataset.prerequisites)) {
+		throw new Error("Dataset must declare a prerequisites array.");
+	}
+
+	const specialtyCodes = new Set<string>();
+	for (const s of dataset.specialties) {
+		if (specialtyCodes.has(s.code)) {
+			throw new Error(`Duplicate specialty code in dataset: ${s.code}`);
+		}
+		specialtyCodes.add(s.code);
+	}
+
 	const seenIds = new Set<string>();
+	const seenCodes = new Set<string>();
+	const canonicalIdByCode = new Map<string, string>();
 	for (const s of dataset.subjects) {
 		if (seenIds.has(s.canonicalId)) {
 			throw new Error(`Duplicate canonicalId in dataset: ${s.canonicalId}`);
 		}
 		seenIds.add(s.canonicalId);
-		for (const p of s.prerequisites ?? []) {
-			if (!seenIds.has(p) && !dataset.subjects.some((d) => d.canonicalId === p)) {
-				throw new Error(
-					`Prerequisite ${p} for subject ${s.canonicalId} does not exist in dataset (forward reference).`,
-				);
-			}
+		if (seenCodes.has(s.code)) {
+			throw new Error(`Duplicate subject code in dataset: ${s.code}`);
+		}
+		seenCodes.add(s.code);
+		canonicalIdByCode.set(s.code, s.canonicalId);
+		if (!SUBJECT_SERIATION_STATES.includes(s.seriationState)) {
+			throw new Error(`Subject ${s.canonicalId} has unknown seriationState "${s.seriationState}".`);
+		}
+		if (!SUBJECT_COMPONENTS.includes(s.component)) {
+			throw new Error(`Subject ${s.canonicalId} has unknown component "${s.component}".`);
+		}
+		if (s.specialtyCode !== null && !specialtyCodes.has(s.specialtyCode)) {
+			throw new Error(
+				`Subject ${s.canonicalId} references specialty "${s.specialtyCode}" which the dataset does not declare.`,
+			);
 		}
 	}
-	const careerCodes = new Set(dataset.careers.map((c) => c.code));
-	for (const c of dataset.careers) {
-		for (const s of c.specialties) {
-			// No FK to enforce here, but ensure specialty uniqueness.
-			if (
-				dataset.careers.some((other) =>
-					other.specialties.some((os) => os.code === s.code && other.code !== c.code),
-				)
-			) {
-				throw new Error(`Specialty code ${s.code} is bound to multiple careers.`);
-			}
-			void careerCodes; // referenced for clarity
+
+	// The dataset keys every edge end by `code`; the table stores `canonical_id`.
+	const edges = dataset.prerequisites.map((e) => {
+		const subject = canonicalIdByCode.get(e.subject);
+		const prerequisite = canonicalIdByCode.get(e.prerequisite);
+		if (!subject) {
+			throw new Error(`Prerequisite edge subject "${e.subject}" does not exist in dataset.`);
 		}
-	}
+		if (!prerequisite) {
+			throw new Error(
+				`Prerequisite "${e.prerequisite}" of "${e.subject}" does not exist in dataset.`,
+			);
+		}
+		if (subject === prerequisite) {
+			throw new Error(`Prerequisite edge for "${e.subject}" points at itself.`);
+		}
+		return { subject, prerequisite };
+	});
 
 	// --- Enrollment fixture (optional) --------------------------------
 	// If `enrollment-fixture.json` is present, load it and emit SQL for
@@ -363,10 +421,12 @@ function main(): void {
 
 	const header = [
 		"-- OpenSIM seed (auto-generated by src/lib/server/db/seed.ts).",
-		`-- Program: ${dataset.program}`,
-		`-- Plan: ${dataset.version}`,
+		`-- Career: ${dataset.careerCode} — ${dataset.careerName}`,
+		`-- Institution: ${dataset.institution}`,
+		`-- Plan: ${dataset.planName} (${dataset.modality})`,
+		`-- Plan version: ${dataset.version}`,
 		`-- Total subjects: ${dataset.subjects.length}`,
-		`-- Total credits (target): ${dataset.totalCredits}`,
+		`-- Total credits (target): ${dataset.declaredTotalCredits}`,
 		"-- Idempotent: catalog INSERTs use OR IGNORE; test-student",
 		"-- rows use OR REPLACE so the fixture is deterministic on rerun.",
 		"",
@@ -374,8 +434,9 @@ function main(): void {
 
 	const sections: string[] = [
 		header,
-		insertCareers(dataset.careers),
+		insertCareers(dataset),
 		insertSubjects(dataset.subjects),
+		insertPrerequisites(edges),
 	];
 	if (enrollment) {
 		sections.push(
@@ -397,13 +458,13 @@ function main(): void {
 
 	const subjectCount = dataset.subjects.length;
 	const aliasCount = dataset.subjects.reduce((a, s) => a + (s.aliases?.length ?? 0), 0);
-	const prereqCount = dataset.subjects.reduce((a, s) => a + (s.prerequisites?.length ?? 0), 0);
-	const specialtyCount = dataset.careers.reduce((a, c) => a + c.specialties.length, 0);
+	const specialtyCount = dataset.specialties.length;
 
 	const counts = [
+		`1 career`,
 		`${subjectCount} subjects`,
 		`${aliasCount} aliases`,
-		`${prereqCount} prerequisites`,
+		`${dataset.prerequisites.length} prerequisites`,
 		`${specialtyCount} specialties`,
 	];
 	if (enrollment) {
