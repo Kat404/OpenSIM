@@ -1,5 +1,12 @@
 # OpenSIM — CF-3 Auth Library: Comparative Analysis
 
+<!-- odd-tracker
+kind: comparison
+status: superseded
+last-verified: 2026-10-08
+reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
+-->
+
 **Project:** OpenSIM (Open Source — Sistema Integral Modular)
 **Document scope:** Magic Link authentication implementation strategy for SvelteKit 3 + Cloudflare D1 + Workers.
 **Status:** SUPERSEDED — CLOSED 2026-10-02. Resolved as a native single-file implementation (Lucia-style pattern, no library) in `src/lib/server/auth.ts`: Web Crypto PBKDF2/SHA-256, `auth_sessions` + `student_credentials` tables, HttpOnly+Secure+SameSite=Lax cookies, **0 npm auth packages, 0 external services** (Resend cancelled; `/login/recuperar` is an informational support view). Source of truth: `odd/tasks/opensim.md:18` and `odd/tasks/opensim.md:29`. The four-option analysis below is preserved verbatim as the historical record — its recommendation (a) was only half-adopted: the Lucia single-file pattern shipped, the Resend leg did not.

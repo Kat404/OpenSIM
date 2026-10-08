@@ -1,5 +1,13 @@
 # Phase 6 — U3 Cosmetic & Hardening Follow-ups (post-mcode-R12)
 
+<!-- odd-tracker
+kind: phase-plan
+status: closed
+last-verified: 2026-10-08
+reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
+sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
+-->
+
 **Feature:** `phase-6-u3-cosmetic-followups`
 **Branch:** `main` (continuing — same default as Phase 6 U3)
 **Goal:** Resolve the cosmetic items mcode flagged across R11 + R12, plus the `initials()` dead-code bug R12 surfaced by re-running the function. All items are **non-blocking** for U3 closeout but cheap enough to land in one focused cycle.

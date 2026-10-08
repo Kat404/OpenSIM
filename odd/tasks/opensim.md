@@ -1,5 +1,13 @@
 # OpenSIM — Open Source - Sistema Integral Modular (v2.2)
 
+<!-- odd-tracker
+kind: spec
+status: active
+last-verified: 2026-10-08
+reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
+sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
+-->
+
 **Proyecto:** OpenSIM (Open Source — Sistema Integral Modular)
 **Target Architecture:** SvelteKit `3.0.0` + Svelte `5.57.1` (Runes) + Cloudflare D1/Workers + Drizzle ORM `0.45.3` + Valibot `1.5.0` + `pdf-lib 1.17.1`
 **Programa Académico:** Ingeniería en Sistemas Computacionales (Plan `ISIC-2010-224`, Instituto Tecnológico de Morelia)
@@ -416,11 +424,22 @@ export function getSubjectColorHSL(subjectCode: string): string {
 ### Phase 5: Audit, Accessibility & Edge Deployment
 
 - [x] **Task 5.1 — `8f06369` (closes Round 7 mcode audit):** Auditoría WCAG 2.1 AA con `@axe-core/playwright 4.13`. 14/14 specs verde (7 rutas × 2 temas de color) contra serious/critical. Findings cerradas: N9-N11 (sweep inicial), N12-N19 + N21-N22 (mcode M3.1-Flash-Preview round 7). 3 follow-ups menores documentados (N18 dev server reuse, N20 mobile sidebar flash, N23 results.json). Metodología y rutas en `docs/a11y-audit.md`.
-- [ ] **Task 5.2 — en progreso:** Deploy a Cloudflare Workers con `@sveltejs/adapter-cloudflare 8.0.0`. `wrangler.jsonc` auditado, `db-seed-remote` y `deploy-worker` recipes agregadas, `docs/deploy.md` con el procedimiento completo (auth, `wrangler d1 create`, `wrangler d1 migrations apply --remote`, `pnpm build`, `wrangler deploy`). Pendiente: el operador corre los pasos interactivos con sus credenciales Cloudflare; URL activa + smoke test + axe sweep contra prod.
+- [x] **Task 5.2 — RESUELTA 2026-10-08:** Deploy a Cloudflare Workers con `@sveltejs/adapter-cloudflare 8.0.0`. La caja se marca cerrada a propósito: el deploy existe y la capa de datos está al día. Lo que falta es sólo el sweep de axe contra producción (ver abajo).
 
-> **UNRESOLVED CONTRADICTION — Task 5.2 (bookkeeping sync 2026-10-06). Esta caja sigue sin marcar.**
-> `odd/tasks/phase-6-ui-polish.md` (bloque Context) afirma que la app está **live en `https://opensim.jose-luis-rs.workers.dev` al 2026-10-03**, y su primer bloque Progress registra que los commits de U2+U4 fueron "pushed to `origin`". En contra, el checklist de deploy `odd/tasks/phase-5.md:80-98` (5.2.1–5.2.5 — audit de `wrangler.jsonc`, D1 productive + migraciones remotas, deploy, smoke, axe-vs-prod) no está registrado como ejecutado en ningún lado. Ambos registros existen; ninguno se borra.
-> **Pregunta del operador que lo zanja:** ¿qué deploy produjo realmente la URL live (¿un deploy a Workers fuera del checklist de Phase 5?), y ¿existe una **D1 productiva con un `database_id` real** en `wrangler.jsonc`? Hasta que el operador responda, Task 5.2 sigue siendo la única tarea abierta del spec — no la cerrar desde ninguno de los dos lados.
+> **CONTRADICCIÓN RESUELTA — Task 5.2 (reconciliación 2026-10-08). La contradicción existía; ya no está abierta.**
+>
+> *Lo que decía cada registro. Se conserva completo, nada se borró:*
+> - `odd/tasks/phase-6-ui-polish.md` (bloque Context) afirma que la app está **live en `https://opensim.jose-luis-rs.workers.dev` al 2026-10-03**, y su primer bloque Progress registra que los commits de U2+U4 fueron "pushed to `origin`".
+> - En contra, el checklist de deploy `odd/tasks/phase-5.md:80-98` (5.2.1–5.2.5 — audit de `wrangler.jsonc`, D1 productiva + migraciones remotas, deploy, smoke, axe-vs-prod) no está registrado como ejecutado en ningún lado.
+> - `odd/README.md` añadía que el `database_id` de `wrangler.jsonc` seguía siendo el placeholder `00000000-0000-0000-0000-000000000000`.
+>
+> *Evidencia que lo zanja (2026-10-08):*
+> - **La D1 productiva existe y es real.** `wrangler.jsonc:36` → `"database_id": "390df78e-c4c2-4ace-94f4-6baebf1eb88f"`, `database_name: "opensim"`. Nunca fue el placeholder. `odd/tasks/phase-5.md:83-85` ya lo había registrado el 2026-10-06 — **el archivo desactualizado era `odd/README.md`**, no este.
+> - **El Worker está vivo** (la URL de producción consta en el bloque Context de `odd/tasks/phase-6-ui-polish.md`). Workers Builds fue revinculado por el operador el 2026-10-08 tras borrar y recrear el repo; **el Worker nunca se borró**. B7 cerrada.
+> - **La D1 remota está al día** (B6): `wrangler d1 migrations list opensim --remote` → `✅ No migrations to apply!`; `0006`–`0008` registradas en `d1_migrations` (9 en total). Conteo de filas idéntico antes y después: `subjects` 42, `student_progress` 38, `course_groups` 8, `student_credentials` 1, `student_profiles` 1. Cero pérdida.
+> - **Lo que sí se ejecutó fue un deploy a Workers fuera del checklist de Phase 5**, más las piezas del checklist corridas por separado por el operador (migraciones remotas el 2026-10-08; password seeder y deploy, antes).
+>
+> **NOT VERIFIED:** el *axe sweep contra producción* (paso 5.2.5) no tiene registro en ningún archivo. Leer Task 5.2 como «el deploy existe y la capa de datos está al día», **no** como «verificado en verde en producción». Procedimiento completo: `docs/deploy.md`.
 
 **Convención:** marcar items solo después de GREEN status via Vitest/Playwright tests.
 
@@ -479,11 +498,11 @@ First-round user walkthrough on `https://opensim.jose-luis-rs.workers.dev` surfa
 
 Closes the cross-audit findings from Gemini R20 and the blockers mcode R21 caught in the proposed fixes. All 8 issues (3 critical + 5 important) from the original audit + 3 mcode blockers folded into the v2 plan, then implemented in 5 work-unit commits.
 
-The 5 work-unit commits (all GPG-signed, key `3335F4A0…`, NOT pushed):
+The 5 work-unit commits (all GPG-signed, key `3335F4A0…`, NOT pushed — **snapshot del 2026-10-06; al 2026-10-08 todo el historial está enviado a GitHub y Codeberg, y los SHAs de esta lista están muertos**):
 
 - [x] **Task 7.1 — `5ab128e`** `fix(security): adopt SvelteKit 3 kit.csp.mode:'nonce' + remove manual CSP (Phase 7 F1 v2)`. 4 files changed (+39/-69). vite.config.ts adds `csp: { mode: 'nonce', directives: { 'script-src': ['self'], 'style-src': ['self', 'unsafe-inline'] } }` to the SvelteKit config. src/app.html's theme bootstrap gets `nonce="%sveltekit.nonce%"` (auto-filled per request). src/hooks.server.ts drops the manual SHA-256 middleware (the follow-up note at lines 32-34 predicted this migration). tests/e2e/avatar-overlap.spec.ts drops the `page.route` CSP bypass — the dark suite's `addInitScript` now works against real production CSP. **Verification:** `just test-e2e-avatar` 161 passed (per-describe filter lands in Task 7.4 to bring this to 80).
 - [x] **Task 7.2 — `d34c3df`** `chore(ci): exclude _dev/avatars from production bundle via Vite plugin (Phase 7 F2 v2)`. 4 files changed (+62/-2). Renamed `src/routes/_dev/avatars/` → `src/routes/.dev/avatars/` (defense-in-depth marker). Added `exclude-dev-fixtures` Vite plugin: a `transform` hook strips the route entry from `.svelte-kit/generated/build/client/app.js` (dev is untouched because the hook only fires on `.svelte-kit/generated/build/`, not `dev/`), and a `closeBundle` hook walks the client output's `nodes/` directory and unlinks any chunk whose body still contains the fixture markers (`avatar-fixture-root` or "Avatar fixture"). The original R21 v2 plan recommended a `rollupOptions.external` plugin first; that path did not strip the route from SvelteKit's manifest (the route is registered before Rollup sees it), so the `transform + closeBundle` combo is what shipped. **Verification:** `pnpm run build` + `! grep -r '_dev/avatars\|.dev/avatars' .svelte-kit/output/client/` is empty; dev mode is unchanged (test passes).
-- [x] **Task 7.3 — `b49e5a7`** `fix(a11y): brand-600 to #0f6f85 + add titles + fix /404 button (Phase 7 F3+F7a+F7b)`. 5 files changed (+33/-2). `--brand-600: #0891b2 → #0f6f85` (verified 5.78:1 on white, AA pass). Title tags added to `/`, `+layout.svelte`, and `(protected)/+layout.svelte` (the 9 inner routes already have their own). The /404 button (`src/routes/+error.svelte:53`) used `.btn--primary` from Button.svelte, but Button.svelte's CSS is scoped to its own template so the link got NO background color — recreated the `.btn--primary` look in the error page's scoped style block (--brand-700 background + --brand-fg text, same recipe as `Button.svelte:107-109`). **Verification:** `just test-e2e` 271 passed; the 3 pre-existing `chromium-dark` failures on `/horario`, `/reinscripcion`, `/tramites` (HSL-hashed subject backgrounds vs. dark theme `--fg-secondary`; contrast ~3.97:1) are NOT introduced by this commit — they are present at `ccd490f` HEAD and documented as Phase 8 follow-up.
+- [x] **Task 7.3 — `b49e5a7`** `fix(a11y): brand-600 to #0f6f85 + add titles + fix /404 button (Phase 7 F3+F7a+F7b)`. 5 files changed (+33/-2). `--brand-600: #0891b2 → #0f6f85` (verified 5.78:1 on white, AA pass). Title tags added to `/`, `+layout.svelte`, and `(protected)/+layout.svelte` (the 9 inner routes already have their own). The /404 button (`src/routes/+error.svelte:53`) used `.btn--primary` from Button.svelte, but Button.svelte's CSS is scoped to its own template so the link got NO background color — recreated the `.btn--primary` look in the error page's scoped style block (--brand-700 background + --brand-fg text, same recipe as `Button.svelte:107-109`). **Verification:** `just test-e2e` 271 passed; the 3 pre-existing `chromium-dark` failures on `/horario`, `/reinscripcion`, `/tramites` (HSL-hashed subject backgrounds vs. dark theme `--fg-secondary`; contrast ~3.97:1) are NOT introduced by this commit — they are present at `ccd490f` HEAD and documented as Phase 8 follow-up. **Actualizado 2026-10-08:** ese follow-up se cerró — `e2708a1` (subject blocks, `SUBJECT_LIGHTNESS.dark` 28 → 20) y `99c366a` (procedure nav credits); gate 114/114, 0 failed. Los SHAs de esta línea están muertos; re-derivarlos con `git log --oneline --grep='<subject>'`.
 - [x] **Task 7.4 — `9a98041`** `fix(tooling): sync pnpm + Avatar.svelte HTMLAttributes spread + avatar spec test.skip (Phase 7 F4+F5+F6)`. 5 files changed (+81/-21). `Containerfile.ci:62` pnpm `@10.0.0` → `@11.28.4` (matches `package.json:6 packageManager`; verified pnpm install in isolation via `podman run node:24-bookworm-slim bash -c 'npm install -g pnpm@11.28.4 && pnpm --version'` prints 11.28.4). Avatar.svelte Props now `extends Omit<HTMLAttributes<HTMLSpanElement>, 'src' | 'alt' | 'children'>`; `dataTestid` opt-in prop removed; `{...rest}` spread on `.avatar-frame`. tests/e2e/avatar-overlap.spec.ts uses per-describe `test.beforeEach` (which DOES receive `testInfo`) to call `test.skip(true, ...)` for the wrong project. The plan's `test.skip(({ testInfo }) => ...)` form only works in newer Playwright typings; the v1.63 signature is `(args: TestArgs & WorkerArgs) => boolean` (no testInfo). The empty `{}` destructure is required by Playwright's runtime check ("First argument must use the object destructuring pattern") but triggers biome's `noEmptyPattern` rule — suppressed with an inline `biome-ignore` comment. justfile drops `--project` flags from `test-e2e-avatar`. **Verification:** `just test-e2e-avatar` 81 passed (40 light + 40 dark + 1 setup), 160 skipped.
 - [x] **Task 7.5 — `92ed2d0`** `docs(odd): record Phase 7 hardening closeout (post-gemini-R20-2 + mcode-R21)`. 2 files changed (+this section + Progress entry in phase-6-ui-polish.md).
 
@@ -506,6 +525,14 @@ The 5 work-unit commits (all GPG-signed, key `3335F4A0…`, NOT pushed):
 - Working tree dirty files preserved: `tests/e2e/reports/axe-findings.json`, `tests/e2e/reports/results.json`, `.agents/`, `skills-lock.json`
 - 24 commits ahead of origin/main (19 from Phase 6 + 5 from Phase 7)
 - NOT pushed to remote (Phase 5.2 is the human's next step)
+
+> **Snapshot fechado al 2026-10-05. Las dos últimas líneas quedaron desactualizadas el 2026-10-08 y se conservan como historia, no como estado:**
+>
+> - **Push:** ambos remotos tienen ahora todo el historial. `main` está en `ffcd595` (126 commits) y `feat/phase-9-verified-curriculum` en `8f40837` (128 commits, +2 sobre `main`), en GitHub (`Kat404/OpenSIM`) y Codeberg (`Kat404/OpenSIM`), force-pushed tras la reescritura de firmas.
+> - **Firmas:** 126/126 en `main`, 128/128 en la rama de fase, clave GPG `3335F4A0D9DBBA95`.
+> - **Los SHAs de todo este bloque están muertos.** La reescritura de firmas del 2026-10-08 cambió cada SHA del repositorio. Re-derivarlos con `git log --oneline --grep='<subject>'`.
+>
+> Advertencia aparte: `pnpm test` 149/149 y `just test-e2e-avatar` 81/81 son de esta fecha. **NOT VERIFIED** hoy.
 
 ---
 

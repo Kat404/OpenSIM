@@ -1,5 +1,13 @@
 # Phase 6.5 — U3 Audit Closure + `just` Adoption + Local Podman CI + Biome (plan v5, post-mcode-R16 + Biome domains)
 
+<!-- odd-tracker
+kind: phase-plan
+status: closed
+last-verified: 2026-10-08
+reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
+sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
+-->
+
 **Feature:** `phase-6.5-closure-and-just-adoption`
 **Branch:** `main` (continuing — same default as Phase 6)
 **Goal:** (1) close the U3 audit-cycle (R11/R12/R13) formally with a traceability doc; (2) bring `just` to full coverage in ODD recipes, reports, and the README; (3) eliminate the GitHub Actions workflow entirely (user-pivot: no cloud CI) and replace with **local Podman CI** recipes; (4) adopt **Biome 2.5.15** with explicit **domains** for svelte/drizzle/playwright/test — these domains were surfaced by the user mid-session as features worth verifying, and verification via official Biome docs confirms they apply to OpenSIM and add value.

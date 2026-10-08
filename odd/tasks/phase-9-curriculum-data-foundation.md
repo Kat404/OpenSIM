@@ -1,8 +1,25 @@
 # Phase 9 — Cimientos de datos curriculares ISIC (v1)
 
-**Estado:** T9.1 cerrado · started 2026-10-07
-**Alcance v1:** una sola carrera — **ISIC-2010-224 Ingeniería en Sistemas Computacional**
+<!-- odd-tracker
+kind: phase-plan
+status: active
+last-verified: 2026-10-08
+reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
+sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
+-->
+
+**Estado:** T9.1 y T9.2 cerradas · started 2026-10-07 · **reconciliado 2026-10-08**
+**Alcance v1:** una sola carrera — **ISIC-2010-224 Ingeniería en Sistemas Computacionales**
 **Fuera de v1:** las otras 12 carreras, sus materias y sus unidades (v2)
+
+> **T9.1 → `6ca7c12`** `feat(data): verified ISIC-2010-224 curriculum dataset`
+> **T9.2 → `8f40837`** `feat(db): subject seriation tri-state and component columns`
+> **T9.3–T9.14 abiertas**, gated por B2–B5 (ver `odd/tasks/phase-9-unblock.md`).
+
+> **Shas re-derivados 2026-10-08.** Este documento se escribió cuando el force-push estaba en
+> `b3fef41`. Ese SHA **está muerto**: la reescritura de firmas GPG cambió cada SHA del
+> repositorio. Estado de push vigente: `main` en `ffcd595`, rama de fase en `8f40837`, ambos en
+> GitHub y Codeberg, 126/126 y 128/128 firmados. Re-derivación: `git log --oneline --grep='<subject>'`.
 
 ---
 
@@ -242,9 +259,18 @@ los promedios, la entidad de nacimiento y el número de seguridad del operador e
 | --- | --- |
 | Purgado del árbol de trabajo | ✅ `odd/audit.md` + 6 archivos de `odd/tasks/` |
 | Reescritura de los 126 commits con `git-filter-repo --replace-text` | ✅ 0 blobs con PII |
-| Force-push a GitHub y Codeberg | ✅ ambos en `b3fef41` |
-| `refs/pull/1/head` en GitHub | ❌ **29 blobs con PII siguen vivos.** GitHub no permite borrar refs de PR |
+| Force-push a GitHub y Codeberg | ✅ ambos en `b3fef41` — **SHA muerto**; al 2026-10-08 `main`=`ffcd595`, rama de fase=`8f40837` |
+| `refs/pull/1/head` en GitHub | ❌ **29 blobs con PII siguen vivos.** GitHub no permite borrar refs de PR. **B4, abierta.** |
 | `src/` (Codegraph) | ✅ sólo PII sintética: `OPNS000101HDFRRA09`, control `99999999`, `HERA000615MMNRZNA3` |
+| Alias de docentes en `docs/data/` | ✅ verificado 2026-10-08: **468/468** filas en `sim-grupos-oferta.json` y **7/7** en `sim-temarios.json` son alias `DOC-NNN`. Cero nombres reales en nada enviado. |
+
+**Verificación de los alias (2026-10-08, reproducible):**
+
+```sh
+for f in docs/data/sim-grupos-oferta.json docs/data/sim-temarios.json; do
+  printf '%s: ' "$f"; rg -o 'DOC-[0-9]{3}' "$f" | wc -l
+done
+```
 
 **Pendiente del operador:** cerrar el PR #1 y reportar a soporte de GitHub y Codeberg para
 el borrado de los objetos inalcanzables y de las vistas cacheadas. Una reescritura de

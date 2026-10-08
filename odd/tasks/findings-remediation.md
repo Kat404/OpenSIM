@@ -1,9 +1,21 @@
 # Findings Remediation — 27 findings, 6 phases
 
-**Date:** 2026-10-06
-**Status:** Plan v1 — awaiting go-ahead + one product decision
+<!-- odd-tracker
+kind: phase-plan
+status: active
+last-verified: 2026-10-08
+reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
+sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
+-->
+
+**Date:** 2026-10-06 · last reconciled 2026-10-08
+**Status:** **Phase 8 shipped 2026-10-06** (T8.1–T8.3 `[x]`, gate 114/114). Phases 1–7 and 9–10 remain.
 **Route:** delegated direct per phase (each phase is one bounded writer)
 **Source:** Codegraph application-surface audit, 2026-10-06. All 27 findings are `pre-existing`.
+
+> **The "Plan v1 — awaiting go-ahead" status this doc carried until 2026-10-08 is stale.** Phase 8
+> ran on 2026-10-06 and closed. The `## Progress` section further down still reads `_Not started._`
+> and its `## Next step` still says "run Phase 8 first" — both historical, kept as written.
 
 ## Objective
 
@@ -43,7 +55,7 @@ The repo is a FOSS tool for a real school; re-enrolment after a failed subject i
 workflow. **A is recommended**, but B is the honest lazy option if period-scoped history is not
 required. **This is the maintainer's call — do not start Phase 10 without it.**
 
-## Phase 8 — a11y dark-theme contrast
+## Phase 8 — a11y dark-theme contrast — **SHIPPED 2026-10-06**
 *Findings: the 3 known e2e failures. Independent of everything else.*
 
 The only currently-red checks: `color-contrast`, ratio **3.97**, on `/horario`,
@@ -77,6 +89,12 @@ The only currently-red checks: `color-contrast`, ratio **3.97**, on `/horario`,
       consumers (Tabs, Badge, Sidebar, KardexTable) to fix one span.
 
       Commits: `0768e8a` (subject blocks), `99e5028` (procedure nav).
+
+      > **Shas re-derived 2026-10-08.** The two SHAs above are dead — the GPG re-sign rewrite
+      > changed every commit SHA in the repository. The current, verified SHAs are **`e2708a1`**
+      > (`fix(a11y): subject block contrast fails WCAG AA below 4.5:1 in dark`) and **`99c366a`**
+      > (`fix(a11y): procedure nav credits fail AA on the active button background`). Closeout:
+      > `8c70790` (`docs(odd): record Phase 8 closeout and the --fg-tertiary latent finding`).
 
 ## Latent finding — NOT fixed, carried forward
 
@@ -261,7 +279,14 @@ and `just test-e2e`. Program exit: e2e fully green and every finding row above c
 
 _Not started._
 
+> **Actualizado 2026-10-08:** desactualizado. **Phase 8 ya corrió** (2026-10-06) y está cerrada:
+> `e2708a1`, `99c366a`, closeout `8c70790`, gate 114/114. Lo de arriba se conserva como se
+> escribió el 2026-10-06.
+
 ## Next step
 
 Answer the blocking decision, then run Phase 8 first — it is independent, it is the only
 currently-red check, and it establishes the all-green baseline the rest of the program needs.
+
+> **Actualizado 2026-10-08:** Phase 8 ya se ejecutó; el único check rojo ya no está rojo. Lo que
+> sigue abierto es la decisión bloqueante de la línea 54 antes de arrancar Phase 10.

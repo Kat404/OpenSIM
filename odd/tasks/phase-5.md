@@ -1,5 +1,13 @@
 # Phase 5 — Audit (axe-core) + Cloudflare deploy
 
+<!-- odd-tracker
+kind: phase-plan
+status: closed
+last-verified: 2026-10-08
+reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
+sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
+-->
+
 **Feature:** `phase-5`
 **Branch:** `feat/phase-1-foundation` (continuing)
 **Goal:** Close the last spec phase by (a) running a full WCAG 2.1 AA sweep with `@axe-core/playwright` over the 7 user-facing routes, fixing any new findings, and (b) deploying the Worker to Cloudflare Pages/Workers. Both are gating for production.
@@ -117,7 +125,35 @@
 - [ ] axe-core probe against the deployed URL (one more mcode round) — production parity.
 
 ### 5.2.5 — Spec close
-- [ ] Mark Tarea 5.2 in `odd/tasks/opensim.md` §8 as `[x]` with the deployed URL and date.
+- [x] Mark Tarea 5.2 in `odd/tasks/opensim.md` §8 as `[x]` with the deployed URL and date.
+      Hecho 2026-10-08.
+
+---
+
+## Resuelto 2026-10-08 — qué se ejecutó de este checklist
+
+**El checklist nunca corrió como bloque.** Eso es histórico y se conserva arriba, con sus cajas
+sin marcar. Lo que sí ocurrió, pieza por pieza, y con qué evidencia:
+
+| Paso | Estado real | Evidencia |
+| --- | --- | --- |
+| 5.2.1 — audit de `wrangler.jsonc` | **Hecho** | `wrangler.jsonc:36` → `"database_id": "390df78e-c4c2-4ace-94f4-6baebf1eb88f"`, `database_name: "opensim"`, `migrations_dir: "drizzle"`. Ya marcado `[x]` el 2026-10-06 en 5.2.1. |
+| 5.2.2 — inspeccionar estado remoto | **Hecho** | `wrangler d1 migrations list opensim --remote` → `✅ No migrations to apply!` |
+| 5.2.2 — aplicar `0006`–`0008` | **Hecho 2026-10-08** | `wrangler d1 migrations apply opensim --remote`. Las tres aplicaron sin error. Cero pérdida de filas: `subjects` 42, `student_progress` 38, `course_groups` 8, `student_credentials` 1, `student_profiles` 1 — idénticos antes y después. `d1_migrations` tiene 9 entradas, incluidas las 3 nuevas. **B6 cerrada.** |
+| 5.2.2 — seed remoto | **NOT VERIFIED** | No hay registro de `just db-seed-remote` en ningún archivo. |
+| 5.2.2 — receta de password remoto | **Resuelta** | La receta que faltaba existe hoy: `just db-set-password-remote` (`justfile:151`). Se agregó en `e426788` (`feat(db): remote D1 password seeder with production password gate`). La casilla dice «UNRESOLVED» porque era cierta el 2026-10-06. |
+| 5.2.3 — deploy a Workers | **Hecho** | El Worker está vivo; la URL de producción consta en el bloque Context de `odd/tasks/phase-6-ui-polish.md`. Workers Builds fue revinculado por el operador el 2026-10-08 tras borrar y recrear el repo; **el Worker nunca se borró**. **B7 cerrada.** |
+| 5.2.3 — capturar URL + deployment ID | **NOT VERIFIED** | La URL sí consta; el deployment ID no aparece en ningún archivo. |
+| 5.2.4 — smoke con `curl` | **NOT VERIFIED** | Sin registro. |
+| 5.2.4 — axe sweep contra producción | **NOT VERIFIED** | Sin registro. Es lo único que realmente impide leer Task 5.2 como «verde en producción». |
+| 5.2.5 — cerrar la caja en §8 | **Hecho 2026-10-08** | `odd/tasks/opensim.md` §8 Task 5.2 está en `[x]`. |
+
+**Conclusión:** Task 5.2 se cierra por *estado de infraestructura*, no por evidencia de humo.
+El deploy existe, la D1 productiva es real y está al día, y el Worker responde. Lo que falta es
+el sweep de axe contra producción. Si eso importa, es una corrida de `just test-e2e` apuntando a
+la URL viva — nada de esto requiere reescribir el historial.
+
+Procedimiento completo: `docs/deploy.md`.
 
 ---
 

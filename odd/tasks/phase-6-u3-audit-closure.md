@@ -1,5 +1,13 @@
 # Phase 6 — U3 Audit Closure (R11/R12/R13)
 
+<!-- odd-tracker
+kind: phase-plan
+status: closed
+last-verified: 2026-10-08
+reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
+sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
+-->
+
 **Feature:** `phase-6-u3-audit-closure`
 **Branch:** `main` (continuing — same default as Phase 6)
 **Goal:** Close the U3 audit cycle (mcode R11 → R12 → R13) formally with a traceability document and a lessons-learned section, so the next cycle starts with a known ceiling rather than re-discovering the same findings.
