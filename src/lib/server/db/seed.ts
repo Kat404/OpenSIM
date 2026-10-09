@@ -26,7 +26,15 @@
  *     primary-key constraints declared in schema.ts).
  *   - For mutable rows (the test student profile) we use INSERT OR
  *     REPLACE so a fresh `db:seed` overwrites previous test data and
- *     the smoke test stays deterministic.
+ *     the smoke test stays deterministic. In SQLite a REPLACE is a
+ *     DELETE plus an INSERT, so the profile upsert also fires the
+ *     cascades declared on `student_profiles`. The student's schedule
+ *     blocks are therefore deleted explicitly first — see
+ *     `deleteEnrollmentScheduleBlocks` — which is what makes a re-run
+ *     succeed at all, let alone land the same rows.
+ *   - What the re-run does NOT preserve: the credential. The same
+ *     DELETE cascade drops `student_credentials`, so `db:seed:apply`
+ *     must be followed by `db:set-password`. See `scripts/README.md`.
  *   - Alias uniqueness is also enforced at the SQL level.
  *   - FK ordering: parents first, then children.
  *
@@ -317,9 +325,21 @@ function insertPrerequisites(edges: { subject: string; prerequisite: string }[])
  * (`docs/data/sim-temarios.json`). Subtopic objects are stored verbatim:
  * each one carries its own `evalFrom`/`evalTo`, and `subtopics_json` is the
  * only place Phase 9 allows them to live.
+ *
+ * The table keys on a surrogate autoincrement `id` and declares no unique
+ * constraint on (subject_canonical_id, unit_number), so `INSERT OR IGNORE`
+ * has nothing to conflict on: every apply appended a fresh copy of all 32
+ * rows instead of being idempotent. The DELETE below supplies the natural
+ * key the schema lacks, scoped to the subjects this seed writes so it can
+ * reach no other row.
  */
 function insertSubjectUnits(units: ResolvedUnit[]): string {
-	const lines: string[] = ["-- subject_units"];
+	const ownSubjectIds = [...new Set(units.map((u) => u.canonicalId))].map(sqlStr);
+	const lines: string[] = [
+		"-- subject_units",
+		`DELETE FROM subject_units WHERE subject_canonical_id IN (${ownSubjectIds.join(", ")});`,
+		"--> statement-breakpoint",
+	];
 	for (const u of units) {
 		lines.push(
 			`INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES (${sqlStr(u.canonicalId)}, ${sqlNum(u.unitNumber)}, ${sqlStr(u.title)}, ${sqlStr(u.subtopicsJson)}, ${sqlNullableStr(u.evalFrom)}, ${sqlNullableStr(u.evalTo)}, ${sqlNullableStr(u.instrumentsJson)}, ${sqlNullableStr(u.criteriaJson)});`,
@@ -394,11 +414,44 @@ function insertFooter(): string {
 // ---------- Enrollment fixture SQL builders ----------
 
 /**
+ * Clears the test student's schedule blocks, and must be emitted before
+ * the profile upsert.
+ *
+ * `INSERT OR REPLACE` in SQLite is a DELETE followed by an INSERT, so
+ * upserting `student_profiles` fires every cascade declared on that
+ * table and drops the student's `course_groups`. Those rows carry
+ * children of their own — `course_schedule_blocks.group_id` is declared
+ * NO ACTION — so the cascade is refused mid-statement, the apply fails
+ * with `FOREIGN KEY constraint failed`, and the whole transaction rolls
+ * back. Deleting the blocks first lets the cascade complete; the seed
+ * re-inserts them from the fixture at the end of this section.
+ *
+ * The subquery filters on `student_control_number IS NOT NULL`, the
+ * discriminator the schema already uses to tell an enrolment from a
+ * catalogue row, so the 468 offering groups and any blocks attached to
+ * them are out of reach.
+ */
+function deleteEnrollmentScheduleBlocks(): string {
+	const lines: string[] = [
+		"-- course_schedule_blocks (test student, cleared before the profile upsert)",
+	];
+	lines.push(
+		"DELETE FROM course_schedule_blocks WHERE group_id IN (SELECT id FROM course_groups WHERE student_control_number IS NOT NULL);",
+	);
+	return lines.join("\n");
+}
+
+/**
  * INSERT OR REPLACE for the test student profile so a fresh
  * `db:seed` always lands the same row regardless of what was
- * already there. The credential row is *not* touched here — it is
- * managed by `seed-password.ts` (PBKDF2 hash + salt require the
- * Node crypto module which is not available at SQL-emit time).
+ * already there.
+ *
+ * The credential row is *not* written here — it is managed by
+ * `seed-password.ts` (PBKDF2 hash + salt require the Node crypto module,
+ * which is not available at SQL-emit time). It is also *destroyed* by
+ * this statement: the REPLACE is a DELETE, `student_credentials`
+ * declares ON DELETE CASCADE on `student_profiles`, and the row is not
+ * re-inserted until `db:set-password` runs. See `scripts/README.md`.
  */
 function insertStudentProfile(p: StudentProfileFixture): string {
 	const lines: string[] = ["-- student_profiles (test student)"];
@@ -680,8 +733,9 @@ function main(): void {
 	// --- Enrollment fixture (optional) --------------------------------
 	// If `enrollment-fixture.json` is present, load it and emit SQL for
 	// the test student profile, progress, course groups, and schedule
-	// blocks. INSERT OR REPLACE keeps the seed idempotent so a fresh
-	// `db:seed` always lands the same fixture.
+	// blocks. INSERT OR REPLACE keeps the fixture deterministic so a
+	// fresh `db:seed` always lands the same rows; the section opens with
+	// a DELETE because that same REPLACE is what used to fail the apply.
 	let enrollment: EnrollmentFixture | null = null;
 	try {
 		enrollment = JSON.parse(readFileSync(ENROLLMENT_FIXTURE_PATH, "utf8")) as EnrollmentFixture;
@@ -767,8 +821,10 @@ function main(): void {
 		`-- Total subjects: ${dataset.subjects.length}`,
 		`-- Total credits (target): ${dataset.declaredTotalCredits}`,
 		`-- Complementary credits required: ${dataset.complementaryCredits.requiredForGraduation}`,
-		"-- Idempotent: catalog INSERTs use OR IGNORE; test-student",
+		"-- Idempotent for data: catalog INSERTs use OR IGNORE; test-student",
 		"-- rows use OR REPLACE so the fixture is deterministic on rerun.",
+		"-- NOT idempotent for the login: the profile REPLACE is a DELETE, so",
+		"-- it cascades into student_credentials. Run db:set-password after.",
 		"",
 	].join("\n");
 
@@ -782,6 +838,11 @@ function main(): void {
 	];
 	if (enrollment) {
 		sections.push(
+			"--> statement-breakpoint",
+			// First, so the profile REPLACE's cascade into `course_groups`
+			// has no NO ACTION child left to refuse it. See
+			// `deleteEnrollmentScheduleBlocks`.
+			deleteEnrollmentScheduleBlocks(),
 			"--> statement-breakpoint",
 			insertStudentProfile(enrollment.student_profile),
 			"--> statement-breakpoint",

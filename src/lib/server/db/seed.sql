@@ -6,8 +6,10 @@
 -- Total subjects: 68
 -- Total credits (target): 260
 -- Complementary credits required: 5
--- Idempotent: catalog INSERTs use OR IGNORE; test-student
+-- Idempotent for data: catalog INSERTs use OR IGNORE; test-student
 -- rows use OR REPLACE so the fixture is deterministic on rerun.
+-- NOT idempotent for the login: the profile REPLACE is a DELETE, so
+-- it cascades into student_credentials. Run db:set-password after.
 
 -- careers
 INSERT OR IGNORE INTO careers (code, name, total_credits, total_semesters) VALUES ('ISIC-2010-224', 'Ingeniería en Sistemas Computacionales', 260, 9);
@@ -193,6 +195,8 @@ INSERT OR IGNORE INTO subject_prerequisites (subject_canonical_id, prerequisite_
 INSERT OR IGNORE INTO subject_prerequisites (subject_canonical_id, prerequisite_canonical_id) VALUES ('scd-1016', 'scd-1015');
 --> statement-breakpoint
 -- subject_units
+DELETE FROM subject_units WHERE subject_canonical_id IN ('scc-1019', 'scd-1003', 'scc-1007', 'sca-1025', 'scd-1016', 'aec-1034', 'sca-1026');
+--> statement-breakpoint
 INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scc-1019', 1, 'CONCEPTOS FUNDAMENTALES.', '[{"index":"1.1","title":"1.1. DIFERENTES ESTILOS DE PROGRAMACIÓN.","evalFrom":"24/08/2026","evalTo":"28/08/2026"},{"index":"1.2","title":"1.2.ANALIZANDO DIFERENTES DE ESTILOS DE PROGRAMACIÓN","evalFrom":"24/08/2026","evalTo":"28/08/2026"},{"index":"1.3","title":"1.2.1 EVALUACIÓN DE EXPRESIONES.","evalFrom":"31/08/2026","evalTo":"04/09/2026"},{"index":"1.4","title":"1.2.2 TIPOS DE DATOS.","evalFrom":"31/08/2026","evalTo":"04/09/2026"},{"index":"1.5","title":"1.2.3 DISCIPLINA TIPOS.","evalFrom":"07/09/2026","evalTo":"11/09/2026"},{"index":"1.6","title":"1.2.4 FUNCIONES.","evalFrom":"07/09/2026","evalTo":"11/09/2026"}]', '14/09/2026', '18/09/2026', '["CÁTEDRA DOCENTE","DEBATES/DISCUSIÓN","INVESTIGACIÓN DOCUMENTAL"]', '["EVALUACIÓN ESCRITA","ELABORACIÓN-PRESENTACIÓN PROYECTO","ASISTENCIA A CLASES"]');
 --> statement-breakpoint
 INSERT OR IGNORE INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria) VALUES ('scc-1019', 2, 'MODELO DE PROGRAMACIÓN FUNCIONAL.', '[{"index":"2.1","title":"2.1 INTRODUCCIÓN AL MODELO DE PROGRAMACIÓN FUNCIONAL.","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.2","title":"2.1. EL TIPO DE DATOS.","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.3","title":"2.2. FUNCIONES.","evalFrom":"21/09/2026","evalTo":"25/09/2026"},{"index":"2.4","title":"2.3. INTERVALOS.","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.5","title":"2.4. OPERADORES.","evalFrom":"28/09/2026","evalTo":"02/10/2026"},{"index":"2.6","title":"2.5. APLICACIONES DE LAS LISTAS.","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"2.7","title":"2.6. ÁRBOLES.","evalFrom":"05/10/2026","evalTo":"09/10/2026"},{"index":"2.8","title":"2.7. EVALUACIÓN PEREZOSA.","evalFrom":"05/10/2026","evalTo":"09/10/2026"}]', '12/10/2026', '16/10/2026', '["PRACTICAS DE LABORATORIO","CÁTEDRA DOCENTE","DEBATES/DISCUSIÓN"]', '["EVALUACIÓN TEÓRICO-PRÁCTICA","PRÁCTICAS EN LABORATORIO","ELABORACIÓN-PRESENTACIÓN PROYECTO"]');
@@ -1194,6 +1198,9 @@ INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teach
 --> statement-breakpoint
 INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2304-A-9-DOC-057', 'tdd-2304', 'A', 'DOC-057', 0, '9', 5, 0);
 --> statement-breakpoint
+--> statement-breakpoint
+-- course_schedule_blocks (test student, cleared before the profile upsert)
+DELETE FROM course_schedule_blocks WHERE group_id IN (SELECT id FROM course_groups WHERE student_control_number IS NOT NULL);
 --> statement-breakpoint
 -- student_profiles (test student)
 INSERT OR REPLACE INTO student_profiles (control_number, full_name, curp, birth_state, career_code, specialty_code, current_semester, certified_average, arithmetic_average, passed_average, approved_credits, remaining_credits, completed_credits, in_progress_credits, advance_percentage, status, health_service, enrollment_period) VALUES ('12345678', 'Ana Gabriela Hernández Ruiz', 'HERA000615MMNRZNA3', 'Michoacán', 'ISIC-2010-224', 'ISIE-TDD-2026-01', 7, 8.7, 8.6, 8.5, 175, 85, 175, 24, 67.3, 'Activo regular', 'IMSS', 'AGOSTO-DICIEMBRE/2026');
