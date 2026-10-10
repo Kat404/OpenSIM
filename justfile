@@ -200,6 +200,7 @@ db-seed-remote:
 # student's own control number (12345678), and the rows it rewrites are
 # that student's, so a reseed restores whatever the fixture says and
 # discards hand edits to those rows. Other students' data is untouched.
+# Rewrite the fixture student from data/enrollment-fixture.json.
 db-seed:
     pnpm run db:seed
 
@@ -229,6 +230,7 @@ db-studio:
 # every student, not just the fixture's. `db-seed` at the end only
 # rewrites the fixture student — see above — so re-run `db-set-password`
 # afterwards to get a credential back.
+# DESTRUCTIVE: delete local D1 state, re-migrate, re-seed.
 db-reset:
     @echo "⚠  Deleting local D1 state + reapplying migrations + seeding..."
     rm -rf .wrangler/state/v3/d1
