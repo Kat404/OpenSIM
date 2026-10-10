@@ -857,3 +857,57 @@ resuelto** — `EnrollmentSimulator.svelte:57-67` filtra los `null` antes de que
 `TypeError` en runtime, no sólo un error de tipos. Con las 68 áreas en `null` el filtro por
 área queda **inerte** a propósito: el select sólo ofrece "todas las áreas". Eso es el
 comportamiento correcto de D1, no un bug pendiente.
+---
+
+## T9.10 — `/retícula`: la especialidad del alumno, no el catálogo completo
+
+**Decisión del operador, 2026-10-10: opción A.** El alumno ve **únicamente los módulos de
+su propia especialidad**, en una bandeja fuera del grid. No las otras once: no le
+corresponden y saber que existen es información que el SIM conoce pero él no.
+
+### Por qué una bandeja y no una columna
+
+Ninguna columna es posible: los 16 módulos de especialidad tienen `semester = NULL` porque
+el plan no publica el término en que se cursan (H8). Una columna exigiría **inventar un
+semestre**, y el proyecto no rellena un campo sin fuente. La bandeja no finge una
+posición: dice "esto es lo tuyo, y cuándo lo cursas todavía no se sabe".
+
+### Las cuatro piezas
+
+| # | Pieza | De dónde sale el dato |
+| --- | --- | --- |
+| **1** | `specialty_code` en el loader | Ya está en `subjects`; falta proyectarlo |
+| **2** | Bandeja de especialidad | `student_profiles.specialty_code` + los `subjects` que lo coincidan |
+| **3** | Badge de laboratorio | `course_groups.has_lab`, agregado al select. Las 6 son Química, Lenguajes de Interfaz, Sistemas Programables, Arquitectura de Computadoras, Principios Eléctricos y Física General |
+| **4** | Ramas de seriación | `decomposeChains` y `describeSeriation` de T9.9, sin consumidor hasta ahora |
+
+### El `console.warn` deja de ser ruido
+
+El DAG **no puede hoy distinguir "esperado" de "bug"**: un `semester: null` en una
+materia `SPECIALTY` es H8 y pasa 16 veces; un `semester: null` en una materia `GENERIC`
+sería un defecto de datos real y no se distingue del anterior. Por eso avisa 16 líneas
+idénticas en cada render.
+
+`SubjectViewModel` gana `component`, y el `derived` separa los dos casos:
+
+- `SPECIALTY` sin semestre → esperado, sin aviso.
+- Cualquier otro sin semestre → aviso, porque **no tiene explicación**.
+- Fuera de 1..9 → aviso, porque siempre es un defecto.
+
+Los 16 avisos desaparecen porque la causa se **`subject_components` de specialty** puede
+verse, no porque se baje el volumen. Un test cubre cada rama.
+
+### Verificación
+
+- `pnpm check`, `pnpm test`, `just qa`.
+- Un test afirma que la bandeja contiene exactamente los módulos de la especialidad del
+  alumno, y que ninguna otra especialidad aparece.
+- Un test afirma que un `semester: null` en una materia no-especialidad sí avisa.
+- `just test-e2e` completo, porque la retícula es una de las 7 rutas con axe.
+- El aviso de la URL de producción en `odd/` es una decisión consciente del operador
+  (2026-10-10): se deja. Es el subdominio de la cuenta de Cloudflare, no un dato que el
+  repositorio controle, y renombrarlo cambiaría una URL ya pública.
+
+### Fuera de alcance
+
+Paginación de la oferta (T9.14), detalle de temario (T9.12), `/horario` (T9.11).
