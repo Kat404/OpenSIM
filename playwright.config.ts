@@ -20,9 +20,11 @@
  * `just ci-shell` (interactive debugging), which sets `CI=true`
  * for the e2e spec's retry behaviour, not the webServer block.
  *
- * D1 is a local Miniflare binding driven by wrangler; tests assume
- * `just db-reset && just db-set-password` ran beforehand. The
- * `just test-e2e` recipe wires that up locally. NOTE: `just ci`
+ * D1 is a local Miniflare binding driven by wrangler; tests assume a
+ * migrated database with the test credential provisioned. The
+ * `just test-e2e` recipe wires that up (`db-migrate db-set-password`)
+ * and is non-destructive. For a pristine database instead, use
+ * `just test-e2e-fresh`, which does delete local state. NOTE: `just ci`
  * (the pre-push container gate) does NOT run this e2e suite — it
  * runs `just qa-fast` (check + biome-check + test). For axe-core
  * e2e coverage, run `just test-e2e` on the host.

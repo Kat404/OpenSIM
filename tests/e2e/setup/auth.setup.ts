@@ -6,8 +6,10 @@
  * reuses the same session. The storage file is gitignored (session
  * cookies are not artefacts).
  *
- * Requires D1 to be seeded beforehand:
- *   just db-reset && just db-set-password
+ * Requires a migrated D1 with the credential provisioned beforehand:
+ *   just db-migrate && just db-set-password
+ * (that is what `just test-e2e` does for you, non-destructively; use
+ * `just test-e2e-fresh` only when the local database must be rebuilt)
  *
  * Default dev credential per the OpenSIM spec §3 / §7:
  *   controlNumber: 12345678
