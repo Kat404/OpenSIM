@@ -140,9 +140,23 @@ odd/tasks/agent-guidelines-and-e2e-recipes.md
 
 ## Next step
 
-Plan complete. `README.md:22-25` and `README.md:137-144` still document the cascade
-that T2 removed, and `README.md:149` documents `just db-set-password 12345678`, which
-`just` cannot pass — all outside this plan's authorized surfaces.
+All three tasks closed. Follow-up task T4 closed the documentation drift the writer found
+outside its authorized surfaces: `README.md` still described the removed cascade and still
+documented `just db-set-password 12345678`, which `just` cannot pass because the recipe
+declares no parameters.
+
+## T4 — close the documentation drift left by T2
+
+- [x] `README.md:22-25` — the `db-reset` warning kept its true claim (the recipe deletes the
+      whole local database, credential included) and lost the false reason (the cascade).
+- [x] `README.md:137-144` — the control-number table now answers "survives `db:seed`?"
+      instead of "survives `db:reset`?"; both rows are `yes`, and `db-reset` is called out as
+      the one case that still needs `db-set-password` afterwards.
+- [x] `README.md:149` — the positional form corrected to `pnpm run db:set-password`, with the
+      env-var form kept as the supported alternative.
+- [x] `src/lib/server/db/seed-password.ts:56-77` — the comment justifying the `99999999`
+      default no longer claims the cascade makes it mandatory; it states the two reasons that
+      survive.
 
 ## Verification evidence
 

@@ -19,10 +19,14 @@ just dev                  # SvelteKit + local D1 via wrangler
 
 Visit `http://localhost:5173`, log in with the test credentials below, and `/dashboard` will load the student's KPIs and the today's classes widget.
 
-> **`db-reset` destroys the test credential.** The seed upserts `student_profiles`, and in
-> SQLite `INSERT OR REPLACE` is a delete plus an insert, which cascades into
-> `student_credentials`. Always run `db-set-password` *after* `db-reset`, never before.
-> That is why `just test-e2e` chains them in that order.
+> **`db-reset` deletes the whole local database**, credential included — it removes
+> `.wrangler/state/v3/d1` before re-migrating and re-seeding. Run `db-set-password` after it;
+> `just test-e2e-fresh` already chains them in that order.
+>
+> A plain `just db-seed` no longer costs you a credential. The seed upserts `student_profiles`
+> with `ON CONFLICT(control_number) DO UPDATE`, which updates the row in place, so the
+> `ON DELETE CASCADE` that `INSERT OR REPLACE` used to fire into `student_credentials` never
+> happens. `db-seed` is safe to re-run at any time.
 
 ## Scripts
 
@@ -134,19 +138,22 @@ password:      opensim-dev-2026
 
 Two control numbers exist and they are **not** interchangeable:
 
-| Number | What it is | Survives `db:reset`? |
+| Number | What it is | Survives `db:seed`? |
 | --- | --- | --- |
-| `99999999` | the seeded credential, written by `db-set-password` | yes — it belongs to no `student_profiles` row, so nothing cascades onto it |
-| `12345678` | the demo student in `enrollment-fixture.json` | **no** — the fixture's profile upsert cascades and destroys its credential |
+| `99999999` | the seeded credential, written by `db-set-password` | yes — it belongs to no `student_profiles` row, so the seed never touches it |
+| `12345678` | the demo student in `enrollment-fixture.json` | yes — its profile is upserted in place, so a reseed keeps the credential |
 
 So log in with **`99999999`**. The demo student's own data is still what the pages render,
 because the fixture profile is seeded as `12345678`; the credential is provisioned
 separately, against a control number with no profile row.
 
+`db-reset` is the exception: it deletes the local database outright rather than upserting
+into it, so the credential has to be provisioned again afterwards.
+
 Override either value when you need to:
 
 ```bash
-just db-set-password 12345678 "tu-contrasena"   # positional
+pnpm run db:set-password 12345678 "tu-contrasena"        # positional (the just recipe takes no arguments)
 OPENSIM_TEST_CONTROL_NUMBER=12345678 OPENSIM_TEST_PASSWORD=… just db-set-password
 ```
 

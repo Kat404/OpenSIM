@@ -57,16 +57,20 @@ const DERIVED_KEY_BYTES = 32;
  * The credential's own control number — deliberately NOT the catalog
  * student's `12345678`.
  *
- * `seed.sql` re-seeds `student_profiles` with `INSERT OR REPLACE`, which
- * deletes the existing profile row and re-inserts it. Because
- * `student_credentials` carries `ON DELETE CASCADE` on
- * `student_control_number`, that replace wiped the credential and the
- * next login timed out waiting for a redirect. Sharing a key with the
- * catalog made the race deterministic on every `db-seed`.
+ * Two independent reasons, both worth keeping:
  *
- * A distinct key means a catalog re-seed replaces only the catalog
- * student; this credential survives, and `db-set-password` stays
- * idempotent under any ordering.
+ * 1. This credential owns no `student_profiles` row, so the catalog
+ *    seed has nothing to say about it. (This used to be a hard
+ *    requirement: the seed wrote profiles with `INSERT OR REPLACE`,
+ *    which is a delete plus an insert, and `student_credentials`
+ *    carries `ON DELETE CASCADE` on the profile key — so a profile
+ *    replace wiped the credential and the next login timed out waiting
+ *    for a redirect. `seed.ts` now upserts with
+ *    `ON CONFLICT(control_number) DO UPDATE`, so the cascade never
+ *    fires and `db-set-password` is idempotent under any ordering.)
+ * 2. One login, one role: the pages render the catalog student's data,
+ *    and provisioning a second credential for the catalog student
+ *    itself would let a test sign in with a profile it does not own.
  */
 const DEFAULT_CONTROL_NUMBER = "99999999";
 const DEFAULT_PASSWORD = "opensim-dev-2026";
