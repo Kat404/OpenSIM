@@ -65,9 +65,15 @@ format:
     pnpm exec biome format --write .
 
 # Verify formatting (CI mode, no writes)
+#
+# Biome 2.x removed `biome format --check`; the flag only ever worked
+# under Prettier, and the 2026-10-04 Biome 2.5.15 migration carried the
+# Prettier spelling over verbatim. Nothing ran this recipe, so it sat
+# broken for five days. `biome ci` with the linter and the import assist
+# disabled is the format-only equivalent and exits non-zero on a diff.
 [group('check')]
 format-check:
-    pnpm exec biome format --check .
+    pnpm exec biome ci --formatter-enabled=true --linter-enabled=false --assist-enabled=false
 
 # Run Biome ci (format + lint + organizeImports, no writes) — CI gate
 [group('check')]
@@ -291,18 +297,29 @@ ci-clean:
 ci-drift:
     #!/usr/bin/env bash
     set -euo pipefail
+    SNAP=.wrangler/state/v3/d1.snapshot
+    # `cp -r src dst` copies INTO dst when dst exists, so a snapshot left
+    # over from an aborted run nests a `d1/` directory that every later run
+    # then reports as drift. Clear first, unconditionally.
+    rm -rf "$SNAP"
+    trap 'rm -rf "$SNAP"' EXIT
     if [ ! -d .wrangler/state/v3/d1 ]; then
         echo "no .wrangler/state/v3/d1 — run `just db-migrate` first"
         exit 1
     fi
-    cp -r .wrangler/state/v3/d1 .wrangler/state/v3/d1.snapshot
+    cp -r .wrangler/state/v3/d1 "$SNAP"
     pnpm run db:migrate:apply
-    if diff -r .wrangler/state/v3/d1.snapshot .wrangler/state/v3/d1 > /dev/null; then
+    # Miniflare keeps -wal and -shm beside the database and rewrites them
+    # on any read, so a bare `diff -r` reported drift on every run no matter
+    # what the migrations did. They are scratch, not state.
+    #
+    # `diff | head` under `pipefail` aborts the script the moment head
+    # closes the pipe, which skipped the cleanup and made the failure
+    # self-perpetuating. Capture the diff, then truncate it for display.
+    if diff -r -x '*-wal' -x '*-shm' -x '*.sqlite-journal' "$SNAP" .wrangler/state/v3/d1 > /tmp/ci-drift.diff; then
         echo "no drift"
-        rm -rf .wrangler/state/v3/d1.snapshot
     else
         echo "DRIFT DETECTED — investigate migrations:"
-        diff -r .wrangler/state/v3/d1.snapshot .wrangler/state/v3/d1 | head -50
-        rm -rf .wrangler/state/v3/d1.snapshot
+        head -50 /tmp/ci-drift.diff
         exit 1
     fi
