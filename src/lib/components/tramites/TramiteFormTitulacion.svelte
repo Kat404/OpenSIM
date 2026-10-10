@@ -56,9 +56,17 @@ const modalityOptions = [
 			name="director"
 		/>
 
-		<Input label="Sinodal presidente" placeholder="Nombre completo del sinodal presidente" name="reviewer1" />
+		<Input
+			label="Sinodal presidente"
+			placeholder="Nombre completo del sinodal presidente"
+			name="reviewer1"
+		/>
 
-		<Input label="Sinodal secretario" placeholder="Nombre completo del sinodal secretario" name="reviewer2" />
+		<Input
+			label="Sinodal secretario"
+			placeholder="Nombre completo del sinodal secretario"
+			name="reviewer2"
+		/>
 
 		<Input label="Sinodal vocal" placeholder="Nombre completo del sinodal vocal" name="reviewer3" />
 

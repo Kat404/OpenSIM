@@ -63,7 +63,11 @@
 			"!**/.wrangler",
 			"!**/playwright-report",
 			"!**/test-results",
-			"!**/tests/e2e/reports"
+			"!**/tests/e2e/reports",
+			"!**/drizzle/meta",
+			"!docs/data",
+			"!src/lib/server/db/data",
+			"!skills-lock.json"
 		]
 	},
 	"overrides": [

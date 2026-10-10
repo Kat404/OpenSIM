@@ -23,7 +23,8 @@
 		"db:seed:apply": "pnpm run db:seed:gen && wrangler d1 execute opensim --local --file=./src/lib/server/db/seed.sql",
 		"db:seed": "pnpm run db:seed:apply",
 		"db:set-password": "tsx src/lib/server/db/seed-password.ts",
-		"db:reset": "rm -rf .wrangler/state/v3/d1 && pnpm run db:migrate:apply && pnpm run db:seed:apply"
+		"db:reset": "rm -rf .wrangler/state/v3/d1 && pnpm run db:migrate:apply && pnpm run db:seed:apply",
+		"test:e2e": "e2e run"
 	},
 	"dependencies": {
 		"drizzle-orm": "0.45.3",
@@ -32,22 +33,27 @@
 		"valibot": "1.5.0"
 	},
 	"devDependencies": {
+		"@ai-sdk/openai-compatible": "^3.0.0",
 		"@axe-core/playwright": "4.13.0",
 		"@biomejs/biome": "2.5.15",
 		"@cloudflare/workers-types": "5.20260813.1",
+		"@e2e-dev/web": "^0.14.0",
 		"@playwright/test": "1.63.0",
 		"@sveltejs/adapter-cloudflare": "8.0.0",
 		"@sveltejs/kit": "3.0.0",
 		"@sveltejs/vite-plugin-svelte": "7.2.0",
 		"@types/node": "26.6.4",
+		"ai": "^7.0.0",
 		"drizzle-kit": "0.31.11",
+		"e2e": "^0.19.0",
 		"svelte": "5.57.1",
 		"svelte-check": "4.6.0",
 		"tsx": "4.23.15",
 		"typescript": "6.0.3",
 		"vite": "8.3.2",
 		"vitest": "5.0.3",
-		"wrangler": "4.147.0"
+		"wrangler": "4.147.0",
+		"zod": "^4.1.8"
 	},
 	"imports": {
 		"#lib": "./src/lib/index.ts",

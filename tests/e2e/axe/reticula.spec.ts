@@ -21,15 +21,14 @@ test("reticula with deep-link hash has no serious/critical WCAG 2.1 AA violation
 	page,
 }, testInfo) => {
 	// canonicalId for Cálculo Diferencial per the curriculum fixture.
-	await page.goto("/reticula#calculo-diferencial");
+	await page.goto("/reticula#acf-0901");
 	// Assert the deep-link actually focused the target node before
 	// scanning — otherwise a hash-routing regression would scan the
 	// same page as the base case and pass silently (audit N22, Round 7).
 	// SubjectNode.svelte applies `class:node--highlighted={isHighlighted}`
 	// when the deep-link lands; we assert that class is present.
-	await expect(page.locator('[data-canonical-id="calculo-diferencial"]')).toHaveClass(
-		/node--highlighted/,
-		{ timeout: 5_000 },
-	);
+	await expect(page.locator('[data-canonical-id="acf-0901"]')).toHaveClass(/node--highlighted/, {
+		timeout: 5_000,
+	});
 	await scanForA11y(page, testInfo);
 });
