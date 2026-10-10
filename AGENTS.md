@@ -38,7 +38,8 @@ aparece ahí no existe y no la debes inventar en un reporte.
 | `just test-e2e-avatar` | Suite Playwright de solapamiento de avatar (AC6-AC11, 80 corridas). Sin auth. |
 | `just e2e-dev` | Runner e2e agéntico, headless. El runner levanta y baja `pnpm dev` él mismo. |
 | `just e2e-web` | Igual con `--headed`, para depurar viendo el navegador. |
-| `just db-migrate` · `just db-seed` · `just db-set-password` | Migrar / sembrar / aprovisionar la credencial en la D1 local. Los tres son idempotentes y re-ejecutarlos es seguro. |
+| `just db-migrate` · `just db-set-password` | Migrar / aprovisionar la credencial en la D1 local. Los dos son idempotentes: re-ejecutarlos es seguro. |
+| `just db-seed` | Sembrar el catálogo y el estudiante del fixture (`12345678`). Determinista para ese estudiante y no destructivo para las credenciales, pero **reescribe** sus filas: no es un no-op si las editaste a mano. |
 
 Cuál usar: `test-e2e` es el default porque no tira el trabajo del mantenedor;
 `test-e2e-fresh` sólo cuando se sospeche de la base local. `qa` no corre e2e, así que un

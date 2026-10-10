@@ -174,11 +174,16 @@ db-seed-remote:
 
 # Seed local D1 (regenerates seed.sql + applies)
 #
-# Safe to re-run: the enrolment profile is written with
+# Safe to re-run for CREDENTIALS: the enrolment profile is written with
 # ON CONFLICT(control_number) DO UPDATE, so it is updated in place and
 # fires no cascade — `student_credentials` keeps its row. `db-set-password`
 # is a dependency of the e2e recipes only to guarantee the credential
 # exists, not because this recipe would drop it.
+#
+# Not a no-op, though. Every delete it emits is keyed to the fixture
+# student's own control number (12345678), and the rows it rewrites are
+# that student's, so a reseed restores whatever the fixture says and
+# discards hand edits to those rows. Other students' data is untouched.
 db-seed:
     pnpm run db:seed
 
@@ -204,8 +209,10 @@ db-studio:
 # Full local D1 reset (delete state + migrate + seed)
 #
 # ⚠  Destructive: it deletes `.wrangler/state/v3/d1` outright, so
-# everything local that is not in the seed or the migrations is gone.
-# `db-seed` at the end is non-destructive on its own — see above.
+# everything local that is not in the seed or the migrations is gone —
+# every student, not just the fixture's. `db-seed` at the end only
+# rewrites the fixture student — see above — so re-run `db-set-password`
+# afterwards to get a credential back.
 db-reset:
     @echo "⚠  Deleting local D1 state + reapplying migrations + seeding..."
     rm -rf .wrangler/state/v3/d1

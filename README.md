@@ -26,7 +26,10 @@ Visit `http://localhost:5173`, log in with the test credentials below, and `/das
 > A plain `just db-seed` no longer costs you a credential. The seed upserts `student_profiles`
 > with `ON CONFLICT(control_number) DO UPDATE`, which updates the row in place, so the
 > `ON DELETE CASCADE` that `INSERT OR REPLACE` used to fire into `student_credentials` never
-> happens. `db-seed` is safe to re-run at any time.
+> happens. `db-migrate` and `db-set-password` are idempotent outright; `db-seed` is
+> deterministic for the fixture student (`12345678`) and non-destructive for credentials,
+> but it still **rewrites** that student's rows — it is not a no-op on a database where you
+> have since edited them by hand.
 
 ## Scripts
 
