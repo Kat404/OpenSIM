@@ -146,4 +146,107 @@ that T2 removed, and `README.md:149` documents `just db-set-password 12345678`, 
 
 ## Verification evidence
 
-_(filled as tasks close)_
+### T1 — `ddb665e` `fix(justfile): default e2e to non-destructive, add agentic recipes`
+
+```
+$ just --list
+exit 0 — all four recipes land under [test]:
+  e2e-dev, e2e-web, test-e2e, test-e2e-fresh (plus the pre-existing test-e2e-avatar)
+
+$ just --dry-run test-e2e-fresh
+echo "⚠  Deleting local D1 state + reapplying migrations + seeding..."
+rm -rf .wrangler/state/v3/d1
+just db-migrate
+just db-seed
+pnpm run db:set-password
+pnpm exec playwright test
+
+$ just --dry-run e2e-dev
+pnpm run db:set-password
+pnpm exec e2e run
+
+$ just --dry-run e2e-web
+pnpm run db:set-password
+pnpm exec e2e run --headed
+
+$ just --dry-run test-e2e          # the non-destructive default
+pnpm run db:migrate:apply          # no `rm -rf` anywhere in the chain
+pnpm run db:set-password
+pnpm exec playwright test
+```
+
+### T2 — `788cdf4` `fix(db): upsert the test student profile so reseeding keeps its credential`
+
+```
+$ pnpm run db:seed:gen             # "seed.sql generated (1 career, 68 subjects, …)"
+$ md5sum src/lib/server/db/seed.sql   (run twice)
+b526331af135b1039c6619f0382b0d02
+b526331af135b1039c6619f0382b0d02   → byte-stable
+$ git diff --exit-code src/lib/server/db/seed.sql   (after staging)
+exit 0, no output
+
+$ rg -n 'ON CONFLICT' src/lib/server/db/seed.sql
+1208:INSERT INTO student_profiles (…) VALUES (…) ON CONFLICT(control_number) DO UPDATE SET …
+```
+
+Cascade regression, on the fixture's own control number:
+
+```
+$ just db-migrate
+✅ No migrations to apply!
+
+$ pnpm run db:set-password 12345678     # NOT `just db-set-password 12345678` — see below
+Done.
+$ pnpm exec wrangler d1 execute opensim --local --command "SELECT control_number FROM student_credentials"
+12345678, 99999999
+
+$ just db-seed
+Done.
+$ pnpm exec wrangler d1 execute opensim --local --command "SELECT control_number FROM student_credentials ORDER BY control_number"
+12345678, 99999999          ← the credential the old statement destroyed
+```
+
+The check is not vacuous. Re-running the **old** statement by hand, after clearing
+the student's children (what `deleteEnrollmentChildren` does), reproduces the bug.
+The statement only succeeds once those NO ACTION children are gone — which is also
+why a first attempt at it was refused with `FOREIGN KEY constraint failed`:
+
+```
+$ pnpm exec wrangler d1 execute opensim --local --command "SELECT control_number FROM student_credentials ORDER BY control_number"
+99999999                    ← 12345678 gone
+```
+
+Local D1 restored afterwards: 7 enrollments, 14 schedule blocks, credential
+`99999999` only — the state it was found in.
+
+### T3 — `8645ce6` `docs(agents): point agents at recipes that exist, with hard thresholds`
+
+```
+$ for r in $(rg -o -N 'just ([a-z][a-z0-9-]+)' AGENTS.md -r '$1' | sort -u); do … just --list … done
+16 recipes named in AGENTS.md, 16 OK, 0 MISSING
+(db-migrate, db-migrate-remote, db-seed, db-seed-remote, db-set-password,
+ db-set-password-remote, deploy-worker, e2e-dev, e2e-web, qa, qa-fast, test,
+ test-e2e, test-e2e-avatar, test-e2e-fresh, test-e2e-ui)
+```
+
+### Whole-plan gate
+
+```
+$ just qa-fast
+svelte-check found 0 errors and 0 warnings
+Checked 135 files … No fixes applied.
+Test Files  19 passed (19)   Tests  326 passed (326)
+✓ pre-commit checks passed
+```
+
+No pre-existing failures: `qa-fast` covers the maintainer's six dirty files too and
+is fully green.
+
+### Not run
+
+`just e2e-dev` and `just e2e-web` were verified with `--dry-run` only. Both spawn
+`pnpm dev` and drive a real model gateway; running them is a remote operation and
+was not authorized. The Playwright suites (`test-e2e`, `test-e2e-fresh`) were not
+executed either — `test-e2e-fresh` deletes the local database and `test-e2e`
+spawns a browser against it; neither was needed to establish any acceptance
+criterion here.
