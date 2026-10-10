@@ -90,12 +90,21 @@ necesarios para titularidad y **desbloquean el Servicio Social**. Los complement
 alumno tiene `approvedCredits: 175` contra un total de 260. `/tramites` calcula umbrales
 182 y 208 sobre los créditos reticulares, que **no incluyen** los complementarios.
 
-**La ambigüedad que hay que resolver antes de codear**, y que es del operador:
-`evaluateCreditThresholds` usa 182 y 208 porque el complementario no suma a los
-reticulares. Entonces, ¿el complementario es una **puerta adicional** para el Servicio
-Social — además de los 182 reticulares — o **reemplaza** ese umbral? Hoy la tabla
-existe pero nada la lee: la decisión es si `unlocked` significa `count ≥ 5` o
-`reticulares ≥ 182 ∧ complementarios ≥ 5`.
+**Decisión del operador, 2026-10-10: (a) puerta ADICIONAL.** El Servicio Social se
+desbloquea con `reticulares ≥ 182` **y** `complementarios ≥ 5`. No se sustituyen.
+
+La alternativa descartada era (b), que los complementarios reemplazaran los 182
+reticulares. Ningún alumno real distingue las dos lecturas, porque con 175 reticulares y
+3 de 5 ambos dan bloqueado; se separan sólo con 200 reticulares y 2 complementarios, o
+con 150 reticulares y 5 complementarios. Lo que decided es que la regla institucional
+son **dos puertas**, no una: los complementarios existen porque el plan los exige como
+requisito de egreso, y si reemplazaran a los 182 reticulares no aportarían nada que los
+182 no hicieran ya.
+
+`evaluateCreditThresholds` hoy calcula únicamente con reticulares y no recibe el conteo
+de complementarios. T9.13 le pasa el segundo número y `canStartSocialService` exige las
+dos condiciones. La Residencia (208) y el Taller de Investigación (130) **no** cambian:
+su regla nunca emm涉及 complementarios.
 
 **Verificación.** Un test por cada rama de la decisión; el copy de `/tramites` refleja la
 misma regla; y el alumno de prueba (3 de 5) queda en el estado que la regla diga.
