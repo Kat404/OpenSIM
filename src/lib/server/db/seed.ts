@@ -468,19 +468,22 @@ function insertFooter(): string {
  * Deleting the children first lets the delete complete; the seed
  * re-inserts them from the fixture at the end of this section.
  *
- * Both deletes filter on `student_control_number IS NOT NULL`, the
- * discriminator the schema already uses to tell an enrolment from a
- * catalogue row, so the 468 offering groups are out of reach. The block
- * delete stays keyed on that subquery rather than on the student
- * directly: `course_schedule_blocks` carries no student column of its
- * own, so the group table is the only way to name the student's blocks.
+ * Both deletes name THIS student's control number and nothing else, so
+ * a reseed only ever clears the fixture student's own rows. The block
+ * delete stays keyed on a subquery rather than on the student directly:
+ * `course_schedule_blocks` carries no student column of its own, so the
+ * group table is the only way to name the student's blocks. Scoping that
+ * subquery to `student_control_number IS NOT NULL` instead — the
+ * discriminator the schema uses to tell an enrolment from a catalogue
+ * row — reaches EVERY student's blocks while only the fixture student's
+ * are re-inserted, silently emptying everyone else's groups.
  */
 function deleteEnrollmentChildren(controlNumber: string): string {
 	const lines: string[] = [
 		"-- test-student children of course_groups (cleared before the group upserts)",
 		`DELETE FROM enrollments WHERE student_control_number = ${sqlStr(controlNumber)};`,
 		"--> statement-breakpoint",
-		"DELETE FROM course_schedule_blocks WHERE group_id IN (SELECT id FROM course_groups WHERE student_control_number IS NOT NULL);",
+		`DELETE FROM course_schedule_blocks WHERE group_id IN (SELECT id FROM course_groups WHERE student_control_number = ${sqlStr(controlNumber)});`,
 	];
 	return lines.join("\n");
 }
