@@ -6,10 +6,11 @@
 -- Total subjects: 68
 -- Total credits (target): 260
 -- Complementary credits required: 5
--- Idempotent for data: catalog INSERTs use OR IGNORE; test-student
--- rows use OR REPLACE so the fixture is deterministic on rerun.
--- NOT idempotent for the login: the profile REPLACE is a DELETE, so
--- it cascades into student_credentials. Run db:set-password after.
+-- Idempotent for data: catalog INSERTs use OR IGNORE; the test-student
+-- profile is upserted with ON CONFLICT ... DO UPDATE so the fixture is
+-- deterministic on rerun and student_credentials is never cascaded away.
+-- Scoped to the fixture student: the deletes below name its control
+-- number, so no other student's rows are touched.
 
 -- careers
 INSERT OR IGNORE INTO careers (code, name, total_credits, total_semesters) VALUES ('ISIC-2010-224', 'Ingeniería en Sistemas Computacionales', 260, 9);

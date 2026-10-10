@@ -24,17 +24,19 @@
  * Idempotency strategy:
  *   - Every table insert uses INSERT OR IGNORE (relying on the unique /
  *     primary-key constraints declared in schema.ts).
- *   - For mutable rows (the test student profile) we use INSERT OR
- *     REPLACE so a fresh `db:seed` overwrites previous test data and
- *     the smoke test stays deterministic. In SQLite a REPLACE is a
- *     DELETE plus an INSERT, so the profile upsert also fires the
- *     cascades declared on `student_profiles`. The student's dependent
- *     rows are therefore deleted explicitly first — see
- *     `deleteEnrollmentChildren` — which is what makes a re-run
- *     succeed at all, let alone land the same rows.
- *   - What the re-run does NOT preserve: the credential. The same
- *     DELETE cascade drops `student_credentials`, so `db:seed:apply`
- *     must be followed by `db:set-password`. See `scripts/README.md`.
+ *   - The test student profile is written with ON CONFLICT(control_number)
+ *     DO UPDATE, not INSERT OR REPLACE: REPLACE is a DELETE plus an
+ *     INSERT and the DELETE fires the cascades on `student_profiles`,
+ *     including the one that drops `student_credentials`. DO UPDATE
+ *     touches the row in place, so a fresh `db:seed` overwrites previous
+ *     test data, the smoke test stays deterministic, and the credential
+ *     survives. See `insertStudentProfile`.
+ *   - The student's enrolment children ARE deleted explicitly first —
+ *     see `deleteEnrollmentChildren` — because the `INSERT OR REPLACE`
+ *     that re-inserts their `course_groups` is still a delete, and it
+ *     would otherwise be refused by the NO ACTION children hanging off
+ *     each group. Those deletes are keyed to the fixture student's own
+ *     control number: a reseed clears its rows and nobody else's.
  *   - Alias uniqueness is also enforced at the SQL level.
  *   - FK ordering: parents first, then children.
  *
@@ -887,10 +889,11 @@ function main(): void {
 		`-- Total subjects: ${dataset.subjects.length}`,
 		`-- Total credits (target): ${dataset.declaredTotalCredits}`,
 		`-- Complementary credits required: ${dataset.complementaryCredits.requiredForGraduation}`,
-		"-- Idempotent for data: catalog INSERTs use OR IGNORE; test-student",
-		"-- rows use OR REPLACE so the fixture is deterministic on rerun.",
-		"-- NOT idempotent for the login: the profile REPLACE is a DELETE, so",
-		"-- it cascades into student_credentials. Run db:set-password after.",
+		"-- Idempotent for data: catalog INSERTs use OR IGNORE; the test-student",
+		"-- profile is upserted with ON CONFLICT ... DO UPDATE so the fixture is",
+		"-- deterministic on rerun and student_credentials is never cascaded away.",
+		"-- Scoped to the fixture student: the deletes below name its control",
+		"-- number, so no other student's rows are touched.",
 		"",
 	].join("\n");
 
@@ -905,8 +908,8 @@ function main(): void {
 	if (enrollment) {
 		sections.push(
 			"--> statement-breakpoint",
-			// First, so the profile REPLACE's cascade into `course_groups`
-			// has no NO ACTION child left to refuse it. See
+			// First, so the `course_groups` INSERT OR REPLACE below has no
+			// NO ACTION child left to refuse its implicit delete. See
 			// `deleteEnrollmentChildren`.
 			deleteEnrollmentChildren(enrollment.controlNumber),
 			"--> statement-breakpoint",
