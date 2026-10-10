@@ -74,11 +74,11 @@ decision of the maintainer).
 
 ### T2 — seed.ts: real upsert, credential survives a reseed
 
-- [ ] `insertStudentProfile` emits `INSERT INTO student_profiles (...) VALUES (...) ON
+- [x] `insertStudentProfile` emits `INSERT INTO student_profiles (...) VALUES (...) ON
       CONFLICT(control_number) DO UPDATE SET ...` covering every column the insert lists, so
       the row is updated in place and no DELETE fires.
-- [ ] Regenerate `src/lib/server/db/seed.sql` with `pnpm run db:seed:gen`; do not hand-edit.
-- [ ] Rewrite the "Seeds y credenciales" section of `scripts/README.md`: the cascade
+- [x] Regenerate `src/lib/server/db/seed.sql` with `pnpm run db:seed:gen`; do not hand-edit.
+- [x] Rewrite the "Seeds y credenciales" section of `scripts/README.md`: the cascade
       scenario it documents no longer reproduces, and the "orden obligatorio" caveat goes
       away with it. State the new guarantee and keep the ⚠ destructive framing for
       `db:reset` itself.
@@ -133,12 +133,14 @@ odd/tasks/agent-guidelines-and-e2e-recipes.md
 
 - **T1 closed** — `justfile`: `test-e2e` non-destructive, `test-e2e-fresh` / `e2e-dev` /
   `e2e-web` added, all four in `[group('test')]` with `[doc(...)]`.
-- T2, T3 open.
+- **T2 closed** — `insertStudentProfile` emits a real `ON CONFLICT ... DO UPDATE`; the
+  cascade regression reproduced before the fix and does not after it.
+- T3 open.
 
 ## Next step
 
-T2 — `insertStudentProfile` emits a real `ON CONFLICT(control_number) DO UPDATE`, then
-regenerate `seed.sql` and rewrite the `scripts/README.md` seeds section.
+T3 — rewrite `AGENTS.md`: stack block, the recipes that exist, an observable audit
+threshold, and the remote prohibition.
 
 ## Verification evidence
 

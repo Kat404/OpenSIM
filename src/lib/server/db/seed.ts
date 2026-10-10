@@ -455,17 +455,18 @@ function insertFooter(): string {
 
 /**
  * Clears the test student's dependent rows, and must be emitted before
- * the profile upsert.
+ * the enrolment children are re-inserted.
  *
- * `INSERT OR REPLACE` in SQLite is a DELETE followed by an INSERT, so
- * upserting `student_profiles` fires every cascade declared on that
- * table and drops the student's `course_groups`. Those rows carry
- * children of their own, both declared NO ACTION — `enrollments.group_id`
- * and `course_schedule_blocks.group_id` — so the cascade is refused
- * mid-statement, the apply fails with `FOREIGN KEY constraint failed`,
- * and the whole transaction rolls back. Deleting the children first lets
- * the cascade complete; the seed re-inserts them from the fixture at the
- * end of this section.
+ * The profile upsert no longer needs this (it updates in place, so it
+ * fires no cascade), but the `INSERT OR REPLACE` statements that
+ * re-insert the student's `course_groups` still do: in SQLite that form
+ * is a DELETE followed by an INSERT, so it drops the group's own
+ * children. Those rows carry children of their own, both declared NO
+ * ACTION — `enrollments.group_id` and `course_schedule_blocks.group_id`
+ * — so the cascade is refused mid-statement, the apply fails with
+ * `FOREIGN KEY constraint failed`, and the whole transaction rolls back.
+ * Deleting the children first lets the delete complete; the seed
+ * re-inserts them from the fixture at the end of this section.
  *
  * Both deletes filter on `student_control_number IS NOT NULL`, the
  * discriminator the schema already uses to tell an enrolment from a
@@ -476,7 +477,7 @@ function insertFooter(): string {
  */
 function deleteEnrollmentChildren(controlNumber: string): string {
 	const lines: string[] = [
-		"-- test-student children of course_groups (cleared before the profile upsert)",
+		"-- test-student children of course_groups (cleared before the group upserts)",
 		`DELETE FROM enrollments WHERE student_control_number = ${sqlStr(controlNumber)};`,
 		"--> statement-breakpoint",
 		"DELETE FROM course_schedule_blocks WHERE group_id IN (SELECT id FROM course_groups WHERE student_control_number IS NOT NULL);",
@@ -485,21 +486,31 @@ function deleteEnrollmentChildren(controlNumber: string): string {
 }
 
 /**
- * INSERT OR REPLACE for the test student profile so a fresh
- * `db:seed` always lands the same row regardless of what was
- * already there.
+ * Upsert for the test student profile so a fresh `db:seed` always
+ * lands the same row regardless of what was already there.
  *
- * The credential row is *not* written here — it is managed by
- * `seed-password.ts` (PBKDF2 hash + salt require the Node crypto module,
- * which is not available at SQL-emit time). It is also *destroyed* by
- * this statement: the REPLACE is a DELETE, `student_credentials`
- * declares ON DELETE CASCADE on `student_profiles`, and the row is not
- * re-inserted until `db:set-password` runs. See `scripts/README.md`.
+ * This has to be `ON CONFLICT ... DO UPDATE` and not `INSERT OR
+ * REPLACE`: in SQLite the REPLACE form is a DELETE followed by an
+ * INSERT, and that DELETE fires every cascade declared on
+ * `student_profiles`. One of them is `student_credentials ON DELETE
+ * CASCADE`, so a REPLACE silently destroyed the student's password —
+ * the login then failed and read like an auth bug rather than like a
+ * seed. DO UPDATE touches the existing row, so no DELETE ever fires
+ * and the credential survives any number of reseeds.
+ *
+ * `DO UPDATE SET` lists every non-key column the INSERT lists, so the
+ * row ends up byte-for-byte what a fresh INSERT would have produced.
+ * The FKs to `careers.code` and `specialties.code` still hold: the
+ * update writes the same values the insert would have written.
+ *
+ * The credential row itself is *not* written here — it is managed by
+ * `seed-password.ts` (PBKDF2 hash + salt require the Node crypto
+ * module, which is not available at SQL-emit time).
  */
 function insertStudentProfile(p: StudentProfileFixture): string {
 	const lines: string[] = ["-- student_profiles (test student)"];
 	lines.push(
-		`INSERT OR REPLACE INTO student_profiles (control_number, full_name, curp, birth_state, career_code, specialty_code, current_semester, certified_average, arithmetic_average, passed_average, approved_credits, remaining_credits, completed_credits, in_progress_credits, advance_percentage, status, health_service, enrollment_period) VALUES (${sqlStr(p.controlNumber)}, ${sqlStr(p.fullName)}, ${sqlStr(p.curp)}, ${sqlStr(p.birthState)}, ${sqlStr(p.careerCode)}, ${sqlNullableStr(p.specialtyCode)}, ${sqlNum(p.currentSemester)}, ${sqlNum(p.certifiedAverage)}, ${sqlNum(p.arithmeticAverage)}, ${sqlNum(p.passedAverage)}, ${sqlNum(p.approvedCredits)}, ${sqlNum(p.remainingCredits)}, ${sqlNum(p.completedCredits)}, ${sqlNum(p.inProgressCredits)}, ${sqlNum(p.advancePercentage)}, ${sqlStr(p.status)}, ${sqlStr(p.healthService)}, ${sqlStr(p.enrollmentPeriod)});`,
+		`INSERT INTO student_profiles (control_number, full_name, curp, birth_state, career_code, specialty_code, current_semester, certified_average, arithmetic_average, passed_average, approved_credits, remaining_credits, completed_credits, in_progress_credits, advance_percentage, status, health_service, enrollment_period) VALUES (${sqlStr(p.controlNumber)}, ${sqlStr(p.fullName)}, ${sqlStr(p.curp)}, ${sqlStr(p.birthState)}, ${sqlStr(p.careerCode)}, ${sqlNullableStr(p.specialtyCode)}, ${sqlNum(p.currentSemester)}, ${sqlNum(p.certifiedAverage)}, ${sqlNum(p.arithmeticAverage)}, ${sqlNum(p.passedAverage)}, ${sqlNum(p.approvedCredits)}, ${sqlNum(p.remainingCredits)}, ${sqlNum(p.completedCredits)}, ${sqlNum(p.inProgressCredits)}, ${sqlNum(p.advancePercentage)}, ${sqlStr(p.status)}, ${sqlStr(p.healthService)}, ${sqlStr(p.enrollmentPeriod)}) ON CONFLICT(control_number) DO UPDATE SET full_name = excluded.full_name, curp = excluded.curp, birth_state = excluded.birth_state, career_code = excluded.career_code, specialty_code = excluded.specialty_code, current_semester = excluded.current_semester, certified_average = excluded.certified_average, arithmetic_average = excluded.arithmetic_average, passed_average = excluded.passed_average, approved_credits = excluded.approved_credits, remaining_credits = excluded.remaining_credits, completed_credits = excluded.completed_credits, in_progress_credits = excluded.in_progress_credits, advance_percentage = excluded.advance_percentage, status = excluded.status, health_service = excluded.health_service, enrollment_period = excluded.enrollment_period;`,
 	);
 	return lines.join("\n");
 }

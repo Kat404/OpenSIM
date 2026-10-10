@@ -129,8 +129,7 @@ test-e2e-fresh: db-reset db-set-password
     pnpm exec playwright test
 
 # Run E2E with UI mode (interactive; assumes DB is ready). `db-set-password`
-# is a dependency because a `db:seed` run before this recipe may have
-# dropped the credential.
+# runs first so the credential exists before the browser asks for it.
 test-e2e-ui: db-set-password
     pnpm exec playwright test --ui
 
@@ -175,13 +174,11 @@ db-seed-remote:
 
 # Seed local D1 (regenerates seed.sql + applies)
 #
-# ⚠  Invalidates the student credential. The seed upserts the enrolment
-# profile with INSERT OR REPLACE, which in SQLite is a DELETE plus an
-# INSERT; that DELETE cascades into `student_credentials`. A credential
-# provisioned for the enrolment's control number is destroyed here, so
-# `db-set-password` must run afterwards. A credential belonging to any
-# other control number is untouched. Re-running this recipe is otherwise
-# idempotent — same rows, same counts.
+# Safe to re-run: the enrolment profile is written with
+# ON CONFLICT(control_number) DO UPDATE, so it is updated in place and
+# fires no cascade — `student_credentials` keeps its row. `db-set-password`
+# is a dependency of the e2e recipes only to guarantee the credential
+# exists, not because this recipe would drop it.
 db-seed:
     pnpm run db:seed
 
@@ -206,9 +203,9 @@ db-studio:
 
 # Full local D1 reset (delete state + migrate + seed)
 #
-# Ends with `db-seed`, so it carries the same credential caveat: follow it
-# with `db-set-password` if the credential belongs to the enrolment's
-# control number. `test-e2e` already sequences them in that order.
+# ⚠  Destructive: it deletes `.wrangler/state/v3/d1` outright, so
+# everything local that is not in the seed or the migrations is gone.
+# `db-seed` at the end is non-destructive on its own — see above.
 db-reset:
     @echo "⚠  Deleting local D1 state + reapplying migrations + seeding..."
     rm -rf .wrangler/state/v3/d1
