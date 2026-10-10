@@ -14,11 +14,22 @@
   server-side action re-validates and inserts the rows. The page
   uses SvelteKit's default form submission (no client-side enhance)
   so the bundle stays under the 100KB budget.
+
+  `candidateBlocks` is therefore always empty: the student can only
+  select offering-catalogue groups (the student's own groups arrive
+  pre-filtered as `alreadyEnrolled`), and the SIM publishes no
+  timetable for the catalogue, so `allBlocks` holds no row for any
+  selectable group. `findConflicts` is kept because it is the correct
+  rule for the enrolled schedule and it starts working the moment an
+  offering export carries blocks — it is the DATA that is missing, not
+  the check. The note rendered above the grid says so out loud rather
+  than letting an empty grid imply "no conflicts".
 -->
 <script lang="ts">
 import { AlertCircle, CheckCircle2, FileSignature } from "lucide-svelte";
 import { Badge, Button, Card } from "#lib/components/ui";
 import { findConflicts } from "#lib/utils/schedule-conflict";
+import { matchesText } from "#lib/utils/text-match";
 import CourseFilter from "./CourseFilter.svelte";
 import SchedulePreview, { type PreviewBlock } from "./SchedulePreview.svelte";
 import type { OfferBlock, OfferGroup } from "./types";
@@ -93,15 +104,14 @@ const allConflictIds = $derived.by(() => {
 });
 
 const filtered = $derived.by(() => {
-	const needle = query.trim().toLowerCase();
+	const needle = query.trim();
 	return groups.filter((g) => {
 		if (g.alreadyEnrolled) return false;
 		if (area && g.area !== area) return false;
 		if (credits === "lt5" && g.credits >= 5) return false;
 		if (credits === "eq5" && g.credits !== 5) return false;
 		if (needle) {
-			const haystack = `${g.subjectCode} ${g.subjectName}`.toLowerCase();
-			if (!haystack.includes(needle)) return false;
+			if (!matchesText(`${g.subjectCode} ${g.subjectName}`, needle)) return false;
 		}
 		if (onlyConflicts && !allConflictIds.has(g.groupId)) return false;
 		return true;
@@ -248,6 +258,16 @@ function rowMeta(g: OfferGroup): string {
 					{selectionCount} {selectionCount === 1 ? "grupo" : "grupos"} · {selectedCredits} créditos
 				</Badge>
 			</header>
+			<!--
+				The SIM publishes who teaches a group and in which term, never a
+				timetable, so no selectable group carries schedule blocks. Without
+				this the empty grid below reads as "your selection has no
+				conflicts" when it actually means "there is nothing to compare".
+			-->
+			<p class="simulator__preview-note">
+				El SIM no publica horarios para los grupos de la oferta, por lo que no se pueden detectar
+				traslapes entre las materias que elijas.
+			</p>
 			<SchedulePreview enrolledBlocks={enrolledPreview} candidateBlocks={candidatePreview} />
 		</section>
 
@@ -436,6 +456,12 @@ function rowMeta(g: OfferGroup): string {
 	font-size: var(--text-md);
 	font-weight: var(--weight-semibold);
 	color: var(--fg-primary);
+}
+
+.simulator__preview-note {
+	margin: 0;
+	font-size: var(--text-xs);
+	color: var(--fg-tertiary);
 }
 
 .simulator__footer {

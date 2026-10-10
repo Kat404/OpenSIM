@@ -283,6 +283,50 @@ export const courseScheduleBlocks = sqliteTable(
 	}),
 );
 
+// 11b. Inscripciones: la eleccion de grupo del estudiante
+//
+// `student_progress` records THAT a student took a subject in a term. It
+// never records WHICH offering group they chose, so after enrolling through
+// /reinscripcion the student had no group row at all: `enrolledGroupIds`
+// resolved to nothing and `course_schedule_blocks` had nothing to hang
+// from. This table is that missing record.
+//
+// `period` is the institution TERM NAME — "AGOSTO-DICIEMBRE/2026" — the
+// exact string `student_progress.period` holds. It is NOT
+// `course_groups.period`, which is a SIM term NUMBER ("1".."9", nullable)
+// and cannot be joined against a term name. The two columns share a name
+// and mean different things; this one follows `student_progress`.
+//
+// Composite primary key over (student, group, period), no surrogate: the
+// natural key is the whole fact being recorded, so a duplicate insert is
+// the same fact twice and nothing else. SQLite prefers an
+// `INTEGER PRIMARY KEY` for its rowid optimisation, but nothing here reads
+// by rowid — every reader filters on the leading columns — so the rowid
+// optimisation would buy nothing and the extra column would have to be
+// invented to fill it.
+//
+// The FK to `student_profiles` is `ON DELETE CASCADE`: an enrollment is
+// a fact about a profile, so removing the profile (egreso,
+// control-number correction) takes it with it.
+export const enrollments = sqliteTable(
+	"enrollments",
+	{
+		studentControlNumber: text("student_control_number")
+			.notNull()
+			.references(() => studentProfiles.controlNumber, { onDelete: "cascade" }),
+		groupId: text("group_id")
+			.notNull()
+			.references(() => courseGroups.id),
+		// Term NAME, matching `student_progress.period` — see the header.
+		period: text("period").notNull(),
+	},
+	(table) => ({
+		pk: primaryKey({
+			columns: [table.studentControlNumber, table.groupId, table.period],
+		}),
+	}),
+);
+
 // 12. Credenciales de Acceso (PBKDF2 / SHA-256 via Web Crypto API)
 //
 // Stores the PBKDF2-derived key, salt, and iteration count for each
@@ -415,6 +459,9 @@ export type NewStudentProgress = typeof studentProgress.$inferInsert;
 
 export type ComplementaryCreditActivity = typeof complementaryCreditActivities.$inferSelect;
 export type NewComplementaryCreditActivity = typeof complementaryCreditActivities.$inferInsert;
+
+export type Enrollment = typeof enrollments.$inferSelect;
+export type NewEnrollment = typeof enrollments.$inferInsert;
 
 export type CourseGroup = typeof courseGroups.$inferSelect;
 export type NewCourseGroup = typeof courseGroups.$inferInsert;

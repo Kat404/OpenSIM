@@ -1199,7 +1199,9 @@ INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teach
 INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2304-A-9-DOC-057', 'tdd-2304', 'A', 'DOC-057', 0, '9', 5, 0);
 --> statement-breakpoint
 --> statement-breakpoint
--- course_schedule_blocks (test student, cleared before the profile upsert)
+-- test-student children of course_groups (cleared before the profile upsert)
+DELETE FROM enrollments WHERE student_control_number = '12345678';
+--> statement-breakpoint
 DELETE FROM course_schedule_blocks WHERE group_id IN (SELECT id FROM course_groups WHERE student_control_number IS NOT NULL);
 --> statement-breakpoint
 -- student_profiles (test student)
@@ -1351,6 +1353,22 @@ INSERT OR REPLACE INTO course_schedule_blocks (group_id, day, start_time, end_ti
 INSERT OR REPLACE INTO course_schedule_blocks (group_id, day, start_time, end_time, classroom) VALUES ('G-SCC1023-1', 'X', '16:00', '18:00', 'Lab. Electrónica');
 --> statement-breakpoint
 --> statement-breakpoint
+-- enrollments (7 group choices for 12345678)
+INSERT OR IGNORE INTO enrollments (student_control_number, group_id, period) VALUES ('12345678', 'G-SCD1004-1', 'AGOSTO-DICIEMBRE/2026');
+--> statement-breakpoint
+INSERT OR IGNORE INTO enrollments (student_control_number, group_id, period) VALUES ('12345678', 'G-SCD1004-2', 'AGOSTO-DICIEMBRE/2026');
+--> statement-breakpoint
+INSERT OR IGNORE INTO enrollments (student_control_number, group_id, period) VALUES ('12345678', 'G-SCD1015-1', 'AGOSTO-DICIEMBRE/2026');
+--> statement-breakpoint
+INSERT OR IGNORE INTO enrollments (student_control_number, group_id, period) VALUES ('12345678', 'G-ACA0909-1', 'AGOSTO-DICIEMBRE/2026');
+--> statement-breakpoint
+INSERT OR IGNORE INTO enrollments (student_control_number, group_id, period) VALUES ('12345678', 'G-SCG1009-1', 'AGOSTO-DICIEMBRE/2026');
+--> statement-breakpoint
+INSERT OR IGNORE INTO enrollments (student_control_number, group_id, period) VALUES ('12345678', 'G-SCG1009-2', 'AGOSTO-DICIEMBRE/2026');
+--> statement-breakpoint
+INSERT OR IGNORE INTO enrollments (student_control_number, group_id, period) VALUES ('12345678', 'G-SCC1023-1', 'AGOSTO-DICIEMBRE/2026');
+--> statement-breakpoint
+--> statement-breakpoint
 -- complementary_credit_activities (3 rows)
 INSERT OR IGNORE INTO complementary_credit_activities (student_control_number, subject_canonical_id, period) VALUES ('12345678', 'itm-100', 'AGOSTO-DICIEMBRE/2022');
 --> statement-breakpoint
@@ -1375,6 +1393,8 @@ SELECT COUNT(*) AS units FROM subject_units;
 SELECT COUNT(*) AS complementary_activities FROM complementary_credit_activities;
 --> statement-breakpoint
 SELECT COUNT(*) AS progress_rows FROM student_progress;
+--> statement-breakpoint
+SELECT COUNT(*) AS enrollments FROM enrollments;
 --> statement-breakpoint
 SELECT COUNT(*) AS groups_offered FROM course_groups;
 --> statement-breakpoint

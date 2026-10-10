@@ -14,7 +14,7 @@
  *   3. Offering catalogue (course_groups, 468 rows across 9 terms) from
  *      `docs/data/sim-grupos-oferta.json`.
  *   4. Test-student enrollment (student_profiles, student_progress,
- *      complementary_credit_activities, course_schedule_blocks) from
+ *      course_groups, course_schedule_blocks, enrollments) from
  *      `data/enrollment-fixture.json`.
  *
  * The generated SQL is applied via:
@@ -28,9 +28,9 @@
  *     REPLACE so a fresh `db:seed` overwrites previous test data and
  *     the smoke test stays deterministic. In SQLite a REPLACE is a
  *     DELETE plus an INSERT, so the profile upsert also fires the
- *     cascades declared on `student_profiles`. The student's schedule
- *     blocks are therefore deleted explicitly first — see
- *     `deleteEnrollmentScheduleBlocks` — which is what makes a re-run
+ *     cascades declared on `student_profiles`. The student's dependent
+ *     rows are therefore deleted explicitly first — see
+ *     `deleteEnrollmentChildren` — which is what makes a re-run
  *     succeed at all, let alone land the same rows.
  *   - What the re-run does NOT preserve: the credential. The same
  *     DELETE cascade drops `student_credentials`, so `db:seed:apply`
@@ -384,6 +384,44 @@ function insertComplementaryCreditActivities(
 	return lines.join("\n");
 }
 
+/**
+ * One row per group the test student chose, keyed by the term NAME of the
+ * ENROLLED progress row for that group's subject.
+ *
+ * The fixture's `course_groups` array carries no period of its own, and
+ * inventing one is not an option: a value with no source is never made up.
+ * The source is the fixture's own `student_progress`, and only its ENROLLED
+ * rows state that the student is currently taking the subject — an APPROVED
+ * row is history and a LOCKED row is a future term the student is not in.
+ * A group whose subject has no ENROLLED row is therefore skipped rather
+ * than pinned to a guessed term.
+ *
+ * `period` is the term name ("AGOSTO-DICIEMBRE/2026"), matching
+ * `student_progress.period` — NOT `course_groups.period`, which is a SIM
+ * term number ("1".."9") the two can never be joined across.
+ *
+ * `INSERT OR IGNORE` keys on the composite primary key
+ * (student, group, period): a duplicate is the same fact twice, so
+ * ignoring it is what makes a re-run land the same rows.
+ */
+function insertEnrollments(
+	controlNumber: string,
+	groups: CourseGroupFixture[],
+	enrolledPeriodBySubject: Map<string, string>,
+): string {
+	const rows = groups
+		.map((g) => ({ g, period: enrolledPeriodBySubject.get(g.subjectCanonicalId) }))
+		.filter((r): r is { g: CourseGroupFixture; period: string } => r.period !== undefined);
+	const lines: string[] = [`-- enrollments (${rows.length} group choices for ${controlNumber})`];
+	for (const { g, period } of rows) {
+		lines.push(
+			`INSERT OR IGNORE INTO enrollments (student_control_number, group_id, period) VALUES (${sqlStr(controlNumber)}, ${sqlStr(g.id)}, ${sqlStr(period)});`,
+		);
+		lines.push("--> statement-breakpoint");
+	}
+	return lines.join("\n");
+}
+
 function insertFooter(): string {
 	return [
 		"--> statement-breakpoint",
@@ -404,6 +442,8 @@ function insertFooter(): string {
 		"--> statement-breakpoint",
 		"SELECT COUNT(*) AS progress_rows FROM student_progress;",
 		"--> statement-breakpoint",
+		"SELECT COUNT(*) AS enrollments FROM enrollments;",
+		"--> statement-breakpoint",
 		"SELECT COUNT(*) AS groups_offered FROM course_groups;",
 		"--> statement-breakpoint",
 		"SELECT COUNT(*) AS schedule_blocks FROM course_schedule_blocks;",
@@ -414,30 +454,33 @@ function insertFooter(): string {
 // ---------- Enrollment fixture SQL builders ----------
 
 /**
- * Clears the test student's schedule blocks, and must be emitted before
+ * Clears the test student's dependent rows, and must be emitted before
  * the profile upsert.
  *
  * `INSERT OR REPLACE` in SQLite is a DELETE followed by an INSERT, so
  * upserting `student_profiles` fires every cascade declared on that
  * table and drops the student's `course_groups`. Those rows carry
- * children of their own — `course_schedule_blocks.group_id` is declared
- * NO ACTION — so the cascade is refused mid-statement, the apply fails
- * with `FOREIGN KEY constraint failed`, and the whole transaction rolls
- * back. Deleting the blocks first lets the cascade complete; the seed
- * re-inserts them from the fixture at the end of this section.
+ * children of their own, both declared NO ACTION — `enrollments.group_id`
+ * and `course_schedule_blocks.group_id` — so the cascade is refused
+ * mid-statement, the apply fails with `FOREIGN KEY constraint failed`,
+ * and the whole transaction rolls back. Deleting the children first lets
+ * the cascade complete; the seed re-inserts them from the fixture at the
+ * end of this section.
  *
- * The subquery filters on `student_control_number IS NOT NULL`, the
+ * Both deletes filter on `student_control_number IS NOT NULL`, the
  * discriminator the schema already uses to tell an enrolment from a
- * catalogue row, so the 468 offering groups and any blocks attached to
- * them are out of reach.
+ * catalogue row, so the 468 offering groups are out of reach. The block
+ * delete stays keyed on that subquery rather than on the student
+ * directly: `course_schedule_blocks` carries no student column of its
+ * own, so the group table is the only way to name the student's blocks.
  */
-function deleteEnrollmentScheduleBlocks(): string {
+function deleteEnrollmentChildren(controlNumber: string): string {
 	const lines: string[] = [
-		"-- course_schedule_blocks (test student, cleared before the profile upsert)",
-	];
-	lines.push(
+		"-- test-student children of course_groups (cleared before the profile upsert)",
+		`DELETE FROM enrollments WHERE student_control_number = ${sqlStr(controlNumber)};`,
+		"--> statement-breakpoint",
 		"DELETE FROM course_schedule_blocks WHERE group_id IN (SELECT id FROM course_groups WHERE student_control_number IS NOT NULL);",
-	);
+	];
 	return lines.join("\n");
 }
 
@@ -812,6 +855,15 @@ function main(): void {
 		.filter((r) => r.status === "APPROVED" && complementaryById.has(r.subjectCanonicalId))
 		.map((r) => ({ canonicalId: r.subjectCanonicalId, period: r.period }));
 
+	// Term NAME of every subject the student is currently ENROLLED in. This
+	// is the only source of a period for a group choice — see
+	// `insertEnrollments`.
+	const enrolledPeriodBySubject = new Map(
+		(enrollment?.student_progress ?? [])
+			.filter((r) => r.status === "ENROLLED")
+			.map((r) => [r.subjectCanonicalId, r.period]),
+	);
+
 	const header = [
 		"-- OpenSIM seed (auto-generated by src/lib/server/db/seed.ts).",
 		`-- Career: ${dataset.careerCode} — ${dataset.careerName}`,
@@ -841,8 +893,8 @@ function main(): void {
 			"--> statement-breakpoint",
 			// First, so the profile REPLACE's cascade into `course_groups`
 			// has no NO ACTION child left to refuse it. See
-			// `deleteEnrollmentScheduleBlocks`.
-			deleteEnrollmentScheduleBlocks(),
+			// `deleteEnrollmentChildren`.
+			deleteEnrollmentChildren(enrollment.controlNumber),
 			"--> statement-breakpoint",
 			insertStudentProfile(enrollment.student_profile),
 			"--> statement-breakpoint",
@@ -851,6 +903,12 @@ function main(): void {
 			insertCourseGroups(enrollment.controlNumber, enrollment.course_groups),
 			"--> statement-breakpoint",
 			insertScheduleBlocks(enrollment.course_schedule_blocks),
+			"--> statement-breakpoint",
+			insertEnrollments(
+				enrollment.controlNumber,
+				enrollment.course_groups,
+				enrolledPeriodBySubject,
+			),
 			"--> statement-breakpoint",
 			insertComplementaryCreditActivities(enrollment.controlNumber, complementaryActivities),
 		);
@@ -884,6 +942,7 @@ function main(): void {
 			`${enrollment.student_progress.length} progress rows`,
 			`${enrollment.course_groups.length} student groups`,
 			`${enrollment.course_schedule_blocks.length} schedule blocks`,
+			`${enrollment.course_groups.filter((g) => enrolledPeriodBySubject.has(g.subjectCanonicalId)).length} enrollment choices`,
 			`${complementaryActivities.length} complementary activities`,
 		);
 	}

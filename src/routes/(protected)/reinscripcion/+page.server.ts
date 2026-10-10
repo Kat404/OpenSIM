@@ -14,10 +14,10 @@
  *   3. Read the student's already-enrolled subjects (same period)
  *      so the page can mark them as taken and exclude them from
  *      the selection list.
- *   4. Read every schedule block for the offer + the already-
- *      enrolled groups so the page can render the schedule preview
- *      and run the conflict detector client-side without further
- *      fetches.
+ *   4. Read the schedule blocks of the student's own groups — the only
+ *      groups the SIM publishes a timetable for — so the page can render
+ *      the schedule preview and run the conflict detector client-side
+ *      without further fetches.
  *
  * All three queries are routed through D1 in parallel; the page is
  * server-rendered so the initial paint already shows the real
@@ -26,7 +26,8 @@
  * The "Inscribir y firmar" form action below accepts a list of
  * `groupId`s, validates the selection (no duplicates, no already-
  * enrolled groups, no conflicts), inserts the corresponding
- * `student_progress` rows in a single `db.batch()`, and redirects to
+ * `student_progress` rows AND the `enrollments` rows that record WHICH
+ * group was chosen, in a single `db.batch()`, and redirects to
  * `/dashboard?enrolled=1` on success.
  *
  * See: odd/tasks/opensim.md Tarea 4.1.
@@ -40,6 +41,7 @@ import { getDb } from "#lib/server/db";
 import {
 	courseGroups,
 	courseScheduleBlocks,
+	enrollments,
 	studentProgress,
 	subjects,
 } from "#lib/server/db/schema";
@@ -131,13 +133,23 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		alreadyEnrolled: enrolledCanonicalIds.includes(r.subjectCanonicalId),
 	}));
 
-	// 3. Schedule blocks: ALL offer blocks + the student's enrolled
-	//    ones (the conflict detector needs both). The simulator
-	//    does the actual filtering client-side; this avoids a
-	//    round-trip per keystroke.
-	const allGroupIds = Array.from(new Set(groups.map((g) => g.groupId)));
+	// 3. Schedule blocks for the student's OWN groups, which are the only
+	//    groups that can carry any.
+	//
+	//    The SIM offering catalogue publishes who teaches and in which
+	//    term, never a timetable: `docs/data/sim-grupos-oferta.json` has
+	//    exactly `code, credits, group, hasLab, name, period, teacher`
+	//    and no `day` / `start_time` / `end_time`, so the 468 catalogue
+	//    rows structurally cannot have a block. The query that handed all
+	//    475 group ids to `inArray` was therefore claiming a fact no
+	//    source states — and at 475 ids it also blew past D1's
+	//    100-bound-parameter ceiling, which is the 500 in production.
+	//    Scoping the id list to the enrolled groups fixes both: the ids
+	//    come from `alreadyEnrolled` (already computed above), and the
+	//    bound count is one per group the student actually has.
+	const enrolledGroupIds = groups.filter((g) => g.alreadyEnrolled).map((g) => g.groupId);
 	const blockRows =
-		allGroupIds.length === 0
+		enrolledGroupIds.length === 0
 			? []
 			: await db
 					.select({
@@ -149,11 +161,15 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 						classroom: courseScheduleBlocks.classroom,
 					})
 					.from(courseScheduleBlocks)
-					.where(inArray(courseScheduleBlocks.groupId, allGroupIds));
+					.where(inArray(courseScheduleBlocks.groupId, enrolledGroupIds));
 
-	const enrolledGroupIds = new Set(groups.filter((g) => g.alreadyEnrolled).map((g) => g.groupId));
+	// Every block that exists belongs to an already-enrolled group, so
+	// the offer block list and the enrolled block list are the same rows.
+	// Both are returned because the simulator still asks for both: keeping
+	// the shape means a future offering export that DOES carry a timetable
+	// only has to widen `blocks` to get the candidate side back.
 	const blocks: OfferBlock[] = blockRows;
-	const enrolledBlocks: OfferBlock[] = blockRows.filter((b) => enrolledGroupIds.has(b.groupId));
+	const enrolledBlocks: OfferBlock[] = blockRows;
 
 	return { period, groups, blocks, enrolledCanonicalIds, enrolledBlocks };
 };
@@ -163,9 +179,10 @@ export const actions: Actions = {
 	 * Enrolls the student in the given `groupId`s for the current
 	 * period. Re-validates the selection on the server (no
 	 * duplicates, no already-enrolled groups, no schedule conflicts)
-	 * and inserts the resulting `student_progress` rows in a single
-	 * `db.batch()`. On success, redirects to `/dashboard?enrolled=1`
-	 * so the dashboard can flash a success message.
+	 * and inserts the resulting `student_progress` and `enrollments`
+	 * rows in a single `db.batch()`. On success, redirects to
+	 * `/dashboard?enrolled=1` so the dashboard can flash a success
+	 * message.
 	 *
 	 * Conflicts are detected at insert time: if the student picks a
 	 * set of groups whose schedule blocks overlap, the action
@@ -321,22 +338,43 @@ export const actions: Actions = {
 			});
 		}
 
-		// Insert all rows in a single multi-value INSERT. SQLite
-		// executes a single `INSERT INTO ... VALUES (...), (...), ...`
-		// atomically: a mid-flight failure does not leave the
-		// student half-enrolled. The Drizzle `db.batch(...)` API
-		// requires a non-empty tuple, which is awkward for a
-		// dynamic N — the multi-value insert is the right primitive.
-		await db.insert(studentProgress).values(
-			toEnrol.map((c) => ({
-				studentControlNumber: u.controlNumber,
-				subjectCanonicalId: c.subjectCanonicalId,
-				status: "ENROLLED" as const,
-				grade: null,
-				evaluationType: null,
-				period,
-			})),
-		);
+		// Record the signature in BOTH tables, in one `db.batch` so D1
+		// wraps them in a single transaction: `student_progress` is the
+		// fact "took this subject", `enrollments` is the fact "chose this
+		// group". Without the second row the choice was lost the moment
+		// the redirect fired — nothing downstream could ever resolve the
+		// student's groups back to the group they picked.
+		//
+		// `enrollments.period` carries the resolved term NAME, the same
+		// string `student_progress.period` holds above. `course_groups.
+		// period` is a SIM term NUMBER ("1".."9") and cannot be joined
+		// against it.
+		//
+		// Both statements are multi-value INSERTs because the row count is
+		// dynamic: SQLite executes a single `INSERT INTO ... VALUES (...), (...), ...`
+		// atomically, so a mid-flight failure does not leave the student
+		// half-enrolled. `toEnrol` is never empty here — the dedupe above
+		// cannot collapse a non-empty `unique` to nothing — which is what
+		// `db.batch` requires (it rejects an empty query list).
+		await db.batch([
+			db.insert(studentProgress).values(
+				toEnrol.map((c) => ({
+					studentControlNumber: u.controlNumber,
+					subjectCanonicalId: c.subjectCanonicalId,
+					status: "ENROLLED" as const,
+					grade: null,
+					evaluationType: null,
+					period,
+				})),
+			),
+			db.insert(enrollments).values(
+				toEnrol.map((c) => ({
+					studentControlNumber: u.controlNumber,
+					groupId: c.groupId,
+					period,
+				})),
+			),
+		]);
 
 		throw redirect(303, "/dashboard?enrolled=1");
 	},
