@@ -8,9 +8,9 @@
   prefix (with exact match for `/dashboard` so `/dashboard/whatever`
   does not always win).
 
-  Items `Reinscripción` and `Trámites` currently point to `#` with
-  Spanish placeholders; Phase 4 will wire them to the simulator and
-  procedure stepper.
+  Items `Reinscripción` and `Trámites` were placeholders pointing at `#`.
+  Phase 4 and Phase 9 wired both routes, so they are live now; the sidebar
+  had not been told.
 -->
 <script lang="ts">
 import {
@@ -37,8 +37,11 @@ const items: NavItem[] = [
 	{ label: "Horario", href: "/horario", Icon: CalendarDays },
 	{ label: "Retícula", href: "/reticula", Icon: Network },
 	{ label: "Kardex", href: "/academico/kardex", Icon: ScrollText },
-	{ label: "Reinscripción", href: "#", Icon: PencilLine, disabled: true },
-	{ label: "Trámites", href: "#", Icon: FileText, disabled: true },
+	// Both routes shipped in Phase 4 and Phase 9 respectively. They stayed
+	// marked unavailable from before either existed, so the sidebar denied
+	// students the two pages the rest of the app links to.
+	{ label: "Reinscripción", href: "/reinscripcion", Icon: PencilLine },
+	{ label: "Trámites", href: "/tramites", Icon: FileText },
 ];
 
 interface Props {
