@@ -148,20 +148,26 @@ test-e2e-ui: db-set-password
 # The runner owns the dev server — e2e.config.ts pins its single `web()`
 # target to localhost and gives it `pnpm dev` as the app command — so
 # nothing needs to be running first. It signs in as the demo student, so
-# provisioning that credential is the only database setup it needs.
+# a migrated database with that credential provisioned is the setup it
+# needs.
+#
+# `db-set-password` reads OPENSIM_TEST_PASSWORD; the runner signs in
+# with E2E_USER_ALUMNO_PASSWORD from `.env`. Nothing enforces that the
+# two agree, so they can silently disagree and the run fails at login —
+# they are two independent settings, not one.
 #
 # A run drives a real model gateway: it costs tokens and is far slower
 # than the Playwright suite. Reach for it for flows that selectors
 # cannot honestly assert, not as the default check.
 [group('test')]
 [doc('Run the agentic e2e suite (MiniMax-M3 driving a real browser; the runner spawns and owns the local dev server).')]
-e2e-dev: db-set-password
+e2e-dev: db-migrate db-set-password
     pnpm exec e2e run
 
 # Same run with the browser visible, for watching the agent work.
 [group('test')]
 [doc('Run the agentic e2e suite with --headed so the browser is visible (debugging).')]
-e2e-web: db-set-password
+e2e-web: db-migrate db-set-password
     pnpm exec e2e run --headed
 
 # ===== Database (D1 / Drizzle) =====

@@ -45,7 +45,10 @@ Cuál usar: `test-e2e` es el default porque no tira el trabajo del mantenedor;
 `test-e2e-fresh` sólo cuando se sospeche de la base local. `qa` no corre e2e, así que un
 `just qa` en verde no dice nada sobre el navegador: los e2e se corren aparte.
 `e2e-dev` / `e2e-web` gastan tokens contra un gateway real y son lentos; no los
-conviertas en el chequeo de cada cambio.
+conviertas en el chequeo de cada cambio. Ojo: esas recetas aprovisionan la credencial
+desde `OPENSIM_TEST_PASSWORD`, pero el runner agéntico inicia sesión con
+`E2E_USER_ALUMNO_PASSWORD` de `.env`. Son dos ajustes independientes — nada obliga a
+que coincidan, y si no coinciden el run falla en el login.
 
 ### Prohibido lo remoto
 
