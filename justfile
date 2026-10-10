@@ -119,6 +119,12 @@ test-e2e-avatar: db-set-password
 # pristine database.
 #
 # The webServer block auto-spawns pnpm dev and tears it down on exit.
+#
+# shortcut: each run signs in through auth.setup and leaves one more
+# `auth_sessions` row behind — measured 3 -> 4 across a single run.
+# Local-only and harmless while the count is in the tens; if it ever
+# matters, prune expired rows (add a DELETE ON the expiry column to
+# db-set-password, which already touches the credential tables).
 [group('test')]
 [doc('Run the Playwright + axe-core suite against the existing local D1 (non-destructive: migrate + credential, no reset). Use test-e2e-fresh for a pristine database.')]
 test-e2e: db-migrate db-set-password
