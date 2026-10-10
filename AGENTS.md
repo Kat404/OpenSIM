@@ -53,7 +53,12 @@ conviertas en el chequeo de cada cambio.
 `just deploy-worker` tocan la D1 de producción o despliegan el Worker. Requieren
 autorización explícita del mantenedor **cada vez**, sin excepción. Una autorización
 de una corrida anterior no autoriza la siguiente, y "el plan lo pedía" tampoco.
-Todo lo demás es local.
+
+Además, dos recetas más son remotas aunque no destruyan nada: `just logs`
+(`wrangler tail`, los logs de producción del Worker desplegado) y `just push-mirror`
+(`git push origin main`, que publica en GitHub **y** en Codeberg). Piden autorización
+en los mismos términos. El resto de las recetas es local — pero la lista real es
+`just --list`, no esta frase.
 
 El D1 que hay en producción es de pruebas/demo, para que alguien pueda ver OpenSIM
 funcionando sin instalarlo; no está diseñado para crecer. Esa es también la razón
@@ -65,7 +70,7 @@ público ya no arranca.
 - Siempre que hagas cualquier cambio de código (no `docs/`) pasa por los comandos de arriba: `just qa-fast` como mínimo, más los e2e que toquen lo que cambiaste.
 - Siempre que cambies partes del código, avances con tareas, planeaciones y demás actualiza `odd/` si es que hay un plan ODD para lo que ya ejecutaste.
 - Guarda y/o actualiza en memoria Engram lo anterior. Este paso es _obligatorio_ se tenga o una planeación ODD.
-- **Umbral del subagente de auditoría.** Lánzalo, *después* de que `qa-fast` y los e2e estén verdes, cuando el diff: (a) toque migraciones en `drizzle/**`, (b) toque código de auth o de credenciales, (c) toque `wrangler.jsonc` o cualquier receta remota, o (d) abarque ≥2 archivos no triviales o ~400 líneas escritas. El resto no lo amerita. La auditoría debe producir: los hallazgos con archivo y línea, la razón por la que cada uno importa, y qué se rompió o no se rompió con evidencia — no un "se ve bien".
+- **Umbral del subagente de auditoría.** Lánzalo, *después* de que `qa-fast` y los e2e estén verdes, cuando el diff: (a) toque migraciones en `drizzle/**`, (b) toque código de auth o de credenciales, (c) toque `wrangler.jsonc` o cualquier receta remota, o (d) abarque ≥2 archivos de código (bajo `src/`, `tests/`, `drizzle/` o configuración ejecutable), excluyendo comentarios y `docs/`, o ~400 líneas escritas. El resto no lo amerita. La auditoría debe producir: los hallazgos con archivo y línea, la razón por la que cada uno importa, y qué se rompió o no se rompió con evidencia — no un "se ve bien".
 
 ## Disclaimer
 
