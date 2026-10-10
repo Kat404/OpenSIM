@@ -59,15 +59,20 @@ const DERIVED_KEY_BYTES = 32;
  *
  * Two independent reasons, both worth keeping:
  *
- * 1. This credential owns no `student_profiles` row, so the catalog
- *    seed has nothing to say about it. (This used to be a hard
- *    requirement: the seed wrote profiles with `INSERT OR REPLACE`,
- *    which is a delete plus an insert, and `student_credentials`
- *    carries `ON DELETE CASCADE` on the profile key — so a profile
- *    replace wiped the credential and the next login timed out waiting
- *    for a redirect. `seed.ts` now upserts with
- *    `ON CONFLICT(control_number) DO UPDATE`, so the cascade never
- *    fires and `db-set-password` is idempotent under any ordering.)
+ * 1. `seed.sql` never writes control number `99999999`, and the
+ *    profile write it does emit is an upsert, so no DELETE — and
+ *    therefore no `ON DELETE CASCADE` from `student_profiles` down to
+ *    `student_credentials` — can reach this row. (This used to be a
+ *    hard requirement: the seed wrote profiles with `INSERT OR
+ *    REPLACE`, which SQLite runs as a delete plus an insert, so a
+ *    profile replace wiped the credential and the next login timed out
+ *    waiting for a redirect. `seed.ts` now upserts with
+ *    `ON CONFLICT(control_number) DO UPDATE`.)
+ *
+ *    This credential DOES own a `student_profiles` row — the `INSERT
+ *    OR IGNORE` in `buildSql` below creates it on first run. What the
+ *    catalog seed does not do is name this control number, so its
+ *    upsert never touches the row this credential hangs off.
  * 2. One login, one role: the pages render the catalog student's data,
  *    and provisioning a second credential for the catalog student
  *    itself would let a test sign in with a profile it does not own.

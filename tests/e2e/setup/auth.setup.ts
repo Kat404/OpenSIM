@@ -37,8 +37,11 @@ const AUTH_FILE = "playwright/.auth/storage.json";
 
 // Must match seed-password.ts's DEFAULT_CONTROL_NUMBER. The credential's
 // control number is deliberately distinct from the catalog student's
-// (12345678 in seed.sql) so a catalog re-seed cannot displace it via the
-// ON DELETE CASCADE on student_credentials — see seed-password.ts.
+// (12345678 in seed.sql): seed.sql never names this control number, and the
+// profile write it does emit is an ON CONFLICT ... DO UPDATE upsert, so no
+// DELETE — and therefore no ON DELETE CASCADE into student_credentials —
+// can reach it. It does own a student_profiles row, created by seed-password.ts
+// itself — see seed-password.ts.
 // Defaulting to the old shared key made every test-e2e run fail auth with
 // a 15 s waitForURL timeout.
 const CONTROL_NUMBER = process.env.OPENSIM_TEST_CONTROL_NUMBER ?? "99999999";

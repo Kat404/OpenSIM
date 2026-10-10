@@ -140,12 +140,12 @@ Two control numbers exist and they are **not** interchangeable:
 
 | Number | What it is | Survives `db:seed`? |
 | --- | --- | --- |
-| `99999999` | the seeded credential, written by `db-set-password` | yes — it belongs to no `student_profiles` row, so the seed never touches it |
+| `99999999` | the seeded credential, written by `db-set-password` | yes — `seed.sql` never names this control number, and the profile write it does emit is an upsert, so no `DELETE` and no `ON DELETE CASCADE` can reach the credential |
 | `12345678` | the demo student in `enrollment-fixture.json` | yes — its profile is upserted in place, so a reseed keeps the credential |
 
 So log in with **`99999999`**. The demo student's own data is still what the pages render,
-because the fixture profile is seeded as `12345678`; the credential is provisioned
-separately, against a control number with no profile row.
+because the fixture profile is seeded as `12345678`; the credential is a separate login shell
+provisioned against its own control number, which the catalog seed never writes.
 
 `db-reset` is the exception: it deletes the local database outright rather than upserting
 into it, so the credential has to be provisioned again afterwards.
