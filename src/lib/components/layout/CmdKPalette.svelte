@@ -31,6 +31,7 @@
 import { Search } from "lucide-svelte";
 import { tick } from "svelte";
 import { Modal } from "#lib/components/ui";
+import { matchesText } from "#lib/utils/text-match";
 import { goto } from "$app/navigation";
 
 export interface PaletteRoute {
@@ -79,12 +80,10 @@ const index = $derived.by(() => {
 });
 
 const results = $derived.by(() => {
-	const q = query.trim().toLowerCase();
+	const q = query.trim();
 	if (!q) return index.slice(0, 12);
 	return index
-		.filter(
-			(item) => item.label.toLowerCase().includes(q) || item.sublabel.toLowerCase().includes(q),
-		)
+		.filter((item) => matchesText(item.label, q) || matchesText(item.sublabel, q))
 		.slice(0, 12);
 });
 
