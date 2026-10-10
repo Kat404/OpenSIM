@@ -27,7 +27,13 @@ import { BookOpen } from "lucide-svelte";
 import { EmptyState } from "#lib/components/ui";
 import type { StudentProgressStatus } from "#lib/server/db/schema";
 import { getSubjectColor } from "#lib/utils/color";
-import { buildAdjacency, getAncestorsFromMap, getDescendantsFromMap } from "#lib/utils/dag";
+import {
+	buildAdjacency,
+	decomposeChains,
+	describeSeriation,
+	getAncestorsFromMap,
+	getDescendantsFromMap,
+} from "#lib/utils/dag";
 import { getTheme } from "#lib/utils/theme.svelte";
 import SubjectNode, { type SubjectViewModel } from "./SubjectNode.svelte";
 
@@ -80,13 +86,20 @@ const adjacency = $derived(buildAdjacency(edges));
 // subjects have no semester at all. The null case is checked first
 // and reported separately, otherwise `null < 1` evaluates true via
 // coercion and the subject is filed under an unstated reason.
+//
+// A `SPECIALTY` module without a semester is the expected case and is
+// explained on screen by the specialty tray, so it stays silent. Any
+// other component without one has no explanation and is a real data
+// defect — that is the branch that keeps the warning.
 const subjectsBySemester = $derived.by(() => {
 	const map = new Map<number, SubjectViewModel[]>();
 	for (const s of subjects) {
 		if (s.semester === null) {
-			console.warn(
-				`[ReticulaDag] Subject ${s.canonicalId} (${s.code}) has no semester on record; not rendered.`,
-			);
+			if (s.component !== "SPECIALTY") {
+				console.warn(
+					`[ReticulaDag] Subject ${s.canonicalId} (${s.code}) is ${s.component} and has no semester on record; not rendered.`,
+				);
+			}
 			continue;
 		}
 		if (s.semester < 1 || s.semester > MAX_SEMESTER) {
@@ -105,6 +118,30 @@ const subjectsBySemester = $derived.by(() => {
 	}
 	return map;
 });
+
+// Seriation branches. `decomposeChains` splits the 14 verified edges into
+// the chains a `SERIALIZED` subject belongs to, and `describeSeriation`
+// answers with the STORED tri-state rather than inferring one from the edge
+// list. `UNKNOWN` is "not established from a source", not "not serialized".
+const decomposition = $derived(decomposeChains(edges));
+
+/**
+ * The one sentence a node carries about its seriation branch. Empty when the
+ * state has nothing to add: a `SERIALIZED` subject no edge reaches keeps its
+ * branch index unknown, and saying so would be noise (operator decision).
+ */
+function seriationText(s: SubjectViewModel): string {
+	const info = describeSeriation(s.canonicalId, s.seriationState, decomposition);
+	if (info.state === "SERIALIZED") {
+		if (!info.chain) return "";
+		const ordinal = info.chain.position + 1;
+		return `Seriado: es la materia ${ordinal} de ${info.chain.subjects.length} en su cadena de prerrequisitos.`;
+	}
+	if (info.state === "INDEPENDENT") {
+		return "Seriación: el plan la registra como materia independiente, sin orden respecto a otras.";
+	}
+	return "Seriación: ninguna fuente consultada establece si debe seriada.";
+}
 
 // Position map keyed by canonicalId for connector math.
 const positionByCanonical = $derived.by(() => {
@@ -271,6 +308,7 @@ function activate(id: string) {
 						width={NODE_WIDTH}
 						height={NODE_HEIGHT}
 						colorHsl={getSubjectColor(s.code, getTheme())}
+						seriationText={seriationText(s)}
 						onHover={setHover}
 						onActivate={activate}
 					/>

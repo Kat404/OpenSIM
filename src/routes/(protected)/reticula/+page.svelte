@@ -9,6 +9,7 @@
 -->
 <script lang="ts">
 import ReticulaDag from "#lib/components/curriculum/ReticulaDag.svelte";
+import SpecialtyTray from "#lib/components/reticula/SpecialtyTray.svelte";
 import type { StudentProgressStatus } from "#lib/server/db/schema";
 import { STATUS_COLOR_VAR, STATUS_LABEL } from "#lib/utils/status-labels";
 import { page } from "$app/state";
@@ -42,6 +43,11 @@ $effect(() => {
 });
 
 const legend: StudentProgressStatus[] = ["APPROVED", "ENROLLED", "AVAILABLE", "LOCKED"];
+
+// The student's OWN specialty modules, and only those: the loader resolves
+// the match against `student_profiles.specialty_code`, so the eleven other
+// specialties in the catalogue never reach the page.
+const specialtyModules = $derived(data.subjects.filter((s) => s.inStudentSpecialty));
 </script>
 
 <svelte:head>
@@ -55,7 +61,7 @@ const legend: StudentProgressStatus[] = ["APPROVED", "ENROLLED", "AVAILABLE", "L
 		<h1 class="reticula__title">Retícula Académica</h1>
 		<p class="reticula__sub">
 			Pasa el cursor sobre una asignatura para resaltar el grafo de prerrequisitos y las que
-			dependen de ella.
+			dependen de ella. Las materias que ofrecen algún grupo con laboratorio llevan la marca LAB.
 		</p>
 	</header>
 
@@ -79,6 +85,10 @@ const legend: StudentProgressStatus[] = ["APPROVED", "ENROLLED", "AVAILABLE", "L
 		statusByCanonicalId={data.statusByCanonicalId}
 		{focusedCanonicalId}
 	/>
+
+	{#if specialtyModules.length > 0}
+		<SpecialtyTray subjects={specialtyModules} statusByCanonicalId={data.statusByCanonicalId} />
+	{/if}
 </section>
 
 <style>
