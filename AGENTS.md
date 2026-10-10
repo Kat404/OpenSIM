@@ -35,7 +35,7 @@ aparece ahí no existe y no la debes inventar en un reporte.
 | `just test-e2e` | Playwright + axe-core contra la D1 local existente. **No destructiva**: migra y aprovisiona la credencial, no borra nada. |
 | `just test-e2e-fresh` | Lo mismo desde una base limpia. **Destructiva**: borra `.wrangler/state/v3/d1`, re-migra y re-siembra. Sólo cuando la base local está realmente mal. |
 | `just test-e2e-ui` | Playwright en modo interactivo (`--ui`). |
-| `just test-e2e-avatar` | Suite Playwright de solapamiento de avatar (AC6-AC11, 80 corridas). Sin auth. |
+| `just test-e2e-avatar` | Suite Playwright de solapamiento de avatar (AC6-AC11, 80 corridas). El spec no usa auth, pero los proyectos que lo corren dependen del proyecto `setup`, así que autentica como el estudiante de prueba. |
 | `just e2e-dev` | Runner e2e agéntico, headless. El runner levanta y baja `pnpm dev` él mismo. |
 | `just e2e-web` | Igual con `--headed`, para depurar viendo el navegador. |
 | `just db-migrate` · `just db-set-password` | Migrar / aprovisionar la credencial en la D1 local. Los dos son idempotentes: re-ejecutarlos es seguro. |

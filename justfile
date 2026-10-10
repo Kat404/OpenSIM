@@ -96,13 +96,17 @@ test-watch:
     pnpm run test:unit
 
 # Run Playwright AC6-AC11 avatar overlap suite (40 light + 40 dark;
-# uses dev fixture page). Public spec — no auth required. The per-
-# describe test.skip in the spec scopes light to chromium and dark
-# to chromium-data-theme-dark, so the just recipe no longer needs
-# --project flags.
+# uses dev fixture page). The per-describe test.skip in the spec scopes
+# light to chromium and dark to chromium-data-theme-dark, so the just
+# recipe no longer needs --project flags.
+#
+# The spec itself needs no auth, but the run is not auth-free: both
+# projects it runs under declare `dependencies: ["setup"]`, so
+# auth.setup.ts signs in as the test student first and the credential
+# must exist. That is why this recipe depends on `db-set-password`.
 [group('test')]
-[doc('Run Playwright AC6-AC11 avatar overlap suite (40 light + 40 dark; total 80 honest runs).')]
-test-e2e-avatar:
+[doc('Run Playwright AC6-AC11 avatar overlap suite (40 light + 40 dark; total 80 honest runs). Authenticates as the test student via the shared setup project.')]
+test-e2e-avatar: db-set-password
     pnpm exec playwright test tests/e2e/avatar-overlap.spec.ts
 
 # End-to-end tests (Playwright + axe-core), non-destructive.
