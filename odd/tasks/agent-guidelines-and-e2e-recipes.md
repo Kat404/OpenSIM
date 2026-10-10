@@ -113,8 +113,13 @@ odd/tasks/agent-guidelines-and-e2e-recipes.md
 - `just --list` shows every recipe `AGENTS.md` names, and every recipe `AGENTS.md` names
   exists. No recipe named in `AGENTS.md` is missing.
 - `grep` for `e2e`, `qa`, `db-reset` in `AGENTS.md` matches the `justfile` reality.
-- After `just db-set-password 12345678` (the fixture's own control number) followed by
-  `just db-seed`, `student_credentials` still holds the row.
+- After `pnpm run db:set-password 12345678` (the fixture's own control number) followed by
+  `just db-seed`, `student_credentials` still holds the row. The `just` form
+  (`just db-set-password 12345678`) does **not** work — `just` reads the second token as a
+  recipe name and exits 1 with ``error: justfile does not contain recipe `12345678` ``.
+  The recipe declares no parameters, so the positional form only exists on the pnpm script.
+- `just db-seed` does not touch another student's rows: with a second student holding an
+  enrolment group and a schedule block, a reseed leaves both in place.
 - `pnpm run db:seed:gen` output is byte-stable across two consecutive runs.
 - `just qa-fast` green.
 
@@ -125,9 +130,12 @@ odd/tasks/agent-guidelines-and-e2e-recipes.md
 | Recipes parse | `just --list` | justfile syntax + inventory |
 | Unit + lint + types | `just qa-fast` | `check biome-check test` |
 | Upsert is real | `rg -n 'ON CONFLICT' src/lib/server/db/seed.sql` | generated SQL, not the source builder |
-| Cascade regression | `just db-migrate && just db-set-password 12345678 && just db-seed` then count `student_credentials` | the scenario `scripts/README.md` documents as broken |
+| Cascade regression | `just db-migrate && pnpm run db:set-password 12345678 && just db-seed` then count `student_credentials` | the scenario `scripts/README.md` documents as broken |
 | Seed is stable | `pnpm run db:seed:gen` twice, diff | determinism of the generated file |
 | Agent docs match | manual read of `AGENTS.md` against `just --list` | the whole point of T3 |
+| Seed blast radius | add a second student + group + block, `just db-seed`, recount | the reseed must touch the fixture student only |
+| Avatar suite auth | `pnpm exec playwright test tests/e2e/avatar-overlap.spec.ts --list` | the spec pulls in `[setup]`, so it is not auth-free |
+| Recipe wiring | `just --dry-run test-e2e-avatar e2e-dev e2e-web` | each recipe's dependencies are what its comment claims |
 
 ## Progress
 
@@ -256,7 +264,114 @@ Test Files  19 passed (19)   Tests  326 passed (326)
 No pre-existing failures: `qa-fast` covers the maintainer's six dirty files too and
 is fully green.
 
+## T5 — independent verification pass: ten findings
+
+A verification pass over T1–T4 found ten defects, several of them corrections to
+claims T1–T4 themselves had made. All ten are closed. `9be85ef` is the parent.
+
+| # | Finding | Resolution | Commit |
+| --- | --- | --- | --- |
+| F1 | HIGH — the documented reason `99999999` survives a reseed was false. `seed-password.ts` writes that `student_profiles` row itself; three surfaces claimed it had none. Conclusion was right, reason was wrong. | Rewrote the reason in `seed-password.ts`, `README.md` (table cell + prose) and `auth.setup.ts`: `seed.sql` never names this control number, and the profile write it does emit is an upsert, so no DELETE and no cascade can reach it. | `16ac8f6` |
+| F2 | HIGH — `db-seed` silently destroyed every other student's schedule blocks. `deleteEnrollmentChildren` deleted blocks for **all** enrolment groups but re-inserted only the fixture student's. | Scoped that DELETE to the control number the function already takes. Regenerated `seed.sql`. Corrected the four "safe to re-run" claims. | `b16bcb2`, `88aa384`, `a433f1c` |
+| F3 | MEDIUM-HIGH — the false cascade warning was baked into the shipped `seed.sql`, which `db-seed-remote` applies straight to production D1. | Corrected the file header in `seed.ts` and the SQL header block it emits; regenerated. | `66d0ba2` |
+| F4 | MEDIUM — `test-e2e-avatar` needs auth: both projects it runs under declare `dependencies: ["setup"]`. Two places called it auth-free. | Added the `db-set-password` dependency; corrected `justfile` and `AGENTS.md`. | `894c33f` |
+| F5 | MEDIUM — `playwright.config.ts` and `auth.setup.ts` still told readers to run `just db-reset`. `test-e2e` never runs it. | Pointed both at `db-migrate` + `db-set-password`, named `test-e2e-fresh` as the destructive path. | `068b0b9` |
+| F6 | LOW-MED — the audit threshold's "≥2 archivos no triviales" is not evaluable from a diff. | Replaced with a mechanical rule: ≥2 code files under `src/`, `tests/`, `drizzle/` or executable config, excluding comments and `docs/`. | `1cdd19c` |
+| F7 | LOW — "Todo lo demás es local" was false: `just logs` tails the deployed Worker's production logs and `just push-mirror` publishes `main` to GitHub **and** Codeberg. | Corrected the sentence; both named as remote actions needing authorization. | `1cdd19c` |
+| F8 | LOW — `auth_sessions` grows by one row per e2e run (measured 3 → 4) and nothing prunes it. **Not fixed by design.** | One-line `shortcut:` comment in the `test-e2e` block recording the limit and when to upgrade. | `9d6a7b7` |
+| F9 | LOW — the agentic recipes provision from `OPENSIM_TEST_PASSWORD` but the runner signs in with `E2E_USER_ALUMNO_PASSWORD`; nothing couples them. | Comment states the two are independent; added a `db-migrate` dependency so the recipes work unmigrated; one `AGENTS.md` line. No coupling invented, no value printed. | `e584f8a` |
+| F10 | LOW — the acceptance criteria specified `just db-set-password 12345678`, which fails: `just` reads the second token as a recipe name. | Corrected both acceptance criteria and the check table to the working `pnpm run db:set-password` form, documented the failure mode, added three checks. | this commit |
+
+### F2 — reproduction and proof
+
+The old statement, run by hand against a second student:
+
+```
+$ python3 d1q.py "DELETE FROM course_schedule_blocks WHERE group_id IN
+    (SELECT id FROM course_groups WHERE student_control_number IS NOT NULL)"
+# rows=0 rc=0
+$ python3 d1q.py "SELECT cg.student_control_number, COUNT(*) AS blocks FROM
+    course_schedule_blocks b JOIN course_groups cg ON cg.id=b.group_id
+    GROUP BY cg.student_control_number"
+# rows=0 rc=0          ← all 15 blocks gone: the fixture student's 14 and the other's 1
+$ python3 d1q.py "SELECT student_control_number, COUNT(*) FROM enrollments GROUP BY 1"
+student_control_number=12345678 c=7
+student_control_number=55555555 c=1      ← enrolment survives, pointing at an empty group
+student_control_number=99999999 c=1
+```
+
+The same scenario after the fix (`just db-seed` with the regenerated `seed.sql`):
+
+```
+$ python3 d1q.py "SELECT cg.student_control_number, COUNT(*) AS blocks FROM
+    course_schedule_blocks b JOIN course_groups cg ON cg.id=b.group_id
+    GROUP BY cg.student_control_number"
+student_control_number=12345678 blocks=14    ← fixture student restored from the fixture
+student_control_number=55555555 blocks=1     ← untouched
+```
+
+The probe rows were deleted afterwards and the local database is back where it was
+found: `student_profiles` 2, `course_groups` 475, `course_schedule_blocks` 14,
+`enrollments` 8, `student_credentials` 2, `auth_sessions` 4.
+
+### F4 — the auth-free claim, disproved
+
+```
+$ pnpm exec playwright test tests/e2e/avatar-overlap.spec.ts --list | grep setup
+  [setup] › setup/auth.setup.ts:50:1 › authenticate as test student 99999999
+Total: 241 tests in 2 files
+
+$ just --dry-run test-e2e-avatar
+pnpm run db:set-password
+pnpm exec playwright test tests/e2e/avatar-overlap.spec.ts
+```
+
+### F10 — the criterion that could not execute
+
+```
+$ just db-set-password 12345678
+error: justfile does not contain recipe `12345678`
+EXIT=1
+```
+
+### Whole-verification gate (after T5)
+
+```
+$ pnpm run db:seed:gen && git diff --exit-code src/lib/server/db/seed.sql
+EXIT=0 — byte-stable, matches the source builder
+$ md5sum src/lib/server/db/seed.sql   (run twice)
+d14008b83f6e1a1728a6eefbafeb13c1
+d14008b83f6e1a1728a6eefbafeb13c1
+
+$ rg -n 'INSERT OR REPLACE INTO student_profiles|cascad' seed.ts seed.sql README.md AGENTS.md justfile scripts/README.md
+  → no `INSERT OR REPLACE INTO student_profiles` anywhere; every remaining
+    `cascad` mention is a true statement (scripts/README.md:25, justfile:195,
+    seed.ts:29,463,468,499, seed.sql:11)
+
+$ just db-migrate            → ✅ No migrations to apply!
+$ pnpm run db:set-password 12345678   → Done.
+$ d1q "SELECT control_number FROM student_credentials"    → 12345678, 99999999
+$ just db-seed               → Done.
+$ d1q "SELECT control_number FROM student_credentials"    → 12345678, 99999999
+                                     ← the credential the old statement destroyed
+$ just db-set-password       → Done.  (default 99999999 credential restored)
+
+$ just qa-fast
+svelte-check found 0 errors and 0 warnings
+Checked 135 files … No fixes applied.
+Test Files  19 passed (19)   Tests  326 passed (326)
+✓ pre-commit checks passed
+EXIT=0
+```
+
 ### Not run
+
+`just e2e-dev` and `just e2e-web` were verified with `--dry-run` only. Both spawn
+`pnpm dev` and drive a real model gateway; running them is a remote operation and
+was not authorized. The Playwright suites (`test-e2e`, `test-e2e-fresh`) were not
+executed either — `test-e2e-fresh` deletes the local database and `test-e2e`
+spawns a browser against it; neither was needed to establish any acceptance
+criterion here. `--list` was used instead of a run to prove F4's premise.
 
 `just e2e-dev` and `just e2e-web` were verified with `--dry-run` only. Both spawn
 `pnpm dev` and drive a real model gateway; running them is a remote operation and
