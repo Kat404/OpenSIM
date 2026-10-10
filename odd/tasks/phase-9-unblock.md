@@ -3,13 +3,15 @@
 <!-- odd-tracker
 kind: phase-plan
 status: active
-last-verified: 2026-10-08
-reconciled-against: feat/phase-9-verified-curriculum@2ac464f (main@fee9d60)
-sha-warning: los SHA 697c1c9, 0cafef1, 6ca7c12, 8f40837, ffcd595 y b3fef41 citados en el cuerpo de este archivo predicen la reescritura de firmas GPG del 2026-10-08 y están MUERTOS; los vivos verificados con `git cat-file -e` son 18de1a5 (T9.1), b6a1d8a (T9.2) y 159b2bc (T9.7)
+last-verified: 2026-10-10
+reconciled-against: feat/phase-9-verified-curriculum@c49caea (main@fee9d60)
+sha-warning: los SHA 697c1c9, 0cafef1, 6ca7c12, 8f40837, ffcd595 y b3fef41 citados en el cuerpo de este archivo predicen la reescritura de firmas GPG del 2026-10-08 y están MUERTOS; los vivos verificados con `git cat-file -e` son 18de1a5 (T9.1), b6a1d8a (T9.2), 159b2bc (T9.7), 4460f27 (T9.3+T9.4+T9.6), 13f4d7a, 17e013b, db258a8, a799d47, a3621f7, c22d05c, 639a663 y c49caea
 -->
 
 **Estado:** Onda 2 **ejecutada por completo** · creado 2026-10-08 ·
-**reconciliado 2026-10-08: B1, B2, B3, B6, B7 y B8 cerradas. B4 parcial. B5 cerrada.**
+**reconciliado 2026-10-08: B1, B2, B3, B6, B7 y B8 cerradas. B4 parcial. B5 cerrada.** ·
+**reconciliado 2026-10-10: sin cambios de estado en B1–B8. B4 sigue siendo la única abierta.
+U1, U2, U6, U7 y U8 quedan marcadas HECHAS de forma explícita; U3 cancelada; U4 parcial.**
 **Objetivo:** eliminar todo lo que bloquea la entrega de Phase 9 y cerrar el ciclo de
 revisión antes de tocar T9.3.
 **Rama:** `feat/phase-9-verified-curriculum` — T9.1 y T9.2 ya están
@@ -28,6 +30,139 @@ revisión antes de tocar T9.3.
 > fase `feat/phase-9-verified-curriculum` = `2ac464f` (132 commits, **132/132 firmados** `G`).
 > La tabla original decía `main`=`ffcd595` y rama=`8f40837` con "128/128 firmados"; los tres
 > datos quedaron desfasados. Verificado con `git log <ref> --format='%G?' | sort | uniq -c`.
+
+---
+
+## Reconciliación 2026-10-10 — sin cambios de estado, con la evidencia al día
+
+Esta pasada no movió ningún bloqueo. Lo que hizo fue **re-verificar los ocho contra el árbol**
+y dejar por escrito lo que estaba en prosa. Los estados del 2026-10-08 eran correctos y
+siguen siéndolo; lo que estaba desfasado era el resto del documento.
+
+| ID | Bloqueo | Antes (2026-10-08) | Después (2026-10-10) | Verificación de esta pasada |
+| --- | --- | --- | --- | --- |
+| **B1** | RDD se rechaza en el runtime opencode | CERRADA por decisión | **CERRADA por decisión** (sin cambio) | Sin cambio en el repositorio; la decisión es de configuración local del operador |
+| **B2** | `subjects.area` → NULL no aplicable en D1 | CERRADA | **CERRADA** (sin cambio) | `drizzle/0009_subjects-rebuild.sql` sigue en el árbol; ver §La corrección de `defer_foreign_keys` |
+| **B3** | `pnpm db:seed:gen` rojo desde T9.1 | CERRADA | **CERRADA** (sin cambio) | `seed.sql` regenerado; el generador corre contra el dataset verificado |
+| **B4** | Blobs con PII vivos en refs de pull request | PARCIALMENTE INVACUA | **ABIERTA, misma razón** | Sin PR ni issues que cerrar; sigue dependiendo de GitHub Support |
+| **B5** | Redacción de docentes manual | CERRADA | **CERRADA** (sin cambio) | `redact_teachers()` en `scripts/build-verified-curriculum.py`; los alias `DOC-NNN` siguen siendo la única forma en `docs/data/` |
+| **B6** | D1 remota 3 migraciones atrás | CERRADA | **CERRADA** (sin cambio) | B6 se cerró sobre `0006`–`0008`; desde entonces Phase 9 escribió **`0010`–`0014`**, que **aún no están aplicadas en producción** |
+| **B7** | Workers Builds huérfano | CERRADA | **CERRADA** (sin cambio) | Sin cambios en `wrangler.jsonc` en esta pasada |
+| **B8** | Commits sin firmar tras la reescritura | CERRADA | **CERRADA** (sin cambio de estado, cifras al día) | 126/126 `G` en `main`; 143/143 `G` en la rama de fase al momento de medir. Ver §Firma y push |
+
+### Lo que cambió en el árbol desde el 2026-10-08
+
+Ninguno de estos commits mueve un bloqueo. Todos son la capa de datos, la capa de UI y la
+de herramientas que las dificultades de B2 y B3 dejaron abiertas.
+
+| Commit | Subject | Qué es |
+| --- | --- | --- |
+| `d4c5ed3` | `docs(odd): reconcile Phase 9 state against the indexed code` | reconciliación previa de `odd/` |
+| `13f4d7a` | `fix(db): stop RetSubject from claiming a semester it may not have` | la mentira de tipos `RetSubject.semester: number` |
+| `4460f27` | `feat(db): load the verified syllabus, offering catalogue and lab sessions` | **T9.3 + T9.4 + T9.6** — `0010` a `0013` |
+| `17e013b` | `feat(utils): make the seriation tri-state consumable` | **T9.9** |
+| `db258a8` | `fix(db): make the seed idempotent and stop it lying about being so` | el seed no era idempotente |
+| `639a663` | `docs(readme): correct the login control number and the stale schema facts` | documentación |
+| `a799d47` | `fix(db): give course_schedule_blocks a reason to exist before querying it` | el 500 de `/reinscripcion`, el detector de conflictos muerto, `0014` |
+| `a3621f7` | `fix(ui): point the sidebar at the two routes that already exist` | `Reinscripción` y `Trámites` como `href: "#"` |
+| `c22d05c` | `feat(utils): match search text without case or accents` | `foldText`/`matchesText` |
+| `c49caea` | `chore(tool): harden the e2e runner and unblock the Playwright suite` | runner `e2e`, `biome.json`, `just qa` |
+| `7992556` | `fix(tooling): repair two just recipes that had been broken since the Biome migration` | `format-check` y `ci-drift` |
+
+> Todos verificados con `git cat-file -e <sha>^{commit}` el 2026-10-10.
+>
+> **La rama siguió avanzando mientras se escribía esta sección.** La lista está completa
+> hasta `7992556`; cualquier commit posterior queda fuera. Las cifras de commits de más abajo
+> son una **cota inferior medida**, no un total.
+
+### Firma y push — corrección al 2026-10-08
+
+> **Lo que este documento decía antes:** "`main` = `fee9d60` con 126/126 `G`, y la rama de
+> fase = `2ac464f` con 132/132 `G` (132 = 126 de `main` + 6 de la rama)."
+
+Medido el 2026-10-10: `main` sigue en `fee9d60` con **126 commits, 126/126 `G`**. La rama de
+fase **ya no está en `2ac464f`**: tenía **141 commits, 141/141 `G`** en la medición de esta
+pasada, y **143/143 `G`** unos minutos después, con la rama todavía avanzando. La reescritura
+de firmas del 2026-10-08 sigue siendo válida para todo lo que había antes de ella; lo que
+ocurrió después son commits nuevos, todos firmados. **Trátese 141 como una cota inferior.**
+
+**Los commits nuevos no están en ningún remoto.** `origin` y `codeberg` apuntan los dos a
+`2ac464f` (132 commits). La rama local estaba **9 commits por delante** en la primera
+medición y **11** en la segunda. Verificado con `git for-each-ref refs/remotes/` y
+`git rev-list --count origin/…..feat/…`. **Cota inferior: 11 commits sin publicar.**
+
+| Afirmación | Estado |
+| --- | --- |
+| Los 128 commits de la reescritura se refirmaron con `git filter-branch --commit-filter 'git commit-tree -S'`, clave `3335F4A0D9DBBA95` | **CIERTA** — sigue en el historial |
+| Force-push a GitHub y Codeberg tras la reescritura | **CIERTA** para ese punto del historial; ambos remotos siguen en `2ac464f` |
+| 126/126 en `main`, 132/132 en la rama | **SUPERADA por la medición de arriba**; la cifra de la rama creció |
+| Todo lo que se ha hecho desde `2ac464f` está publicado | **FALSA.** Los commits de Phase 9 (`13f4d7a`…`7992556`) son locales |
+
+### La corrección de `defer_foreign_keys` — la afirmación original y su corrección
+
+> **La afirmación original del plan, conservada literal.** La tabla §El conjunto bloqueante
+> decía de B2: *"**Resoluble** con `PRAGMA defer_foreign_keys`"*. El §B2 de este mismo
+> llamaba a D1 la salida documentada:
+>
+> *"Because D1 runs every query inside an implicit transaction, user queries cannot change
+> this during a query or migration. Instead, D1 allows you to call `PRAGMA
+> defer_foreign_keys = on` or `off`, which allows you to violate foreign key constraints
+> temporarily (until the end of the current transaction)."*
+>
+> Leída sin más, esa cita dice que el pragma **resuelve** B2. **No lo hace.**
+
+> **SUPERADA 2026-10-08 por el experimento U5.** `defer_foreign_keys` por sí solo **pospone**
+> la violación al `COMMIT`; no la previene. Medido en una D1 descartable
+> (`/tmp/opencode/dfk-probe/`), nunca contra la base real:
+>
+> | Prueba | Resultado |
+> | --- | --- |
+> | ¿El pragma se ejecuta como primera sentencia de una migración de wrangler? | **PASA** — la posición es irrelevante |
+> | Reconstrucción de 12 pasos **con** el pragma | **FALLA** — el `DROP TABLE` pasa y la violación salta en el `COMMIT` |
+> | Control negativo, mismo archivo **sin** el pragma | **FALLA limpio** |
+> | Orden con **tabla de respaldo** (`CREATE TABLE … AS SELECT` → crear nueva → soltar → renombrar → reponer → tirar el respaldo) | **PASA** sobre el esquema real de 11 columnas |
+>
+> El error que produce el caso fallido, textual:
+>
+> ```
+> ERROR Durable Object was reset and rolled back to its last known good state because the
+>        application left the database in a state where constraints were violated:
+>        FOREIGN KEY constraint failed: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_FOREIGNKEY)
+> ```
+>
+> **Conclusión escrita tal cual:** "**`defer_foreign_keys` aplaza la violación, no la
+> previene.**"
+>
+> **El orden que sí funciona** (respaldar → crear → soltar → renombrar → reponer → tirar el
+> respaldo) quedó verificado sobre el esquema real. Además: `defer_foreign_keys` no sobrevive
+> entre archivos de migración, y `BEGIN;` explícito lo rechaza workerd.
+
+> **Segunda corrección, 2026-10-08 — y esta es la que dio forma a la migración.** El `0009`
+> que realmente se escribió **no usa ni el pragma ni la tabla de respaldo**: tomó el
+> *respaldo alternativo* que el propio §U6 preveía, vaciar las hijas antes del `DROP TABLE`.
+> No hace falta preservar nada porque las filas que había eran el catálogo fabricado y sus
+> identificadores morían con ellas.
+>
+> **Las dos afirmaciones siguen registradas porque las dos son verdaderas en su nivel:** el
+> pragma solo no alcanza, y la tabla de respaldo es el orden correcto *cuando hay algo que
+> preservar*. Lo que no hay aquí es algo que preservar. Ver §Lo que la ejecución cambió, que
+> ya documentaba esta divergencia; esta entrada la hace oficial.
+
+### U1–U8 — estado unificado
+
+Ninguna de estas tareas se ejecutó de nuevo el 2026-10-10. La tabla existe porque el
+documento las marcaba en prosa distinta según la Onda.
+
+| ID | Tarea | Cierra | Estado 2026-10-08 | Estado 2026-10-10 |
+| --- | --- | --- | --- | --- |
+| **U1** | Aplicar `0006`–`0008` a la D1 remota y verificar | B6 | ✅ ejecutada | ✅ **HECHA** |
+| **U2** | `redact_teachers()` dentro del generador | B5 | ✅ ejecutada | ✅ **HECHA** |
+| **U3** | `gentle-ai sync --agent opencode`, re-evaluar | B1 | 🚫 **CANCELADA** | 🚫 **CANCELADA** — no se ejecuta y no queda pendiente |
+| **U4** | Cerrar PR #1, contar, abrir ticket de soporte | B4 | ⚪ parcial | ⚪ **PARCIAL** — sin cambio |
+| **U5** | Experimento `defer_foreign_keys` en D1 descartable | Onda 2 | ✅ ejecutado | ✅ **HECHO** — su veredicto es el que corrigió a U6 |
+| **U6** | `area` → NULL con migración `0009` escrita a mano | B2 | ✅ `0009_subjects-rebuild.sql` | ✅ **HECHA** |
+| **U7** | `seed.ts` a la forma nueva (= T9.7) | B3 | ✅ `159b2bc` | ✅ **HECHA** |
+| **U8** | Rehacer `enrollment-fixture.json` (= T9.8) | B3 | ✅ dentro de `159b2bc` | ✅ **HECHA** |
 
 ---
 
@@ -79,7 +214,7 @@ determinar **[?]**.
 | ID | Bloqueo | Tipo | Estado real |
 | --- | --- | --- | --- |
 | **B1** | La revisión de recibos RDD se rechaza en el runtime opencode | Configuración global | ~~**Solución de 1 comando, sin tocar código**~~ — **CERRADA 2026-10-08 sin ejecutar esa solución**: RDD se desactivó en scope de clon |
-| **B2** | `subjects.area` → NULL no es aplicable en D1 | Límite de plataforma | **Resoluble** con `PRAGMA defer_foreign_keys` |
+| **B2** | `subjects.area` → NULL no es aplicable en D1 | Límite de plataforma | **SUPERADA 2026-10-08.** El plan decía "**Resoluble** con `PRAGMA defer_foreign_keys`". El experimento U5 probó que el pragma **aplaza** la violación al `COMMIT` en vez de prevenirla. El orden que funciona es el de tabla de respaldo; lo que se ejecutó fue el respaldo alternativo, vaciar las hijas. Ver §La corrección de `defer_foreign_keys` |
 | **B3** | `pnpm db:seed:gen` rojo desde T9.1 | Código | **Depende de B2** |
 | **B4** | 29 blobs con PII vivos en `refs/pull/1/head` | Soporte externo | **Sólo GitHub Support** |
 | **B5** | La redacción de docentes es un paso manual | Código | **10 líneas** |
@@ -144,6 +279,12 @@ Además:
 
 **[?] Sin ejemplo de `defer_foreign_keys` como primera sentencia de una migración
 aplicada por wrangler.** Es lo primero que hay que probar.
+
+> **RESUELTO 2026-10-08 por U5.** El pragma **sí** se ejecuta sin quejarse como primera
+> sentencia de una migración aplicada por wrangler, y su posición es irrelevante. Eso era
+> exactamente lo que este `[?]` preguntaba, y la respuesta es afirmativa. Lo que el
+> experimento encontró después es que **no basta**: pospone la violación al `COMMIT`. Ver
+> §U5 y §La corrección de `defer_foreign_keys`.
 
 ### B3 — la reconstrucción de `subjects` choca con las FK **[V]**
 
@@ -508,11 +649,23 @@ tenía 38 filas. Sobrevivió como número heredado al pasar al plan de 68.
 | **U8** | U7 | ✅ **HECHO** dentro de U7 — el fixture se reconstruyó, no se remapeó (0 de 38 filas viejas sobreviven) |
 | **U4** | El operador | ⚪ **PARCIAL** — sin PR ni issues que cerrar. Sólo queda confirmar con GitHub Support que no queden objetos con PII |
 | **H6** | Fuente externa | Nube suma 265, no 260. ¿Módulo de 30 cr o el alumno elige 5 de 6? |
-| **H8** | El operador | Semestre de las 16 materias de especialidad. **Sigue abierta y ya tiene impacto visible:** `/retícula` muestra 52 de 68 módulos sin explicarlo. Decisión de bandeja o contador en T9.10 |
+| **H8** | El operador | Semestre de las 16 materias de especialidad. **Sigue abierta y ya tiene impacto visible:** `/retícula` muestra 52 de 68 módulos sin explicarlo. La decisión se escaló de dos opciones (bandeja o contador) a **tres**, y ahora distingue qué especialidad ve el estudiante. Ver `phase-9-curriculum-data-foundation.md` §"Decisión abierta: las 16 materias sin semestre" |
 | **H3 / H4 / H9** | Catálogo del TecNM o coordinación | Temarios, áreas, seriación de 8 materias |
-| **Defecto** | Nadie — pre-existente | `course_schedule_blocks` no tiene clave natural: `INSERT OR REPLACE` **duplica** los bloques en cada corrida del seed. Confirmado en HEAD sin modificar (28 filas antes del wipe de `0009`, 14 ahora). **No se arregla en v1.** Detalle en `phase-9-curriculum-data-foundation.md` |
+| **Defecto** | Nadie — pre-existente | `course_schedule_blocks` no tiene clave natural. **Sigue sin arreglar**: el `INSERT OR REPLACE` ya no duplica porque `db258a8` mete un `DELETE` acotado antes del `REPLACE` del perfil, pero la tabla **sigue sin `UNIQUE`** sobre `(group_id, day, start_time, end_time, classroom)`. El defecto estructural —no tener clave natural— es exactamente lo que hace que la tabla casi nunca sirva y lo que habilitó el `0014`. Detalle en `phase-9-curriculum-data-foundation.md` |
 
 ### Verificación de esta reconciliación
+
+| Comprobación | Resultado |
+| --- | --- |
+| `pnpm check` | svelte-check **0 errores, 0 warnings** — **`NOT VERIFIED` el 2026-10-10**; la afirmación de arriba es del 2026-10-08 y no se ha vuelto a correr en esta pasada |
+| `pnpm test` | **272/272**, 16 ficheros (2026-10-08). **Re-medido 2026-10-10: 305/305, 18 ficheros** (`pnpm vitest run`, 1.44 s) |
+| Suite **e2e** (Playwright) | `NOT VERIFIED` por esta pasada. El commit `c49caea` declara `test-e2e` 274 y `test-e2e-avatar` 81 en verde; no se ha reproducido aquí |
+| Runner **e2e** agente | `.e2e/report.json` existe: corrida `passed`, `exitCode 0`, 4 specs (2 `passed`, 2 `skipped`), commit `639a663`, host `localhost:5173`. **La cifra de 1.08M de tokens en 2 corridas de bug bash NO es reproducible desde ese fichero** — la última corrida lo sobrescribió. Queda como cifra reportada por el operador |
+| `wrangler d1 migrations list opensim --remote` | **`NOT VERIFIED` el 2026-10-10** — no se consultó el remoto en esta pasada |
+| Docentes | **0** nombres reales en el árbol de trabajo |
+
+<details>
+<summary>Snapshot del 2026-10-08, conservado literal</summary>
 
 | Comprobación | Resultado |
 | --- | --- |
@@ -521,3 +674,5 @@ tenía 38 filas. Sobrevivió como número heredado al pasar al plan de 68.
 | Suite **e2e** | **`NOT VERIFIED`** — no corrida en esta sesión |
 | `wrangler d1 migrations list opensim --remote` | `✅ No migrations to apply!` |
 | Docentes | **0** nombres reales; el seed emite `DOC-001`…`DOC-007` |
+
+</details>

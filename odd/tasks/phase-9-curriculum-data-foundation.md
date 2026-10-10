@@ -3,13 +3,14 @@
 <!-- odd-tracker
 kind: phase-plan
 status: active
-last-verified: 2026-10-08
-reconciled-against: feat/phase-9-verified-curriculum@2ac464f (main@fee9d60)
+last-verified: 2026-10-10
+reconciled-against: feat/phase-9-verified-curriculum@c49caea (main@fee9d60)
 sha-warning: los SHA 6ca7c12, 8f40837, ffcd595 y b3fef41 citados en el cuerpo de este archivo predicen la reescritura de firmas GPG del 2026-10-08 y están MUERTOS; los SHA de la sección "Commits que importan" verificados con `git cat-file -e` sí están vivos
 -->
 
-**Estado:** T9.1, T9.2 y T9.7 cerradas (T9.7 absorbió T9.8) · started 2026-10-07 ·
-**reconciliado 2026-10-08**
+**Estado:** T9.1–T9.7 cerradas salvo T9.5 (cerrada dentro de T9.7) · started 2026-10-07 ·
+**reconciliado 2026-10-08** · **reconciliado 2026-10-10: T9.3, T9.4 y T9.6 cerradas;
+T9.9 cerrada el 2026-10-08 (`17e013b`). Abiertas: T9.10–T9.14.**
 **Alcance v1:** una sola carrera — **ISIC-2010-224 Ingeniería en Sistemas Computacionales**
 **Fuera de v1:** las otras 12 carreras, sus materias y sus unidades (v2)
 
@@ -26,7 +27,7 @@ sha-warning: los SHA 6ca7c12, 8f40837, ffcd595 y b3fef41 citados en el cuerpo de
 > Firmas verificadas el 2026-10-08: **126/126 `G` en `main`, 132/132 `G` en la rama de fase**
 > (132 = 126 + 6, no 128). Re-derivación: `git log --oneline --grep='<subject>'`.
 
-### Commits que importan (vivos, `git cat-file -e` verificado 2026-10-08)
+### Commits que importan (vivos, `git cat-file -e` verificado 2026-10-10)
 
 | Commit | Subject | Rol en Phase 9 |
 | --- | --- | --- |
@@ -34,12 +35,76 @@ sha-warning: los SHA 6ca7c12, 8f40837, ffcd595 y b3fef41 citados en el cuerpo de
 | `b6a1d8a` | `feat(db): subject seriation tri-state and component columns` | T9.2 |
 | `cbe4315` | `docs(odd): reconcile bookkeeping with the repository after the signing rewrite` | bookkeeping |
 | `6f50f93` | `fix(privacy): make docs/data teacher redaction a pipeline guarantee` | B5 |
-| `159b2bc` | `feat(db): seed the verified curriculum and relax the unknown-column constraint` | **T9.7 + T9.8** |
-| `2ac464f` | `fix(privacy): drop personal names from the titulacion and residencia placeholders` | HEAD de la rama |
+| `159b2bc` | `feat(db): seed the verified curriculum and relax the unknown-column constraint` | **T9.7 + T9.8 + T9.5** |
+| `2ac464f` | `fix(privacy): drop personal names from the titulacion and residencia placeholders` | último commit publicado |
+| `13f4d7a` | `fix(db): stop RetSubject from claiming a semester it may not have` | `RetSubject.semester` |
+| `4460f27` | `feat(db): load the verified syllabus, offering catalogue and lab sessions` | **T9.3 + T9.4 + T9.6** |
+| `17e013b` | `feat(utils): make the seriation tri-state consumable` | **T9.9** |
+| `db258a8` | `fix(db): make the seed idempotent and stop it lying about being so` | idempotencia del seed |
+| `a799d47` | `fix(db): give course_schedule_blocks a reason to exist before querying it` | 500 de `/reinscripcion`, `0014`, detector de conflictos |
+| `a3621f7` | `fix(ui): point the sidebar at the two routes that already exist` | rutas del sidebar |
+| `c22d05c` | `feat(utils): match search text without case or accents` | `foldText` / `matchesText` |
+| `639a663` | `docs(readme): correct the login control number and the stale schema facts` | documentación |
+| `c49caea` | `chore(tool): harden the e2e runner and unblock the Playwright suite` | tooling |
 
 > `6ca7c12`, `8f40837` y `ffcd595` son los SHAs que este documento usaba antes de que la
 > reescritura de firmas los matara. No se borran: quedan como registro del error. Los vivos
 > equivalentes son `18de1a5` (T9.1) y `b6a1d8a` (T9.2).
+>
+> **Los commits desde `2ac464f` no están publicados.** `origin` y `codeberg` siguen en
+> `2ac464f`; todos los commits de Phase 9 posteriores son locales (11 sin publicar en la última
+> medición). `main` no se ha movido desde `fee9d60` y sigue con 126 commits.
+
+---
+
+## Reconciliación 2026-10-10 — T9.3, T9.4, T9.6 y T9.9 cerradas
+
+Cuatro tareas cerradas desde la última reconciliación, todas en un commit: `4460f27` para
+las tres de esquema y `17e013b` para T9.9. **Ninguna está en producción.**
+
+| Tarea | Qué exigía | Qué se entregó | Migración |
+| --- | --- | --- | --- |
+| **T9.3** | `subject_units`: `eval_from`, `eval_to`, `instruments`, `criteria` + 32 unidades / 223 subtemas | Las 4 columnas, nullable a propósito, y las **32** unidades. Los 223 ventanos de evaluación por subtema se quedan dentro de `subtopics_json` verbatim, no aplanados a la unidad | `drizzle/0010_productive_edwin_jarvis.sql` |
+| **T9.4** | `course_groups`: `period`, `credits`, `is_lab_session` + 468 filas | Las 3 columnas y las **468** filas reales de oferta del SIM | `drizzle/0011_misty_namorita.sql` + `0013_yellow_wallow.sql` |
+| **T9.6** | Tabla `complementary_credit_activities` | La tabla existe, **sin columna de créditos y sin flag de Servicio Social** — ver abajo | `drizzle/0012_condemned_vermin.sql` |
+| **T9.9** | `dag.ts` con las 14 aristas + tri-estado de seriación | `describeSeriation` devuelve una unión discriminada por el propio estado, y `decomposeChains` reconstruye las 7 cadenas del operador desde las 14 aristas | — (sin migración) |
+
+### Lo que T9.4 añadió que el plan no pedía
+
+Cargar el catálogo de oferta destapó un defecto que el plan no contemplaba:
+**`course_groups` era a la vez el conjunto de inscritos del estudiante y, implícitamente, el
+catálogo de oferta**, sin nada que los distinguiera. Tres lectores identificaban los grupos
+del estudiante con un join sólo por materia y devolvían **49 filas donde debían devolver 7**.
+
+La corrección es `course_groups.student_control_number` nullable (`0013`): `NULL` es una fila
+de catálogo, con valor es una inscripción. Los tres lectores se acotan a él; el único que
+quiere el catálogo completo —el `load` de `/reinscripcion`— se deja deliberadamente sin acotar
+y distingue por `alreadyEnrolled`.
+
+> **Nota sobre `0013`.** drizzle-kit 0.45 emite `ADD COLUMN … REFERENCES` **sin**
+> `ON DELETE CASCADE`, en silencio. `0013` lleva la corrección a mano, y
+> `PRAGMA foreign_key_list` confirma que la acción es ahora `CASCADE`.
+
+### Lo que T9.6 decidió no hacer
+
+`complementary_credit_activities` **no tiene columna de créditos** ni bandera
+`social_service_unlocked`. La razón está escrita en el esquema: la fuente **no declara un
+peso por actividad**, así que una columna de créditos sólo podría contener números
+inventados, y el desbloqueo del Servicio Social es un conteo puro sobre estas filas.
+
+### Las dieciséis sin semestre: el plan decía una columna, son cuatro
+
+Esto ya estaba registrado el 2026-10-08 y se conserva intacto; lo que cambia el 2026-10-10 es
+que **las tres columnas de H8 dejaron de ser un futuro problema**: `semester`, `ht` y `hp`
+ya son nullable en el esquema, ya las escribe el seed con `NULL` para las 16 materias de
+especialidad, y ya las lee `/retícula`. El coste de H8 ya está pagado en el lado de los
+datos; lo que queda es la decisión de UI de §"Decisión abierta: las 16 materias sin semestre".
+
+| Lo que el plan dijo | Lo que pasó | Dónde se ve |
+| --- | --- | --- |
+| "`subjects.area` → NULL" (una columna) | **Cuatro** columnas nullable: `area`, `semester`, `ht`, `hp` | `src/lib/server/db/schema.ts:59-66` |
+| Relajar `area` era suficiente | No bastaba: el seed habría seguido fallando al insertar las 16 de especialidad | §"Las cuatro columnas nullable de `subjects`" |
+| El coste se hubiera resuelto con una `ALTER` | Exigió reconstruir `subjects` en `0009` por el bug de `SQLiteRecreateTableConvertor` | §Precedente técnico |
 
 ---
 
@@ -323,10 +388,34 @@ como el plan que se escribió, con su estado real anotado.
 | Tabla | Lo que decía el plan | Estado real |
 | --- | --- | --- |
 | `subjects` | `canonical_id` = `slug(código)`; **68 filas**; `area` → NULL; + `seriation_state`; + `component` | ✅ **SHIPPED**, pero el plan estaba incompleto: **cuatro** columnas quedaron nullable, no una. Ver abajo. |
-| `specialties` | **3 filas** reales | ✅ **SHIPPED** — 3 filas, sembradas por `seed.ts:184` |
-| `subject_prerequisites` | **14 filas** verificadas | ✅ **SHIPPED** — 14 aristas, `seed.ts:213` |
-| `course_groups` | **468 filas** + `period`, `credits`, `is_lab_session` | ☐ **ABIERTA (T9.4)** — en producción hay **7** filas del fixture, no 468. Las columnas `period`/`credits`/`is_lab_session` no existen. |
-| `subject_units` | **32 filas** + `eval_from`, `eval_to`, `instruments`, `criteria` | ☐ **ABIERTA (T9.3)** — en producción hay **0** filas. Las 4 columnas no existen. |
+| `specialties` | **3 filas** reales | ✅ **SHIPPED** — 3 filas, sembradas por `seed.ts` |
+| `subject_prerequisites` | **14 filas** verificadas | ✅ **SHIPPED** — 14 aristas, `seed.ts` |
+| `course_groups` | **468 filas** + `period`, `credits`, `is_lab_session` | ✅ **SHIPPED (T9.4, `4460f27`, migraciones `0011` y `0013`)** — 468 filas de catálogo reales **más 7 de inscripción del estudiante de demostración**, 475 en total. `period` con 9 números de término del SIM (`"1"`…`"9"`), `NULL` en 234 de las 468 |
+| `subject_units` | **32 filas** + `eval_from`, `eval_to`, `instruments`, `criteria` | ✅ **SHIPPED (T9.3, `4460f27`, migración `0010`)** — las 4 columnas y las 32 unidades |
+
+> **La foto de producción sigue siendo la del 2026-10-08.** Todas las filas de esta tabla
+> son lo que **el `seed.sql` genera**, medido contando sentencias `INSERT` en
+> `src/lib/server/db/seed.sql`. La D1 de producción está en `0009`; las migraciones
+> `0010`–`0014` están escritas y confirmadas pero **no aplicadas**. Ver §Producción.
+
+#### Contenido del `seed.sql` medido el 2026-10-10
+
+| Tabla | Filas en `seed.sql` |
+| --- | --- |
+| `careers` | 1 |
+| `specialties` | 3 |
+| `subjects` | **68** |
+| `subject_aliases` | 4 |
+| `subject_prerequisites` | **14** |
+| `subject_units` | **32** |
+| `course_groups` | **475** = 468 de catálogo + 7 de inscripción |
+| `course_schedule_blocks` | 14 |
+| `complementary_credit_activities` | **3** |
+| `enrollments` | **7** |
+| `student_progress` | 49 |
+| `student_profiles` | 1 |
+
+Medido con `rg -o '^INSERT (OR [A-Z]+ )?INTO [a-z_]+ ' src/lib/server/db/seed.sql | awk '{print $NF}' | sort | uniq -c`.
 
 #### Las cuatro columnas nullable de `subjects` — el plan decía una
 
@@ -363,15 +452,28 @@ Medido en la D1 de producción `390df78e-c4c2-4ace-94f4-6baebf1eb88f` el 2026-10
 
 | Tabla | Acción | Tarea |
 | --- | --- | --- |
-| `subject_units` | **32 unidades / 223 subtemas** (7 materias) + columnas `eval_from`, `eval_to`, `instruments`, `criteria` | T9.3 |
-| `course_groups` | **468 filas** en 9 periodos + `period`, `credits`, `is_lab_session` | T9.4 |
-| `complementary_credit_activities` | Tabla nueva: conteo por estudiante y su desbloqueo del Servicio Social | T9.6 |
+| — | Nada de esquema | — |
+
+Las tres acciones que esta tabla listaba (`subject_units`, `course_groups`,
+`complementary_credit_activities`) están **cerradas**. Ver §Reconciliación 2026-10-10.
 
 ### Tablas nuevas
 
 | Tabla | Para qué | Estado |
 | --- | --- | --- |
-| `complementary_credit_activities` | Conteo por estudiante y su desbloqueo del Servicio Social | ☐ no creada (T9.6) |
+| `complementary_credit_activities` | Conteo por estudiante y su desbloqueo del Servicio Social | ✅ **creada (T9.6, `4460f27`, migración `0012`)** — sin columna de créditos, sin flag de desbloqueo |
+| `enrollments` | Qué grupo eligió el estudiante, no sólo qué asignatura | ✅ **creada (2026-10-10, `a799d47`, migración `0014`)** — PK compuesta `(student_control_number, group_id, period)`. **Nada la lee todavía.** Ver abajo |
+
+> **La tabla `enrollments` no estaba en el plan.** La acción de inscripción de
+> `/reinscripcion` registraba sólo la asignatura, nunca el grupo, así que tras reinscribirse
+> el estudiante no tenía ninguna fila de grupo: `enrolledGroupIds` no resolvía a nada y
+> `course_schedule_blocks` no tenía de qué colgarse. La tabla registra ese dato que faltaba.
+>
+> **Trampa de nombre, deliberada y documentada.** `enrollments.period` lleva el **nombre**
+> del periodo institucional —`AGOSTO-DICIEMBRE/2026`—, que es lo que guarda
+> `student_progress.period`. **NO** es `course_groups.period`, que es el **número** de
+> término del SIM (`"1"`…`"9"`, nullable). Las dos columnas comparten nombre y no se pueden
+> cruzar jamás por join.
 
 ### Lo que NO se agrega en v1
 
@@ -390,7 +492,7 @@ Medido en la D1 de producción `390df78e-c4c2-4ace-94f4-6baebf1eb88f` el 2026-10
 | --- | --- | --- | --- |
 | **H6** | **Nube suma 265, no 260** (6 materias × 5 cr) | La ruta del estudiante con Nube no cuadra | ¿El módulo vale 30? ¿el alumno elige 5 de 6? |
 | **H7** | Los **totales por semestre impresos en F1 no cuadran con sus propias celdas** (S5 24 vs 25, S6 29 vs 28, S7 30 vs 29, S8 26 vs 27, S9 24 vs 14) | F1 tiene arithmetic interno roto | Se usa la suma de celdas, que da 210 exactos. La fila de totales es inservible |
-| **H8** | **Semestre de las 16 materias de especialidad** desconocido | No se pueden colocar en la retícula | SIM `/estudiante/datos/especialidad` de un alumno ya asignado, o Catálogo |
+| **H8** | **Semestre de las 16 materias de especialidad** desconocido | No se pueden colocar en la retícula; `/retícula` muestra 52 de 68 sin explicarlo | **Decisión de producto tomada aparte** — ver §"Decisión abierta: las 16 materias sin semestre". El dato de origen sigue faltando: SIM `/estudiante/datos/especialidad` de un alumno ya asignado, o el Catálogo |
 | **H3** | **Temarios de ~39 materias**: F4 sólo expone el periodo activo | El detalle de temario sólo existe para 7 | Catálogo de Asignaturas · docentes |
 | **H4** | **Áreas curriculares**: sin fuente | `/reticula` sin color por área | Clasificación del plan impreso |
 | **H9** | **Seriación de 8 materias** `UNKNOWN` | La UI las muestra "por confirmar" | F5 a mayor resolución, o Catálogo |
@@ -404,18 +506,18 @@ Medido en la D1 de producción `390df78e-c4c2-4ace-94f4-6baebf1eb88f` el 2026-10
 | --- | --- | --- |
 | **T9.1** | Dataset canónico verificado — `scripts/build-verified-curriculum.py` → 68 materias, Δ 0 en los 3 routes | ✅ **cerrada** |
 | **T9.2** | Migración `subjects`: `seriation_state`, `component` (2 `ADD COLUMN`) | ✅ **cerrada** (`b6a1d8a`) — `area` → NULL se difirió a T9.7, y resultó que `semester`/`ht`/`hp` también |
-| **T9.3** | Migración `subject_units`: 4 columnas + 32 filas | ☐ abierta |
-| **T9.4** | Migración `course_groups`: `period`, `credits`, `is_lab_session` + 468 filas | ☐ abierta |
+| **T9.3** | Migración `subject_units`: 4 columnas + 32 filas | ✅ **cerrada 2026-10-10** (`4460f27`, `drizzle/0010_productive_edwin_jarvis.sql`) — las 4 columnas nullable y las 32 unidades; los 223 ventanos por subtema quedan verbatim dentro de `subtopics_json` |
+| **T9.4** | Migración `course_groups`: `period`, `credits`, `is_lab_session` + 468 filas | ✅ **cerrada 2026-10-10** (`4460f27`, `0011_misty_namorita.sql` + `0013_yellow_wallow.sql`) — 468 filas reales más 7 de inscripción; la `0013` añade el discriminador `student_control_number` que el plan no pedía |
 | **T9.5** | Migración `specialties` (3 filas) + `subject_prerequisites` (14 aristas) | ✅ **cerrada por T9.7** — las 3 especialidades y las 14 aristas se sembraron en `159b2bc`; no hizo falta migración aparte |
-| **T9.6** | Tabla `complementary_credit_activities` | ☐ abierta |
-| **T9.7** | `seed.ts` + `seed.sql`: leer el nuevo dataset, reconstruir `subjects` a 68 filas, sembrar especialidades y prerrequisitos | ✅ **cerrada** (`159b2bc`) — **absorbió T9.8** |
-| **T9.8** | Rehacer `enrollment-fixture.json` con los `canonicalId` nuevos | ✅ **cerrada dentro de T9.7** — fue una reconstrucción, no un remapeo. Ver §"T9.8 fue una reconstrucción, no un remapeo" |
-| **T9.9** | `dag.ts` con 14 aristas + `seriation_state` tri-estado | ☐ abierta |
-| **T9.10** | `/retícula`: semestres corregidos, badge de laboratorio, ramas de seriación | ☐ abierta — **con una decisión de operador pendiente**. Ver abajo |
+| **T9.6** | Tabla `complementary_credit_activities` | ✅ **cerrada 2026-10-10** (`4460f27`, `drizzle/0012_condemned_vermin.sql`) — creada **sin** columna de créditos ni flag de desbloqueo, porque la fuente no declara peso por actividad |
+| **T9.7** | `seed.ts` + `seed.sql`: leer el nuevo dataset, reconstruir `subjects` a 68 filas, sembrar especialidades y prerrequisitos | ✅ **cerrada** (`159b2bc`) — **absorbió T9.5 y T9.8** |
+| **T9.8** | Rehacer `enrollment-fixture.json` con los `canonicalId` nuevos | ✅ **cerrada dentro de T9.7** — fue una **reconstrucción, no un remapeo**. Ver §"T9.8 fue una reconstrucción, no un remapeo" |
+| **T9.9** | `dag.ts` con 14 aristas + `seriation_state` tri-estado | ✅ **cerrada 2026-10-08** (`17e013b`) — `describeSeriation` + `decomposeChains`; el tri-estado dejó de ser columna escrita sin consumidor |
+| **T9.10** | `/retícula`: semestres corregidos, badge de laboratorio, ramas de seriación | ☐ **abierta** — corregido el tipo de `RetSubject.semester` (`13f4d7a`), pero **la decisión de las 16 materias sin semestre sigue pendiente**. Ver §"Decisión abierta: las 16 materias sin semestre" |
 | **T9.11** | `/horario`: aulas reales | ☐ abierta |
-| **T9.12** | **Detalle de temario** — primer consumidor real de `subject_units` | ☐ abierta |
-| **T9.13** | `/tramites`: regla de los 5 complementarios → Servicio Social | ☐ abierta |
-| **T9.14** | `/reinscripcion`: filtro por área desaparece (D1), aparece el de laboratorio | ☐ abierta — **el filtro por área ya está inerte y_null-safe**; ver §Radio de impacto |
+| **T9.12** | **`/detalle`** primer consumidor real de `subject_units` | ☐ abierta — **desbloqueada el 2026-10-10**: la tabla ya tiene las 32 unidades. Ya no depende de T9.3 |
+| **T9.13** | `/tramites`: regla de los 5 complementarios → Servicio Social | ☐ abierta — **desbloqueada el 2026-10-10**: `complementary_credit_activities` ya existe con 3 filas |
+| **T9.14** | `/reinscripcion`: filtro por área desaparece (D1), aparece el de laboratorio | ☐ abierta — el filtro por área ya está inerte y null-safe; el de laboratorio tiene datos desde el 2026-10-10 con `is_lab_session` |
 
 ## Radio de impacto de las cuatro columnas nullable
 
@@ -424,31 +526,38 @@ consumidor: dos tienen lector real y dos no tienen ninguno.
 
 | Columna | Se escribe en | **Se lee en** | ¿Null-unsafe? |
 | --- | --- | --- | --- |
-| `semester` | `seed.ts:195` | `reticula/+page.server.ts:68` (select), `:72` (`orderBy asc`), `ReticulaDag.svelte:86-100` (agrupación), `SubjectNode.svelte:65-68` (render) | **Sí, en el tipo.** Ver abajo. |
-| `area` | `seed.ts:195` | `reinscripcion/+page.server.ts:121` (select), `simulador/types.ts:19`, `EnrollmentSimulator.svelte:63` (filtro de `Set`), `:99` (predicado), `:156` (metadatos de fila) | **No.** Filtrado a propósito en `:63` antes de `Set`/`localeCompare`. |
-| `seriation_state` | `seed.ts:195` | **nadie.** Sólo `seed.ts:344-346` lo valida al escribir | **No.** Columna escrita, aún sin consumidor de UI. |
-| `component` | `seed.ts:195` | **nadie.** Sólo `seed.ts:347-349` lo valida al escribir | **No.** Columna escrita, aún sin consumidor de UI. |
+| `semester` | `seed.ts` | `reticula/+page.server.ts` (select, `orderBy`), `ReticulaDag.svelte:86-100` (agrupación), `SubjectNode.svelte:65-68` (render) | **Ya corregido** — `13f4d7a`, `13f4d7a` cambió `semester: number` por `semester: number \| null`. El resto de la cadena ya era correcto. |
+| `area` | `seed.ts` | `reinscripcion/+page.server.ts`, `simulador/types.ts`, `EnrollmentSimulator.svelte` (filtro de `Set`, predicado, metadatos de fila) | **No.** Filtrado a propósito antes de `Set`/`localeCompare`. |
+| `seriation_state` | `seed.ts` | `src/lib/utils/dag.ts` (`describeSeriation`), `reticula/+page.server.ts` | **No.** Dejó de ser columna muerta el 2026-10-08 (`17e013b`, T9.9). |
+| `component` | `seed.ts` | `src/lib/utils/dag.ts` (`describeSeriation`), `reticula/+page.server.ts` | **No.** Igual que arriba. |
 
-**El punto que hay que arreglar en T9.10 — `RetSubject.semester` es una mentira de tipos.**
+**`RetSubject.semester` era una mentira de tipos — RESUELTA 2026-10-08 (`13f4d7a`).**
 
-```ts
-// src/routes/(protected)/reticula/+page.server.ts:32
-semester: number;   // <-- dice number
-```
+> **El diagnóstico de abajo era correcto y no se borra.** Lo que había:
+>
+> ```ts
+> // src/routes/(protected)/reticula/+page.server.ts:32
+> semester: number;   // <-- decía number
+> ```
+>
+> La interfaz exportada declaraba `number`, pero la columna underlying es nullable y el
+> `select` devuelve `number | null`. El type-checker no lo detectaba porque el `return` no
+> está anotado: `RetSubject` sólo se usa en los dos `satisfies` de las ramas tempranas,
+> donde el array va vacío. El consumidor final sí era correcto —
+> `SubjectNode.SubjectViewModel.semester` es `number | null` y `ReticulaDag` comprueba
+> `=== null` **antes** que `s.semester < 1` (`ReticulaDag.svelte:86-92`), porque `null < 1`
+> por coerción es `true` y los subjects se archivarían bajo un motivo falso.
+>
+> Efecto en runtime: **no había crash**. El peor síntoma era de consola — 16 líneas de
+> `console.warn` por render, en inglés como todos los del componente, diciendo `has no
+> semester on record; not rendered`, y 16 módulos que no aparecen.
+>
+> **El arreglo era `semester: number | null` en `RetSubject`, y está aplicado.** Verificado
+> en `src/routes/(protected)/reticula/+page.server.ts:40`.
 
-La interfaz exportada declara `number`, pero la columna underlying es nullable y el `select`
-de la línea 68 devuelve `number | null`. El type-checker no lo detecta porque el `return` de
-la línea 114 no está anotado: `RetSubject` sólo se usa en los dos `satisfies` de las ramas
-tempranas, donde el array va vacío. El consumidor final sí es correcto —
-`SubjectNode.SubjectViewModel.semester` es `number | null` (`SubjectNode.svelte:21`) y
-`ReticulaDag` comprueba `=== null` **antes** que `s.semester < 1`
-(`ReticulaDag.svelte:86-92`), porque `null < 1` por coerción es `true` y los subjects se
-archivarían bajo un motivo falso.
-
-Efecto en runtime hoy: **no hay crash**. El peor síntoma es de consola — 16 líneas de
-`console.warn` por render, en inglés como todos los del componente, diciendo `has no semester
-on record; not rendered`, y 16 módulos que no aparecen. El arreglo correcto es
-`semester: number | null` en `RetSubject`.
+**Lo que sigue sin resolver en esa columna no es el tipo, es la decisión.** Los 16 módulos
+siguen sin aparecer, y eso es una decisión de producto, no un defecto de tipos. Ver
+§"Decisión abierta: las 16 materias sin semestre".
 
 `area` es el espejo: el filtro de `EnrollmentSimulator` es **inerte** con las 68 áreas en
 `null`, y eso es correcto según D1, no un defecto.
@@ -469,6 +578,17 @@ migraciones de T9.3–T9.6 quedaron para después, no antes. T9.5 no necesita mi
 ```
 T9.7+T9.8 (hecho) → T9.3 → T9.4 → T9.6 → T9.9 → T9.10 → T9.11 → T9.12 → T9.13 → T9.14
 ```
+
+**Corrección 2026-10-10.** T9.3, T9.4, T9.6 y T9.9 también están hechas. De las cinco que
+quedan, sólo dos dependen de algo externo:
+
+| Siguiente | Por qué |
+| --- | --- |
+| **T9.12** — primer consumidor real de `subject_units` | **Desbloqueada** por T9.3. La tabla tiene las 32 unidades desde el 2026-10-10 |
+| **T9.13** — regla de los 5 complementarios | **Desbloqueada** por T9.6. La tabla existe con 3 filas |
+| **T9.14** — filtro de laboratorio en `/reinscripcion` | Tiene datos desde T9.4 con `is_lab_session` |
+| **T9.10** — retícula | **BLOQUEADA por una decisión de operador**, no por datos. Ver §"Decisión abierta: las 16 materias sin semestre" |
+| **T9.11** — aulas reales | Sin fuente. Depende de H8/H9 |
 
 ## Lo que shipped: T9.7 (2026-10-08)
 
@@ -636,39 +756,99 @@ verde. **Nada se empuja ni se abre PR antes de T9.8.**
 `390df78e-c4c2-4ace-94f4-6baebf1eb88f`. La suite **e2e no se ha corrido** en esta sesión:
 `NOT VERIFIED`.
 
-## Decisión de operador pendiente — T9.10 y las 16 materias sin semestre
+## Decisión abierta: las 16 materias sin semestre (T9.10, hueco H8)
 
-**El hueco visible de T9.10. Necesita una decisión del operador; esta pasada no lo resuelve.**
+**Estado: ABIERTA. Bloquea T9.10 y es la única decisión de producto que Phase 9 necesita del
+operador.** No es un bug y no se resuelve con más datos: H8 no tiene fuente, y las opciones
+que siguen son todas defendibles según qué se quiera que el estudiante entienda.
 
-Las 16 materias de especialidad no tienen semestre (H8, sin fuente publicada). Como
-`ReticulaDag.svelte` **descarta** los subjects sin semestre (`ReticulaDag.svelte:86-90`), la
-retícula muestra **52 de 68** módulos sin ninguna explicación en pantalla: el estudiante ve
-16 asignaturas desaparecer y no hay nada que diga por qué.
+### El hecho
 
-| Opción | Qué implica |
-| --- | --- |
-| **A. Bandeja fuera de la retícula** ("sin semestre registrado: 16 módulos") | Honesto y completo, pero es UI nueva |
-| **B. Contador en el encabezado** de `/retícula` ("52 de 68 con semestre") | Cambio mínimo, un número |
-| **C. Dejarlo como está** | El estudiante ve 52 módulos y un `console.warn` invisible |
+Las 16 materias de especialidad **no tienen semestre registrado** (H8, sin fuente publicada).
+`ReticulaDag.svelte` **descarta** los subjects sin semestre (`ReticulaDag.svelte:86-90`), así
+que la retícula muestra **52 de 68** módulos sin ninguna explicación en pantalla: el
+estudiante ve 16 asignaturas desaparecer y no hay nada que diga por qué.
+
+`SubjectNode.svelte` ya tiene el caso nulo escrito —"Semestre sin registrar" y la etiqueta
+`S—`, en `SubjectNode.svelte:65-68`— pero **nunca se muestra**, porque los subjects sin
+semestre se descartan antes de llegar al nodo.
+
+### El dato que cambia la pregunta
+
+Las 16 no son un bloque indiferenciado. **Cada una pertenece a una de las tres
+especialidades, y un estudiante sólo ve la suya.** El catálogo es 68 = 52 con semestre + 16
+módulos de especialidad repartidos en tres ramas (`ISIE-TDD-2026-01`, `ISIE-SID-2026-01`,
+`ISIE-TND-2026-01`), de 5, 5 y 6 módulos respectivamente. Nube es la que suma 265 cr — H6.
+
+Eso convierte "¿qué hago con 16 módulos sin semestre?" en una pregunta con identidad: **el
+número que le falta a un estudiante no es 16, es 5 o 6.**
+
+### Las opciones
+
+| | Opción | Qué ve el estudiante | Coste |
+| --- | --- | --- | --- |
+| **A** | **Bandeja fuera de la retícula**, sólo con los módulos de **su** especialidad | Una bandeja bajo la rejilla: "Módulos de tu especialidad, sin semestre registrado", con los 5 o 6 que le corresponden | UI nueva. Es la única que **explica** y además **filtra por especialidad** |
+| **B** | **Contador en el encabezado** ("52 de 68 con semestre") | Un número. Ni los 16, ni los 5, ni los 6 | Cambio mínimo |
+| **C** | **Los 16 agrupados** bajo la rejilla, por especialidad, sin filtrar | 52 en la rejilla más 16 agrupados en tres bloques | UI media, y **muestra ramas que no son la del estudiante** |
+| **D** | **Dejarlo como está** | 52 módulos y un `console.warn` en inglés que no ve nadie | Cero coste, y es la opción que este documento **descarta** |
+
+**Recomendación, no decisión: A.** Es la única que responde a la pregunta que el estudiante se
+hace —"¿cuál es mi asignatura y por qué no la veo?"— sin inventar nada y sin mostrarle ramas
+que no le tocan. **C es aceptable** si el operador decide que el plan completo debe ser
+visible para todos; su precio es tener que distinguir "esto no es tuyo" sin una fuente que lo
+diga. **B es el mínimo honesto** si no hay tiempo para A. **D no es aceptable**: 16 módulos
+desaparecen sin explicación, que es exactamente el fallo que Phase 9 existe para eliminar.
+
+> **Cambio frente a la versión anterior de esta sección.** Hasta el 2026-10-10 el plan ofrecía
+> tres opciones y ninguna distinguía especialidad. La diferencia importa: **A** y **B**
+> operands sobre las 16 son opciones distintas en número y en significado de las que
+> oferece ahora, porque el número que ve un estudiante es el de **su** especialidad.
 
 **Prohibido inventar un semestre.** No hay fuente para el semestre de un módulo de
 especialidad; asignar uno sería fabricar dato curricular, que es justo lo que Phase 9 existe
-para eliminar. `SubjectNode.svelte` ya tiene el caso nulo escrito —"Semestre sin registrar" y
-la etiqueta `S—`, en `SubjectNode.svelte:65-68`— pero **nunca se muestra**, porque los
-subjects sin semestre se descartan antes de llegar al nodo.
+para eliminar. Un "semestre estimado", un "semestre 7 por defecto" o un orden deducido de los
+códigos son las tres formas barreduras de inventarlo, y las tres quedan prohibidas aunque la
+rejilla se vea mejor.
+
+### Qué desbloquea y qué no
+
+| Al resolver | Se desbloquea | Sigue sin resolverse |
+| --- | --- | --- |
+| T9.10 | La rejilla de `/retícula` deja de truncar en silencio | H8 sigue abierta: sin la fuente, la bandeja seguirá diciendo "sin semestre registrado", que es la verdad |
+| — | — | H6 (Nube suma 265), H3 (temarios de ~39 materias), H4 (áreas), H9 (seriación de 8) |
+
+## Producción — qué está aplicado y qué no
+
+| Migración | Contenido | ¿En producción? |
+| --- | --- | --- |
+| `0009_subjects-rebuild.sql` | reconstrucción de `subjects`, `area`/`semester`/`ht`/`hp` nullable | ✅ **sí** — producción está en `0009` con el seed aplicado |
+| `0010_productive_edwin_jarvis.sql` | T9.3 — 4 columnas de `subject_units` | ❌ **no** |
+| `0011_misty_namorita.sql` | T9.4 — `period`, `credits`, `is_lab_session` | ❌ **no** |
+| `0012_condemned_vermin.sql` | T9.6 — `complementary_credit_activities` | ❌ **no** |
+| `0013_yellow_wallow.sql` | discriminador `student_control_number` | ❌ **no** |
+| `0014_famous_darkhawk.sql` | `enrollments` | ❌ **no** |
+
+Las cinco están escritas y confirmadas. Aplicarlas requiere la **puerta G1** del plan de
+desbloqueo —autorización explícita del operador para una mutación de producción— y **no se
+ha usado**. Hasta que se apliquen, **producción sigue sirviendo el 500 de `/reinscripcion`**:
+el arreglo está confirmado en `a799d47`, pero **nada de este trabajo está publicado en ningún
+remoto**. `origin` y `codeberg` siguen en `2ac464f`; todos los commits de Phase 9 posteriores
+a ese punto son locales.
 
 ## Próximo paso
 
-**T9.3** — migración `subject_units`: 4 columnas (`eval_from`, `eval_to`, `instruments`,
-`criteria`) + 32 unidades / 223 subtemas de 7 materias. Es la siguiente tarea abierta y
-desbloquea a T9.12, el primer consumidor real de esa tabla.
+**T9.12** — primer consumidor real de `subject_units`: el detalle de temario con las 32
+unidades y los 223 ventanos de evaluación. Es la siguiente tarea abierta y ya no depende de
+nada: la tabla se cargó el 2026-10-10 (`4460f27`).
 
 En paralelo, y sin coste de código:
 
-- **Elegir A o B para T9.10** (bandeja vs contador). C no es aceptable: el estudiante ve 16
-  módulos desaparecer sin explicación.
-- **H10** — sigue dependiendo del operador: confirmar con GitHub Support que no queden
+- **Responder la decisión de §"Decisión abierta: las 16 materias sin semestre"** (A, B o C).
+  T9.10 no empieza sin eso.
+- **H10 / B4** — sigue dependiendo del operador: confirmar con GitHub Support que no queden
   objetos con PII. Ya no hay PR que cerrar; ver `phase-9-unblock.md` §B4.
+- **Autorizar o rechazar la aplicación de `0010`–`0014` en producción** (puerta G1). Sin eso
+  el arreglo del 500 de `/reinscripcion` existe pero no llega a nadie.
 
 **Sobre el filtro de `/reinscripcion`:** el "Próximo paso" anterior advertía que
 `EnrollmentSimulator` haría `null.localeCompare` y reventaría con `area` en `null`. **Ya está

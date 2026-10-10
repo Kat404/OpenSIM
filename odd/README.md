@@ -3,18 +3,24 @@
 <!-- odd-tracker
 kind: index
 status: active
-last-verified: 2026-10-08
-reconciled-against: feat/phase-9-verified-curriculum@2ac464f (main@fee9d60)
-sha-warning: los SHA ffcd595, 8f40837, 6ca7c12 y b3fef41 citados en el cuerpo de este archivo predicen la reescritura de firmas GPG del 2026-10-08 y están MUERTOS; los SHA vivos verificados con `git cat-file -e` son 18de1a5, b6a1d8a, 159b2bc, 2ac464f y fee9d60
+last-verified: 2026-10-10
+reconciled-against: feat/phase-9-verified-curriculum@c49caea (main@fee9d60)
+sha-warning: los SHA ffcd595, 8f40837, 6ca7c12 y b3fef41 citados en el cuerpo de este archivo predicen la reescritura de firmas GPG del 2026-10-08 y están MUERTOS; los SHA vivos verificados con `git cat-file -e` son 18de1a5, b6a1d8a, 159b2bc, 2ac464f, fee9d60, 13f4d7a, 4460f27, 17e013b, db258a8, a799d47, a3621f7, c22d05c, 639a663 y c49caea
 -->
 
 OpenSIM (Open Source — Sistema Integral Modular) reached **Phase 7 complete**. The build,
 the WCAG audit, the U1–U4 polish cycle and the hardening cycle are all closed and recorded
-with commit SHAs. **Phase 9 (curriculum data foundation) is the active phase: T9.1, T9.2 and
-T9.7 are closed — T9.7 absorbed T9.8 — and T9.3–T9.6 plus T9.9–T9.14 are open.** The
-production D1 is at migration `0009` and the remote catalogue is now the verified 68-subject
-plan. This file is the index; `tasks/opensim.md` is the canonical spec.
+with commit SHAs. **Phase 9 (curriculum data foundation) is the active phase: T9.1–T9.9 are
+closed and T9.10–T9.14 are open.** Production D1 is still at migration `0009`; the five
+migrations that carry the rest of Phase 9 are written and committed but **not applied**. This
+file is the index; `tasks/opensim.md` is the canonical spec.
 
+> **Reconciled 2026-10-10.** Phase 9 moved a long way and the bookkeeping had not caught up.
+> T9.3, T9.4, T9.6 and T9.9 closed; seven defects found and fixed; five migrations waiting for
+> the operator's authorization; **the Phase 9 commits are not published to any remote**.
+> Nothing changed in the blocker set. See "Quick answer" below and
+> `tasks/phase-9-curriculum-data-foundation.md`.
+>
 > **Reconciled 2026-10-08.** Task 5.2 (production deploy) and the filed-not-started Phase 8
 > item are both **closed** — see "Resolved 2026-10-08" below. Nothing is left waiting on an
 > operator question.
@@ -23,13 +29,13 @@ plan. This file is the index; `tasks/opensim.md` is the canonical spec.
 
 | Question | Answer |
 | --- | --- |
-| **What is done?** | Phases 1, 2, 3, 4.0, 4, 5, 6, 6.1, 6.2, 6.5, 7, 8 (a11y dark-theme contrast), and in Phase 9: **T9.1, T9.2, T9.7** (T9.7 absorbed T9.8, and T9.5 shipped inside it). |
-| **What is open?** | **Phase 9, T9.3–T9.6 and T9.9–T9.14.** No blocker gates them any more: B2 and B3 closed on 2026-10-08. B4 (PII in GitHub refs) is the only one still pending, and it depends on the operator, not on the plan. |
-| **What is next?** | **T9.3** — `subject_units`: 4 columns + 32 units / 223 subtopics across 7 subjects. It is the next open task and unblocks T9.12. In parallel, the operator has an open decision in T9.10: 16 specialty subjects have no semester, so `/retícula` shows 52 of 68 modules with no explanation. |
-| **Pushed?** | **Yes — both remotes.** `main` (`fee9d60`, 126 commits) and `feat/phase-9-verified-curriculum` (`2ac464f`, 132 commits, +6 over `main`) are on GitHub and Codeberg. Force-pushed after the 2026-10-08 re-sign rewrite. |
-| **Signed?** | **Yes — 126/126 `G` on `main`, 132/132 `G` on the feature branch**, GPG key `3335F4A0D9DBBA95`. Verified with `git log <ref> --format='%G?' \| sort \| uniq -c`. Every SHA changed in the rewrite, so older SHAs cited anywhere in `odd/` are dead. |
-| **Production data?** | **Migration `0009` applied** to `390df78e-c4c2-4ace-94f4-6baebf1eb88f`, plus the regenerated seed. The remote catalogue is now the **verified 68**: 68 subjects (all with `area` NULL, 16 with `semester`/`ht`/`hp` NULL), 14 prerequisite edges, 3 specialties, 1 career, 49 progress rows, 7 course groups, 14 schedule blocks, 0 `subject_units`. `PRAGMA foreign_key_check` empty. |
-| **Green?** | `pnpm check` → 0 errors, 0 warnings. `pnpm test` → **272/272**, 16 files. Teacher names → **0** occurrences in the working tree or any blob; the seed emits `DOC-001`…`DOC-007`. **The e2e suite has NOT been run this session** — `NOT VERIFIED`. |
+| **What is done?** | Phases 1, 2, 3, 4.0, 4, 5, 6, 6.1, 6.2, 6.5, 7, 8 (a11y dark-theme contrast), and in Phase 9: **T9.1–T9.9**. T9.5 shipped inside T9.7; T9.8 shipped inside T9.7 too, as a rebuild. |
+| **What is open?** | **Phase 9, T9.10–T9.14.** No blocker gates them. B4 (PII in GitHub refs) is the only blocker still pending and it depends on GitHub Support, not on the plan. |
+| **What is next?** | **T9.12** — the temario detail, the first real consumer of `subject_units`, which has carried its 32 units since 2026-10-10. **T9.10 is blocked on an operator decision**, not on data: see "The one decision the owner owes" below. |
+| **Pushed?** | **No — not everything.** `main` (`fee9d60`, 126 commits) is on GitHub and Codeberg, along with `feat/phase-9-verified-curriculum` at `2ac464f` (132 commits). **Every Phase 9 commit after `2ac464f` is local only** — 11 commits unpushed at the last measurement, verified with `git for-each-ref refs/remotes/` and `git rev-list --count origin/…..`. Production therefore still serves the `/reinscripcion` 500. |
+| **Signed?** | **Yes — everything.** 126/126 `G` on `main`, 143/143 `G` on the local feature branch at the last measurement, GPG key `3335F4A0D9DBBA95`. Verified with `git log <ref> --format='%G?' \| sort \| uniq -c`. Treat the branch figure as a lower bound: the branch was still advancing while this file was written. Every SHA changed in the 2026-10-08 rewrite, so older SHAs cited anywhere in `odd/` are dead. |
+| **Production data?** | **Migration `0009` applied** with the seed: 68 subjects (all with `area` NULL, 16 with `semester`/`ht`/`hp` NULL), 14 prerequisite edges, 3 specialties, 1 career, 49 progress rows, 7 course groups, 14 schedule blocks, **0 subject units**. `0010`–`0014` are committed but **not applied** — applying them is a production mutation and needs the operator's explicit authorization. **`NOT VERIFIED` on 2026-10-10**: the remote was not queried in that pass. |
+| **Green?** | `pnpm vitest run` re-measured 2026-10-10: **305/305, 18 files, 1.44 s**. `pnpm check` **not re-run** in that pass — `NOT VERIFIED` there. Teacher names → **0** occurrences in any blob or reachable commit; the seed emits `DOC-001`…`DOC-007`. The Playwright suite was **not run** in that pass — `NOT VERIFIED`; commit `c49caea` reports `test-e2e` 274 and `test-e2e-avatar` 81 green. |
 
 ## Phase table
 
@@ -43,9 +49,62 @@ plan. This file is the index; `tasks/opensim.md` is the canonical spec.
 | 6 — UI/UX Polish + Audit + Tooling | Closed | U1–U4 shipped (`1294c91`, `5d7ac9c`, `e7facd3`, U3 in 6.1); mcode R11–R17 audit chain closed; Biome 2.5.15 adopted; GitHub Actions dropped for local Podman CI; `just qa`/`just qa-fast` naming. Tests 149/149 (Phase 6 closeout snapshot — **NOT VERIFIED** today). | `opensim.md` §6.0–6.5; `tasks/phase-6-ui-polish.md` |
 | 7 — Hardening | Closed | CSP moved to SvelteKit `kit.csp.mode:'nonce'`; avatar fixture excluded from the production bundle; `--brand-600` contrast fix; `<title>` on root routes; `/404` button restored; pnpm pin synced. | `opensim.md` §7 (`5ab128e`, `d34c3df`, `b49e5a7`, `9a98041`, `92ed2d0`) |
 | 8 — a11y dark-theme contrast | **Closed 2026-10-06** | The 3 `chromium-dark` axe contrast failures are fixed at the source, not per-hue. `SUBJECT_LIGHTNESS.dark` 28 → 20 (`e2708a1`), plus `--fg-tertiary` on the stepper's active button (`99c366a`). Gate is **114/114, 0 failed**. | `tasks/findings-remediation.md` §Phase 8 |
-| 9 — Curriculum data foundation | **Active** | T9.1, T9.2 and T9.7 closed (`18de1a5`, `b6a1d8a`, `159b2bc`): verified `ISIC-2010-224` dataset (68 subjects) + `seriation_state`/`component` columns + `0009_subjects-rebuild.sql` and the regenerated seed, **applied to production**. T9.7 absorbed T9.8 and T9.5. Note the 468 course groups and 32 units are still **targets**, not rows — production has 7 groups and 0 units. T9.3–T9.6 and T9.9–T9.14 open, ungated. | `tasks/phase-9-curriculum-data-foundation.md`; `tasks/phase-9-unblock.md` |
+| 9 — Curriculum data foundation | **Active** | **T9.1–T9.9 closed.** The fabricated 42-subject catalogue is gone; the verified ISIC-2010-224 dataset (68 subjects) is in. `0010`–`0013` carry 32 `subject_units`, 468 real offering groups across 9 SIM terms, and `complementary_credit_activities`; `0014` adds `enrollments`. T9.7 absorbed T9.5 and T9.8. **None of `0010`–`0014` is applied to production, and the 9 commits carrying them are not pushed.** T9.10–T9.14 open; T9.10 waits on an operator decision, T9.11 on a source. | `tasks/phase-9-curriculum-data-foundation.md`; `tasks/phase-9-unblock.md` |
 
-## Resolved 2026-10-08 — Task 5.2 (production deploy) and Phase 8
+## Phase 9 — what landed, and what did not
+
+### Seven defects found and fixed
+
+| Defect | Root cause | Commit |
+| --- | --- | --- |
+| `db:seed` was not idempotent | `INSERT OR REPLACE` on `student_profiles` is a DELETE plus an INSERT, which cascades into `student_credentials`, `auth_sessions`, `course_groups` and `complementary_credit_activities`; the cascade then hit `course_schedule_blocks`' NO ACTION foreign key and the whole transaction rolled back. Run 1 succeeded, runs 2 and 3 failed with `FOREIGN KEY constraint` | `db258a8` |
+| The demo login credential vanished during a production migration | Same cascade. The seed has no way to reinsert a password it cannot regenerate; `db:set-password` has to run again | `db258a8` |
+| `course_schedule_blocks` silently doubled 14 → 28 in production | No natural key, so `INSERT OR REPLACE` always appended. **The table still has no natural key** — `db258a8` added a scoped DELETE, it did not add a `UNIQUE` | `db258a8` |
+| `/reinscripcion` returned **HTTP 500 in production** | The loader handed all 475 group ids to one `inArray`, past D1's 100-bound-parameter ceiling. Local Miniflare cannot reproduce it — it inherits SQLite's 32766 ceiling — so only the parameter count proves it | `a799d47` |
+| The conflict detector was structurally dead, and had been since Phase 4 | The SIM offering export publishes `code, credits, group, hasLab, name, period, teacher` and **no timetable fields at all**, so no selectable catalogue group can carry a block, so `candidateBlocks` is always empty and `findConflicts` always returns an empty set. The UI now says so in Spanish instead of implying there are no conflicts | `a799d47` |
+| The sidebar marked `Reinscripción` and `Trámites` as `href: "#"`, `disabled: true` | Left over from before either route existed, so a student could not reach two pages the rest of the app links to | `a3621f7` |
+| Search ignored accents | `toLowerCase().includes()` in both the Cmd+K palette and the simulator filter, so typing `algebra` found nothing when the catalogue holds `Álgebra Lineal`. Fixed with a shared `foldText`/`matchesText` helper using NFD decomposition, which also handles `Cañón`/`canon` | `c22d05c` |
+
+Plus one type lie: `RetSubject.semester` was declared `number` while the column became
+nullable (`13f4d7a`). The runtime consumer was already correct, so nothing crashed — it would
+have surfaced as a phantom data bug the first time anyone inspected the type.
+
+### The agentic runner: what it found, and what it cannot find
+
+`e2e explore` (the tester-army agentic runner, `c49caea`) found four of the seven above in
+**two three-minute bug bashes**. None was reachable by a fixed locator: the sidebar one
+required contrasting two screens against each other, and the accent one required typing the
+way a person would.
+
+**Its limit, recorded honestly: `/reinscripcion` overruns the model's input budget at 2450
+accessibility nodes, so it found nothing there.** The 500 on that route was found by reading
+the loader and counting parameters, not by the agent.
+
+> `1.08M tokens across 2 runs` is the operator's figure. It is **not reproducible from
+> `.e2e/report.json`**, which the last run overwrote with a 4-spec verification pass
+> (`status: passed`, `exitCode 0`, 2 passed + 2 skipped, commit `639a663`). Recorded as
+> reported, not as measured.
+
+### The one decision the owner owes
+
+The 16 specialty subjects have no semester on record (H8, no source). `/retícula` therefore
+renders **52 of 68** and says nothing about the other 16. **Inventing a semester is
+forbidden.**
+
+The decision is not binary. Each of the 16 belongs to one of three specialties, and a student
+only ever sees their own — so the number missing *from that student's screen* is 5 or 6, not
+16.
+
+| | Option | What the student sees |
+| --- | --- | --- |
+| **A** | Off-grid tray, filtered to their specialty | "Módulos de tu especialidad, sin semestre registrado" — 5 or 6 modules, explained |
+| **B** | All sixteen, grouped by specialty | 52 in the grid, 16 grouped below — including specialties that are not theirs |
+| **C** | A count in the header | "52 de 68 con semestre" — a number, no explanation of which |
+
+Full write-up, costs, and the recommendation (A): `tasks/phase-9-curriculum-data-foundation.md`
+§"Decisión abierta: las 16 materias sin semestre".
+
+## Reconciled 2026-10-08 — Task 5.2 (production deploy) and Phase 8
 
 **Both closed. The historical contradiction is preserved below; neither record was deleted.**
 
@@ -105,18 +164,26 @@ report it today, so it is not in the 27 findings. Recorded in
 
 ## Blockers — Phase 9
 
-Full detail in `tasks/phase-9-unblock.md`. Summary as of 2026-10-08:
+Full detail in `tasks/phase-9-unblock.md`. Summary as of 2026-10-10 — **re-verified against
+the tree; no status changed since 2026-10-08**:
 
 | ID | Blocker | Status |
 | --- | --- | --- |
 | B1 | RDD review rejected on the opencode runtime | **Resolved by decision** — RDD disabled at clone scope (`receipt-driven development: off (decided by clone_local)`); global still `on`. `gentle-ai 4.0.0` is the latest release; OpenCode is not an eligible immutable-review runtime for this build. |
-| B2 | `subjects.area` → NULL is not applicable in D1 as-is | **Closed 2026-10-08** — `drizzle/0009_subjects-rebuild.sql`, hand-written, applied to production. No `defer_foreign_keys` and no backup table needed: emptying the child tables removes the FK problem outright. Caveat found in execution: relaxing **only** `area` was insufficient — `semester`, `ht` and `hp` also had to become nullable. |
-| B3 | `pnpm db:seed:gen` red since T9.1 | **Closed 2026-10-08** — the seed runs against the verified dataset; `seed.sql` regenerated and applied. Production now holds the verified 68. |
-| B4 | 29 PII blobs alive in `refs/pull/1/head` | **Partially moot** — the repo was recreated, so no PR ref survives to close. Only GitHub Support can confirm no unreachable PII objects remain. Operator-dependent. |
-| B5 | Teacher redaction is a manual step | **Closed 2026-10-08** — `redact_teachers()` is a pipeline step in the generator; deterministic and idempotent. 468/468 and 7/7 rows are `DOC-NNN` aliases, union of 121 distinct names. |
-| B6 | Remote D1 was 3 migrations behind | **Closed 2026-10-08** — `0006`–`0008` applied, zero row loss. Later extended to `0009` by T9.7. |
+| B2 | `subjects.area` → NULL is not applicable in D1 as-is | **Closed 2026-10-08** — `drizzle/0009_subjects-rebuild.sql`, hand-written, applied to production. Caveat found in execution: relaxing **only** `area` was insufficient — `semester`, `ht` and `hp` also had to become nullable. |
+| B3 | `pnpm db:seed:gen` red since T9.1 | **Closed 2026-10-08** — the seed runs against the verified dataset; `seed.sql` regenerated and applied. |
+| B4 | 29 PII blobs alive in `refs/pull/1/head` | **Still open, unchanged reason** — the repo was recreated, so no PR ref survives to close. Only GitHub Support can confirm no unreachable PII objects remain. Operator-dependent. |
+| B5 | Teacher redaction is a manual step | **Closed 2026-10-08** — `redact_teachers()` is a pipeline step in the generator; deterministic and idempotent. |
+| B6 | Remote D1 was 3 migrations behind | **Closed 2026-10-08** on `0006`–`0008`. Since then Phase 9 wrote `0010`–`0014`, which are **committed but not applied** — a different thing, tracked separately. |
 | B7 | Cloudflare Workers Builds relink | **Closed 2026-10-08** — relinked by the operator; the Worker was never deleted. |
-| B8 | GPG signatures missing after the PII rewrite | **Closed 2026-10-08** — all 128 commits back-signed; 126/126 on `main`, 128/128 on the feature branch. |
+| B8 | GPG signatures missing after the PII rewrite | **Closed 2026-10-08** — 128 commits re-signed. Re-verified 2026-10-10: `main` 126/126 `G`, feature branch 143/143 `G`. **Those Phase 9 commits are not on any remote.** |
+
+> **`defer_foreign_keys`, corregido.** El plan afirmaba que B2 era "**Resoluble** con
+> `PRAGMA defer_foreign_keys`". El experimento U5 probó que el pragma **aplaza** la violación
+> al `COMMIT`, no que la prevenga. El orden que funciona es el de tabla de respaldo; lo que
+> finalmente se ejecutó fue el respaldo alternativo, vaciar las hijas. La afirmación original
+> no se borra — está marcada superada en `tasks/phase-9-unblock.md` §La corrección de
+> `defer_foreign_keys`.
 
 ## Review-round ledger
 
@@ -154,8 +221,8 @@ catch the 8 Gemini R20 issues — cross-model review is what surfaced them.
 | `tasks/phase-5-mcode-reviews/` | External review captures | Frozen archive. Has its own `README.md` since 2026-10-08. |
 | `tasks/odd-bookkeeping-sync.md` | The 2026-10-06 bookkeeping pass (this index's own plan) | Closed |
 | `tasks/findings-remediation.md` | 27-findings remediation plan, Phases 1–10 | **Active.** Phase 8 shipped 2026-10-06 (114/114). Its header "Plan v1 — awaiting go-ahead" and its Progress "Not started" are stale. |
-| `tasks/phase-9-curriculum-data-foundation.md` | Phase 9 data-foundation plan (T9.1–T9.14) | **Active** — T9.1, T9.2, T9.7 closed (T9.7 absorbed T9.8 and T9.5); T9.3–T9.6 and T9.9–T9.14 open. Contains the blast radius of the four nullable `subjects` columns. |
-| `tasks/phase-9-unblock.md` | Phase 9 unblock plan B1–B8 | **Onda 2 executed** — B1, B2, B3, B5, B6, B7, B8 closed; B4 partial. Records what execution got wrong about the plan. |
+| `tasks/phase-9-curriculum-data-foundation.md` | Phase 9 data-foundation plan (T9.1–T9.14) | **Active** — **T9.1–T9.9 closed**; T9.5 and T9.8 shipped inside T9.7, and T9.8 was a rebuild rather than a remap. T9.10–T9.14 open. Holds the blast radius of the four nullable `subjects` columns, the per-migration applied/not-applied table, and the open retícula decision. |
+| `tasks/phase-9-unblock.md` | Phase 9 unblock plan B1–B8 | **B1, B2, B3, B5, B6, B7, B8 closed; B4 open.** U1, U2, U6, U7, U8 done; U3 cancelled; U4 partial. Records what execution got wrong about the plan, including the `defer_foreign_keys` correction. |
 
 ## Canonical spec
 
