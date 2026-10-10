@@ -13,6 +13,7 @@ pnpm · Biome (formato + lint) · vitest · Playwright + axe-core · runner e2e 
 
 ### Búsqueda e Indexado de Código
 
+- **Al empezar la sesión, corre `codegraph status` y lee el aviso de versión.** Si dice `⚠ Index was built by vX.Y.Z; re-index to pick up this engine's improvements`, el índice se construyó con un Codegraph viejo aunque diga "Index is up to date". Pídele al mantenedor autorización para reindexar (`codegraph index`, reconstrucción completa, o `codegraph sync` si el propio aviso lo sugiere) y espera su respuesta. La indexación es suya: no la corras por tu cuenta, y no sigas usando el índice viejo como si estuviera al día.
 - Siempre que requieras y quieras buscar cualquier fragmento de código haz de _Codegraph_ tú método principal y favorito. Codegraph permite indexar y buscar de manera semántica y natural porciones de código grande.
 - Para búsqueda menos extensa y con un alcance más específico haz uso de _ripgrep_ (mediante 'rg') como una mejora exponencial de rendimiento de _grep_.
 - Como último recurso haz uso de _grep_.
