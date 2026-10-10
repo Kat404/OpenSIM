@@ -2,7 +2,12 @@
 
 ## Contexto
 
-Estás en un repositorio todo-en-uno llamado **OpenSIM**, el cual trata de ser una opción FOSS al SIM original del Instituto Tecnológico de Morelia.
+Repositorio todo-en-uno **OpenSIM**: opción FOSS al SIM original del Instituto
+Tecnológico de Morelia. Un solo mantenedor; los agentes no deben adivinar el tooling.
+
+**Stack:** SvelteKit 3 + Svelte 5 · Cloudflare Workers · D1 (SQLite) vía Drizzle ·
+pnpm · Biome (formato + lint) · vitest · Playwright + axe-core · runner e2e agéntico
+(MiniMax-M3 al navegador real, configurado en `e2e.config.ts`) · Codegraph.
 
 ## Patrones y Guía de Ejecución
 
@@ -17,19 +22,50 @@ Estás en un repositorio todo-en-uno llamado **OpenSIM**, el cual trata de ser u
 - Siempre que vayas a tratar con datos personales pregunta al usuario mantenedor qué se deberían hacer con dichos datos, debido a que sería un riesgo grave a la privacidad subirlos en remoto.
 - Cumple el requisito anterior aún si los datos no parecen ser completamente personales o que involucren a primeras o terceras personas.
 
+### Comandos: usa los que existen
+
+Todo se ejecuta por `just`; `just --list` es la lista real. Una receta que no
+aparece ahí no existe y no la debes inventar en un reporte.
+
+| Receta | Qué hace |
+| --- | --- |
+| `just qa-fast` | `check` + `biome-check` + `test`. El gate de pre-commit; **no** incluye e2e. |
+| `just qa` | Lo anterior más `build`. El gate de pre-push. |
+| `just test` | Sólo vitest. |
+| `just test-e2e` | Playwright + axe-core contra la D1 local existente. **No destructiva**: migra y aprovisiona la credencial, no borra nada. |
+| `just test-e2e-fresh` | Lo mismo desde una base limpia. **Destructiva**: borra `.wrangler/state/v3/d1`, re-migra y re-siembra. Sólo cuando la base local está realmente mal. |
+| `just test-e2e-ui` | Playwright en modo interactivo (`--ui`). |
+| `just test-e2e-avatar` | Suite Playwright de solapamiento de avatar (AC6-AC11, 80 corridas). Sin auth. |
+| `just e2e-dev` | Runner e2e agéntico, headless. El runner levanta y baja `pnpm dev` él mismo. |
+| `just e2e-web` | Igual con `--headed`, para depurar viendo el navegador. |
+| `just db-migrate` · `just db-seed` · `just db-set-password` | Migrar / sembrar / aprovisionar la credencial en la D1 local. Los tres son idempotentes y re-ejecutarlos es seguro. |
+
+Cuál usar: `test-e2e` es el default porque no tira el trabajo del mantenedor;
+`test-e2e-fresh` sólo cuando se sospeche de la base local. `qa` no corre e2e, así que un
+`just qa` en verde no dice nada sobre el navegador: los e2e se corren aparte.
+`e2e-dev` / `e2e-web` gastan tokens contra un gateway real y son lentos; no los
+conviertas en el chequeo de cada cambio.
+
+### Prohibido lo remoto
+
+`just db-migrate-remote`, `just db-seed-remote`, `just db-set-password-remote` y
+`just deploy-worker` tocan la D1 de producción o despliegan el Worker. Requieren
+autorización explícita del mantenedor **cada vez**, sin excepción. Una autorización
+de una corrida anterior no autoriza la siguiente, y "el plan lo pedía" tampoco.
+Todo lo demás es local.
+
+El D1 que hay en producción es de pruebas/demo, para que alguien pueda ver OpenSIM
+funcionando sin instalarlo; no está diseñado para crecer. Esa es también la razón
+de la prohibición: un `db-seed-remote` equivocado no se nota hasta que el demo
+público ya no arranca.
+
 ### Actualización & Seguimiento
 
-- Siempre que hagas cualquier cambio de código (no `docs/`) usa los comandos de `qa`, `e2e` y tests en general planteados en `justfile`.
+- Siempre que hagas cualquier cambio de código (no `docs/`) pasa por los comandos de arriba: `just qa-fast` como mínimo, más los e2e que toquen lo que cambiaste.
 - Siempre que cambies partes del código, avances con tareas, planeaciones y demás actualiza `odd/` si es que hay un plan ODD para lo que ya ejecutaste.
 - Guarda y/o actualiza en memoria Engram lo anterior. Este paso es _obligatorio_ se tenga o una planeación ODD.
-- Para cualquier cambio grande, significante o que pueda llegar a introducir inestabilidad, comportamientos desconocidos e incertidumbre (aún habiendo pasado todos los pasos anteriores) lanza un subagente auditando de manera realista y específica los cambios realizados.
-
-### Base de Datos (Demo)
-
-- La BD que se tiene en D1 (SQLite proveído por Cloudflare) es únicamente de pruebas/demo para poder proveer una previsualización de OpenSIM sin que el usuario tenga que instalarlo en su sistema.
-- La BD no está diseñada para tener un gran crecimiento y/o adopción, es solo de pruebas para siempre verificar la integridad, usabilidad y funcionamiento de OpenSIM en un entorno de producción real.
+- **Umbral del subagente de auditoría.** Lánzalo, *después* de que `qa-fast` y los e2e estén verdes, cuando el diff: (a) toque migraciones en `drizzle/**`, (b) toque código de auth o de credenciales, (c) toque `wrangler.jsonc` o cualquier receta remota, o (d) abarque ≥2 archivos no triviales o ~400 líneas escritas. El resto no lo amerita. La auditoría debe producir: los hallazgos con archivo y línea, la razón por la que cada uno importa, y qué se rompió o no se rompió con evidencia — no un "se ve bien".
 
 ## Disclaimer
 
-- Aunque OpenSIM trate de ser una mejor versión del SIM usado por el Instituto Tecnológico de Morelia también tiene (a futuro) como propósito poder proveer una capa de construcción liviana e inicial para cualquiera que quiera hacer un sistema completo de administración para cualquier institución.
-- El código de OpenSIM está bajo la (des)licencia de [The Unlicense](https://unlicense.org) por lo que cualquier puede visualizar, auditar, verificar, analizar, copiar, usar, modificar y distribuir partes totales y/o parciales del código de OpenSIM.
+Ver `README.md` para el propósito del proyecto; el código es de dominio público bajo [The Unlicense](https://unlicense.org).

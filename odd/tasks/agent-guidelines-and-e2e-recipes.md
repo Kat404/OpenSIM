@@ -85,17 +85,17 @@ decision of the maintainer).
 
 ### T3 — AGENTS.md: exact commands, observable thresholds, remote prohibition
 
-- [ ] Open with a short context + stack line block (SvelteKit 3 + Svelte 5, Cloudflare
+- [x] Open with a short context + stack line block (SvelteKit 3 + Svelte 5, Cloudflare
       Workers + D1/SQLite, Drizzle, pnpm, Biome, vitest, Playwright + axe-core, agentic
       `e2e` runner, Codegraph).
-- [ ] Replace "usa los comandos de `qa`, `e2e`" with the recipes that exist and what each
+- [x] Replace "usa los comandos de `qa`, `e2e`" with the recipes that exist and what each
       one does, including the destructive path made explicit.
-- [ ] Audit-subagent threshold becomes observable: diff touches `drizzle/**`, auth or
+- [x] Audit-subagent threshold becomes observable: diff touches `drizzle/**`, auth or
       credential code, `wrangler.jsonc` / remote recipes, or ≥2 non-trivial files / ~400
       authored lines. Name what the audit must produce.
-- [ ] Remote prohibition: `db-migrate-remote`, `db-seed-remote`, `db-set-password-remote`,
+- [x] Remote prohibition: `db-migrate-remote`, `db-seed-remote`, `db-set-password-remote`,
       `deploy-worker` require explicit maintainer authorization, every time.
-- [ ] Codegraph section: unchanged, by maintainer decision.
+- [x] Codegraph section: unchanged, by maintainer decision.
 
 ## Authorized scope (edit surfaces)
 
@@ -135,12 +135,14 @@ odd/tasks/agent-guidelines-and-e2e-recipes.md
   `e2e-web` added, all four in `[group('test')]` with `[doc(...)]`.
 - **T2 closed** — `insertStudentProfile` emits a real `ON CONFLICT ... DO UPDATE`; the
   cascade regression reproduced before the fix and does not after it.
-- T3 open.
+- **T3 closed** — `AGENTS.md` names only recipes that exist, states what each does, and
+  sets an observable audit threshold plus a per-occasion remote prohibition.
 
 ## Next step
 
-T3 — rewrite `AGENTS.md`: stack block, the recipes that exist, an observable audit
-threshold, and the remote prohibition.
+Plan complete. `README.md:22-25` and `README.md:137-144` still document the cascade
+that T2 removed, and `README.md:149` documents `just db-set-password 12345678`, which
+`just` cannot pass — all outside this plan's authorized surfaces.
 
 ## Verification evidence
 
