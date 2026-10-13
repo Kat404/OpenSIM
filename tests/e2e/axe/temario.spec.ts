@@ -37,3 +37,36 @@ test("temario names the real coverage and separates published from unpublished",
 		page.getByText("El portal no publica el temario de esta materia").first(),
 	).toBeVisible();
 });
+
+test("temario keeps its collapsed syllabus out of the initial DOM budget", async ({ page }) => {
+	await page.goto("/temario");
+	await page.waitForLoadState("networkidle");
+
+	// The regression gate on T9.14's shape: /reinscripcion died at 2 450
+	// accessibility nodes. This page has 68 subjects, 32 units and 223
+	// subtopics, so it only stays small because the syllabus lives inside a
+	// collapsed <details>. That claim is only worth anything if it is
+	// measured, so measure it.
+	const nodes = await page.evaluate(() => {
+		// `checkVisibility()` is the DOM's own answer to "would a screen
+		// reader see this", and it accounts for a closed <details> the same
+		// way axe does. An earlier version filtered on `offsetParent`, which
+		// is null for <body> itself and so rejected the whole tree — a
+		// counter reading 0 satisfies any upper bound while measuring
+		// nothing, which is what the lower bound below exists to catch.
+		const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+		let count = 0;
+		while (walker.nextNode()) {
+			const node = walker.currentNode;
+			if (node instanceof HTMLElement && node.checkVisibility()) count++;
+		}
+		return count;
+	});
+
+	// Budget, not an exact number: the point is that it is nowhere near the
+	// ~2 000 a fully expanded syllabus would cost. The lower bound matters as
+	// much as the upper one — a counter that returned 0 would satisfy
+	// `toBeLessThan` forever while measuring nothing.
+	expect(nodes).toBeGreaterThan(100);
+	expect(nodes).toBeLessThan(700);
+});

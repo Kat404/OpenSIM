@@ -336,6 +336,22 @@ describe("temario loader", () => {
 		expect(unit?.evalFrom).toBeNull();
 	});
 
+	it("survives a subtopics array holding a null", async () => {
+		seedSubject(raw, { canonicalId: "aec-1034", code: "AEC1034" });
+		raw
+			.prepare(
+				`INSERT INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json)
+				 VALUES ('aec-1034', 1, 'UNIDAD 1', ?)`,
+			)
+			.run(JSON.stringify([null, "texto", 7, { index: "1.1", title: "OK" }]));
+
+		const result = await loadTemario(signedIn());
+		const unit = result.subjects[0]?.units[0];
+		expect(unit?.subtopics).toHaveLength(4);
+		expect(unit?.subtopics[3]).toEqual({ index: "1.1", title: "OK", evalFrom: null, evalTo: null });
+		expect(unit?.subtopics[0]).toEqual({ index: "", title: "", evalFrom: null, evalTo: null });
+	});
+
 	it("orders subjects by code so SSR and CSR agree", async () => {
 		seedSubject(raw, { canonicalId: "z-1", code: "ZZZ999" });
 		seedSubject(raw, { canonicalId: "a-1", code: "AAA111" });

@@ -72,12 +72,19 @@ function parseJson<T>(raw: string | null, fallback: T): T {
 	}
 }
 
-function toSubtopic(raw: Record<string, unknown>): Subtopic {
+/**
+ * A subtopic is only a subtopic if the stored element is an object. `null`
+ * and primitives inside the JSON array are real enough to appear — one
+ * malformed element must not take the whole page down, so each becomes an
+ * empty entry the renderer shows as a blank line rather than a crash.
+ */
+function toSubtopic(raw: unknown): Subtopic {
+	const o = (typeof raw === "object" && raw !== null ? raw : {}) as Record<string, unknown>;
 	return {
-		index: typeof raw.index === "string" ? raw.index : "",
-		title: typeof raw.title === "string" ? raw.title : "",
-		evalFrom: typeof raw.evalFrom === "string" ? raw.evalFrom : null,
-		evalTo: typeof raw.evalTo === "string" ? raw.evalTo : null,
+		index: typeof o.index === "string" ? o.index : "",
+		title: typeof o.title === "string" ? o.title : "",
+		evalFrom: typeof o.evalFrom === "string" ? o.evalFrom : null,
+		evalTo: typeof o.evalTo === "string" ? o.evalTo : null,
 	};
 }
 
@@ -113,7 +120,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		const unit: Unit = {
 			unitNumber: row.unitNumber,
 			title: row.title,
-			subtopics: parseJson<Record<string, unknown>[]>(row.subtopicsJson, []).map(toSubtopic),
+			subtopics: parseJson<unknown[]>(row.subtopicsJson, []).map(toSubtopic),
 			evalFrom: row.evalFrom,
 			evalTo: row.evalTo,
 			instruments: parseJson<string[]>(row.instruments, []),

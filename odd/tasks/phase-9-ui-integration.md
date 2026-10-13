@@ -160,16 +160,16 @@ distingue de uno vacío: "el portal no lo publica" **no** es "no hay unidades".
 
 ## Estado
 
-| Task | Qué | Estado |
-| --- | --- | --- |
-| T9.14 | la oferta cabe en una pantalla | implementada, verde, sin commitear |
-| T9.13 | `/tramites`: regla de los 5 complementarios | especificada, decisión del operador ya tomada |
-| T9.11 | horario con aulas reales | especificada |
-| T9.12 | detalle de temario | especificada, cobertura explícita |
+| Task | Qué | Estado | Commit |
+| --- | --- | --- | --- |
+| T9.14 | la oferta cabe en una pantalla | cerrada | `ab39e95` |
+| T9.13 | `/tramites`: regla de los 5 complementarios | cerrada | `1282ec4` |
+| T9.11 | horario con aulas reales | cerrada | `3df4bca` |
+| T9.12 | detalle de temario | cerrada | `756246a` |
 
 Las dos decisiones que bloqueaban el plan están tomadas: **T9.13** puerta adicional (ya
-dictada el 2026-10-10) y **T9.12** cobertura explícita (2026-10-13). Ninguna task está
-bloqueada por una decisión pendiente.
+dictada el 2026-10-10) y **T9.12** cobertura explícita (2026-10-13). Ninguna task quedó
+bloqueada.
 
 ---
 
@@ -189,6 +189,33 @@ bloqueada por una decisión pendiente.
   opción A. Se reescriben las secciones afectadas, se corrigen dos corrupciones de texto
   del documento (`emm涉及`, `unaplaceholder`) y este bloque sustituye a la sección que
   declaraba el bloqueo.
-- **2026-10-13 — T9.14 verificada antes de commitear.** 22/22 en
-  `tests/unit/reinscripcion.test.ts`; `just qa-fast` completo en verde (326 tests,
-  svelte-check 0 errores, Biome limpio sobre 135 archivos).
+- **2026-10-13 — T9.14 cerrada** (`ab39e95`). Paginación server-side de la oferta con
+  filtros aplicados en SQL antes del conteo, y deduplicación de los grupos que el SIM
+  publica dos veces. 22/22 en `tests/unit/reinscripcion.test.ts`.
+- **2026-10-13 — T9.13 cerrada** (`1282ec4`). `evaluateCreditThresholds` recibe el conteo
+  de complementarios y `canStartSocialService` exige las dos puertas. La Residencia (208)
+  y el Taller (130) no cambian. RED observado: 3 tests fallan antes del cambio (182 con 4,
+  260 con 0, y 208 con 0 esperando false en Servicio Social); GREEN tras el cambio.
+  El copy de `/tramites` nombra las dos puertas y el motivo de bloqueo cambia según cuál
+  falte.
+- **2026-10-13 — T9.11 cerrada** (`3df4bca`). `/horario` devuelve `pending`: los grupos
+  inscritos cuyos bloques no existen. La grilla ya no se muestra vacía cuando el alumno sí
+  tiene clases; la lista nombrada lo dice. `getCurrentEnrollment` ya acota `groups` a las
+  inscripciones del propio alumno, así que una fila de catálogo (`student_control_number`
+  NULL) nunca llega al bucle: hay un test que lo afirma, porque sin él se pintarían 468
+  materias fantasma.
+- **2026-10-13 — T9.12 cerrada** (`756246a`). Ruta `/temario` con cobertura explícita
+  leída de las filas, nunca codificada: 7 de 68, 32 unidades, 223 subtemas, contra lo que
+  la D1 local reporta. La lista se parte en dos grupos —con temario y sin temario— y la
+  fila del segundo dice "El portal no publica el temario de esta materia", que es un hecho
+  distinto de un temario vacío. Las unidades viven en un `<details>` colapsado: abiertas
+  serían los mismos ~2 000 nodos que T9.14 quitó de `/reinscripcion`.
+- **2026-10-13 — verificación.** `just qa-fast` en verde sobre las cuatro tareas (344
+  tests, svelte-check 0, Biome limpio). e2e: `axe/reinscripcion` 10/10 con
+  `--repeat-each=3`, `axe/tramites` 4/4, `axe/horario` 4/4, `axe/temario` 7/7 (spec nuevo,
+  con el escaneo a11y y las aserciones de cobertura).
+- **2026-10-13 — Flake observado, no resuelto.** En la corrida completa de `just
+  test-e2e`, `axe/reinscripcion` falló una vez con *"Execution context was destroyed,
+  most likely because of a navigation"* en el proyecto `chromium-data-theme-dark`. No
+  reprodujo en 10 corridas seguidas de ese spec y no hay navegación en el código que
+  T9.14 tocó. Queda registrado como flake no explicado, no como verde.
