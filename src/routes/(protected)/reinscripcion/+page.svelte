@@ -38,6 +38,7 @@ const formError = $derived(form && "error" in form ? form.error : null);
 		allBlocks={data.blocks}
 		enrolledCanonicalIds={data.enrolledCanonicalIds}
 		enrolledBlocks={data.enrolledBlocks}
+		offer={data.offer}
 		{formError}
 	/>
 </section>

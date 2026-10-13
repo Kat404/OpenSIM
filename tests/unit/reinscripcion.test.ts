@@ -27,8 +27,9 @@ import { readFileSync } from "node:fs";
 import type { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { OfferBlock, OfferGroup } from "../../src/lib/components/simulador/types";
+import type { OfferBlock, OfferGroup, OfferPage } from "../../src/lib/components/simulador/types";
 import {
+	_PAGE_SIZE,
 	actions as reinscripcionActions,
 	load as reinscripcionLoad,
 } from "../../src/routes/(protected)/reinscripcion/+page.server";
@@ -57,6 +58,16 @@ const PREVIOUS_PERIOD = "AGOSTO-DICIEMBRE/2025";
 const D1_MAX_BOUND_PARAMS = 100;
 /** Size of the real SIM offering catalogue (`docs/data/sim-grupos-oferta.json`). */
 const CATALOGUE_SIZE = 468;
+/**
+ * Every `course_groups` row production has: the 468 catalogue entries plus
+ * the 7 enrolment rows the demo student owns (T9.14).
+ */
+const OFFER_ROWS = 475;
+/**
+ * Subjects in the duplicate-shaped fixture: more than `_PAGE_SIZE`, so the
+ * dedup has to hold across a page boundary rather than inside one page.
+ */
+const DUPLICATED_SUBJECTS = 120;
 
 interface ReinscripcionData {
 	period: string;
@@ -64,6 +75,7 @@ interface ReinscripcionData {
 	blocks: OfferBlock[];
 	enrolledCanonicalIds: string[];
 	enrolledBlocks: OfferBlock[];
+	offer: OfferPage;
 }
 
 interface RecordedQuery {
@@ -125,6 +137,67 @@ function seedCatalogue(raw: DatabaseSync, count: number): void {
 	}
 }
 
+/**
+ * One catalogue row with an explicit term and teacher. `seedGroup` pins a
+ * teacher name and never sets `period`, and both are what the duplicate
+ * predicate keys on, so this is the only honest way to build the shape the
+ * SIM actually publishes.
+ */
+function seedOfferingRow(
+	raw: DatabaseSync,
+	id: string,
+	subjectCanonicalId: string,
+	period: string | null,
+): void {
+	raw
+		.prepare(
+			`INSERT INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session)
+			 VALUES (?, ?, 'A', 'DOC-001', 0, ?, 4, 0)`,
+		)
+		.run(id, subjectCanonicalId, period);
+}
+
+/**
+ * The production catalogue shape: every group published TWICE, once from an
+ * export with no term filter (`-NA-`, `period` NULL) and once from a
+ * term-filtered one (`-1-`). Identical subject, group code and teacher — the
+ * only difference is the term the page never renders.
+ */
+function seedDuplicatedCatalogue(raw: DatabaseSync, subjects: number): void {
+	const subject = raw.prepare(
+		`INSERT INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area)
+		 VALUES (?, ?, ?, 1, 3, 3, 4, 'Sistemas')`,
+	);
+	for (let i = 0; i < subjects; i++) {
+		const n = String(i).padStart(4, "0");
+		subject.run(`dup-${n}`, `DUP${n}`, `Materia duplicada ${n}`);
+		seedOfferingRow(raw, `O-DUP${n}-A-NA-DOC-001`, `dup-${n}`, null);
+		seedOfferingRow(raw, `O-DUP${n}-A-1-DOC-001`, `dup-${n}`, "1");
+	}
+}
+
+/** Catalogue rows in the table, duplicates included — the pre-filter truth. */
+function catalogueRowCount(raw: DatabaseSync): number {
+	const row = raw
+		.prepare(`SELECT count(*) AS n FROM course_groups WHERE student_control_number IS NULL`)
+		.get() as { n: number };
+	return row.n;
+}
+
+/**
+ * `group_code` for a served row. The loader does not select it, and parsing
+ * it back out of the id would let the test agree with a bug in the id format;
+ * the column is the real thing the predicate keys on.
+ */
+function groupCodeOf(raw: DatabaseSync, groupId: string): string {
+	const row = raw
+		.prepare(`SELECT group_code AS c FROM course_groups WHERE id = ?`)
+		.get(groupId) as {
+		c: string;
+	};
+	return row.c;
+}
+
 /** The fixture shape for the demo student: their own groups plus blocks. */
 function seedOwnGroups(raw: DatabaseSync): void {
 	seedSubject(raw, { canonicalId: "sistemas-1", code: "SCC1027" });
@@ -165,7 +238,10 @@ describe("reinscripcion loader", () => {
 		const data = await load(signedIn());
 
 		expect(data.period).toBe(PERIOD);
-		expect(data.groups).toHaveLength(CATALOGUE_SIZE + 1);
+		// Paged, not the whole catalogue: the student's own group is
+		// excluded and 468 - 1 offerable rows come back one page at a time.
+		expect(data.groups.length).toBeLessThanOrEqual(_PAGE_SIZE);
+		expect(data.offer.totalCount).toBe(CATALOGUE_SIZE);
 		expect(data.blocks).toHaveLength(1);
 		expect(data.enrolledBlocks).toHaveLength(1);
 	});
@@ -194,6 +270,187 @@ describe("reinscripcion loader", () => {
 		expect(data.groups).toEqual([]);
 		expect(data.blocks).toEqual([]);
 		expect(data.period).toBeNull();
+		expect(data.offer.totalCount).toBe(0);
+	});
+});
+
+describe("reinscripcion — the offer fits on a screen (T9.14)", () => {
+	it("serves one page of the 475-row catalogue and still reports the whole", async () => {
+		seedCatalogue(raw, OFFER_ROWS);
+
+		const data = await load(signedIn());
+
+		// The whole defect in two numbers: the fetch is bounded, the count
+		// is not.
+		expect(data.groups).toHaveLength(_PAGE_SIZE);
+		expect(data.groups.length).toBeLessThanOrEqual(_PAGE_SIZE);
+		expect(data.offer.totalCount).toBe(OFFER_ROWS);
+		expect(data.offer.pages).toBe(Math.ceil(OFFER_ROWS / _PAGE_SIZE));
+		expect(data.offer.page).toBe(1);
+	});
+
+	it("narrows the text filter in SQL, before the count, not after", async () => {
+		seedCatalogue(raw, OFFER_ROWS);
+
+		const data = await load(
+			signedIn("https://opensim.test/reinscripcion?q=materia+de+oferta+0001"),
+		);
+
+		// One match, and the total reports the match — counting first would
+		// show 475 next to a 1-row result.
+		expect(data.offer.totalCount).toBe(1);
+		expect(data.groups).toHaveLength(1);
+		expect(data.groups[0].subjectCode).toBe("CAT0001");
+		expect(data.offer.query).toBe("materia de oferta 0001");
+	});
+
+	it("matches the search accent-insensitively, as `matchesText` does", async () => {
+		seedCatalogue(raw, OFFER_ROWS);
+		seedSubject(raw, { canonicalId: "acf-x", code: "ACF-9999", name: "Álgebra Lineal" });
+		seedGroup(raw, "O-ACF-9999-A", "acf-x", "A", null);
+
+		// SQLite's `lower()` is ASCII-only, so this only passes because the
+		// loader rebuilds the fold as SQL.
+		const data = await load(signedIn("https://opensim.test/reinscripcion?q=algebra"));
+
+		expect(data.offer.totalCount).toBe(1);
+		expect(data.groups[0].subjectName).toBe("Álgebra Lineal");
+	});
+
+	it("treats `_` and `%` as typed characters, not LIKE wildcards", async () => {
+		seedCatalogue(raw, OFFER_ROWS);
+
+		const data = await load(signedIn("https://opensim.test/reinscripcion?q=%25"));
+
+		// Bare `%` is every row when it escapes, and no row when it does not.
+		expect(data.offer.totalCount).toBe(0);
+	});
+
+	it("keeps the enrolled subjects out of the offer page", async () => {
+		seedCatalogue(raw, CATALOGUE_SIZE);
+		seedOwnGroups(raw);
+
+		const data = await load(signedIn());
+
+		// The rule moved from `if (g.alreadyEnrolled) return false` in the
+		// browser to `notInArray` in the WHERE clause; same answer, and now
+		// it also keeps those rows out of the count.
+		expect(data.offer.totalCount).toBe(CATALOGUE_SIZE);
+		expect(data.groups.filter((g) => g.alreadyEnrolled)).toEqual([]);
+	});
+
+	it("serves a different page of rows for a different page number", async () => {
+		seedCatalogue(raw, OFFER_ROWS);
+
+		const first = await load(signedIn());
+		const second = await load(signedIn("https://opensim.test/reinscripcion?page=2"));
+
+		// A `LIMIT` with no `OFFSET` — or an unstable `ORDER BY` — returns
+		// page 1 twice and quietly loses half the catalogue.
+		expect(first.groups.map((g) => g.groupId)).toHaveLength(_PAGE_SIZE);
+		expect(second.groups).toHaveLength(_PAGE_SIZE);
+		const firstIds = new Set(first.groups.map((g) => g.groupId));
+		expect(second.groups.filter((g) => firstIds.has(g.groupId))).toEqual([]);
+	});
+
+	it("serves the last page for a page number past the end", async () => {
+		seedCatalogue(raw, OFFER_ROWS);
+
+		const data = await load(signedIn("https://opensim.test/reinscripcion?page=999"));
+
+		expect(data.offer.page).toBe(data.offer.pages);
+		expect(data.groups.length).toBeGreaterThan(0);
+		expect(data.groups.length).toBeLessThanOrEqual(_PAGE_SIZE);
+	});
+
+	it("ignores a credits filter it does not recognise", async () => {
+		seedCatalogue(raw, OFFER_ROWS);
+
+		const data = await load(signedIn("https://opensim.test/reinscripcion?credits=lt9000"));
+
+		expect(data.offer.credits).toBe("");
+		expect(data.offer.totalCount).toBe(OFFER_ROWS);
+	});
+});
+
+describe("reinscripcion — the duplicated offering (the SIM publishes each group twice)", () => {
+	it("never serves two rows sharing (subject, group, teacher), on any page", async () => {
+		seedDuplicatedCatalogue(raw, DUPLICATED_SUBJECTS);
+
+		const seen = new Map<string, string>();
+		const pages = Math.ceil(DUPLICATED_SUBJECTS / _PAGE_SIZE);
+		let totalCount = 0;
+		for (let page = 1; page <= pages; page++) {
+			const data = await load(signedIn(`https://opensim.test/reinscripcion?page=${page}`));
+			totalCount = data.offer.totalCount;
+			for (const g of data.groups) {
+				const key = [g.subjectCanonicalId, groupCodeOf(raw, g.groupId), g.teacherName].join("|");
+				// Before the fix this fails on page 1: the two copies of a
+				// group sort next to each other under the same subject code.
+				expect(seen.has(key), `page ${page} served ${g.groupId} twice under ${key}`).toBe(false);
+				seen.set(key, g.groupId);
+			}
+		}
+
+		// Every subject, exactly once, across every page.
+		expect(seen.size).toBe(DUPLICATED_SUBJECTS);
+		// And the badge counts that same deduplicated set, not the wider one.
+		expect(totalCount).toBe(DUPLICATED_SUBJECTS);
+	});
+
+	it("keeps a period-less group that has no period-bearing twin — the anti-loss test", async () => {
+		seedSubject(raw, {
+			canonicalId: "sin-periodo",
+			code: "AAA1001",
+			name: "Materia sin periodo",
+			credits: 4,
+		});
+		seedOfferingRow(raw, "O-AAA1001-A-NA-DOC-001", "sin-periodo", null);
+
+		// The SIM published this group once, with no term filter. It is the
+		// only record of it: dropping it would be deletion, not deduplication.
+		const lonely = await load(signedIn());
+		expect(lonely.offer.totalCount).toBe(1);
+		expect(lonely.groups.map((g) => g.groupId)).toEqual(["O-AAA1001-A-NA-DOC-001"]);
+
+		// Now the term-filtered export lands. Only NOW does the period-less
+		// copy have a better version, and only now is it the one that goes.
+		seedOfferingRow(raw, "O-AAA1001-A-1-DOC-001", "sin-periodo", "1");
+
+		const paired = await load(signedIn());
+		expect(paired.offer.totalCount).toBe(1);
+		expect(paired.groups.map((g) => g.groupId)).toEqual(["O-AAA1001-A-1-DOC-001"]);
+	});
+
+	it("counts the deduplicated set, not the rows it then discards", async () => {
+		seedDuplicatedCatalogue(raw, DUPLICATED_SUBJECTS);
+
+		const data = await load(signedIn());
+
+		// The table holds twice the offer. A count taken before the predicate
+		// reads 240 next to a 50-row page — the badge and the list disagree,
+		// which is the half of the bug that lives in the WHERE clause.
+		expect(catalogueRowCount(raw)).toBe(DUPLICATED_SUBJECTS * 2);
+		expect(data.offer.totalCount).toBe(DUPLICATED_SUBJECTS);
+		expect(data.offer.pages).toBe(Math.ceil(DUPLICATED_SUBJECTS / _PAGE_SIZE));
+		// Every served row belongs to that same set, not the wider one.
+		expect(data.groups.every((g) => g.groupId.includes("-1-DOC-001"))).toBe(true);
+	});
+
+	it("never lets one student's own group suppress another row", async () => {
+		seedSubject(raw, { canonicalId: "propia", code: "BBB2002", credits: 4 });
+		// An enrolment row: no period, exactly like the untagged catalogue
+		// row, but it belongs to a student and is not the catalogue's to drop.
+		seedOfferingRow(raw, "G-BBB2002-1", "propia", null);
+		seedProgress(raw, CONTROL, "propia", "ENROLLED", PERIOD);
+
+		const data = await load(signedIn());
+
+		// The enrolment row is filtered out as an already-enrolled subject,
+		// not silently deleted as a duplicate of nothing.
+		expect(data.enrolledCanonicalIds).toEqual(["propia"]);
+		expect(data.groups).toEqual([]);
+		expect(data.offer.totalCount).toBe(0);
 	});
 });
 
@@ -212,7 +469,8 @@ describe("reinscripcion — the dead conflict detector", () => {
 		// detector would start claiming a detection it has never made.
 		const blockGroupIds = new Set(data.blocks.map((b) => b.groupId));
 		const catalogueGroups = data.groups.filter((g) => !g.alreadyEnrolled);
-		expect(catalogueGroups).toHaveLength(CATALOGUE_SIZE);
+		expect(catalogueGroups.length).toBeGreaterThan(0);
+		expect(catalogueGroups.length).toBeLessThanOrEqual(_PAGE_SIZE);
 		expect(catalogueGroups.filter((g) => blockGroupIds.has(g.groupId))).toEqual([]);
 	});
 

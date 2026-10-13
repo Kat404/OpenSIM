@@ -35,7 +35,7 @@ horario aún no existe. El SIM asigna el horario al inscribir y ahí es donde ch
 
 Esto confirma el texto que ya muestra el simulador: *"El SIM no publica horarios para los
 grupos de la oferta, por lo que no se pueden detectar traslapes entre las materias que
-elijas."* La nota ya no es unaplaceholder: es la explicación correcta.
+elijas."* La nota ya no es un placeholder: es la explicación correcta.
 
 **Lo que queda abierto y no podemos resolver sin ti**: si existe un endpoint del SIM que
 no conozco. La sesión del 2026-10-07 expiró. Si tienes una sesión viva, un vistazo a la
@@ -104,7 +104,7 @@ requisito de egreso, y si reemplazaran a los 182 reticulares no aportarían nada
 `evaluateCreditThresholds` hoy calcula únicamente con reticulares y no recibe el conteo
 de complementarios. T9.13 le pasa el segundo número y `canStartSocialService` exige las
 dos condiciones. La Residencia (208) y el Taller de Investigación (130) **no** cambian:
-su regla nunca emm涉及 complementarios.
+su regla nunca involucró complementarios.
 
 **Verificación.** Un test por cada rama de la decisión; el copy de `/tramites` refleja la
 misma regla; y el alumno de prueba (3 de 5) queda en el estado que la regla diga.
@@ -144,19 +144,32 @@ expone las materias **del periodo activo**. De ahí el 24 % de cobertura.
 
 **Lo que falta.** El consumidor. No hay ninguna vista que lea `subject_units`.
 
-**Lo que hay que decidir, y es del operador**, porque cambia la forma:
+**Decisión del operador, 2026-10-13: (A) cobertura explícita.** Una vista de temario por
+materia, que nombre la cobertura real en pantalla. Se descarta (B), sólo buscador.
 
-| | |
-| --- | --- |
-| **A** | Una vista de temario por materia, con cobertura explícita: 7 de 68 tienen temario, las otras 61 no |
-| **B** | Sólo un buscador, y el temario aparece cuando existe |
-
-La diferencia es de producto, no de código. La opción A es honesta pero invita a que el
-alumno piense que las otras 61 no tienen temario — que es exactamente lo que ocurre, pero
-la causa es el portal, no la institución.
+**Qué obliga la decisión.** La opción A es honesta, pero por sí sola invita a que el alumno
+piense que las otras materias no tienen temario. La respuesta correcta es mostrar *la causa*
+junto al número: el temario falta porque el portal sólo publica el del periodo activo, no
+porque la institución no lo tenga. Así el dato ausente se lee como una limitación de la
+fuente, no como una ausencia real.
 
 **Verificación.** La vista nombra la cobertura real en pantalla. Un temario que no existe se
-distingue de uno vacío.
+distingue de uno vacío: "el portal no lo publica" **no** es "no hay unidades".
+
+---
+
+## Estado
+
+| Task | Qué | Estado |
+| --- | --- | --- |
+| T9.14 | la oferta cabe en una pantalla | implementada, verde, sin commitear |
+| T9.13 | `/tramites`: regla de los 5 complementarios | especificada, decisión del operador ya tomada |
+| T9.11 | horario con aulas reales | especificada |
+| T9.12 | detalle de temario | especificada, cobertura explícita |
+
+Las dos decisiones que bloqueaban el plan están tomadas: **T9.13** puerta adicional (ya
+dictada el 2026-10-10) y **T9.12** cobertura explícita (2026-10-13). Ninguna task está
+bloqueada por una decisión pendiente.
 
 ---
 
@@ -168,9 +181,14 @@ distingue de uno vacío.
 
 ---
 
-## La decisión que bloquea el plan
+## Log
 
-**T9.13**: ¿los 5 complementarios son una puerta **adicional** a los 182 reticulares, o
-**reemplazan** ese umbral? Y **T9.12**: ¿vista con cobertura explícita o sólo buscador?
-
-T9.14 y el resto de T9.11 no dependen de ninguna de las dos.
+- **2026-10-13 — L1.** El operador responde las dos decisiones que bloqueaban el plan:
+  *"T9.13 Habíamos que 5 complementarios + 182 reticulares / T9.12 Cobertura explícita.
+  Procede."* T9.13 confirma la puerta adicional ya escrita el 2026-10-10; T9.12 elige la
+  opción A. Se reescriben las secciones afectadas, se corrigen dos corrupciones de texto
+  del documento (`emm涉及`, `unaplaceholder`) y este bloque sustituye a la sección que
+  declaraba el bloqueo.
+- **2026-10-13 — T9.14 verificada antes de commitear.** 22/22 en
+  `tests/unit/reinscripcion.test.ts`; `just qa-fast` completo en verde (326 tests,
+  svelte-check 0 errores, Biome limpio sobre 135 archivos).
