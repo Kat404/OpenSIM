@@ -73,7 +73,7 @@ público ya no arranca.
 
 - Siempre que hagas cualquier cambio de código (no `docs/`) pasa por los comandos de arriba: `just qa-fast` como mínimo, más los e2e que toquen lo que cambiaste.
 - Siempre que cambies partes del código, avances con tareas, planeaciones y demás actualiza `odd/` si es que hay un plan ODD para lo que ya ejecutaste.
-- Guarda y/o actualiza en memoria Engram lo anterior. Este paso es _obligatorio_ se tenga o una planeación ODD.
+- Guarda y/o actualiza en memoria Engram lo anterior. Este paso es _obligatorio_ se tenga o no una planeación ODD.
 - **Umbral del subagente de auditoría.** Lánzalo, *después* de que `qa-fast` y los e2e estén verdes, cuando el diff: (a) toque migraciones en `drizzle/**`, (b) toque código de auth o de credenciales, (c) toque `wrangler.jsonc` o cualquier receta remota, o (d) abarque ≥2 archivos de código (bajo `src/`, `tests/`, `drizzle/` o configuración ejecutable), excluyendo comentarios y `docs/`, o ~400 líneas escritas. El resto no lo amerita. La auditoría debe producir: los hallazgos con archivo y línea, la razón por la que cada uno importa, y qué se rompió o no se rompió con evidencia — no un "se ve bien".
 
 ## Disclaimer
