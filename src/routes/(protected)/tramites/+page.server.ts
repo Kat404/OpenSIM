@@ -1,10 +1,14 @@
 /**
- * OpenSIM — Trámites page loader (Phase 4 Tarea 4.2).
+ * OpenSIM — Trámites page loader (Phase 4 Tarea 4.2; T9.13).
  *
  * Computes the unlock state of the three academic procedures:
- *   - Servicio Social       (>= 182 CR, 70% of 260)
+ *   - Servicio Social       (>= 182 reticular CR + >= 5 complementary CR)
  *   - Residencia Profesional (>= 208 CR, 80% of 260)
  *   - Titulación            (>= 260 CR + Servicio Social done)
+ *
+ * Servicio Social is gated twice (T9.13, operator decision 2026-10-10).
+ * The complementary subjects carry 0 reticular credits by construction,
+ * so the two counts never overlap and neither can stand in for the other.
  *
  * The credit-threshold math lives in `evaluateCreditThresholds`
  * (src/lib/utils/dag.ts) so the numbers are defined in exactly
@@ -16,7 +20,8 @@
  * thresholds are pulled from the profile; CURP / birthState stay
  * server-side.
  *
- * See: odd/tasks/opensim.md Tarea 4.2.
+ * See: odd/tasks/opensim.md Tarea 4.2; odd/tasks/phase-9-ui-integration.md
+ * T9.13.
  */
 
 import { env as workerEnv } from "cloudflare:workers";
@@ -24,8 +29,12 @@ import { type Actions, fail } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import type { ProcedureStatus } from "#lib/components/tramites/types";
 import { getDb } from "#lib/server/db";
-import { studentProfiles, studentProgress } from "#lib/server/db/schema";
-import { evaluateCreditThresholds } from "#lib/utils/dag";
+import {
+	complementaryCreditActivities,
+	studentProfiles,
+	studentProgress,
+} from "#lib/server/db/schema";
+import { COMPLEMENTARY_CREDITS_REQUIRED, evaluateCreditThresholds } from "#lib/utils/dag";
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 import type { PageServerLoad } from "./$types";
 
@@ -33,6 +42,7 @@ const env = workerEnv as OpenSimWorkerEnv;
 
 const TOTAL_CREDITS = 260;
 const SOCIAL_SERVICE_CANONICAL_ID = "servicio-social";
+const SOCIAL_SERVICE_RETICULAR_REQUIRED = 182;
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Explicit guard mirrors reinscripcion/+page.server.ts (audit R8-7 /
@@ -45,6 +55,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (!u) {
 		return {
 			approvedCredits: 0,
+			complementaryCredits: 0,
+			complementaryRequired: COMPLEMENTARY_CREDITS_REQUIRED,
 			totalCredits: TOTAL_CREDITS,
 			socialServiceDone: false,
 			procedures: [
@@ -52,9 +64,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 					id: "servicio-social" as const,
 					label: "Servicio Social",
 					description: "500 horas de práctica profesional en dependencias públicas o privadas.",
-					creditsRequired: 182,
+					creditsRequired: SOCIAL_SERVICE_RETICULAR_REQUIRED,
 					creditsHave: 0,
-					creditsRemaining: 182,
+					creditsRemaining: SOCIAL_SERVICE_RETICULAR_REQUIRED,
 					percentage: 0,
 					unlocked: false,
 					blockedReason: "No autenticado. Inicia sesión.",
@@ -109,6 +121,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		});
 		return {
 			approvedCredits: 0,
+			complementaryCredits: 0,
+			complementaryRequired: COMPLEMENTARY_CREDITS_REQUIRED,
 			totalCredits: TOTAL_CREDITS,
 			socialServiceDone: false,
 			procedures: [
@@ -116,7 +130,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 					"servicio-social",
 					"Servicio Social",
 					"500 horas de práctica profesional en dependencias públicas o privadas.",
-					182,
+					SOCIAL_SERVICE_RETICULAR_REQUIRED,
 				),
 				stub(
 					"residencia",
@@ -136,7 +150,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const db = getDb(env.DB);
 
-	const [profileRows, progressRows] = await Promise.all([
+	const [profileRows, progressRows, complementaryRows] = await Promise.all([
 		db
 			.select({
 				approvedCredits: studentProfiles.approvedCredits,
@@ -153,28 +167,47 @@ export const load: PageServerLoad = async ({ locals }) => {
 			})
 			.from(studentProgress)
 			.where(eq(studentProgress.studentControlNumber, u.controlNumber)),
+		// One row per COMPLETED complementary activity, and one activity
+		// counts as one complementary credit (T9.13). The table carries no
+		// credit column because the four complementary subjects are
+		// 0-credit transversal modules by construction.
+		db
+			.select({ subjectCanonicalId: complementaryCreditActivities.subjectCanonicalId })
+			.from(complementaryCreditActivities)
+			.where(eq(complementaryCreditActivities.studentControlNumber, u.controlNumber)),
 	]);
 
 	const profile = profileRows[0];
 	const approvedCredits = profile?.approvedCredits ?? u.approvedCredits;
+	const complementaryCredits = complementaryRows.length;
 	const socialServiceDone = progressRows.some(
 		(r) => r.subjectCanonicalId === SOCIAL_SERVICE_CANONICAL_ID && r.status === "APPROVED",
 	);
 
-	const thresholds = evaluateCreditThresholds(approvedCredits);
+	const thresholds = evaluateCreditThresholds(approvedCredits, complementaryCredits);
+
+	// The blocked reason names the gate that is actually unmet. Both can
+	// fail at once; reticular comes first because it is the slower one.
+	const socialServiceBlockReason = ((): string | null => {
+		if (thresholds.canStartSocialService) return null;
+		const missingReticular = SOCIAL_SERVICE_RETICULAR_REQUIRED - approvedCredits;
+		if (missingReticular > 0) {
+			return `Necesitas ${missingReticular} créditos reticulares más (tienes ${approvedCredits} de ${TOTAL_CREDITS})`;
+		}
+		const missingComplementary = COMPLEMENTARY_CREDITS_REQUIRED - complementaryCredits;
+		return `Necesitas ${missingComplementary} créditos complementarios más (tienes ${complementaryCredits} de ${COMPLEMENTARY_CREDITS_REQUIRED}). Los complementarios son una puerta aparte: no sustituyen los ${SOCIAL_SERVICE_RETICULAR_REQUIRED} reticulares.`;
+	})();
 
 	const social: ProcedureStatus = {
 		id: "servicio-social",
 		label: "Servicio Social",
 		description: "500 horas de práctica profesional en dependencias públicas o privadas.",
-		creditsRequired: 182,
+		creditsRequired: SOCIAL_SERVICE_RETICULAR_REQUIRED,
 		creditsHave: approvedCredits,
-		creditsRemaining: Math.max(0, 182 - approvedCredits),
-		percentage: Math.min(100, (approvedCredits / 182) * 100),
+		creditsRemaining: Math.max(0, SOCIAL_SERVICE_RETICULAR_REQUIRED - approvedCredits),
+		percentage: Math.min(100, (approvedCredits / SOCIAL_SERVICE_RETICULAR_REQUIRED) * 100),
 		unlocked: thresholds.canStartSocialService,
-		blockedReason: thresholds.canStartSocialService
-			? null
-			: `Necesitas ${182 - approvedCredits} créditos más (tienes ${approvedCredits} de ${TOTAL_CREDITS})`,
+		blockedReason: socialServiceBlockReason,
 	};
 	const residencia: ProcedureStatus = {
 		id: "residencia",
@@ -209,6 +242,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		approvedCredits,
+		complementaryCredits,
+		complementaryRequired: COMPLEMENTARY_CREDITS_REQUIRED,
 		totalCredits: TOTAL_CREDITS,
 		socialServiceDone,
 		procedures: [social, residencia, titulacion],

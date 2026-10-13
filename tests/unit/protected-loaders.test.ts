@@ -18,6 +18,7 @@
  * regresses.
  */
 
+import type { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { currentAcademicPeriod } from "../../src/lib/server/enrollment";
 import { load as kardexLoad } from "../../src/routes/(protected)/academico/kardex/+page.server";
@@ -152,9 +153,29 @@ interface Procedure {
 
 interface TramitesData {
 	approvedCredits: number;
+	complementaryCredits: number;
+	complementaryRequired: number;
 	totalCredits: number;
 	socialServiceDone: boolean;
 	procedures: Procedure[];
+}
+
+/**
+ * T9.13: one row per completed complementary activity = one complementary
+ * credit. The four complementary subjects are 0-credit transversal modules,
+ * so the row count IS the credit count.
+ */
+function seedComplementary(raw: DatabaseSync, count: number): void {
+	for (let i = 0; i < count; i++) {
+		seedSubject(raw, { canonicalId: `complementario-${i}`, code: `ITM-1${i}0` });
+		raw
+			.prepare(
+				`INSERT INTO complementary_credit_activities
+					(student_control_number, subject_canonical_id, period)
+				 VALUES (?, ?, ?)`,
+			)
+			.run(CONTROL, `complementario-${i}`, PERIOD);
+	}
 }
 
 const loadHorario = async (event: unknown): Promise<HorarioData> =>
@@ -514,7 +535,8 @@ describe("trámites loader", () => {
 		expect(result.procedures[0]?.blockedReason).toBe("No autenticado. Inicia sesión.");
 	});
 
-	it("unlocks Servicio Social at 182 approved credits", async () => {
+	it("unlocks Servicio Social at 182 approved credits and 5 complementary credits", async () => {
+		seedComplementary(raw, 5);
 		const result = await loadTramites(signedIn({ approvedCredits: 182, remainingCredits: 78 }));
 		const social = procedureById(result, "servicio-social");
 		expect(social.unlocked).toBe(true);
@@ -524,6 +546,45 @@ describe("trámites loader", () => {
 		const residencia = procedureById(result, "residencia");
 		expect(residencia.unlocked).toBe(false);
 		expect(residencia.blockedReason).toContain("Necesitas 26 créditos más");
+	});
+
+	// T9.13 — the complementary gate is a SECOND gate on the loader, not
+	// only on the pure function.
+
+	it("keeps Servicio Social locked at 182 approved credits with no complementary credits", async () => {
+		const result = await loadTramites(signedIn({ approvedCredits: 182, remainingCredits: 78 }));
+		const social = procedureById(result, "servicio-social");
+		expect(result.complementaryCredits).toBe(0);
+		expect(social.unlocked).toBe(false);
+		expect(social.blockedReason).toContain("5 créditos complementarios más");
+	});
+
+	it("counts only THIS student's complementary activities", async () => {
+		seedComplementary(raw, 5);
+		seedProfile(raw, { controlNumber: "87654321", fullName: "Grace Hopper Ramirez" });
+		raw
+			.prepare(
+				`INSERT INTO complementary_credit_activities
+					(student_control_number, subject_canonical_id, period)
+				 VALUES ('87654321', 'complementario-0', ?)`,
+			)
+			.run(PERIOD);
+		// Six rows exist in the table; this student owns five of them.
+		const total = raw
+			.prepare("SELECT COUNT(*) AS n FROM complementary_credit_activities")
+			.get() as { n: number };
+		expect(total.n).toBe(6);
+		const result = await loadTramites(signedIn());
+		expect(result.complementaryCredits).toBe(5);
+		// 182 reticular + exactly 5 complementary clears both gates.
+		expect(procedureById(result, "servicio-social").unlocked).toBe(true);
+	});
+
+	it("leaves Residencia unlocked even when the complementary gate is unmet", async () => {
+		raw.prepare("UPDATE student_profiles SET approved_credits = 240, remaining_credits = 20").run();
+		const result = await loadTramites(signedIn());
+		expect(procedureById(result, "residencia").unlocked).toBe(true);
+		expect(procedureById(result, "servicio-social").unlocked).toBe(false);
 	});
 
 	it("keeps Titulación locked until both Residencia and Servicio Social are done", async () => {
