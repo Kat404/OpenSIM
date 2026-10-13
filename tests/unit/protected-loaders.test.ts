@@ -25,6 +25,7 @@ import { load as kardexLoad } from "../../src/routes/(protected)/academico/karde
 import { load as dashboardLoad } from "../../src/routes/(protected)/dashboard/+page.server";
 import { load as horarioLoad } from "../../src/routes/(protected)/horario/+page.server";
 import { load as reticulaLoad } from "../../src/routes/(protected)/reticula/+page.server";
+import { load as temarioLoad } from "../../src/routes/(protected)/temario/+page.server";
 import {
 	actions as tramitesActions,
 	load as tramitesLoad,
@@ -199,6 +200,47 @@ const loadKardex = async (event: unknown): Promise<KardexData> =>
 const loadTramites = async (event: unknown): Promise<TramitesData> =>
 	(await tramitesLoad(event as never)) as TramitesData;
 
+interface TemarioSubtopic {
+	index: string;
+	title: string;
+	evalFrom: string | null;
+	evalTo: string | null;
+}
+
+interface TemarioUnit {
+	unitNumber: number;
+	title: string;
+	subtopics: TemarioSubtopic[];
+	evalFrom: string | null;
+	evalTo: string | null;
+	instruments: string[];
+	criteria: string[];
+}
+
+interface TemarioSubject {
+	canonicalId: string;
+	code: string;
+	name: string;
+	units: TemarioUnit[];
+}
+
+interface TemarioData {
+	subjects: TemarioSubject[];
+	coverage: { withTemario: number; total: number };
+}
+
+const loadTemario = async (event: unknown): Promise<TemarioData> =>
+	(await temarioLoad(event as never)) as TemarioData;
+
+function seedUnit(raw: DatabaseSync, canonicalId: string, unitNumber: number, title: string): void {
+	raw
+		.prepare(
+			`INSERT INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json)
+			 VALUES (?, ?, ?, '[]')`,
+		)
+		.run(canonicalId, unitNumber, title);
+}
+
 function procedureById(data: TramitesData, id: string): Procedure {
 	const found = data.procedures.find((p) => p.id === id);
 	if (!found) throw new Error(`no procedure ${id}`);
@@ -213,6 +255,94 @@ beforeEach(() => {
 
 afterEach(() => {
 	raw.close();
+});
+
+describe("temario loader", () => {
+	it("returns an empty coverage view for an anonymous visitor", async () => {
+		const result = await loadTemario(anonymous());
+		expect(result).toEqual({ subjects: [], coverage: { withTemario: 0, total: 0 } });
+	});
+
+	// T9.12 — operator decision 2026-10-13: explicit coverage. The numbers
+	// the page shows must come from the DB, never from a hard-coded ratio.
+
+	it("counts the subjects that have a temario against the whole plan", async () => {
+		seedSubject(raw, {
+			canonicalId: "aec-1034",
+			code: "AEC1034",
+			name: "Sistemas de comunicación",
+		});
+		seedUnit(raw, "aec-1034", 1, "UNIDAD 1");
+		seedUnit(raw, "aec-1034", 2, "UNIDAD 2");
+		seedSubject(raw, { canonicalId: "sistemas-1", code: "SCC1027", name: "Programación" });
+
+		const result = await loadTemario(signedIn());
+		expect(result.coverage).toEqual({ withTemario: 1, total: 2 });
+		const conTemario = result.subjects.find((s) => s.canonicalId === "aec-1034");
+		expect(conTemario?.units).toHaveLength(2);
+	});
+
+	it("returns an empty unit list for a subject the portal does not publish", async () => {
+		seedSubject(raw, { canonicalId: "sistemas-1", code: "SCC1027", name: "Programación" });
+
+		const result = await loadTemario(signedIn());
+		const sinTemario = result.subjects.find((s) => s.canonicalId === "sistemas-1");
+		expect(sinTemario?.units).toEqual([]);
+		expect(result.coverage).toEqual({ withTemario: 0, total: 1 });
+	});
+
+	it("parses subtopics, instruments and criteria out of their JSON columns", async () => {
+		seedSubject(raw, { canonicalId: "aec-1034", code: "AEC1034" });
+		raw
+			.prepare(
+				`INSERT INTO subject_units
+					(subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria)
+				 VALUES ('aec-1034', 1, 'UNIDAD 1', ?, '24/08/2026', '28/08/2026', ?, ?)`,
+			)
+			.run(
+				JSON.stringify([
+					{ index: "1.1", title: "IMPACTO", evalFrom: "24/08/2026", evalTo: "28/08/2026" },
+				]),
+				JSON.stringify(["CÁTEDRA DOCENTE"]),
+				JSON.stringify(["EVALUACIÓN ESCRITA"]),
+			);
+
+		const result = await loadTemario(signedIn());
+		const unit = result.subjects[0]?.units[0];
+		expect(unit?.title).toBe("UNIDAD 1");
+		expect(unit?.evalFrom).toBe("24/08/2026");
+		expect(unit?.evalTo).toBe("28/08/2026");
+		expect(unit?.subtopics).toEqual([
+			{ index: "1.1", title: "IMPACTO", evalFrom: "24/08/2026", evalTo: "28/08/2026" },
+		]);
+		expect(unit?.instruments).toEqual(["CÁTEDRA DOCENTE"]);
+		expect(unit?.criteria).toEqual(["EVALUACIÓN ESCRITA"]);
+	});
+
+	it("survives a unit whose JSON columns are absent or malformed", async () => {
+		seedSubject(raw, { canonicalId: "aec-1034", code: "AEC1034" });
+		raw
+			.prepare(
+				`INSERT INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json)
+				 VALUES ('aec-1034', 1, 'UNIDAD 1', 'no es json')`,
+			)
+			.run();
+
+		const result = await loadTemario(signedIn());
+		const unit = result.subjects[0]?.units[0];
+		expect(unit?.title).toBe("UNIDAD 1");
+		expect(unit?.subtopics).toEqual([]);
+		expect(unit?.instruments).toEqual([]);
+		expect(unit?.evalFrom).toBeNull();
+	});
+
+	it("orders subjects by code so SSR and CSR agree", async () => {
+		seedSubject(raw, { canonicalId: "z-1", code: "ZZZ999" });
+		seedSubject(raw, { canonicalId: "a-1", code: "AAA111" });
+
+		const result = await loadTemario(signedIn());
+		expect(result.subjects.map((s) => s.code)).toEqual(["AAA111", "ZZZ999"]);
+	});
 });
 
 describe("horario loader", () => {
