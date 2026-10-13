@@ -89,7 +89,13 @@ interface HorarioItem {
 
 interface HorarioData {
 	schedule: HorarioItem[];
+	pending: PendingGroup[];
 	period: string | null;
+}
+
+interface PendingGroup {
+	subject: { canonicalId: string; code: string; name: string };
+	group: { id: string; groupCode: string; teacherName: string };
 }
 
 interface TodayClass {
@@ -212,7 +218,7 @@ afterEach(() => {
 describe("horario loader", () => {
 	it("returns an empty schedule for an anonymous visitor", async () => {
 		const result = await loadHorario(anonymous());
-		expect(result).toEqual({ schedule: [], period: null });
+		expect(result).toEqual({ schedule: [], pending: [], period: null });
 	});
 
 	it("joins the enrollment's blocks with the subjects catalog", async () => {
@@ -234,7 +240,60 @@ describe("horario loader", () => {
 
 		const result = await loadHorario(signedIn());
 		expect(result.schedule).toEqual([]);
+		expect(result.pending).toEqual([]);
 		expect(result.period).toBeNull();
+	});
+
+	// T9.11 — H11: the SIM publishes no schedule for an OFFERED group. The
+	// schedule only exists once the student is enrolled. So an enrolled
+	// group with no blocks is real data with a known cause, not an empty
+	// grid and not a rendering failure.
+
+	it("lists an enrolled group with no blocks as pending, not as an empty schedule", async () => {
+		seedSubject(raw, { canonicalId: "sistemas-1", code: "SCC1027", name: "Programación" });
+		seedGroup(raw, "G-SCC1027-9", "sistemas-1", "9B", CONTROL);
+		seedProgress(raw, CONTROL, "sistemas-1", "ENROLLED", PERIOD);
+
+		const result = await loadHorario(signedIn());
+		expect(result.schedule).toEqual([]);
+		expect(result.pending).toEqual([
+			{
+				subject: { canonicalId: "sistemas-1", code: "SCC1027", name: "Programación" },
+				group: { id: "G-SCC1027-9", groupCode: "9B", teacherName: "Docente Prueba" },
+			},
+		]);
+		expect(result.period).toBe(PERIOD);
+	});
+
+	it("does not list a scheduled group as pending", async () => {
+		seedCurrentEnrollment();
+		const result = await loadHorario(signedIn());
+		expect(result.pending).toEqual([]);
+	});
+
+	it("keeps scheduled and pending groups in one answer when both exist", async () => {
+		seedCurrentEnrollment();
+		seedSubject(raw, { canonicalId: "sistemas-2", code: "SCC1042", name: "Bases de datos" });
+		seedGroup(raw, "G-SCC1042-7", "sistemas-2", "7A", CONTROL);
+		seedProgress(raw, CONTROL, "sistemas-2", "ENROLLED", PERIOD);
+
+		const result = await loadHorario(signedIn());
+		expect(result.schedule).toHaveLength(1);
+		expect(result.pending).toHaveLength(1);
+		expect(result.pending[0]?.subject.code).toBe("SCC1042");
+	});
+
+	it("never lists an offering-catalogue group as this student's pending", async () => {
+		// `student_control_number IS NULL` is a catalogue row, not an
+		// enrolment. Offering groups have no schedule either, so counting
+		// them would paint 468 phantom subjects on the grid.
+		seedSubject(raw, { canonicalId: "sistemas-1", code: "SCC1027" });
+		seedGroup(raw, "G-CATALOGO-1", "sistemas-1", "A", null);
+		seedProgress(raw, CONTROL, "sistemas-1", "ENROLLED", PERIOD);
+
+		const result = await loadHorario(signedIn());
+		expect(result.pending).toEqual([]);
+		expect(result.schedule).toEqual([]);
 	});
 
 	it("sorts the grid by weekday order, not by insertion order", async () => {
@@ -293,7 +352,7 @@ describe("horario loader", () => {
 		seedProgress(raw, CONTROL, "sistemas-1", "APPROVED", PREVIOUS_PERIOD);
 
 		const result = await loadHorario(signedIn());
-		expect(result).toEqual({ schedule: [], period: null });
+		expect(result).toEqual({ schedule: [], pending: [], period: null });
 	});
 
 	it("ignores the enrollment of a different student", async () => {
@@ -682,6 +741,7 @@ describe("loaders without a D1 binding", () => {
 
 		await expect(loadHorario(signedIn())).resolves.toEqual({
 			schedule: [],
+			pending: [],
 			period: null,
 		});
 		await expect(loadKardex(signedIn())).resolves.toEqual({ entries: [] });
