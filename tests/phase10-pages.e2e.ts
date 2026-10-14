@@ -46,6 +46,7 @@ import { z } from "zod";
 describe("temario — explicit coverage", { tags: ["temario"] }, () => {
 	test("the coverage numbers on screen are internally consistent", {
 		session: "alumno",
+		timeout: 300_000,
 	}, async ({ app, agent, screen, browser }) => {
 		await app.open("/temario");
 
@@ -76,6 +77,7 @@ describe("temario — explicit coverage", { tags: ["temario"] }, () => {
 
 	test("a missing syllabus reads as a portal gap, not an institutional one", {
 		session: "alumno",
+		timeout: 300_000,
 	}, async ({ app, agent, screen }) => {
 		await app.open("/temario");
 
@@ -97,6 +99,7 @@ describe("temario — explicit coverage", { tags: ["temario"] }, () => {
 describe("horario — real schedule vs pending groups", { tags: ["horario"] }, () => {
 	test("shows a grid, an explicit empty state, or a pending list that says why", {
 		session: "alumno",
+		timeout: 300_000,
 	}, async ({ app, agent, screen }) => {
 		await app.open("/horario");
 
@@ -114,6 +117,7 @@ describe("horario — real schedule vs pending groups", { tags: ["horario"] }, (
 describe("tramites — the double credit gate", { tags: ["tramites"] }, () => {
 	test("names both gates and never implies they substitute each other", {
 		session: "alumno",
+		timeout: 300_000,
 	}, async ({ app, agent, screen }) => {
 		await app.open("/tramites");
 
@@ -145,11 +149,10 @@ describe("tramites — the double credit gate", { tags: ["tramites"] }, () => {
 		).toBeVisible();
 	});
 
-	test("a locked procedure states which gate is unmet", { session: "alumno" }, async ({
-		app,
-		agent,
-		screen,
-	}) => {
+	test("a locked procedure states which gate is unmet", {
+		session: "alumno",
+		timeout: 300_000,
+	}, async ({ app, agent, screen }) => {
 		await app.open("/tramites");
 
 		await agent.assert(
@@ -162,11 +165,10 @@ describe("tramites — the double credit gate", { tags: ["tramites"] }, () => {
 });
 
 describe("kardex — academic record", { tags: ["kardex"] }, () => {
-	test("renders the record or an explicit empty state", { session: "alumno" }, async ({
-		app,
-		agent,
-		screen,
-	}) => {
+	test("renders the record or an explicit empty state", {
+		session: "alumno",
+		timeout: 300_000,
+	}, async ({ app, agent, screen }) => {
 		await app.open("/academico/kardex");
 
 		await agent.assert(

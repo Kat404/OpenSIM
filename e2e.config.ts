@@ -71,47 +71,83 @@ export default {
 
 	agents: {
 		default: {
-			// THE AGENTIC LANE IS NOT RELIABLE ON THIS GATEWAY. Measured, not
-			// assumed, and the numbers are reproducible with the scripts in
-			// scripts/: run them, don't take this comment's word for it.
+			// THE AGENTIC LANE DOES NOT RUN ON THIS GATEWAY. Two real misconfigurations
+			// were found and fixed while diagnosing it (see below); what remains is
+			// the provider itself. Measured, not assumed, and reproducible with
+			// the scripts in scripts/.
 			//
-			// `agent.assert` / `agent.extract` need valid structured output, so
-			// every model the gateway declares (GET /v1/models, which is the
-			// authority — not this comment) was measured against the exact
-			// tool-calling shape those steps send:
+			// `agent.assert` / `agent.extract` need valid structured output. What
+			// was actually wrong here, in order of discovery:
 			//
-			//   MiniMax-M3                    0-20%   worst of the line
-			//   MiniMax-M2.5                  0-40%
-			//   MiniMax-M2.1                  0-20%
-			//   MiniMax-M2.7                  33% over 12 runs  ← configured
+			// 1. Model ids came from a comment in this file, not from the docs.
+			//    `GET /v1/models` is the authority and lists eight; a made-up id
+			//    returns 400 "unknown model", so the gateway does not substitute.
+			// 2. `judgmentTimeout` was left at the default of 30 s
+			//    (DEFAULT_JUDGMENT_TIMEOUT_MS in
+			//    node_modules/e2e/dist/config/agent.js). A reasoning model reading
+			//    this app's 329-330 node pages blows past it, and the runner
+			//    reports STEP_TIMEOUT, which reads like a test bug and is not one.
+			//    Raised to 120 s; the per-test timeout went to 300 s to match.
+			// 3. With those fixed the error changed back to MODEL_OUTPUT_INVALID,
+			//    and THAT one is the provider: this endpoint ignores every
+			//    `response_format` variant (scripts/probe-response-format.mjs) and
+			//    answers with reasoning wrapped around the value, renaming schema
+			//    fields on the way (`withTemario` → `published`).
 			//
-			// Hypotheses tested and RULED OUT, so nobody re-runs them:
+			// Ruled out with measurement, so nobody repeats them:
 			//
-			//   · Unknown ids are not silently substituted: a made-up name
-			//     returns 400 "unknown model", so the sweep measured real
-			//     models and not one default answer repeated.
-			//   · Thinking is not the cause. The docs say MiniMax-M3 "skips
-			//     thinking" with thinking.type="disabled" — and with it off the
-			//     <think> blocks do vanish while tool-calling stays at 0%.
-			//   · Token budget is not the cause: 4 000 and 12 000 max_tokens
-			//     score identically.
-			//   · Retries are not the answer: 12 → 36 model calls, pass rate
-			//     unmoved. That is why no test carries a `retries` key.
+			//   · Unknown ids silently substituted — no, a bogus id 400s.
+			//   · Thinking blocks — no, M3 "skips thinking" per the docs and
+			//     tool-calling stays at 0% with the blocks gone.
+			//   · Token budget — no, 4 000 and 12 000 max_tokens score alike.
+			//   · Retries — no, 12 → 36 model calls with the pass rate unmoved,
+			//     which is why no test carries a `retries` key.
+			//   · Tool-calling itself — it works ~80% of the time
+			//     (scripts/probe-sdk-path.ts), but the runner's judgments do not
+			//     use it.
 			//
-			// Failures arrive as finish_reason:"stop" with no tool call: the
-			// model finishes its turn in prose instead of calling the tool the
-			// caller forced. M2.7 at 5/5 looked perfect until 12 runs put it
-			// at 33% — which is why the confirmation script exists.
-			//
-			// To make this lane work, point E2E_MODEL at a model that answers
-			// tool-calling reliably; the tests in tests/phase10-pages.e2e.ts are
+			// To fix this, point E2E_MODEL at a model whose endpoint honours
+			// `response_format`. The tests in tests/phase10-pages.e2e.ts are
 			// sound and need no changes. Until then vitest and Playwright remain
 			// the gate, and `just qa-fast` does not depend on any of this.
 			model: createOpenAICompatible({
 				name: "openai-compatible",
 				baseURL: "https://api.minimax.io/v1",
 				apiKey: process.env.LLM_API_KEY,
+				// NOT set, deliberately. The SDK picks `response_format` from this
+				// flag and nothing else (node_modules/@ai-sdk/openai-compatible/
+				// dist/index.js:430):
+				//
+				//   true  → { type: "json_schema", json_schema: {...} }
+				//   false → { type: "json_object" }
+				//
+				// Measured against this endpoint with
+				// scripts/probe-response-format.mjs, ALL THREE variants
+				// (no flag, json_object, json_schema) score 0: the flag changes
+				// what is sent and the endpoint honours none of them. The model
+				// answers with its reasoning wrapped around the answer —
+				//
+				//   {"published": 7, "total": 68} or maybe {"published": 7,
+				//   "total": 68}. They said "sin texto alrededor"…
+				//
+				// — note also that it renamed `withTemario` to `published`, so
+				// even a well-formed parse would fail a strict schema.
+				//
+				// Leaving it false keeps the default, which is the least
+				// specific request and therefore the only one with any chance on
+				// a provider that does support it. Set it to true ONLY for a
+				// provider that implements `json_schema`. The flag name is
+				// `supportsStructuredOutputs`; `structuredOutputs` is silently
+				// ignored, which is how it went missing before.
+				supportsStructuredOutputs: false,
 			}).chatModel(process.env.E2E_MODEL ?? "MiniMax-M2.7"),
+			// The default judgment budget is 30 s
+			// (DEFAULT_JUDGMENT_TIMEOUT_MS in node_modules/e2e/dist/config/agent.js).
+			// That is tuned for a fast model on a small screen; a MiniMax
+			// reasoning model reading this app's 329-330 node pages blows
+			// straight past it, and the runner reports STEP_TIMEOUT, which reads
+			// like a test problem and is not one. Raised to 120 s.
+			judgmentTimeout: 120_000,
 			// Spanish, like the UI: every string the model reads comes from the
 			// app, so judging it in the app's language is the consistent choice.
 			system:
