@@ -2,8 +2,31 @@
 
 ## Contexto
 
-Repositorio todo-en-uno **OpenSIM**: opción FOSS al SIM original del Instituto
-Tecnológico de Morelia. Un solo mantenedor; los agentes no deben adivinar el tooling.
+Repositorio todo-en-uno **OpenSIM**: rediseño FOSS del SIM del Instituto Tecnológico de
+Morelia, construido como demo funcional. No es una réplica ni un espejo de datos: la
+institución publica parte de su información académica y ninguna de su planificación, así
+que una copia fiel es imposible por construcción. Un solo mantenedor; los agentes no deben
+adivinar el tooling.
+
+### Qué es dato y qué es invención
+
+Al reportar o proponer, no mezcles las dos categorías. Si un número viene del SIM, cita la
+fuente; si lo inventamos para el demo, dilo.
+
+| Verificado del SIM | Invención de diseño |
+| --- | --- |
+| Materias, códigos, créditos, serialización | Salones, edificios, horarios |
+| Catálogo de oferta (468 grupos) | Nombre y plan de estudios del alumno de demo |
+| Temario publicado (7 de 68, en `/temario`) | Los 25 créditos de especialidad sin temario |
+
+**v1 = una sola carrera, ISIC-2010-224 (Sistemas).** Las demás quedan fuera de alcance
+mientras sus datos no sean obtenibles. El scraping está descartado de forma explícita: el
+horario de un grupo no existe en el portal hasta la inscripción, ni con scraping de
+compañeros se cierra ese hueco (ver hallazgo H11 en
+`odd/tasks/phase-9-ui-integration.md`).
+
+Cuando una fuente calla, la UI lo dice en pantalla en vez de rellenarlo. No inventes un
+valor para que una pantalla se vea completa.
 
 **Stack:** SvelteKit 3 + Svelte 5 · Cloudflare Workers · D1 (SQLite) vía Drizzle ·
 pnpm · Biome (formato + lint) · vitest · Playwright + axe-core · runner e2e agéntico
