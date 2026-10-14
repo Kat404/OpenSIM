@@ -248,6 +248,21 @@ Presupuesto: ~400 líneas escritas acumuladas. Si lo rebasa, se corta en el lím
   `E2E_MODEL` para cambiar de modelo sin tocar código. `retries: 2` se probó y se quitó:
   triplicó el costo (12 → 36 llamadas) sin mover la tasa, que ya estaba medida.
   vitest y Playwright siguen siendo el gate y `just qa-fast` no depende de este carril.
+- **2026-10-13 — T6: los nombres de modelo estaban mal documentados.** Los ids que se
+  configuraron venían de un comentario en `e2e.config.ts`, no de la documentación. La fuente
+  de verdad es `GET /v1/models`, que declara ocho: M3, M2.7, M2.7-highspeed, M2.5,
+  M2.5-highspeed, M2.1, M2.1-highspeed y M2. `MiniMax-M3.1-Flash-Preview` **no está**
+  disponible en esta cuenta: responde 400 `invalid params`. Un nombre inventado responde
+  400 `unknown model`, así que el barrido midió modelos reales y no una misma respuesta
+  repetida. Barrido completo (`scripts/probe-models.mjs`): M2.7 es el menos malo, pero
+  con 12 corridas queda en **33%**, no en el 100% que sugerían las primeras 5.
+  `scripts/confirm-model.mjs` existe por eso: un 5/5 habría pasado por bueno.
+  Hipótesis descartadas con medición: el razonamiento no es la causa (con
+  `thinking.type="disabled"` — que la documentación dice que M3 respeta — desaparecen los
+  bloques de pensamiento y el tool-calling sigue en 0%); el presupuesto de tokens no es la
+  causa; y los reintentos no son la solución. Los fallos llegan como
+  `finish_reason: "stop"` sin tool call: el modelo termina su turno en prosa en vez de
+  llamar a la herramienta que se le forzaba.
 - **2026-10-13 — Dependencias actualizadas.** `pnpm outdated` mostraba `e2e` 0.19 → 0.20
   (su changelog no toca la gramática del judge), más parches de `ai` y
   `@ai-sdk/openai-compatible`. Nota: `pnpm update` NO sube `e2e` porque en 0.x el caret no

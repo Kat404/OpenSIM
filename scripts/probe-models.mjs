@@ -84,7 +84,13 @@ async function attempt(model, temperature) {
 	}
 }
 
-const MODELS = ["MiniMax-M3", "MiniMax-M2.5", "MiniMax-M2.1", "MiniMax-M2"];
+// La lista sale del propio gateway (GET /v1/models), no de un comentario:
+// hardcodear ids es justo lo que produjo el barrido inicial incompleto.
+const listed = await fetch("https://api.minimax.io/v1/models", {
+	headers: { authorization: `Bearer ${key}` },
+}).then((r) => r.json());
+const MODELS = (listed?.data ?? []).map((m) => m.id);
+console.log(`Modelos declarados por el gateway: ${MODELS.join(", ")}\n`);
 const TEMPS = [0, 1];
 const table = [];
 

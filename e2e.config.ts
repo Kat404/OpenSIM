@@ -71,29 +71,39 @@ export default {
 
 	agents: {
 		default: {
-			// THE AGENTIC LANE DOES NOT CURRENTLY RUN. Kept configured and
-			// kept measured rather than quietly switched off.
+			// THE AGENTIC LANE IS NOT RELIABLE ON THIS GATEWAY. Measured, not
+			// assumed, and the numbers are reproducible with the scripts in
+			// scripts/: run them, don't take this comment's word for it.
 			//
-			// `agent.assert` / `agent.extract` need valid structured output.
-			// Measured against this gateway with `scripts/probe-models.mjs`
-			// and `scripts/probe-budget.mjs`, on the exact tool-calling shape
-			// those steps send:
+			// `agent.assert` / `agent.extract` need valid structured output, so
+			// every model the gateway declares (GET /v1/models, which is the
+			// authority — not this comment) was measured against the exact
+			// tool-calling shape those steps send:
 			//
-			//   MiniMax-M3    temp 0  →   0-20%   (once read "7 de 68" backwards)
-			//   MiniMax-M2.5  temp 0  →  50-60%  ← configured here, the best of them
-			//   MiniMax-M2.1  temp 0  →  25%
-			//   MiniMax-M2    temp 0  →  25%
+			//   MiniMax-M3                    0-20%   worst of the line
+			//   MiniMax-M2.5                  0-40%
+			//   MiniMax-M2.1                  0-20%
+			//   MiniMax-M2.7                  33% over 12 runs  ← configured
 			//
-			// M2.5 is the least bad id and is what stays. But 60% was measured
-			// on a SYNTHETIC one-line question. Against this app's real screens
-			// (329-330 accessibility nodes) the rate is 0: six tests, 36 model
-			// calls, every one MODEL_OUTPUT_INVALID. Raising `max_tokens` does
-			// not help (4 000 and 12 000 score identically) — the failures are
-			// `finish_reason: stop` with no tool call, i.e. the model choosing
-			// to answer in prose. `retries` were tried and removed: cost went
-			// up 3x and the pass rate did not move.
+			// Hypotheses tested and RULED OUT, so nobody re-runs them:
 			//
-			// To make this lane work, point `E2E_MODEL` at a model that answers
+			//   · Unknown ids are not silently substituted: a made-up name
+			//     returns 400 "unknown model", so the sweep measured real
+			//     models and not one default answer repeated.
+			//   · Thinking is not the cause. The docs say MiniMax-M3 "skips
+			//     thinking" with thinking.type="disabled" — and with it off the
+			//     <think> blocks do vanish while tool-calling stays at 0%.
+			//   · Token budget is not the cause: 4 000 and 12 000 max_tokens
+			//     score identically.
+			//   · Retries are not the answer: 12 → 36 model calls, pass rate
+			//     unmoved. That is why no test carries a `retries` key.
+			//
+			// Failures arrive as finish_reason:"stop" with no tool call: the
+			// model finishes its turn in prose instead of calling the tool the
+			// caller forced. M2.7 at 5/5 looked perfect until 12 runs put it
+			// at 33% — which is why the confirmation script exists.
+			//
+			// To make this lane work, point E2E_MODEL at a model that answers
 			// tool-calling reliably; the tests in tests/phase10-pages.e2e.ts are
 			// sound and need no changes. Until then vitest and Playwright remain
 			// the gate, and `just qa-fast` does not depend on any of this.
@@ -101,7 +111,7 @@ export default {
 				name: "openai-compatible",
 				baseURL: "https://api.minimax.io/v1",
 				apiKey: process.env.LLM_API_KEY,
-			}).chatModel(process.env.E2E_MODEL ?? "MiniMax-M2.5"),
+			}).chatModel(process.env.E2E_MODEL ?? "MiniMax-M2.7"),
 			// Spanish, like the UI: every string the model reads comes from the
 			// app, so judging it in the app's language is the consistent choice.
 			system:
