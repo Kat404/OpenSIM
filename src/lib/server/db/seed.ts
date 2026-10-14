@@ -51,7 +51,11 @@ import { execSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { SUBJECT_COMPONENTS, SUBJECT_SERIATION_STATES } from "#lib/server/db/schema";
+import {
+	COMPLEMENTARY_CREDITS_REQUIRED,
+	SUBJECT_COMPONENTS,
+	SUBJECT_SERIATION_STATES,
+} from "#lib/server/db/schema";
 
 // ---------- Types matching the dataset JSON ----------
 
@@ -77,6 +81,9 @@ interface SubjectDataset {
 	specialtyCode: string | null;
 	seriationState: (typeof SUBJECT_SERIATION_STATES)[number];
 	component: (typeof SUBJECT_COMPONENTS)[number];
+	/** Complementary credits this subject is worth (Phase 10, S1). Zero for
+	 * every reticular subject. Absent in older datasets, hence the default. */
+	complementaryCredits?: number;
 }
 
 /** One verified seriation edge. The dataset states both ends by `code`; the
@@ -293,7 +300,7 @@ function insertSubjects(subjects: SubjectDataset[]): string {
 	const lines: string[] = ["-- subjects"];
 	for (const s of subjects) {
 		lines.push(
-			`INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES (${sqlStr(s.canonicalId)}, ${sqlStr(s.code)}, ${sqlStr(s.name)}, ${sqlNullableNum(s.semester)}, ${sqlNullableNum(s.ht)}, ${sqlNullableNum(s.hp)}, ${sqlNum(s.credits)}, ${sqlNullableStr(s.area)}, ${sqlStr(s.seriationState)}, ${sqlStr(s.component)}, ${sqlNullableStr(s.specialtyCode)});`,
+			`INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES (${sqlStr(s.canonicalId)}, ${sqlStr(s.code)}, ${sqlStr(s.name)}, ${sqlNullableNum(s.semester)}, ${sqlNullableNum(s.ht)}, ${sqlNullableNum(s.hp)}, ${sqlNum(s.credits)}, ${sqlNullableStr(s.area)}, ${sqlStr(s.seriationState)}, ${sqlStr(s.component)}, ${sqlNullableStr(s.specialtyCode)}, ${sqlNum(s.complementaryCredits ?? 0)});`,
 		);
 		lines.push("--> statement-breakpoint");
 		for (const alias of s.aliases ?? []) {
@@ -441,6 +448,11 @@ function insertFooter(): string {
 		"SELECT COUNT(*) AS units FROM subject_units;",
 		"--> statement-breakpoint",
 		"SELECT COUNT(*) AS complementary_activities FROM complementary_credit_activities;",
+		"--> statement-breakpoint",
+		// Phase 10 S1: the four weights must add up to the 5-credit block the
+		// plan publishes. A drift here means a complementary subject lost its
+		// weight and no gate would ever notice.
+		"SELECT SUM(complementary_credits) AS complementary_weight_total FROM subjects;",
 		"--> statement-breakpoint",
 		"SELECT COUNT(*) AS progress_rows FROM student_progress;",
 		"--> statement-breakpoint",
@@ -761,6 +773,34 @@ function main(): void {
 				`Subject ${s.canonicalId} references specialty "${s.specialtyCode}" which the dataset does not declare.`,
 			);
 		}
+	}
+
+	// Phase 10 S1: a subject may carry complementary weight ONLY if it is a
+	// complementary subject, and the weights must add up to the 5-credit
+	// block the plan publishes. Without this the seed would happily write a
+	// reticular subject with weight 3 and the Servicio Social gate would
+	// open on credits that do not exist.
+	const complementaryTotal = dataset.subjects.reduce(
+		(total, s) => total + (s.complementaryCredits ?? 0),
+		0,
+	);
+	for (const s of dataset.subjects) {
+		const weight = s.complementaryCredits ?? 0;
+		if (weight > 0 && s.component !== "COMPLEMENTARY") {
+			throw new Error(
+				`Subject ${s.canonicalId} has component "${s.component}" but carries ${weight} complementary credits.`,
+			);
+		}
+		if (!Number.isInteger(weight) || weight < 0) {
+			throw new Error(
+				`Subject ${s.canonicalId} has a non-integer complementary weight: ${weight}.`,
+			);
+		}
+	}
+	if (complementaryTotal !== COMPLEMENTARY_CREDITS_REQUIRED) {
+		throw new Error(
+			`Complementary weights sum to ${complementaryTotal}, but the plan's block is ${COMPLEMENTARY_CREDITS_REQUIRED}.`,
+		);
 	}
 
 	// The dataset keys every edge end by `code`; the table stores `canonical_id`.

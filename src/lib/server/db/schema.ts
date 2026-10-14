@@ -68,6 +68,13 @@ export const subjects = sqliteTable("subjects", {
 	// were never classified against a seriation source.
 	seriationState: text("seriation_state").notNull().default("UNKNOWN"),
 	component: text("component").notNull().default("GENERIC"),
+	// Complementary credits this subject is worth (Phase 10, S1). Zero for
+	// every reticular subject — that is the point: a complementary subject
+	// contributes to the 5-credit block and NEVER to the reticular total,
+	// so the two counts cannot overlap. The weight lives on the subject,
+	// not on a student's activity row, so re-weighting a subject corrects
+	// every student at once.
+	complementaryCredits: integer("complementary_credits").notNull().default(0),
 	specialtyCode: text("specialty_code").references(() => specialties.code),
 });
 
@@ -488,6 +495,14 @@ export type SubjectSeriationState = (typeof SUBJECT_SERIATION_STATES)[number];
 
 export const SUBJECT_COMPONENTS = ["GENERIC", "COMPLEMENTARY", "PRACTICE", "SPECIALTY"] as const;
 export type SubjectComponent = (typeof SUBJECT_COMPONENTS)[number];
+
+/**
+ * Complementary credits required for graduation and to unlock Servicio Social
+ * (Phase 10, S1). This is the 5-credit block the ISIC-2010-224 plan publishes,
+ * NOT a count of activities: the per-subject weights in `complementaryCredits`
+ * add up to it, and that sum is what a student accumulates.
+ */
+export const COMPLEMENTARY_CREDITS_REQUIRED = 5;
 
 // Evaluation types live in `#lib/utils/academic` (client-safe home)
 // so the kardex UI can read the array at runtime without dragging
