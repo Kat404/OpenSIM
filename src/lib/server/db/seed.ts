@@ -51,11 +51,8 @@ import { execSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-	COMPLEMENTARY_CREDITS_REQUIRED,
-	SUBJECT_COMPONENTS,
-	SUBJECT_SERIATION_STATES,
-} from "#lib/server/db/schema";
+import { SUBJECT_COMPONENTS, SUBJECT_SERIATION_STATES } from "#lib/server/db/schema";
+import { COMPLEMENTARY_CREDITS_REQUIRED } from "#lib/utils/dag";
 
 // ---------- Types matching the dataset JSON ----------
 

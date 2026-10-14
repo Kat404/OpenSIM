@@ -496,14 +496,6 @@ export type SubjectSeriationState = (typeof SUBJECT_SERIATION_STATES)[number];
 export const SUBJECT_COMPONENTS = ["GENERIC", "COMPLEMENTARY", "PRACTICE", "SPECIALTY"] as const;
 export type SubjectComponent = (typeof SUBJECT_COMPONENTS)[number];
 
-/**
- * Complementary credits required for graduation and to unlock Servicio Social
- * (Phase 10, S1). This is the 5-credit block the ISIC-2010-224 plan publishes,
- * NOT a count of activities: the per-subject weights in `complementaryCredits`
- * add up to it, and that sum is what a student accumulates.
- */
-export const COMPLEMENTARY_CREDITS_REQUIRED = 5;
-
 // Evaluation types live in `#lib/utils/academic` (client-safe home)
 // so the kardex UI can read the array at runtime without dragging
 // the server-only schema into the browser bundle. Re-exported here

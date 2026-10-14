@@ -250,7 +250,7 @@ export interface SeedProfile {
 export function seedProfile(raw: DatabaseSync, seed: SeedProfile = {}): void {
 	const {
 		controlNumber = "12345678",
-		fullName = "Ada Lovelace Ortiz",
+		fullName = "Valeria Moreno Ortiz",
 		approvedCredits = 182,
 		remainingCredits = 78,
 		currentSemester = 5,

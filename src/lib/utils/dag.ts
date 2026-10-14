@@ -26,7 +26,7 @@
  * See: odd/tasks/opensim.md §7.1
  */
 
-import { COMPLEMENTARY_CREDITS_REQUIRED, type SubjectSeriationState } from "#lib/server/db/schema";
+import type { SubjectSeriationState } from "#lib/server/db/schema";
 
 // ---------- Edge model ----------
 
@@ -307,14 +307,18 @@ export interface CreditThresholds {
 
 /**
  * Complementary credits required for graduation, and therefore to unlock
- * Servicio Social. Operator decision (T9.13): this is a SECOND gate, not a
- * replacement for the reticular threshold — the two are counted separately
- * because complementary subjects carry 0 reticular credits by definition.
+ * Servicio Social (Phase 10, S1). This is the 5-credit block the ISIC-2010-224
+ * plan publishes, NOT a count of activities: the per-subject weights in
+ * `subjects.complementary_credits` add up to it, and that sum is what a
+ * student accumulates.
  *
- * Re-exported from the schema module, which owns the plan's vocabulary, so
- * the seed validator and this pure function read one definition.
+ * It lives here, in a client-safe module, rather than beside the schema: the
+ * retícula renders on the client and imports from this file, so a value
+ * imported from the server-only schema module would trip SvelteKit's
+ * `server_only_import` guard. The seed validator imports it from here too, so
+ * both read one definition.
  */
-export { COMPLEMENTARY_CREDITS_REQUIRED };
+export const COMPLEMENTARY_CREDITS_REQUIRED = 5;
 
 /**
  * Phase 10 S2. The ISIC-2010-224 plan publishes a 260-credit total, but only

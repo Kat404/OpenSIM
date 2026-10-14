@@ -1,10 +1,11 @@
 {
+  "_NOTICE": "Fixture del alumno de demo. Los datos personales (nombre, CURP) son SINTETICOS: se inventaron para el demo y no corresponden a ninguna persona real (Phase 10, S5). El horario y los salones provienen de una captura real del SIM, pero son nombres de instalacion, no datos personales. v1 solo cubre la carrera ISIC-2010-224 (Sistemas).",
   "version": "ENROLLMENT-2026-AGO",
   "controlNumber": "12345678",
   "student_profile": {
     "controlNumber": "12345678",
-    "fullName": "Ana Gabriela Hernández Ruiz",
-    "curp": "HERA000615MMNRZNA3",
+    "fullName": "Sofía Ramírez Aguirre",
+    "curp": "RAGA000615MMZNRX3",
     "birthState": "Michoacán",
     "careerCode": "ISIC-2010-224",
     "specialtyCode": "ISIE-TDD-2026-01",
