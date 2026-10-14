@@ -71,12 +71,43 @@ export default {
 
 	agents: {
 		default: {
+			// THE AGENTIC LANE DOES NOT CURRENTLY RUN. Kept configured and
+			// kept measured rather than quietly switched off.
+			//
+			// `agent.assert` / `agent.extract` need valid structured output.
+			// Measured against this gateway with `scripts/probe-models.mjs`
+			// and `scripts/probe-budget.mjs`, on the exact tool-calling shape
+			// those steps send:
+			//
+			//   MiniMax-M3    temp 0  →   0-20%   (once read "7 de 68" backwards)
+			//   MiniMax-M2.5  temp 0  →  50-60%  ← configured here, the best of them
+			//   MiniMax-M2.1  temp 0  →  25%
+			//   MiniMax-M2    temp 0  →  25%
+			//
+			// M2.5 is the least bad id and is what stays. But 60% was measured
+			// on a SYNTHETIC one-line question. Against this app's real screens
+			// (329-330 accessibility nodes) the rate is 0: six tests, 36 model
+			// calls, every one MODEL_OUTPUT_INVALID. Raising `max_tokens` does
+			// not help (4 000 and 12 000 score identically) — the failures are
+			// `finish_reason: stop` with no tool call, i.e. the model choosing
+			// to answer in prose. `retries` were tried and removed: cost went
+			// up 3x and the pass rate did not move.
+			//
+			// To make this lane work, point `E2E_MODEL` at a model that answers
+			// tool-calling reliably; the tests in tests/phase10-pages.e2e.ts are
+			// sound and need no changes. Until then vitest and Playwright remain
+			// the gate, and `just qa-fast` does not depend on any of this.
 			model: createOpenAICompatible({
 				name: "openai-compatible",
 				baseURL: "https://api.minimax.io/v1",
 				apiKey: process.env.LLM_API_KEY,
-			}).chatModel("MiniMax-M3"),
-			system: "You are a thorough QA agent. Verify every outcome.",
+			}).chatModel(process.env.E2E_MODEL ?? "MiniMax-M2.5"),
+			// Spanish, like the UI: every string the model reads comes from the
+			// app, so judging it in the app's language is the consistent choice.
+			system:
+				"Agente de QA. La aplicación está en español: lee las pantallas en español y responde sobre lo que se ve, sin inventar datos.",
+			context:
+				"OpenSIM es el sistema de gestión académica del Instituto Tecnológico de Morelia. v1 cubre solo la carrera de Ingeniería en Sistemas Computacionales. Cuando una pantalla no muestra un dato, no lo completes: es correcto que falte.",
 		},
 	},
 	targets: [

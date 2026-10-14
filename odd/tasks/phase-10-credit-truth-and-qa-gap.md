@@ -166,8 +166,8 @@ Presupuesto: ~400 líneas escritas acumuladas. Si lo rebasa, se corta en el lím
 | T2 | cerrada — constantes 235/260 y los tres umbrales; derivación de 260 documentada como retirada | `68e6979` |
 | T3 | cerrada — el loader suma `subjects.complementary_credits`; 350 tests verdes | `68e6979` |
 | T4 | cerrada — nombre y CURP sintéticos, `_NOTICE` en el fixture, PII vieja ausente del código | `5e2e936` |
-| T5 | en curso | — |
-| T6 | pendiente | — |
+| T5 | cerrada — README y AGENTS.md declaran verificado vs invención, v1 Sistemas, scraping fuera de alcance | `730aa91` |
+| T6 | **bloqueada por proveedor** — los tests están escritos y commiteados, pero el gateway no produce structured output válido | `a203bf9` |
 
 ---
 
@@ -232,6 +232,26 @@ Presupuesto: ~400 líneas escritas acumuladas. Si lo rebasa, se corta en el lím
   `server_only_import` y falló el e2e. La constante volvió a `dag.ts` (client-safe) y el
   seed la importa de ahí, de modo que ambos leen una sola definición sin cruzar el límite
   server/client.
+- **2026-10-13 — T6 BLOQUEADA por el proveedor, no por los tests.** Los seis tests
+  agénticos de `tests/phase10-pages.e2e.ts` fallan con `MODEL_OUTPUT_INVALID`. Se
+  investigation a fondo con tres sondeos reproducibles
+  (`scripts/probe-minimax-tools.mjs`, `probe-models.mjs`, `probe-budget.mjs`):
+  `agent.assert` y `agent.extract` necesitan structured output, y este gateway lo emite de
+  forma intermitente. Contra una pregunta sintética de una línea, los mejores resultados
+  fueron M2.5 temp 0 con 50-60%, M3 con 0-20% (una vez leyó "7 de 68" al revés), M2.1 y M2
+  con 25%. Subir `max_tokens` no cambia nada (4 000 y 12 000 puntúan igual) y los fallos
+  llegan como `finish_reason: stop` sin tool call: el modelo elige responder en prosa.
+  Contra las pantallas reales de la app (329-330 nodos) la tasa es **0%**: 6 tests, 36
+  llamadas al modelo, todas inválidas.
+  **Los tests quedan commiteados tal cual.** No se debilitan ni se borran: las preguntas son
+  correctas y sólo necesitan un modelo que obedezca tool-calling. `e2e.config.ts` acepta
+  `E2E_MODEL` para cambiar de modelo sin tocar código. `retries: 2` se probó y se quitó:
+  triplicó el costo (12 → 36 llamadas) sin mover la tasa, que ya estaba medida.
+  vitest y Playwright siguen siendo el gate y `just qa-fast` no depende de este carril.
+- **2026-10-13 — Dependencias actualizadas.** `pnpm outdated` mostraba `e2e` 0.19 → 0.20
+  (su changelog no toca la gramática del judge), más parches de `ai` y
+  `@ai-sdk/openai-compatible`. Nota: `pnpm update` NO sube `e2e` porque en 0.x el caret no
+  cubre el siguiente minor; hay que mover el rango a mano. Commit `43d1d1f`.
 - **2026-10-13 — Defecto propio en S3, capturado por un test.** El test que S3 especificaba
   ("182 no es 70% de 260") es una afirmación falsa: 182 = 0.7 × 260 exactamente, igual que
   130 y 208. Los tres umbrales SÍ son porcentajes de 260. Lo que se retira es la

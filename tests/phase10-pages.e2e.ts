@@ -18,6 +18,18 @@
  * here is evidence, not proof, and nothing in `just qa-fast` depends on any of
  * these passing.
  *
+ * STATUS: these tests do not pass against the current gateway, and they are
+ * committed anyway rather than deleted or weakened. `agent.assert` and
+ * `agent.extract` need valid structured output; this gateway emits it for a
+ * simple synthetic question about 60% of the time, and 0% of the time against
+ * the real screens of this app (6 tests, 36 model calls, every one
+ * MODEL_OUTPUT_INVALID). Retries were tried and removed: they multiply cost
+ * without moving the rate, which was measured, not assumed.
+ *
+ * They become meaningful the moment `E2E_MODEL` names a model that answers
+ * tool-calling reliably. Keep the assertions; change the gateway, not the
+ * questions.
+ *
  * Session note: the `alumno` credential belongs to `99999999`, the placeholder
  * student, not to the 175-credit fixture (`12345678`). The pages still render
  * the fixture's catalogue, temario and credit rules because those are global
@@ -32,12 +44,9 @@ import { expect } from "e2e";
 import { z } from "zod";
 
 describe("temario — explicit coverage", { tags: ["temario"] }, () => {
-	test("the coverage numbers on screen are internally consistent", { session: "alumno" }, async ({
-		app,
-		agent,
-		screen,
-		browser,
-	}) => {
+	test("the coverage numbers on screen are internally consistent", {
+		session: "alumno",
+	}, async ({ app, agent, screen, browser }) => {
 		await app.open("/temario");
 
 		// The point of Phase 10 S6 is that the ratio is stated, not hidden. An
