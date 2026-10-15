@@ -18,10 +18,14 @@
  *   - The optional `period` argument filters `student_progress` to a
  *     single period string (e.g. "AGOSTO-DICIEMBRE/2026").
  *   - When omitted, `getCurrentPeriod` picks the most recent period
- *     present in the student's progress rows. The most recent period
- *     is the lexicographic maximum — period strings sort the same way
- *     chronologically because the year suffix and the month order
- *     (AGOSTO > ENERO) line up with the ASCII order.
+ *     present in the student's progress rows, by `desc(period)` on the
+ *     period STRING. That is NOT chronological. "AGOSTO-DICIEMBRE/2026"
+ *     and "ENERO-JUNIO/2027" are the same year to a reader and the wrong
+ *     order to `desc`, because "ENERO" starts with E and "AGOSTO" with A.
+ *     This ordering once put the demo student in a term that had not
+ *     opened (T10.1). Sorting these by text is safe ONLY while the
+ *     rows being compared are all ENROLLED in one term; anything wider
+ *     needs a parsed date, not a string.
  *   - If the student has no progress rows, `getCurrentPeriod` returns
  *     `null` and `getCurrentEnrollment` returns empty arrays — pages
  *     are responsible for the EmptyState.
@@ -138,28 +142,6 @@ export async function getCurrentEnrollment(
 		.where(inArray(courseScheduleBlocks.groupId, groupIds));
 
 	return { groups, schedule, period: effectivePeriod };
-}
-
-/**
- * Most recent period in the student's academic history, regardless of
- * status. Unlike `getCurrentPeriod` this does not require an ENROLLED
- * row, so it also resolves for a student whose only rows are APPROVED
- * or FAILED from earlier terms — the case where "which term am I in?"
- * is unanswerable from active enrollment alone.
- *
- * Returns null only for a student with no progress rows at all.
- */
-export async function getLatestProgressPeriod(
-	db: Database,
-	controlNumber: string,
-): Promise<string | null> {
-	const rows = await db
-		.select({ period: studentProgress.period })
-		.from(studentProgress)
-		.where(eq(studentProgress.studentControlNumber, controlNumber))
-		.orderBy(desc(studentProgress.period))
-		.limit(1);
-	return rows[0]?.period ?? null;
 }
 
 /**
