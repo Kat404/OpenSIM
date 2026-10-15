@@ -22,8 +22,8 @@ importers:
         version: 1.5.0(typescript@6.0.3)
     devDependencies:
       '@ai-sdk/openai-compatible':
-        specifier: ^3.0.0
-        version: 3.0.67(zod@4.6.5)
+        specifier: ^3.0.68
+        version: 3.0.68(zod@4.6.5)
       '@axe-core/playwright':
         specifier: 4.13.0
         version: 4.13.0(playwright-core@1.63.0)
@@ -35,7 +35,7 @@ importers:
         version: 5.20260813.1
       '@e2e-dev/web':
         specifier: ^0.14.0
-        version: 0.14.0(e2e@0.19.0(@ai-sdk/openai-compatible@3.0.67(zod@4.6.5))(ai@7.0.136(zod@4.6.5)))
+        version: 0.14.0(e2e@0.20.0(@ai-sdk/openai-compatible@3.0.68(zod@4.6.5))(ai@7.0.138(zod@4.6.5)))
       '@playwright/test':
         specifier: 1.63.0
         version: 1.63.0
@@ -52,14 +52,14 @@ importers:
         specifier: 26.6.4
         version: 26.6.4
       ai:
-        specifier: ^7.0.0
-        version: 7.0.136(zod@4.6.5)
+        specifier: ^7.0.138
+        version: 7.0.138(zod@4.6.5)
       drizzle-kit:
         specifier: 0.31.11
         version: 0.31.11
       e2e:
-        specifier: ^0.19.0
-        version: 0.19.0(@ai-sdk/openai-compatible@3.0.67(zod@4.6.5))(ai@7.0.136(zod@4.6.5))
+        specifier: ^0.20.0
+        version: 0.20.0(@ai-sdk/openai-compatible@3.0.68(zod@4.6.5))(ai@7.0.138(zod@4.6.5))
       svelte:
         specifier: 5.57.1
         version: 5.57.1
@@ -87,20 +87,20 @@ importers:
 
 packages:
 
-  '@ai-sdk/gateway@4.0.110':
-    resolution: {integrity: sha512-5IwnOR6v7KC+D9eddUqsCobXl/FbLUVb2LaQc/uyuQdpP3/n9s0YLc9zl4/W3IS/R2pjHrqUfCzEAeOu7bFLoQ==}
+  '@ai-sdk/gateway@4.0.111':
+    resolution: {integrity: sha512-+Uq8GgAsEkq3rv1AoYyqpCeHSOXG5ZP7KnsquM8yyIXkn1oBeZbFZvTtNE6gC9Eg1VK34KwImv8NrtB6tfm2wA==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/openai-compatible@3.0.67':
-    resolution: {integrity: sha512-w1l+CRQoPgXGRuDMpD0hal7RWXYXzbr0uMzTF7L/zHusYRUfwQHphs/voY/H8yMWLc+8chu2UCfvfwUGSANubA==}
+  '@ai-sdk/openai-compatible@3.0.68':
+    resolution: {integrity: sha512-xnBmn8wJvlRX4BtB2nJTzSoYHHD7OpZwUigwH0oKDzg5HfYx+rNFqOKUMQDUuOClhMyDRMn29q/rzp0M41vgQw==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/provider-utils@5.0.58':
-    resolution: {integrity: sha512-iXSwKR/7LpHzAlyrUl+bTinwzmZ3Nmup1viwPisM5Gn5cogRdIG4rV9w1ZDuKFcrXyu/AeVs42E1CX/0aNwrfQ==}
+  '@ai-sdk/provider-utils@5.0.59':
+    resolution: {integrity: sha512-eaXBTkguxBFzS+KvxGRsbdkX9A7+R1g/C4jWx9mup0oSs3Cx5Mb427/byGpD2XL8SnMYT9O8LmXBmrgo+N3TJw==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -109,8 +109,8 @@ packages:
     resolution: {integrity: sha512-UpbC9C1oht8dhfKPbVXSLRZS3DI8uk8n5v2uMjBPNIYGsC2kL045ywq7D8Hh9KgnH9rP5W/GxQdYtWScRouqlA==}
     engines: {node: '>=22'}
 
-  '@ai-sdk/provider@4.0.26':
-    resolution: {integrity: sha512-BZ443uBEq6HuMA+Z4b7Hpm65GpZSo7pWqnYqpf/7tAO3C48JbtvAhOE2JnODFj+jodsZzfRHkAyQb64xuD2tZQ==}
+  '@ai-sdk/provider@4.0.27':
+    resolution: {integrity: sha512-TtWwm6SxFiPomlMIbTQa+yhJte+w4/oCsW+wJrJzMC3MqHpAY9e5dJF1Y4HxyKt3W2Csac0KiI76Ckio11TFYw==}
     engines: {node: '>=22'}
 
   '@axe-core/playwright@4.13.0':
@@ -1514,8 +1514,8 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  ai@7.0.136:
-    resolution: {integrity: sha512-quFXFKEw7qUZL9v2ciJ9eruQYq9KUo3F+mDhwdL/pi7ZPu0bj7UX6yv55oAUiMjbGXd8MZRzIcu0oPc4y9llQw==}
+  ai@7.0.138:
+    resolution: {integrity: sha512-rB2grfrM9se2GY/au4e5Eq0xadPM4+a+ip3EZ0ofedIPU8/GETWGjXO6gbzQDA+7nMaZnaUVaX2f+ByAj/LF8w==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -1679,8 +1679,8 @@ packages:
       sqlite3:
         optional: true
 
-  e2e@0.19.0:
-    resolution: {integrity: sha512-tTWgVR9tQTeESXkAxCh8H/gR4bGxbSbidw07/GngKT5P5tAPdsJ+bW5bQwIaAL/LUTwIG106V64/oiWLXkS29Q==}
+  e2e@0.20.0:
+    resolution: {integrity: sha512-MqpN6TSGIvRa3X2Hj1pWtYrBeW+qEsj3EVEelZlUT3NofIr9yHBFtPfdmIh18quA9AIWX8XrFBYPNn0WdZ9OTQ==}
     engines: {node: ^22.22.3 || >=24.8.0}
     hasBin: true
     peerDependencies:
@@ -2218,22 +2218,22 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/gateway@4.0.110(zod@4.6.5)':
+  '@ai-sdk/gateway@4.0.111(zod@4.6.5)':
     dependencies:
-      '@ai-sdk/provider': 4.0.26
-      '@ai-sdk/provider-utils': 5.0.58(zod@4.6.5)
+      '@ai-sdk/provider': 4.0.27
+      '@ai-sdk/provider-utils': 5.0.59(zod@4.6.5)
       '@vercel/oidc': 3.2.0
       zod: 4.6.5
 
-  '@ai-sdk/openai-compatible@3.0.67(zod@4.6.5)':
+  '@ai-sdk/openai-compatible@3.0.68(zod@4.6.5)':
     dependencies:
-      '@ai-sdk/provider': 4.0.26
-      '@ai-sdk/provider-utils': 5.0.58(zod@4.6.5)
+      '@ai-sdk/provider': 4.0.27
+      '@ai-sdk/provider-utils': 5.0.59(zod@4.6.5)
       zod: 4.6.5
 
-  '@ai-sdk/provider-utils@5.0.58(zod@4.6.5)':
+  '@ai-sdk/provider-utils@5.0.59(zod@4.6.5)':
     dependencies:
-      '@ai-sdk/provider': 4.0.26
+      '@ai-sdk/provider': 4.0.27
       '@standard-schema/spec': 1.1.0
       '@workflow/serde': 4.1.0
       eventsource-parser: 3.1.1
@@ -2244,7 +2244,7 @@ snapshots:
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/provider@4.0.26':
+  '@ai-sdk/provider@4.0.27':
     dependencies:
       json-schema: 0.4.0
 
@@ -2333,9 +2333,9 @@ snapshots:
 
   '@drizzle-team/brocli@0.10.2': {}
 
-  '@e2e-dev/web@0.14.0(e2e@0.19.0(@ai-sdk/openai-compatible@3.0.67(zod@4.6.5))(ai@7.0.136(zod@4.6.5)))':
+  '@e2e-dev/web@0.14.0(e2e@0.20.0(@ai-sdk/openai-compatible@3.0.68(zod@4.6.5))(ai@7.0.138(zod@4.6.5)))':
     dependencies:
-      e2e: 0.19.0(@ai-sdk/openai-compatible@3.0.67(zod@4.6.5))(ai@7.0.136(zod@4.6.5))
+      e2e: 0.20.0(@ai-sdk/openai-compatible@3.0.68(zod@4.6.5))(ai@7.0.138(zod@4.6.5))
       playwright-core: 1.63.0
 
   '@emnapi/runtime@1.11.3':
@@ -3076,11 +3076,11 @@ snapshots:
 
   acorn@8.18.0: {}
 
-  ai@7.0.136(zod@4.6.5):
+  ai@7.0.138(zod@4.6.5):
     dependencies:
-      '@ai-sdk/gateway': 4.0.110(zod@4.6.5)
-      '@ai-sdk/provider': 4.0.26
-      '@ai-sdk/provider-utils': 5.0.58(zod@4.6.5)
+      '@ai-sdk/gateway': 4.0.111(zod@4.6.5)
+      '@ai-sdk/provider': 4.0.27
+      '@ai-sdk/provider-utils': 5.0.59(zod@4.6.5)
       zod: 4.6.5
 
   aria-query@5.3.1: {}
@@ -3128,7 +3128,7 @@ snapshots:
     optionalDependencies:
       '@cloudflare/workers-types': 5.20260813.1
 
-  e2e@0.19.0(@ai-sdk/openai-compatible@3.0.67(zod@4.6.5))(ai@7.0.136(zod@4.6.5)):
+  e2e@0.20.0(@ai-sdk/openai-compatible@3.0.68(zod@4.6.5))(ai@7.0.138(zod@4.6.5)):
     dependencies:
       '@ai-sdk/provider': 4.0.21
       '@clack/prompts': 1.8.1
@@ -3145,8 +3145,8 @@ snapshots:
       pixelmatch: 8.0.0
       zod: 4.6.1
     optionalDependencies:
-      '@ai-sdk/openai-compatible': 3.0.67(zod@4.6.5)
-      ai: 7.0.136(zod@4.6.5)
+      '@ai-sdk/openai-compatible': 3.0.68(zod@4.6.5)
+      ai: 7.0.138(zod@4.6.5)
 
   error-stack-parser-es@1.0.5: {}
 
