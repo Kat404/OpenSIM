@@ -8,20 +8,23 @@
  *
  * Data flow:
  *   1. Resolve the current period via `getCurrentPeriod`.
- *   2. Read the full `course_groups` catalog (joined with `subjects`
- *      so the UI can render area / credits / name without a second
- *      round-trip) — this is the "oferta" the filter operates on.
- *   3. Read the student's already-enrolled subjects (same period)
- *      so the page can mark them as taken and exclude them from
- *      the selection list.
+ *   2. Read the student's already-enrolled subjects (same period) so
+ *      the page can keep them out of the offer and still resolve the
+ *      student's own groups for the schedule preview.
+ *   3. Read ONE page of the `course_groups` catalog (joined with
+ *      `subjects` so the UI can render area / credits / name without a
+ *      second round-trip), narrowed and paged in SQL.
  *   4. Read the schedule blocks of the student's own groups — the only
  *      groups the SIM publishes a timetable for — so the page can render
  *      the schedule preview and run the conflict detector client-side
  *      without further fetches.
  *
- * All three queries are routed through D1 in parallel; the page is
- * server-rendered so the initial paint already shows the real
- * catalog (no client-side spinner on first load).
+ * Step 3 is paged (T9.14). The catalogue is 475 rows: shipping all of
+ * them made the page unusable for a student and unobservable for the
+ * agentic runner — 2,450 accessibility nodes, 65,890 tokens against a
+ * 64,000 budget, `STEP_BUDGET_EXHAUSTED` on the first step. The filters
+ * are therefore query parameters the WHERE clause applies, not a chain
+ * the browser runs over 475 rows it has already paid for.
  *
  * The "Inscribir y firmar" form action below accepts a list of
  * `groupId`s, validates the selection (no duplicates, no already-
@@ -35,8 +38,19 @@
 
 import { env as workerEnv } from "cloudflare:workers";
 import { type Actions, fail, redirect } from "@sveltejs/kit";
-import { and, eq, inArray } from "drizzle-orm";
-import type { OfferBlock, OfferGroup } from "#lib/components/simulador/types";
+import {
+	and,
+	count,
+	eq,
+	inArray,
+	lt,
+	notInArray,
+	type SQL,
+	type SQLWrapper,
+	sql,
+} from "drizzle-orm";
+import { alias } from "drizzle-orm/sqlite-core";
+import type { OfferBlock, OfferGroup, OfferPage } from "#lib/components/simulador/types";
 import { getDb } from "#lib/server/db";
 import {
 	courseGroups,
@@ -47,10 +61,71 @@ import {
 } from "#lib/server/db/schema";
 import { currentAcademicPeriod, getLatestProgressPeriod } from "#lib/server/enrollment";
 import { findConflicts } from "#lib/utils/schedule-conflict";
+import { foldText } from "#lib/utils/text-match";
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 import type { PageServerLoad } from "./$types";
 
 const env = workerEnv as OpenSimWorkerEnv;
+
+/**
+ * Rows per page of the offering catalogue (T9.14).
+ *
+ * The agent's budget would tolerate far more — the measured 2,450 nodes
+ * over 475 rows puts the ceiling near 500 — so the binding constraint is
+ * the student's screen, not the runner. 50 keeps the pager at 10 pages
+ * for the real catalogue and lands one page at ~258 nodes, ~6,900 tokens.
+ *
+ * Exported for the tests; the `_` prefix is what SvelteKit allows a
+ * `+page.server.ts` to export beyond the framework's own names.
+ */
+export const _PAGE_SIZE = 50;
+
+/**
+ * `foldText`'s NFD fold, rebuilt as SQL.
+ *
+ * SQLite has no `unaccent()`, and its `lower()` is ASCII-only, so a plain
+ * `LIKE` would stop matching "algebra" against "Álgebra Lineal" — for a
+ * TecNM student the unaccented guess is the normal input, not the edge
+ * case, so that is the behaviour `matchesText` was written for. The
+ * uppercase entries come first because `lower()` would leave "Á" alone
+ * and hand back a folded column that still misses the needle.
+ *
+ * shortcut: the 68 catalogued subjects spell with á é í ó ú ü ñ and
+ * nothing else, so the map is closed — add a key if the curriculum
+ * export ever grows another diacritic.
+ */
+const FOLD_SQL: Record<string, string> = {
+	Á: "A",
+	É: "E",
+	Í: "I",
+	Ó: "O",
+	Ú: "U",
+	Ü: "U",
+	Ñ: "N",
+	á: "a",
+	é: "e",
+	í: "i",
+	ó: "o",
+	ú: "u",
+	ü: "u",
+	ñ: "n",
+};
+
+function foldSql(column: SQLWrapper): SQL {
+	let expression: SQLWrapper = column;
+	for (const [accented, base] of Object.entries(FOLD_SQL)) {
+		expression = sql`replace(${expression}, ${accented}, ${base})`;
+	}
+	return sql`lower(${expression})`;
+}
+
+/** `_` and `%` are LIKE wildcards; a student typing them means the character. */
+function escapeLike(value: string): string {
+	return value.replace(/[\\%_]/g, (character) => `\\${character}`);
+}
+
+/** The self-reference of the duplicate-offering predicate below. */
+const offeringTwin = alias(courseGroups, "offering_twin");
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// The (protected) layout's middleware is what normally populates
@@ -60,6 +135,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	// a clean TypeError -> fail() -> error boundary, instead of a 500
 	// TypeError on `u.controlNumber` (audit R8-7 / P0-3).
 	const u = locals.user;
+	const emptyOffer: OfferPage = { query: "", credits: "", page: 1, pages: 1, totalCount: 0 };
 	if (!u) {
 		return {
 			period: null,
@@ -67,6 +143,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			blocks: [] as OfferBlock[],
 			enrolledCanonicalIds: [] as string[],
 			enrolledBlocks: [] as OfferBlock[],
+			offer: emptyOffer,
 		};
 	}
 	if (!env.DB) {
@@ -76,6 +153,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			blocks: [] as OfferBlock[],
 			enrolledCanonicalIds: [] as string[],
 			enrolledBlocks: [] as OfferBlock[],
+			offer: emptyOffer,
 		};
 	}
 	const db = getDb(env.DB);
@@ -95,8 +173,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		(await getLatestProgressPeriod(db, u.controlNumber)) ??
 		currentAcademicPeriod();
 
-	// 1. Already-enrolled canonicalIds for this period (so the UI can
-	//    render those groups as "already taken").
+	// 1. Already-enrolled canonicalIds for this period. The offer query
+	//    below excludes them, which is what the browser used to do with
+	//    `if (g.alreadyEnrolled) return false` — the same rule, applied
+	//    before the rows are fetched instead of after.
 	const enrolledRows = await db
 		.select({ subjectCanonicalId: studentProgress.subjectCanonicalId })
 		.from(studentProgress)
@@ -109,11 +189,75 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		);
 	const enrolledCanonicalIds = enrolledRows.map((r) => r.subjectCanonicalId);
 
-	// 2. Full course-groups catalog joined with the subjects table
-	//    so the page has code/name/area/credits without further
-	//    round-trips. Drizzle's leftJoin keeps groups that point at
-	//    a missing subject as a single row (the spec pins FKs at
-	//    insert time, so this is defensive).
+	// 2. Filter inputs. The simulator's controls are a plain GET form, so
+	//    the URL is the only place a filter lives.
+	const query = (url.searchParams.get("q") ?? "").trim();
+	const requestedCredits = url.searchParams.get("credits");
+	const credits: OfferPage["credits"] =
+		requestedCredits === "lt5" || requestedCredits === "eq5" ? requestedCredits : "";
+	const requestedPage = Number(url.searchParams.get("page") ?? "1");
+
+	// 3. Every predicate the page can narrow by, as SQL. The count and the
+	//    page below both apply this one clause, so there is a single answer
+	//    to "which groups match".
+	const conditions: SQL[] = [];
+	// The SIM publishes the same group twice — once from an export with no
+	// term filter, once from a term-filtered one — and because our offering
+	// id embeds the period (`O-{code}-{group}-{period|NA}-{teacher}`) those
+	// are two distinct rows that `course_groups` holds both of. The UI shows
+	// no period, so the student just sees the same group listed twice.
+	//
+	// Drop a period-less row ONLY when a period-bearing twin exists on the
+	// same (subject, group, teacher). That NOT EXISTS is the whole point:
+	// a period-less row with no twin is the only record we have of that
+	// group and MUST survive, so this filters duplicates, never data.
+	// Simplifying it to `period IS NOT NULL` would delete 234 real rows from
+	// the catalogue the moment the SIM published an untagged group alone.
+	//
+	// Both sides also require `student_control_number IS NULL`: enrolment
+	// rows carry no period either, and one student's group must never be
+	// allowed to suppress another student's.
+	conditions.push(
+		sql`(${courseGroups.period} IS NOT NULL OR NOT EXISTS (
+			SELECT 1 FROM ${courseGroups} AS "offering_twin"
+			WHERE ${offeringTwin.studentControlNumber} IS NULL
+				AND ${offeringTwin.period} IS NOT NULL
+				AND ${offeringTwin.subjectCanonicalId} = ${courseGroups.subjectCanonicalId}
+				AND ${offeringTwin.groupCode} = ${courseGroups.groupCode}
+				AND ${offeringTwin.teacherName} = ${courseGroups.teacherName}
+		))`,
+	);
+	if (enrolledCanonicalIds.length > 0) {
+		conditions.push(notInArray(courseGroups.subjectCanonicalId, enrolledCanonicalIds));
+	}
+	const needle = foldText(query);
+	if (needle !== "") {
+		const pattern = `%${escapeLike(needle)}%`;
+		conditions.push(
+			sql`(${foldSql(subjects.code)} LIKE ${pattern} ESCAPE '\\' OR ${foldSql(subjects.name)} LIKE ${pattern} ESCAPE '\\')`,
+		);
+	}
+	if (credits === "lt5") conditions.push(lt(subjects.credits, 5));
+	if (credits === "eq5") conditions.push(eq(subjects.credits, 5));
+	// Unconditional (the duplicate predicate is always pushed), so the count
+	// below and the page after it can never disagree about what "the offer" is.
+	const where = and(...conditions);
+
+	// 4. The total comes off the SAME WHERE clause as the page. Counting
+	//    before filtering would report 475 next to a 12-row search, and
+	//    counting after fetching would mean fetching all 475 first.
+	const countRows = await db
+		.select({ n: count() })
+		.from(courseGroups)
+		.innerJoin(subjects, eq(subjects.canonicalId, courseGroups.subjectCanonicalId))
+		.where(where);
+	const totalCount = Number(countRows[0]?.n ?? 0);
+	const pages = Math.max(1, Math.ceil(totalCount / _PAGE_SIZE));
+	// A `?page=999` past the end serves the last page rather than an empty
+	// list under a "475 grupos" badge.
+	const page =
+		Number.isInteger(requestedPage) && requestedPage > 1 ? Math.min(requestedPage, pages) : 1;
+
 	const offerRows = await db
 		.select({
 			groupId: courseGroups.id,
@@ -126,14 +270,20 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			teacherName: courseGroups.teacherName,
 		})
 		.from(courseGroups)
-		.innerJoin(subjects, eq(subjects.canonicalId, courseGroups.subjectCanonicalId));
+		.innerJoin(subjects, eq(subjects.canonicalId, courseGroups.subjectCanonicalId))
+		.where(where)
+		// `courseGroups.id` is the primary key, so code + id is a total
+		// order: without it a row could appear on two pages.
+		.orderBy(subjects.code, courseGroups.id)
+		.limit(_PAGE_SIZE)
+		.offset((page - 1) * _PAGE_SIZE);
 
 	const groups: OfferGroup[] = offerRows.map((r) => ({
 		...r,
 		alreadyEnrolled: enrolledCanonicalIds.includes(r.subjectCanonicalId),
 	}));
 
-	// 3. Schedule blocks for the student's OWN groups, which are the only
+	// 5. Schedule blocks for the student's OWN groups, which are the only
 	//    groups that can carry any.
 	//
 	//    The SIM offering catalogue publishes who teaches and in which
@@ -144,10 +294,17 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	//    475 group ids to `inArray` was therefore claiming a fact no
 	//    source states — and at 475 ids it also blew past D1's
 	//    100-bound-parameter ceiling, which is the 500 in production.
-	//    Scoping the id list to the enrolled groups fixes both: the ids
-	//    come from `alreadyEnrolled` (already computed above), and the
-	//    bound count is one per group the student actually has.
-	const enrolledGroupIds = groups.filter((g) => g.alreadyEnrolled).map((g) => g.groupId);
+	//    Asking the enrolled subjects for their groups fixes both: the ids
+	//    come from `enrolledCanonicalIds` (already computed above), and
+	//    the bound count is one per subject the student actually has.
+	const enrolledGroupIds = (
+		enrolledCanonicalIds.length === 0
+			? []
+			: await db
+					.select({ id: courseGroups.id })
+					.from(courseGroups)
+					.where(inArray(courseGroups.subjectCanonicalId, enrolledCanonicalIds))
+	).map((r) => r.id);
 	const blockRows =
 		enrolledGroupIds.length === 0
 			? []
@@ -171,7 +328,14 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const blocks: OfferBlock[] = blockRows;
 	const enrolledBlocks: OfferBlock[] = blockRows;
 
-	return { period, groups, blocks, enrolledCanonicalIds, enrolledBlocks };
+	return {
+		period,
+		groups,
+		blocks,
+		enrolledCanonicalIds,
+		enrolledBlocks,
+		offer: { query, credits, page, pages, totalCount } satisfies OfferPage,
+	};
 };
 
 export const actions: Actions = {

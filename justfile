@@ -96,35 +96,79 @@ test-watch:
     pnpm run test:unit
 
 # Run Playwright AC6-AC11 avatar overlap suite (40 light + 40 dark;
-# uses dev fixture page). Public spec — no auth required. The per-
-# describe test.skip in the spec scopes light to chromium and dark
-# to chromium-data-theme-dark, so the just recipe no longer needs
-# --project flags.
+# uses dev fixture page). The per-describe test.skip in the spec scopes
+# light to chromium and dark to chromium-data-theme-dark, so the just
+# recipe no longer needs --project flags.
+#
+# The spec itself needs no auth, but the run is not auth-free: both
+# projects it runs under declare `dependencies: ["setup"]`, so
+# auth.setup.ts signs in as the test student first and the credential
+# must exist. That is why this recipe depends on `db-set-password`.
 [group('test')]
-[doc('Run Playwright AC6-AC11 avatar overlap suite (40 light + 40 dark; total 80 honest runs).')]
-test-e2e-avatar:
+[doc('Run Playwright AC6-AC11 avatar overlap suite (40 light + 40 dark; total 80 honest runs). Authenticates as the test student via the shared setup project.')]
+test-e2e-avatar: db-set-password
     pnpm exec playwright test tests/e2e/avatar-overlap.spec.ts
 
-# End-to-end tests (Playwright + axe-core).
+# End-to-end tests (Playwright + axe-core), non-destructive.
 #
-# Order matters and is already correct: `just` runs recipe dependencies
-# sequentially in written order, so `db-reset` (which re-runs `db-seed`)
-# completes before `db-set-password` writes the credential. The ordering
-# is load-bearing: `db-seed` destroys a credential belonging to the
-# enrolment's control number (see the `db-seed` comment above), so
-# re-running it without re-running `db-set-password` afterwards leaves the
-# suite unable to log in. It only happens to be safe today because
-# `db:set-password` defaults to a different control number than the
-# enrolment fixture — see seed-password.ts and .env.example.
-[doc('Full pipeline: reset D1, provision the test student credential, then run the Playwright + axe-core suite. The webServer block auto-spawns pnpm dev and tears it down on exit.')]
-test-e2e: db-reset db-set-password
+# Both dependencies are idempotent, so a run leaves local D1 as it found
+# it: re-applying already-applied migrations is a no-op, and
+# `db-set-password` upserts the one credential row the suite signs in
+# with. No state is deleted, so the run sees whatever data is already
+# local — reach for `test-e2e-fresh` when the suite must start from a
+# pristine database.
+#
+# The webServer block auto-spawns pnpm dev and tears it down on exit.
+#
+# shortcut: each run signs in through auth.setup and leaves one more
+# `auth_sessions` row behind — measured 3 -> 4 across a single run.
+# Local-only and harmless while the count is in the tens; if it ever
+# matters, prune expired rows (add a DELETE ON the expiry column to
+# db-set-password, which already touches the credential tables).
+[group('test')]
+[doc('Run the Playwright + axe-core suite against the existing local D1 (non-destructive: migrate + credential, no reset). Use test-e2e-fresh for a pristine database.')]
+test-e2e: db-migrate db-set-password
+    pnpm exec playwright test
+
+# Same suite from a pristine database. `db-reset` deletes local D1 state,
+# re-migrates and re-seeds, so local-only data is gone; `db-set-password`
+# runs after it so the credential the suite signs in with exists again.
+[group('test')]
+[doc('DESTRUCTIVE: delete local D1 state, re-migrate, re-seed, provision the credential, then run the Playwright + axe-core suite.')]
+test-e2e-fresh: db-reset db-set-password
     pnpm exec playwright test
 
 # Run E2E with UI mode (interactive; assumes DB is ready). `db-set-password`
-# is a dependency for the same reason as in `test-e2e`: a `db:seed` run
-# between here and login would drop the credential.
+# runs first so the credential exists before the browser asks for it.
 test-e2e-ui: db-set-password
     pnpm exec playwright test --ui
+
+# Agentic end-to-end tests: MiniMax-M3 driving a real browser.
+#
+# The runner owns the dev server — e2e.config.ts pins its single `web()`
+# target to localhost and gives it `pnpm dev` as the app command — so
+# nothing needs to be running first. It signs in as the demo student, so
+# a migrated database with that credential provisioned is the setup it
+# needs.
+#
+# `db-set-password` reads OPENSIM_TEST_PASSWORD; the runner signs in
+# with E2E_USER_ALUMNO_PASSWORD from `.env`. Nothing enforces that the
+# two agree, so they can silently disagree and the run fails at login —
+# they are two independent settings, not one.
+#
+# A run drives a real model gateway: it costs tokens and is far slower
+# than the Playwright suite. Reach for it for flows that selectors
+# cannot honestly assert, not as the default check.
+[group('test')]
+[doc('Run the agentic e2e suite (MiniMax-M3 driving a real browser; the runner spawns and owns the local dev server).')]
+e2e-dev: db-migrate db-set-password
+    pnpm exec e2e run
+
+# Same run with the browser visible, for watching the agent work.
+[group('test')]
+[doc('Run the agentic e2e suite with --headed so the browser is visible (debugging).')]
+e2e-web: db-migrate db-set-password
+    pnpm exec e2e run --headed
 
 # ===== Database (D1 / Drizzle) =====
 
@@ -146,13 +190,17 @@ db-seed-remote:
 
 # Seed local D1 (regenerates seed.sql + applies)
 #
-# ⚠  Invalidates the student credential. The seed upserts the enrolment
-# profile with INSERT OR REPLACE, which in SQLite is a DELETE plus an
-# INSERT; that DELETE cascades into `student_credentials`. A credential
-# provisioned for the enrolment's control number is destroyed here, so
-# `db-set-password` must run afterwards. A credential belonging to any
-# other control number is untouched. Re-running this recipe is otherwise
-# idempotent — same rows, same counts.
+# Safe to re-run for CREDENTIALS: the enrolment profile is written with
+# ON CONFLICT(control_number) DO UPDATE, so it is updated in place and
+# fires no cascade — `student_credentials` keeps its row. `db-set-password`
+# is a dependency of the e2e recipes only to guarantee the credential
+# exists, not because this recipe would drop it.
+#
+# Not a no-op, though. Every delete it emits is keyed to the fixture
+# student's own control number (12345678), and the rows it rewrites are
+# that student's, so a reseed restores whatever the fixture says and
+# discards hand edits to those rows. Other students' data is untouched.
+# Rewrite the fixture student from data/enrollment-fixture.json.
 db-seed:
     pnpm run db:seed
 
@@ -177,9 +225,12 @@ db-studio:
 
 # Full local D1 reset (delete state + migrate + seed)
 #
-# Ends with `db-seed`, so it carries the same credential caveat: follow it
-# with `db-set-password` if the credential belongs to the enrolment's
-# control number. `test-e2e` already sequences them in that order.
+# ⚠  Destructive: it deletes `.wrangler/state/v3/d1` outright, so
+# everything local that is not in the seed or the migrations is gone —
+# every student, not just the fixture's. `db-seed` at the end only
+# rewrites the fixture student — see above — so re-run `db-set-password`
+# afterwards to get a credential back.
+# DESTRUCTIVE: delete local D1 state, re-migrate, re-seed.
 db-reset:
     @echo "⚠  Deleting local D1 state + reapplying migrations + seeding..."
     rm -rf .wrangler/state/v3/d1

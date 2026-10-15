@@ -23,6 +23,26 @@ export interface OfferGroup {
 	alreadyEnrolled: boolean;
 }
 
+/**
+ * The page of the offering catalogue the loader returned, plus the totals
+ * the pager and the count badge need (T9.14).
+ *
+ * The catalogue is 475 rows, so the narrowing and the paging happen in SQL
+ * and this shape is what tells the simulator how to build the next request —
+ * there is no second, client-side answer to "which groups match".
+ */
+export interface OfferPage {
+	/** The free-text needle as submitted, trimmed; `""` when the filter is clear. */
+	query: string;
+	credits: "" | "lt5" | "eq5";
+	/** 1-based page actually served, after clamping to `pages`. */
+	page: number;
+	/** Pages the current filter spans; at least 1, even on an empty result. */
+	pages: number;
+	/** Rows matching the current filter, across every page. */
+	totalCount: number;
+}
+
 export interface OfferBlock {
 	id: number;
 	groupId: string;

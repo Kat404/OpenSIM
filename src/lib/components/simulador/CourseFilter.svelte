@@ -1,43 +1,45 @@
 <!--
   OpenSIM — Course filter panel for the Reinscripción simulator.
 
-  A controlled component: the parent owns the `query`, `area`, and
-  `credits` runes and the filter panel renders the inputs. The
-  parent does the actual filtering (Svelte 5 runes handle
-  reactivity without a separate store).
+  A GET form: submitting it navigates to `/reinscripcion?q=…&credits=…`,
+  the loader narrows in SQL, and the page comes back paged (T9.14). The
+  inputs are therefore uncontrolled — the loader's value is what was
+  last submitted, and the browser owns anything typed since.
 
   Filters:
-    - Free-text search (code + name, case-insensitive)
-    - Subject area (single-select)
+    - Free-text search (code + name, accent-insensitive in SQL)
+    - Subject area (single-select, inert — see below)
     - Credits (single-select: all, ≤4, =5)
-    - "Only show conflicts" toggle (parent reads this to flag rows)
+
+  The area select carries no `name`, so it is never submitted and never
+  reaches the server. `subjects.area` is NULL for all 68 subjects — no
+  source establishes the classification (H4) — so there is nothing to
+  filter on; keeping the control inert is deliberate and adding a way to
+  set it would be a lie.
+
+  The "only conflicts" toggle is gone. It cannot be a query parameter
+  (a conflict depends on what the student has ticked, which is client
+  state) and it could never return a row: the SIM publishes no timetable
+  for the catalogue (H11), so `allConflictIds` never holds a selectable
+  group. It was a control that always answered "nothing matches".
 
   The components are typed in English (per convention §13); UI copy
   is Spanish.
 -->
 <script lang="ts">
 import { Filter } from "lucide-svelte";
-import { Badge, Input, Select } from "#lib/components/ui";
+import { Badge, Button, Input, Select } from "#lib/components/ui";
 
 interface Props {
 	areas: string[];
 	query: string;
 	area: string;
 	credits: "" | "lt5" | "eq5";
-	onlyConflicts: boolean;
+	period: string;
 	totalCount: number;
-	filteredCount: number;
 }
 
-let {
-	areas,
-	query = $bindable(""),
-	area = $bindable(""),
-	credits = $bindable<"" | "lt5" | "eq5">(""),
-	onlyConflicts = $bindable(false),
-	totalCount,
-	filteredCount,
-}: Props = $props();
+let { areas, query, area, credits, period, totalCount }: Props = $props();
 
 const areaOptions = $derived([
 	{ value: "", label: "Todas las áreas" },
@@ -51,37 +53,39 @@ const creditOptions = [
 ];
 </script>
 
-<section class="filter" aria-label="Filtros de la oferta académica">
+<form class="filter" method="GET" aria-label="Filtros de la oferta académica">
+	<!-- Carries the resolved term so a filter submit cannot silently
+		 re-resolve it to a different one mid-browse. -->
+	<input type="hidden" name="period" value={period}>
+
 	<header class="filter__header">
 		<h2 class="filter__title">
 			<Filter size={16} strokeWidth={1.75} aria-hidden="true" />
 			Filtrar oferta
 		</h2>
-		<Badge variant="neutral" size="sm"> {filteredCount} / {totalCount} grupos </Badge>
+		<Badge variant="neutral" size="sm"> {totalCount} grupos </Badge>
 	</header>
 
 	<div class="filter__row">
 		<Input
 			label="Buscar"
 			type="search"
+			name="q"
 			placeholder="Código o nombre de la asignatura"
-			bind:value={query}
+			value={query}
 		/>
 	</div>
 
 	<div class="filter__row">
-		<Select label="Área" options={areaOptions} bind:value={area} />
+		<Select label="Área" options={areaOptions} value={area} />
 	</div>
 
 	<div class="filter__row">
-		<Select label="Créditos" options={creditOptions} bind:value={credits} />
+		<Select label="Créditos" name="credits" options={creditOptions} value={credits} />
 	</div>
 
-	<label class="filter__toggle">
-		<input type="checkbox" bind:checked={onlyConflicts}>
-		<span>Solo grupos con conflicto de horario</span>
-	</label>
-</section>
+	<Button type="submit" variant="secondary" size="sm" fullWidth>Filtrar</Button>
+</form>
 
 <style>
 .filter {
@@ -117,18 +121,5 @@ const creditOptions = [
 	display: flex;
 	flex-direction: column;
 	gap: var(--space-1);
-}
-
-.filter__toggle {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--space-2);
-	font-size: var(--text-sm);
-	color: var(--fg-secondary);
-	cursor: pointer;
-}
-
-.filter__toggle input {
-	cursor: pointer;
 }
 </style>

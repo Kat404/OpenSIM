@@ -57,16 +57,25 @@ const DERIVED_KEY_BYTES = 32;
  * The credential's own control number — deliberately NOT the catalog
  * student's `12345678`.
  *
- * `seed.sql` re-seeds `student_profiles` with `INSERT OR REPLACE`, which
- * deletes the existing profile row and re-inserts it. Because
- * `student_credentials` carries `ON DELETE CASCADE` on
- * `student_control_number`, that replace wiped the credential and the
- * next login timed out waiting for a redirect. Sharing a key with the
- * catalog made the race deterministic on every `db-seed`.
+ * Two independent reasons, both worth keeping:
  *
- * A distinct key means a catalog re-seed replaces only the catalog
- * student; this credential survives, and `db-set-password` stays
- * idempotent under any ordering.
+ * 1. `seed.sql` never writes control number `99999999`, and the
+ *    profile write it does emit is an upsert, so no DELETE — and
+ *    therefore no `ON DELETE CASCADE` from `student_profiles` down to
+ *    `student_credentials` — can reach this row. (This used to be a
+ *    hard requirement: the seed wrote profiles with `INSERT OR
+ *    REPLACE`, which SQLite runs as a delete plus an insert, so a
+ *    profile replace wiped the credential and the next login timed out
+ *    waiting for a redirect. `seed.ts` now upserts with
+ *    `ON CONFLICT(control_number) DO UPDATE`.)
+ *
+ *    This credential DOES own a `student_profiles` row — the `INSERT
+ *    OR IGNORE` in `buildSql` below creates it on first run. What the
+ *    catalog seed does not do is name this control number, so its
+ *    upsert never touches the row this credential hangs off.
+ * 2. One login, one role: the pages render the catalog student's data,
+ *    and provisioning a second credential for the catalog student
+ *    itself would let a test sign in with a profile it does not own.
  */
 const DEFAULT_CONTROL_NUMBER = "99999999";
 const DEFAULT_PASSWORD = "opensim-dev-2026";

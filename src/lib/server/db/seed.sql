@@ -6,10 +6,11 @@
 -- Total subjects: 68
 -- Total credits (target): 260
 -- Complementary credits required: 5
--- Idempotent for data: catalog INSERTs use OR IGNORE; test-student
--- rows use OR REPLACE so the fixture is deterministic on rerun.
--- NOT idempotent for the login: the profile REPLACE is a DELETE, so
--- it cascades into student_credentials. Run db:set-password after.
+-- Idempotent for data: catalog INSERTs use OR IGNORE; the test-student
+-- profile is upserted with ON CONFLICT ... DO UPDATE so the fixture is
+-- deterministic on rerun and student_credentials is never cascaded away.
+-- Scoped to the fixture student: the deletes below name its control
+-- number, so no other student's rows are touched.
 
 -- careers
 INSERT OR IGNORE INTO careers (code, name, total_credits, total_semesters) VALUES ('ISIC-2010-224', 'Ingeniería en Sistemas Computacionales', 260, 9);
@@ -1199,13 +1200,13 @@ INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teach
 INSERT OR IGNORE INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, period, credits, is_lab_session) VALUES ('O-TDD-2304-A-9-DOC-057', 'tdd-2304', 'A', 'DOC-057', 0, '9', 5, 0);
 --> statement-breakpoint
 --> statement-breakpoint
--- test-student children of course_groups (cleared before the profile upsert)
+-- test-student children of course_groups (cleared before the group upserts)
 DELETE FROM enrollments WHERE student_control_number = '12345678';
 --> statement-breakpoint
-DELETE FROM course_schedule_blocks WHERE group_id IN (SELECT id FROM course_groups WHERE student_control_number IS NOT NULL);
+DELETE FROM course_schedule_blocks WHERE group_id IN (SELECT id FROM course_groups WHERE student_control_number = '12345678');
 --> statement-breakpoint
 -- student_profiles (test student)
-INSERT OR REPLACE INTO student_profiles (control_number, full_name, curp, birth_state, career_code, specialty_code, current_semester, certified_average, arithmetic_average, passed_average, approved_credits, remaining_credits, completed_credits, in_progress_credits, advance_percentage, status, health_service, enrollment_period) VALUES ('12345678', 'Ana Gabriela Hernández Ruiz', 'HERA000615MMNRZNA3', 'Michoacán', 'ISIC-2010-224', 'ISIE-TDD-2026-01', 7, 8.7, 8.6, 8.5, 175, 85, 175, 24, 67.3, 'Activo regular', 'IMSS', 'AGOSTO-DICIEMBRE/2026');
+INSERT INTO student_profiles (control_number, full_name, curp, birth_state, career_code, specialty_code, current_semester, certified_average, arithmetic_average, passed_average, approved_credits, remaining_credits, completed_credits, in_progress_credits, advance_percentage, status, health_service, enrollment_period) VALUES ('12345678', 'Ana Gabriela Hernández Ruiz', 'HERA000615MMNRZNA3', 'Michoacán', 'ISIC-2010-224', 'ISIE-TDD-2026-01', 7, 8.7, 8.6, 8.5, 175, 85, 175, 24, 67.3, 'Activo regular', 'IMSS', 'AGOSTO-DICIEMBRE/2026') ON CONFLICT(control_number) DO UPDATE SET full_name = excluded.full_name, curp = excluded.curp, birth_state = excluded.birth_state, career_code = excluded.career_code, specialty_code = excluded.specialty_code, current_semester = excluded.current_semester, certified_average = excluded.certified_average, arithmetic_average = excluded.arithmetic_average, passed_average = excluded.passed_average, approved_credits = excluded.approved_credits, remaining_credits = excluded.remaining_credits, completed_credits = excluded.completed_credits, in_progress_credits = excluded.in_progress_credits, advance_percentage = excluded.advance_percentage, status = excluded.status, health_service = excluded.health_service, enrollment_period = excluded.enrollment_period;
 --> statement-breakpoint
 -- student_progress (49 rows for 12345678)
 INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'aca-0907', 'APPROVED', 8.5, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2022');

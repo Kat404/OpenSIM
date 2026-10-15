@@ -6,8 +6,10 @@
  * reuses the same session. The storage file is gitignored (session
  * cookies are not artefacts).
  *
- * Requires D1 to be seeded beforehand:
- *   just db-reset && just db-set-password
+ * Requires a migrated D1 with the credential provisioned beforehand:
+ *   just db-migrate && just db-set-password
+ * (that is what `just test-e2e` does for you, non-destructively; use
+ * `just test-e2e-fresh` only when the local database must be rebuilt)
  *
  * Default dev credential per the OpenSIM spec §3 / §7:
  *   controlNumber: 12345678
@@ -37,8 +39,11 @@ const AUTH_FILE = "playwright/.auth/storage.json";
 
 // Must match seed-password.ts's DEFAULT_CONTROL_NUMBER. The credential's
 // control number is deliberately distinct from the catalog student's
-// (12345678 in seed.sql) so a catalog re-seed cannot displace it via the
-// ON DELETE CASCADE on student_credentials — see seed-password.ts.
+// (12345678 in seed.sql): seed.sql never names this control number, and the
+// profile write it does emit is an ON CONFLICT ... DO UPDATE upsert, so no
+// DELETE — and therefore no ON DELETE CASCADE into student_credentials —
+// can reach it. It does own a student_profiles row, created by seed-password.ts
+// itself — see seed-password.ts.
 // Defaulting to the old shared key made every test-e2e run fail auth with
 // a 15 s waitForURL timeout.
 const CONTROL_NUMBER = process.env.OPENSIM_TEST_CONTROL_NUMBER ?? "99999999";

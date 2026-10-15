@@ -10,35 +10,47 @@ ruff format scripts/         # formato
 ty check scripts/            # tipos
 ```
 
-## Seeds y credenciales (⚠ destructive)
+## Seeds y credenciales
 
 Esto aplica al seed de la app (`src/lib/server/db/seed.ts`), no a los scripts de
 `scripts/`.
 
-### `db:seed:apply` destruye `student_credentials`
+### La credencial sobrevive al seed
 
-El seed escribe el perfil del estudiante de prueba con
-`INSERT OR REPLACE INTO student_profiles`. En SQLite, `INSERT OR REPLACE` es un
-**DELETE seguido de un INSERT**, y ese DELETE dispara todas las cascadas
-declaradas sobre `student_profiles`. Una de ellas es
-`student_credentials ON DELETE CASCADE`.
+`student_credentials` declara `ON DELETE CASCADE` sobre `student_profiles`, así que
+cualquier statement que **borre** la fila del perfil se lleva la credencial. El seed
+escribe el perfil del estudiante del fixture (`12345678`, el de
+`data/enrollment-fixture.json`) con
+`INSERT … ON CONFLICT(control_number) DO UPDATE`, que **actualiza la fila existente**
+en vez de borrarla: no dispara ninguna cascada y la credencial sobrevive.
 
-Consecuencia, verificada sobre un D1 local desechable:
+Verificado sobre el D1 local: aprovisionar la credencial del `12345678`, correr
+`db:seed:apply` y volver a contar deja la fila ahí, cuántas veces se repita.
 
 ```
-student_credentials = 1   →  db:seed:apply  →  student_credentials = 0
+student_credentials (control 12345678)  →  db:seed:apply  →  student_credentials (control 12345678)
 ```
 
-**Qué credenciales se ven afectadas:** sólo las del número de control del
-inscrito del fixture (`12345678`, el de `data/enrollment-fixture.json`). Una
-credencial de cualquier otro número de control sobrevive intacta — por eso
-`db:set-password`, cuyo valor por defecto es `99999999`, no se ve afectado por
-defecto. Si en algún momento se aprovisiona la credencial del `12345678`
-(`just db-set-password 12345678`), **sí** se pierde en cada seed.
+Con el `INSERT OR REPLACE` anterior (SQLite lo ejecuta como DELETE + INSERT) la misma
+secuencia terminaba en `student_credentials = 0`. Por eso `db:set-password` ya no
+depende del orden: puede correr antes o después del seed.
 
-**Orden obligatorio:** `db:set-password` va **después** de `db:seed:apply`,
-`db:seed` o `db:reset`. Si se ejecuta al revés, el login queda sin credencial.
-Es exactamente el orden en que `just test-e2e` encadena sus recetas.
+```bash
+pnpm run db:set-password            # credencial por defecto, control 99999999
+pnpm run db:set-password 12345678   # la del fixture (ojo: `just` no acepta argumentos)
+```
+
+`just db-set-password <n>` **no** funciona: `just` interpreta el argumento como el
+nombre de otra receta y falla con `justfile does not contain recipe`. Para pasar
+número de control o contraseña hay que invocar el script de pnpm.
+
+### ⚠ `db-reset` sí destruye
+
+`just db-reset` (y `just test-e2e-fresh`, que lo encadena) borra
+`.wrangler/state/v3/d1` por completo: se va la base local entera, con cualquier dato
+que no venga del seed. Eso es legítimo cuando lo que se quiere es una base limpia,
+pero no es un paso de verificación routineario. Para correr una suite sin perder
+estado local usa `just test-e2e`, que no resetea nada.
 
 ### Idempotencia del resto de los datos
 
