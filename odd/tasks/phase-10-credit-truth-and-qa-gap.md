@@ -186,7 +186,7 @@ Presupuesto: ~400 líneas escritas acumuladas. Si lo rebasa, se corta en el lím
 | T3 | **reabierta 2026-10-15** — el loader suma `activities.credits`; el copy ya decía "créditos" y ahora dice la verdad | — |
 | T4 | cerrada — nombre y CURP sintéticos, `_NOTICE` en el fixture, PII vieja ausente del código | `5e2e936` |
 | T5 | cerrada — README y AGENTS.md declaran verificado vs invención, v1 Sistemas, scraping fuera de alcance | `730aa91` |
-| T6 | **bloqueada por proveedor** — los tests están escritos y commiteados, pero el gateway no produce structured output válido | `a203bf9` |
+| T6 | **cerrada 2026-10-15** — el shim repara la respuesta; 10 de 10 verdes, cero MODEL_OUTPUT_INVALID | `054be20`, `5fd9324` |
 
 ---
 
@@ -356,3 +356,28 @@ Presupuesto: ~400 líneas escritas acumuladas. Si lo rebasa, se corta en el lím
   (2) un locator puro sin modelo, que además es un test mal escrito: el alumno de la sesión
   e2e es `99999999`, que no tiene historial académico, y el comentario del test da por hecho
   que sí. Commit `054be20`.
+
+- **2026-10-15 — `e2e` 0.20.0 → 0.21.1 y T6 cerrada.** La versión salió el mismo día
+  (0.21.1 a las 12:45). `pnpm update` no llega porque en 0.x el caret no cruza el minor
+  siguiente: hay que mover el rango a mano, la misma trampa que en el salto 0.19 → 0.20.
+  pnpm dejó la excepción anotada en `pnpm-workspace.yaml` porque la release es más joven
+  que la edad mínima de release del proyecto.
+  **Config: no hubo que migrar nada.** La única clave reemplazada, `cache.dir`, este config
+  nunca la puso. Leídas las 28 entradas del changelog de 0.21.x: 3 tocan juicios y NINGUNA
+  toca structured output — la única de juicios (#1092) es sobre tamaño de la observación
+  causando `STEP_BUDGET_EXHAUSTED`, que es otro fallo. Se consideró `maxDuration` y se
+  descartó: el gasto ya lo acotan `maxSteps` y `maxModelCalls`, y un tope de reloj puede
+  cortar una corrida sana con el gateway lento. `E2E_CACHE_DIR` sólo sirve entre worktrees.
+  **Los dos tests que quedaban rojos eran culpa del test, no de la app.** `/tramites` es un
+  stepper: sólo el procedimiento seleccionado enseña su bloqueo, así que "todos los
+  bloqueados dicen por qué" es una pregunta que no tiene respuesta en una vista y el modelo
+ .contestó `ASSERTION_INCONCLUSIVE` con razón. Ahora pregunta por procedimiento, pulsando
+  cada pestaña: tres comprobaciones donde había una vaga. Y el Kardex pedía tabla cuando la
+  sesión `alumno` es `99999999` y todas las filas de `student_progress` son de `12345678`:
+  la página enseña su estado vacío y acierta.
+  Nota que quedó viva: el SDK avisa por stderr
+  `The feature "responseFormat" is not supported. JSON response format schema is only
+  supported with structuredOutputs`. Es la evidencia de que el esquema ni siquiera sale, y
+  por eso el shim repara la respuesta en vez de esperar que se cumpla. No se silencia a
+  propósito: callar un aviso del provider es esconder un problema.
+  Commit `5fd9324`.
