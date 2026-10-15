@@ -141,28 +141,6 @@ export async function getCurrentEnrollment(
 }
 
 /**
- * Most recent period in the student's academic history, regardless of
- * status. Unlike `getCurrentPeriod` this does not require an ENROLLED
- * row, so it also resolves for a student whose only rows are APPROVED
- * or FAILED from earlier terms — the case where "which term am I in?"
- * is unanswerable from active enrollment alone.
- *
- * Returns null only for a student with no progress rows at all.
- */
-export async function getLatestProgressPeriod(
-	db: Database,
-	controlNumber: string,
-): Promise<string | null> {
-	const rows = await db
-		.select({ period: studentProgress.period })
-		.from(studentProgress)
-		.where(eq(studentProgress.studentControlNumber, controlNumber))
-		.orderBy(desc(studentProgress.period))
-		.limit(1);
-	return rows[0]?.period ?? null;
-}
-
-/**
  * The current academic period using the institution's term names:
  * `AGOSTO-DICIEMBRE/<year>` for August through December and
  * `ENERO-JUNIO/<year>` for January through June.

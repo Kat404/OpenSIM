@@ -59,7 +59,7 @@ import {
 	studentProgress,
 	subjects,
 } from "#lib/server/db/schema";
-import { currentAcademicPeriod, getLatestProgressPeriod } from "#lib/server/enrollment";
+import { currentAcademicPeriod } from "#lib/server/enrollment";
 import { findConflicts } from "#lib/utils/schedule-conflict";
 import { foldText } from "#lib/utils/text-match";
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
@@ -127,6 +127,20 @@ function escapeLike(value: string): string {
 /** The self-reference of the duplicate-offering predicate below. */
 const offeringTwin = alias(courseGroups, "offering_twin");
 
+/**
+ * The term an explicit `?period=` asks for, or `undefined` when it does not
+ * ask for one.
+ *
+ * `undefined` and `""` are different things and only the first is a fallback:
+ * `url.searchParams.get` returns `""` for a bare `?period=`, and letting that
+ * through wrote rows whose term was the empty string. An override with no
+ * value is not a term, so it falls back like any absent one (T10.1, S2).
+ */
+function requestedTerm(url: URL): string | undefined {
+	const requested = url.searchParams.get("period")?.trim();
+	return requested === undefined || requested === "" ? undefined : requested;
+}
+
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// The (protected) layout's middleware is what normally populates
 	// `locals.user`; the layout already redirects unauthenticated
@@ -163,15 +177,13 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	// route: an empty catalog plus a 400 from the action, with no way to
 	// create a first enrollment.
 	//
-	// Derive the term from the student's own academic history instead.
-	// A student with prior progress gets their most recent recorded
-	// period; a brand-new one gets the current calendar term. An
-	// explicit `?period=` always wins so a link can target a term.
-	const requestedPeriod = url.searchParams.get("period");
-	const period =
-		requestedPeriod ??
-		(await getLatestProgressPeriod(db, u.controlNumber)) ??
-		currentAcademicPeriod();
+	// A new enrolment belongs to the term it is made in (T10.1, S1). It used
+	// to fall back to the student's most recent progress row, which ordered
+	// by `desc(period)` on the term NAME as text: "ENERO-JUNIO/2099"
+	// outranked "AGOSTO-DICIEMBRE/2026", so the demo student resolved to a
+	// term that has not opened. `?period=` still wins, but only when it
+	// carries a value — an empty one is not a term.
+	const period = requestedTerm(url) ?? currentAcademicPeriod();
 
 	// 1. Already-enrolled canonicalIds for this period. The offer query
 	//    below excludes them, which is what the browser used to do with
@@ -380,13 +392,10 @@ export const actions: Actions = {
 		}
 
 		const db = getDb(env.DB);
-		// Same resolution as `load` (T10.4): explicit query param, then the
-		// student's most recent recorded period, then the current calendar
-		// term. `getCurrentPeriod` alone returns null for a student with
-		// no ENROLLED rows — precisely the student who needs to enrol.
-		const requested = url.searchParams.get("period");
-		const period =
-			requested ?? (await getLatestProgressPeriod(db, u.controlNumber)) ?? currentAcademicPeriod();
+		// The SAME resolution `load` uses (T10.1, S4). When these two
+		// disagreed the page offered one term and the action wrote
+		// another, which is its own silent bug.
+		const period = requestedTerm(url) ?? currentAcademicPeriod();
 
 		// Look up the candidate groups + their subjects.
 		const candidates = await db
@@ -413,22 +422,24 @@ export const actions: Actions = {
 		}
 		const toEnrol = [...bySubject.values()];
 
-		// Reject groups whose subject the student is already enrolled
-		// in this period — the UI already filters them out, but a
-		// stale form post could still submit them.
-		// Reject subjects already enrolled THIS period (a stale form post can
-		// bypass the UI's filter). (T10.1)
-		const alreadyEnrolled = await db
+		// The PRIMARY KEY is (student, subject, period). EVERY status occupies
+		// that triple — APPROVED, ENROLLED and LOCKED alike — so filtering
+		// by status here is what let an APPROVED row through to the INSERT
+		// and raise UNIQUE constraint failed, a 500. (T10.1, S3)
+		//
+		// A past term does NOT block: the filter is the term, not the
+		// student's history. Re-taking a subject they completed in 2019 is
+		// a different (student, subject, period) and must stay allowed.
+		const alreadyHeld = await db
 			.select({ subjectCanonicalId: studentProgress.subjectCanonicalId })
 			.from(studentProgress)
 			.where(
 				and(
 					eq(studentProgress.studentControlNumber, u.controlNumber),
-					eq(studentProgress.status, "ENROLLED"),
 					eq(studentProgress.period, period),
 				),
 			);
-		const taken = new Set(alreadyEnrolled.map((r) => r.subjectCanonicalId));
+		const taken = new Set(alreadyHeld.map((r) => r.subjectCanonicalId));
 		for (const c of toEnrol) {
 			if (taken.has(c.subjectCanonicalId)) {
 				return fail(409, {

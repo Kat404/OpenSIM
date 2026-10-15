@@ -28,6 +28,7 @@ import type { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { OfferBlock, OfferGroup, OfferPage } from "../../src/lib/components/simulador/types";
+import { currentAcademicPeriod } from "../../src/lib/server/enrollment";
 import {
 	_PAGE_SIZE,
 	actions as reinscripcionActions,
@@ -509,8 +510,17 @@ describe("reinscripcion enroll action", () => {
 	it("records the chosen group in `enrollments` with the term NAME", async () => {
 		seedPriorTerm();
 
+		// The term is named here on purpose (T10.1, S2). This test used to
+		// inherit whatever period the seeded student happened to carry, which
+		// meant it asserted whatever `getLatestProgressPeriod` resolved rather
+		// than the rule its own name states. A test should say which term it means.
 		await expect(
-			reinscripcionActions.enroll(postEnroll(["O-CAT0001-A-3-DOC-001"]) as never),
+			reinscripcionActions.enroll(
+				postEnroll(
+					["O-CAT0001-A-3-DOC-001"],
+					`https://opensim.test/reinscripcion?period=${PREVIOUS_PERIOD}`,
+				) as never,
+			),
 		).rejects.toMatchObject({
 			status: 303,
 			location: "/dashboard?enrolled=1",
@@ -559,6 +569,75 @@ describe("reinscripcion enroll action", () => {
 
 		expect(result).toMatchObject({ status: 400 });
 		expect(raw.prepare("SELECT count(*) AS n FROM enrollments").get()).toEqual({ n: 0 });
+	});
+
+	// ---- T10.1: the PRIMARY KEY is (student, subject, period), and EVERY
+	// status occupies that triple. The guard used to read ENROLLED only, so an
+	// APPROVED or a LOCKED row for the same subject and term went straight to
+	// the INSERT and raised UNIQUE constraint failed — a 500. Confirmed by
+	// running it, not by reading it: the answer was
+	//   UNIQUE constraint failed: student_progress.student_control_number,
+	//   student_progress.subject_canonical_id, student_progress.period
+
+	/** The calendar term a new enrolment belongs to, per `currentAcademicPeriod`. */
+	function calendarTerm(): string {
+		return currentAcademicPeriod();
+	}
+
+	function enrolOffering(period: string) {
+		seedSubject(raw, { canonicalId: "cat-0001", code: "CAT0001" });
+		seedGroup(raw, "O-CAT0001-A-3-DOC-001", "cat-0001", "A", null);
+		return postEnroll(
+			["O-CAT0001-A-3-DOC-001"],
+			`https://opensim.test/reinscripcion?period=${period}`,
+		);
+	}
+
+	for (const status of ["APPROVED", "LOCKED", "ENROLLED"] as const) {
+		it(`rejects a subject the student already has a ${status} row for this term`, async () => {
+			const term = calendarTerm();
+			// Seed the subject before the row that references it.
+			const event = enrolOffering(term);
+			seedProgress(raw, CONTROL, "cat-0001", status, term);
+
+			const result = await reinscripcionActions.enroll(event as never);
+
+			// A clean refusal, not a database error. 409 says "conflicto con lo
+			// que ya tienes", which is what this is.
+			expect(result).toMatchObject({ status: 409 });
+			expect(raw.prepare("SELECT count(*) AS n FROM enrollments").get()).toEqual({ n: 0 });
+		});
+	}
+
+	it("enrols into the calendar term even when the newest row belongs to a later term", async () => {
+		// `getLatestProgressPeriod` ordered by `desc(period)` on the term NAME
+		// as text, so "ENERO-JUNIO/2099" outranked "AGOSTO-DICIEMBRE/2026" and
+		// the student would enrol into a term that has not opened. A new
+		// enrolment belongs to the term it is made in.
+		seedSubject(raw, { canonicalId: "future-1", code: "FUT1000" });
+		seedProgress(raw, CONTROL, "future-1", "LOCKED", "ENERO-JUNIO/2099");
+		// No `?period=` here ON PURPOSE: that override would short-circuit the
+		// chain and the test would pass without exercising anything.
+		const event = enrolOffering("");
+
+		await expect(reinscripcionActions.enroll(event as never)).rejects.toMatchObject({
+			status: 303,
+		});
+
+		const rows = raw.prepare("SELECT period FROM enrollments").all() as { period: string }[];
+		expect(rows).toEqual([{ period: calendarTerm() }]);
+	});
+
+	it("lets the student re-take a subject they completed in an EARLIER term", async () => {
+		// The other half of the rule: an APPROVED row in a past term must not
+		// block. Only the same term collides.
+		const event = enrolOffering(calendarTerm());
+		seedProgress(raw, CONTROL, "cat-0001", "APPROVED", "AGOSTO-DICIEMBRE/2019");
+
+		await expect(reinscripcionActions.enroll(event as never)).rejects.toMatchObject({
+			status: 303,
+		});
+		expect(raw.prepare("SELECT count(*) AS n FROM enrollments").get()).toEqual({ n: 1 });
 	});
 });
 
