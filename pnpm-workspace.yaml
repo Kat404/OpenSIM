@@ -7,3 +7,4 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - '@types/node@26.6.4'
   - wrangler@4.147.0
+  - e2e@0.21.1
