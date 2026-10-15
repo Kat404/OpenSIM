@@ -41,13 +41,8 @@
 		"unlocksServiceSocial": true,
 		"source": "ITM-100, ITM-104, ITM-105 y horas de ITM-101",
 		"reticularCredits": false,
-		"weights": {
-			"ITM-100": 1,
-			"ITM-104": 1,
-			"ITM-105": 1,
-			"ITM-101": 2
-		},
-		"weightsNote": "ITM-101 = 2 es supuesto: completa el bloque de 5. Las tres primeras están dictadas por el operador."
+		"weightPerActivity": 1,
+		"weightNote": "Cada materia complementaria vale 1 crédito por materia cursada, y cada actividad externa (curso, taller, participación) vale lo que la institución le reconozca. El peso vive en la fila de la actividad."
 	},
 	"subjects": [
 		{
@@ -714,8 +709,7 @@
 			"area": null,
 			"specialtyCode": null,
 			"seriationState": "INDEPENDENT",
-			"component": "COMPLEMENTARY",
-			"complementaryCredits": 1
+			"component": "COMPLEMENTARY"
 		},
 		{
 			"canonicalId": "itm-104",
@@ -729,8 +723,7 @@
 			"area": null,
 			"specialtyCode": null,
 			"seriationState": "INDEPENDENT",
-			"component": "COMPLEMENTARY",
-			"complementaryCredits": 1
+			"component": "COMPLEMENTARY"
 		},
 		{
 			"canonicalId": "itm-105",
@@ -744,8 +737,7 @@
 			"area": null,
 			"specialtyCode": null,
 			"seriationState": "INDEPENDENT",
-			"component": "COMPLEMENTARY",
-			"complementaryCredits": 1
+			"component": "COMPLEMENTARY"
 		},
 		{
 			"canonicalId": "itm-101",
@@ -759,8 +751,7 @@
 			"area": null,
 			"specialtyCode": null,
 			"seriationState": "INDEPENDENT",
-			"component": "COMPLEMENTARY",
-			"complementaryCredits": 2
+			"component": "COMPLEMENTARY"
 		},
 		{
 			"canonicalId": "itm-102",
@@ -774,8 +765,7 @@
 			"area": null,
 			"specialtyCode": null,
 			"seriationState": "INDEPENDENT",
-			"component": "PRACTICE",
-			"complementaryCredits": 0
+			"component": "PRACTICE"
 		},
 		{
 			"canonicalId": "itm-103",
@@ -789,8 +779,7 @@
 			"area": null,
 			"specialtyCode": null,
 			"seriationState": "INDEPENDENT",
-			"component": "PRACTICE",
-			"complementaryCredits": 0
+			"component": "PRACTICE"
 		},
 		{
 			"canonicalId": "sid-2301",

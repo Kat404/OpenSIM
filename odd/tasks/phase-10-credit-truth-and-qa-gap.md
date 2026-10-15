@@ -1,7 +1,7 @@
 <!-- odd-tracker
 kind: phase-plan
 status: active
-last-verified: 2026-10-13
+last-verified: 2026-10-15
 branch: feat/phase-9-verified-curriculum
 test-runner: vitest (just qa-fast) · Playwright (just test-e2e) · runner agéntico (just e2e-dev)
 -->
@@ -49,26 +49,45 @@ De ahí salen tres hechos que T9.13 ignoró:
 
 ## Specs
 
-### S1 — Cada materia complementaria vale un crédito, y el peso vive en la materia
+### S1 — Cada materia complementaria vale un crédito, y el peso vive en la actividad
 
 > Dictamen del operador, 2026-10-13, textual: *"Tutoría, Actividad Física y Artes son
 > materias opcionales para el avance curricular del estudiante, es decir, el estudiante
 > técnicamente podría graduarse sin tener que agarrar y/o cursar dichas materias, son
 > materias únicamente con el propósito de obtener un crédito complementario por materia."*
 
-El peso pertenece a la **materia**, no a la actividad del alumno: si cambia el peso de una
-materia, todos los alumnos quedan corregidos de una vez y no hay que reescribir filas.
+> Corrección del operador, 2026-10-15, textual: *"Que las materias den un solo créditos
+> complementario está correcto. Las materias no son la única forma de obtenerlos debido a
+> que puede obtener créditos mediante cursos, talleres, participaciones externas y demás.
+> Recordemos que si NO cursa dichas materias COMPLEMENTARIAS aún podría reunir 5 créditos
+> complementarios mediante actividades externas a las materias."*
+
+> Decisión del operador, 2026-10-15, textual: *"El peso va en la ACTIVIDAD"*
+
+El crédito complementario es una propiedad de la **actividad**, no de la materia. Eso
+cambia la premisa de la versión anterior de este spec, que adjudicaba el peso a
+`subjects.complementary_credits`:
 
 | Materia | Peso complementario | Fuente |
 | --- | --- | --- |
 | `ITM-100` Tutoría | 1 | dictamen del operador |
+| `ITM-101` Actividades Complementarias | 1 | Same — es una materia más |
 | `ITM-104` Actividades Físicas | 1 | dictamen del operador |
 | `ITM-105` Apreciación de Artes | 1 | dictamen del operador |
-| `ITM-101` Actividades Complementarias | 2 | **supuesto** — el resto del bloque de 5; falta confirmación |
 
-Alcance aceptado: `subjects.complementary_credits INTEGER NOT NULL DEFAULT 0` más una
-migración de Drizzle y los cuatro valores en el seed. La suma del alumno es
-`SUM(subjects.complementary_credits)` sobre sus actividades complementarias acreditadas.
+Las cuatro suman **4, no 5**, y eso es correcto: el quinto crédito no tiene materia que lo
+produzca. Se consigue con una actividad externa —un curso, un taller, una participación
+externa— y por eso `complementary_credit_activities.subject_canonical_id` tiene que poder
+ser nulo. Una fila sin materia es una actividad externa, no un dato roto.
+
+Alcance aceptado:
+
+- `complementary_credit_activities.credits INTEGER NOT NULL DEFAULT 1`, que es de donde
+  sale el crédito del alumno.
+- `subject_canonical_id` pasa a nullable.
+- `subjects.complementary_credits` se elimina: dos fuentes de verdad para el mismo hecho es
+  peor que una. La migración 0015 livedía un día y su premisa ya está retirada.
+- La activities suma es `SUM(complementary_credit_activities.credits)`.
 
 Lo que **no** cambia: el número 182. Es la regla del operador, reafirmada el 2026-10-13.
 
@@ -149,9 +168,9 @@ y el runner se suma como capa probabilística. Nada de esto cambia `just qa-fast
 
 | # | Task | Specs | Ruta | Riesgo |
 | --- | --- | --- | --- | --- |
-| T1 | Migración `subjects.complementary_credits` + los 4 pesos en el seed | S1 | inline | item 1 — toca `drizzle/**` |
-| T2 | `evaluateCreditThresholds` con créditos reales + constantes 182/208/130/235/260 | S1 S2 S3 | inline | item 3 — contrato compartido |
-| T3 | Loader y copy de `/tramites` sumando pesos | S4 | inline | ninguno |
+| T1 | Migración `activities.credits` + `subject_canonical_id` nullable - `subjects.complementary_credits` fuera | S1 | inline | item 1 — toca `drizzle/**` |
+| T2 | `evaluateCreditThresholds` sin cambio de números + invariante "los pesos suman 5" **retirada** | S1 S2 S3 | inline | item 3 — contrato compartido |
+| T3 | Loader y copy de `/tramites` sumando `activities.credits` | S1 S4 | inline | ninguno |
 | T4 | Fixture: PII sintética con sentido + encabezado de origen | S5 | inline | item 1 — PII en repo público |
 | T5 | README + `AGENTS.md`: posicionamiento de rediseño FOSS, v1 Sistemas | S6 | inline | ninguno |
 | T6 | Tests agénticos para las rutas sin cobertura | S7 | inline | ninguno |
@@ -162,12 +181,12 @@ Presupuesto: ~400 líneas escritas acumuladas. Si lo rebasa, se corta en el lím
 
 | Task | Estado | Commit |
 | --- | --- | --- |
-| T1 | cerrada — migración 0015 aplicada, pesos en la D1 local, invariante suma 5 verificada | `68e6979` |
-| T2 | cerrada — constantes 235/260 y los tres umbrales; derivación de 260 documentada como retirada | `68e6979` |
-| T3 | cerrada — el loader suma `subjects.complementary_credits`; 350 tests verdes | `68e6979` |
+| T1 | **reabierta 2026-10-15** — la premisa de S1 cambió: el peso va en la actividad, no en la materia. 0016 añade `activities.credits`, hace nullable `subject_canonical_id` y tira `subjects.complementary_credits` | — |
+| T2 | **reabierta 2026-10-15** — los números no cambian; lo que cae es el validador que exigía que los pesos sumaran 5, porque la suma ya no tiene por qué dar 5 | — |
+| T3 | **reabierta 2026-10-15** — el loader suma `activities.credits`; el copy ya decía "créditos" y ahora dice la verdad | — |
 | T4 | cerrada — nombre y CURP sintéticos, `_NOTICE` en el fixture, PII vieja ausente del código | `5e2e936` |
 | T5 | cerrada — README y AGENTS.md declaran verificado vs invención, v1 Sistemas, scraping fuera de alcance | `730aa91` |
-| T6 | **bloqueada por proveedor** — los tests están escritos y commiteados, pero el gateway no produce structured output válido | `a203bf9` |
+| T6 | **cerrada 2026-10-15** — el shim repara la respuesta; 10 de 10 verdes, cero MODEL_OUTPUT_INVALID | `054be20`, `5fd9324` |
 
 ---
 
@@ -274,3 +293,91 @@ Presupuesto: ~400 líneas escritas acumuladas. Si lo rebasa, se corta en el lím
   5 complementarios sustituyeran progreso reticular. El test que S3 especificaba ahora fija las
   constantes a sus literales y a que NO coincidan con un porcentaje del total reticular
   (235 × 0.7 = 164.5, no 182), que es la recálculo "correcto" tentador.
+- **2026-10-15 — S1 estaba construida sobre una premisa falsa, y la Premisa la puso el
+  modelo.** El `ITM-101 = 2` no era "un número sin confirmar": era una invención para que
+  el bloque sumara 5. El bloque NO lo producen esas cuatro materias. El operador, textual:
+  *"Que las materias dan un solo créditos complementario está correcto. Las materias no son
+  la única forma de obtenerlos debido a que puede obtener créditos mediante cursos, talleres,
+  participaciones externas y demás. Recordemos que si NO cursa dichas materias COMPLEMENTARIAS
+  aún podría reunir 5 créditos complementarios mediante actividades externas a las materias."*
+  Decisión de modelo, textual: *"El peso va en la ACTIVIDAD"*.
+  Consecuencias que no estaban previstas: (1) las cuatro pesan 1 y suman 4, y el quinto
+  crédito no tiene materia que lo produzca; (2) `complementary_credit_activities.subject_canonical_id`
+  tiene que poder ser nulo, porque un curso externo no es ninguna de las cuatro; (3) el
+  validador del seed que exigía `SUM(complementary_credits) == 5` deja de ser cierto y se
+  retira — ese invariante era el que hacía parecer correcto el modelo equivocado; (4)
+  `subjects.complementary_credits` se va: la migración 0015 quedó con una premisa retirada
+  y una sola línea de vida. T1, T2 y T3 se reabren.
+- **2026-10-15 — La hipótesis de "el output depende de la conexión" queda MEDIDA y
+  descartada.** `scripts/probe-models.mjs` ahora separa la clase de fallo y toma la latencia
+  por llamada. Barrido de `MiniMax-M3`, 12 corridas por temperatura:
+  `temp=0 2/12 (17%) red=0/12 lat 1202/3172 ms` y
+  `temp=1 2/12 (17%) red=0/12 lat 1047/1356 ms`. Cero eventos de red, latencia mediana de
+  ~1 s contra un presupuesto de 120 s, y todos los fallos son `sin tool_calls
+  (finish=stop)`: HTTP 200, turno cerrado en prosa, respuesta completa. Eso no es una
+  conexión caída. Lo que sí era conexión —el `STEP_TIMEOUT` con el default de 30 s— ya
+  quedó resuelto en `f752bfd`. Commit `67ee220`.
+- **2026-10-15 — El operador fija el modelo en `MiniMax-M3` aunque el barrido lo coloca
+  segundo.** No se toca el carril del juez: `model` y `judge` siguen siendo el mismo id, que
+  es lo que hay. Consecuencia honesta: M3 mide 17% contra el 33% de M2.7, así que T6 sigue
+  bloqueada con M3 y con M2.7. No hay modelo de la cuenta que devuelva structured output
+  válido; los ocho que declara `GET /v1/models` fallan en `response_format`.
+
+- **2026-10-15 — T6 reintentado con `MiniMax-M3` y vuelve a cerrarse por proveedor.** El
+  operador lo pidió expresamente. `just e2e-dev`: 10 tests, 4 verdes, 6 rojos, 12 llamadas
+  al modelo, 60 s en total. Los 6 rojos son todos
+  `MODEL_OUTPUT_INVALID: provider response did not match the closed response grammar`, y
+  cada uno consumió exactamente 2 llamadas — 6 × 2 = 12 se come el run entero, así que los
+  4 verdes no llamaron al modelo: son los deterministas. O sea: **6 de 6** de los tests que
+  necesitan juicio de modelo fallaron, y los que no lo necesitan pasaron.
+  Lo que sí funciona es el carril del actor: `app.open` llegó a `/temario` en 513 ms y la
+  pantalla tenía 329 nodos. Lo que falla es `agent.extract`, el paso de structured output, y
+  sólo ese. Cero `STEP_TIMEOUT` en todo el run: el presupuesto de 120 s ni se acercó. T6
+  sigue bloqueada por el proveedor, con el alcance más estrecho de lo que se creía.
+
+- **2026-10-15 — T6 deja de estar bloqueada: el diagnóstico anterior era FALSO.** El
+  shim `e2e-structured-output-shim.ts` repara la respuesta en `wrapLanguageModel` y el
+  carril pasa de 4/10 a **8/10**, sin un solo `MODEL_OUTPUT_INVALID`.
+  Lo que la sonda midió y lo que la documentation decía no coinciden. No es que el endpoint
+  "ignore `response_format`": lo ignora y da igual, porque el JSON que vuelve es válido y
+  sus **valores son correctos**. Lo que no hace es repetir la clave que le pides —
+  `withTemario` vuelve como `publicadas` o `publicados`, `conTemario` como `con_temario` o
+  `materias_con_temario`, y `publicadas` vuelve como `publicados`: renombra incluso cuando
+  se le da la clave exacta que más le gusta, así que renombrar el campo NO es el arreglo.
+  También suelta dos o tres objetos candidatos con prosa alrededor, y a `agent.extract` le
+  llega la respuesta interior sin el sobre `found`/`value`/`missing`.
+  El shim sólo renombra claves, nunca valores: un acierto equivocado se ve como un assert
+  rojo, nunca como un verde. Texto que no encaja con nada se deja igual y falla la
+  validación — un modelo que no respondió no puede convertirse en un test que pasó.
+  La guía oficial de e2e para `MODEL_OUTPUT_INVALID` dice "simplify the schema or question;
+  pick a stronger model": el runner no trae reparador, así que esto no reinventa nada.
+  Quedan dos rojos que **no son del proveedor**: (1) el modelo se negó a avalar una
+  afirmación que la UI en stepper no puede mostrar, que es exactamente lo que debe hacer;
+  (2) un locator puro sin modelo, que además es un test mal escrito: el alumno de la sesión
+  e2e es `99999999`, que no tiene historial académico, y el comentario del test da por hecho
+  que sí. Commit `054be20`.
+
+- **2026-10-15 — `e2e` 0.20.0 → 0.21.1 y T6 cerrada.** La versión salió el mismo día
+  (0.21.1 a las 12:45). `pnpm update` no llega porque en 0.x el caret no cruza el minor
+  siguiente: hay que mover el rango a mano, la misma trampa que en el salto 0.19 → 0.20.
+  pnpm dejó la excepción anotada en `pnpm-workspace.yaml` porque la release es más joven
+  que la edad mínima de release del proyecto.
+  **Config: no hubo que migrar nada.** La única clave reemplazada, `cache.dir`, este config
+  nunca la puso. Leídas las 28 entradas del changelog de 0.21.x: 3 tocan juicios y NINGUNA
+  toca structured output — la única de juicios (#1092) es sobre tamaño de la observación
+  causando `STEP_BUDGET_EXHAUSTED`, que es otro fallo. Se consideró `maxDuration` y se
+  descartó: el gasto ya lo acotan `maxSteps` y `maxModelCalls`, y un tope de reloj puede
+  cortar una corrida sana con el gateway lento. `E2E_CACHE_DIR` sólo sirve entre worktrees.
+  **Los dos tests que quedaban rojos eran culpa del test, no de la app.** `/tramites` es un
+  stepper: sólo el procedimiento seleccionado enseña su bloqueo, así que "todos los
+  bloqueados dicen por qué" es una pregunta que no tiene respuesta en una vista y el modelo
+  contestó `ASSERTION_INCONCLUSIVE` con razón. Ahora pregunta por procedimiento, pulsando
+  cada pestaña: tres comprobaciones donde había una vaga. Y el Kardex pedía tabla cuando la
+  sesión `alumno` es `99999999` y todas las filas de `student_progress` son de `12345678`:
+  la página enseña su estado vacío y acierta.
+  Nota que quedó viva: el SDK avisa por stderr
+  `The feature "responseFormat" is not supported. JSON response format schema is only
+  supported with structuredOutputs`. Es la evidencia de que el esquema ni siquiera sale, y
+  por eso el shim repara la respuesta en vez de esperar que se cumpla. No se silencia a
+  propósito: callar un aviso del provider es esconder un problema.
+  Commit `5fd9324`.
