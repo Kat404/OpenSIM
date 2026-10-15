@@ -1,5 +1,5 @@
 /**
- * OpenSIM — Horario semanal loader (Phase 3 Tarea 3.3; Phase 4 N6).
+ * OpenSIM — Horario semanal loader (Phase 3 Tarea 3.3; Phase 4 N6; T9.11).
  *
  * Resolves the current student's enrolled subjects through
  * `getCurrentEnrollment` (shared with the dashboard) and joins them
@@ -15,6 +15,13 @@
  * Phase 4 N6: the loader passes an explicit period to the helper
  * (resolved by `getCurrentPeriod` first) and surfaces the period
  * to the page so the header can render "Periodo actual: {period}".
+ *
+ * T9.11: an enrolled group with NO schedule block is real data with a
+ * known cause (H11) — the SIM publishes a group's classroom and hours
+ * only after the student enrols in it, so an enrolment whose blocks
+ * have not landed yet is normal, not a rendering failure. Those groups
+ * come back in `pending` so the page can SAY so, instead of showing an
+ * empty grid that reads as "you have no classes".
  *
  * The visual contract of the page (height = end - start in 60px/hour
  * pixels, color from theme-aware HSL hash) is satisfied by the
@@ -40,12 +47,28 @@ interface ScheduledClassItem {
 	block: { day: DayLetter; startTime: string; endTime: string; classroom: string };
 }
 
+/** An enrolled group whose classroom and hours the SIM has not published. */
+interface PendingGroupItem {
+	subject: { code: string; name: string; canonicalId: string };
+	group: { id: string; groupCode: string; teacherName: string };
+}
+
 export const load: PageServerLoad = async ({ locals }) => {
 	const u = locals.user;
-	if (!u) return { schedule: [] as ScheduledClassItem[], period: null };
+	if (!u) {
+		return {
+			schedule: [] as ScheduledClassItem[],
+			pending: [] as PendingGroupItem[],
+			period: null,
+		};
+	}
 
 	if (!env.DB) {
-		return { schedule: [] as ScheduledClassItem[], period: null };
+		return {
+			schedule: [] as ScheduledClassItem[],
+			pending: [] as PendingGroupItem[],
+			period: null,
+		};
 	}
 
 	const db = getDb(env.DB);
@@ -53,8 +76,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const currentPeriod = await getCurrentPeriod(db, controlNumber);
 	const enrollment = await getCurrentEnrollment(db, controlNumber, currentPeriod ?? undefined);
 
-	if (enrollment.schedule.length === 0) {
-		return { schedule: [] as ScheduledClassItem[], period: enrollment.period };
+	if (enrollment.groups.length === 0) {
+		return {
+			schedule: [] as ScheduledClassItem[],
+			pending: [] as PendingGroupItem[],
+			period: enrollment.period,
+		};
 	}
 
 	// Subjects catalog for the enrolled set. `groupToCanonical` maps
@@ -92,6 +119,25 @@ export const load: PageServerLoad = async ({ locals }) => {
 		});
 	}
 
+	// T9.11 — a group is pending when the enrolment carries no block for
+	// it. `getCurrentEnrollment` already scoped `groups` to this student's
+	// OWN enrolments (`student_control_number` set), so a catalogue row
+	// with NULL there can never reach this loop and paint phantom classes.
+	const scheduledGroupIds = new Set(enrollment.schedule.map((b) => b.groupId));
+	const pending: PendingGroupItem[] = [];
+	for (const g of enrollment.groups) {
+		if (scheduledGroupIds.has(g.id)) continue;
+		const canonical = groupToCanonical.get(g.id);
+		if (!canonical) continue;
+		const info = codeByCanonical.get(canonical);
+		if (!info) continue;
+		pending.push({
+			subject: { canonicalId: canonical, code: info.code, name: info.name },
+			group: { id: g.id, groupCode: g.groupCode, teacherName: g.teacherName },
+		});
+	}
+	pending.sort((a, b) => a.subject.code.localeCompare(b.subject.code));
+
 	// Stable order so SSR and CSR agree on the DOM tree.
 	const dayOrder: Record<DayLetter, number> = { L: 0, M: 1, X: 2, J: 3, V: 4, S: 5, D: 6 };
 	schedule.sort((a, b) => {
@@ -101,5 +147,5 @@ export const load: PageServerLoad = async ({ locals }) => {
 		return a.block.startTime.localeCompare(b.block.startTime);
 	});
 
-	return { schedule, period: enrollment.period };
+	return { schedule, pending, period: enrollment.period };
 };

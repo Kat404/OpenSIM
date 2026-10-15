@@ -306,20 +306,37 @@ export interface CreditThresholds {
 }
 
 /**
+ * Complementary credits required for graduation, and therefore to unlock
+ * Servicio Social. Operator decision (T9.13): this is a SECOND gate, not a
+ * replacement for the reticular threshold — the two are counted separately
+ * because complementary subjects carry 0 reticular credits by definition.
+ */
+export const COMPLEMENTARY_CREDITS_REQUIRED = 5;
+
+/**
  * Returns whether a student with the given number of approved credits can
  * start the named academic procedure. Thresholds are computed as fixed
  * percentages of the ISIC-2010-224 plan total of 260 credits:
  *
  *   Taller de Investigación I  >= 50%  (130 credits)
- *   Servicio Social            >= 70%  (182 credits)
  *   Residencia Profesional     >= 80%  (208 credits)
+ *
+ * Servicio Social is the exception: it is gated TWICE (T9.13). It needs
+ * reticular credits >= 70% (182) AND complementary credits >= 5. The
+ * complementary subjects contribute 0 reticular credits, so the two
+ * numbers never overlap and neither gate can stand in for the other.
+ * Residencia and Taller keep the single reticular gate.
  *
  * Pure function: no side effects, safe to call from form loaders and
  * Vitest without setup.
  */
-export function evaluateCreditThresholds(approvedCredits: number): CreditThresholds {
+export function evaluateCreditThresholds(
+	approvedCredits: number,
+	complementaryCredits: number,
+): CreditThresholds {
 	return {
-		canStartSocialService: approvedCredits >= 182,
+		canStartSocialService:
+			approvedCredits >= 182 && complementaryCredits >= COMPLEMENTARY_CREDITS_REQUIRED,
 		canStartResidency: approvedCredits >= 208,
 		canTakeTallerInv1: approvedCredits >= 130,
 	};

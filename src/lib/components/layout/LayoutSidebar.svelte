@@ -14,6 +14,7 @@
 -->
 <script lang="ts">
 import {
+	BookOpenText,
 	CalendarDays,
 	ChevronLeft,
 	ChevronRight,
@@ -42,6 +43,7 @@ const items: NavItem[] = [
 	// students the two pages the rest of the app links to.
 	{ label: "Reinscripción", href: "/reinscripcion", Icon: PencilLine },
 	{ label: "Trámites", href: "/tramites", Icon: FileText },
+	{ label: "Temario", href: "/temario", Icon: BookOpenText },
 ];
 
 interface Props {

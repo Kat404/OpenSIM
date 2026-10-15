@@ -18,12 +18,14 @@
  * regresses.
  */
 
+import type { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { currentAcademicPeriod } from "../../src/lib/server/enrollment";
 import { load as kardexLoad } from "../../src/routes/(protected)/academico/kardex/+page.server";
 import { load as dashboardLoad } from "../../src/routes/(protected)/dashboard/+page.server";
 import { load as horarioLoad } from "../../src/routes/(protected)/horario/+page.server";
 import { load as reticulaLoad } from "../../src/routes/(protected)/reticula/+page.server";
+import { load as temarioLoad } from "../../src/routes/(protected)/temario/+page.server";
 import {
 	actions as tramitesActions,
 	load as tramitesLoad,
@@ -88,7 +90,13 @@ interface HorarioItem {
 
 interface HorarioData {
 	schedule: HorarioItem[];
+	pending: PendingGroup[];
 	period: string | null;
+}
+
+interface PendingGroup {
+	subject: { canonicalId: string; code: string; name: string };
+	group: { id: string; groupCode: string; teacherName: string };
 }
 
 interface TodayClass {
@@ -152,9 +160,29 @@ interface Procedure {
 
 interface TramitesData {
 	approvedCredits: number;
+	complementaryCredits: number;
+	complementaryRequired: number;
 	totalCredits: number;
 	socialServiceDone: boolean;
 	procedures: Procedure[];
+}
+
+/**
+ * T9.13: one row per completed complementary activity = one complementary
+ * credit. The four complementary subjects are 0-credit transversal modules,
+ * so the row count IS the credit count.
+ */
+function seedComplementary(raw: DatabaseSync, count: number): void {
+	for (let i = 0; i < count; i++) {
+		seedSubject(raw, { canonicalId: `complementario-${i}`, code: `ITM-1${i}0` });
+		raw
+			.prepare(
+				`INSERT INTO complementary_credit_activities
+					(student_control_number, subject_canonical_id, period)
+				 VALUES (?, ?, ?)`,
+			)
+			.run(CONTROL, `complementario-${i}`, PERIOD);
+	}
 }
 
 const loadHorario = async (event: unknown): Promise<HorarioData> =>
@@ -172,6 +200,47 @@ const loadKardex = async (event: unknown): Promise<KardexData> =>
 const loadTramites = async (event: unknown): Promise<TramitesData> =>
 	(await tramitesLoad(event as never)) as TramitesData;
 
+interface TemarioSubtopic {
+	index: string;
+	title: string;
+	evalFrom: string | null;
+	evalTo: string | null;
+}
+
+interface TemarioUnit {
+	unitNumber: number;
+	title: string;
+	subtopics: TemarioSubtopic[];
+	evalFrom: string | null;
+	evalTo: string | null;
+	instruments: string[];
+	criteria: string[];
+}
+
+interface TemarioSubject {
+	canonicalId: string;
+	code: string;
+	name: string;
+	units: TemarioUnit[];
+}
+
+interface TemarioData {
+	subjects: TemarioSubject[];
+	coverage: { withTemario: number; total: number };
+}
+
+const loadTemario = async (event: unknown): Promise<TemarioData> =>
+	(await temarioLoad(event as never)) as TemarioData;
+
+function seedUnit(raw: DatabaseSync, canonicalId: string, unitNumber: number, title: string): void {
+	raw
+		.prepare(
+			`INSERT INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json)
+			 VALUES (?, ?, ?, '[]')`,
+		)
+		.run(canonicalId, unitNumber, title);
+}
+
 function procedureById(data: TramitesData, id: string): Procedure {
 	const found = data.procedures.find((p) => p.id === id);
 	if (!found) throw new Error(`no procedure ${id}`);
@@ -188,10 +257,114 @@ afterEach(() => {
 	raw.close();
 });
 
+describe("temario loader", () => {
+	it("returns an empty coverage view for an anonymous visitor", async () => {
+		const result = await loadTemario(anonymous());
+		expect(result).toEqual({ subjects: [], coverage: { withTemario: 0, total: 0 } });
+	});
+
+	// T9.12 — operator decision 2026-10-13: explicit coverage. The numbers
+	// the page shows must come from the DB, never from a hard-coded ratio.
+
+	it("counts the subjects that have a temario against the whole plan", async () => {
+		seedSubject(raw, {
+			canonicalId: "aec-1034",
+			code: "AEC1034",
+			name: "Sistemas de comunicación",
+		});
+		seedUnit(raw, "aec-1034", 1, "UNIDAD 1");
+		seedUnit(raw, "aec-1034", 2, "UNIDAD 2");
+		seedSubject(raw, { canonicalId: "sistemas-1", code: "SCC1027", name: "Programación" });
+
+		const result = await loadTemario(signedIn());
+		expect(result.coverage).toEqual({ withTemario: 1, total: 2 });
+		const conTemario = result.subjects.find((s) => s.canonicalId === "aec-1034");
+		expect(conTemario?.units).toHaveLength(2);
+	});
+
+	it("returns an empty unit list for a subject the portal does not publish", async () => {
+		seedSubject(raw, { canonicalId: "sistemas-1", code: "SCC1027", name: "Programación" });
+
+		const result = await loadTemario(signedIn());
+		const sinTemario = result.subjects.find((s) => s.canonicalId === "sistemas-1");
+		expect(sinTemario?.units).toEqual([]);
+		expect(result.coverage).toEqual({ withTemario: 0, total: 1 });
+	});
+
+	it("parses subtopics, instruments and criteria out of their JSON columns", async () => {
+		seedSubject(raw, { canonicalId: "aec-1034", code: "AEC1034" });
+		raw
+			.prepare(
+				`INSERT INTO subject_units
+					(subject_canonical_id, unit_number, title, subtopics_json, eval_from, eval_to, instruments, criteria)
+				 VALUES ('aec-1034', 1, 'UNIDAD 1', ?, '24/08/2026', '28/08/2026', ?, ?)`,
+			)
+			.run(
+				JSON.stringify([
+					{ index: "1.1", title: "IMPACTO", evalFrom: "24/08/2026", evalTo: "28/08/2026" },
+				]),
+				JSON.stringify(["CÁTEDRA DOCENTE"]),
+				JSON.stringify(["EVALUACIÓN ESCRITA"]),
+			);
+
+		const result = await loadTemario(signedIn());
+		const unit = result.subjects[0]?.units[0];
+		expect(unit?.title).toBe("UNIDAD 1");
+		expect(unit?.evalFrom).toBe("24/08/2026");
+		expect(unit?.evalTo).toBe("28/08/2026");
+		expect(unit?.subtopics).toEqual([
+			{ index: "1.1", title: "IMPACTO", evalFrom: "24/08/2026", evalTo: "28/08/2026" },
+		]);
+		expect(unit?.instruments).toEqual(["CÁTEDRA DOCENTE"]);
+		expect(unit?.criteria).toEqual(["EVALUACIÓN ESCRITA"]);
+	});
+
+	it("survives a unit whose JSON columns are absent or malformed", async () => {
+		seedSubject(raw, { canonicalId: "aec-1034", code: "AEC1034" });
+		raw
+			.prepare(
+				`INSERT INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json)
+				 VALUES ('aec-1034', 1, 'UNIDAD 1', 'no es json')`,
+			)
+			.run();
+
+		const result = await loadTemario(signedIn());
+		const unit = result.subjects[0]?.units[0];
+		expect(unit?.title).toBe("UNIDAD 1");
+		expect(unit?.subtopics).toEqual([]);
+		expect(unit?.instruments).toEqual([]);
+		expect(unit?.evalFrom).toBeNull();
+	});
+
+	it("survives a subtopics array holding a null", async () => {
+		seedSubject(raw, { canonicalId: "aec-1034", code: "AEC1034" });
+		raw
+			.prepare(
+				`INSERT INTO subject_units (subject_canonical_id, unit_number, title, subtopics_json)
+				 VALUES ('aec-1034', 1, 'UNIDAD 1', ?)`,
+			)
+			.run(JSON.stringify([null, "texto", 7, { index: "1.1", title: "OK" }]));
+
+		const result = await loadTemario(signedIn());
+		const unit = result.subjects[0]?.units[0];
+		expect(unit?.subtopics).toHaveLength(4);
+		expect(unit?.subtopics[3]).toEqual({ index: "1.1", title: "OK", evalFrom: null, evalTo: null });
+		expect(unit?.subtopics[0]).toEqual({ index: "", title: "", evalFrom: null, evalTo: null });
+	});
+
+	it("orders subjects by code so SSR and CSR agree", async () => {
+		seedSubject(raw, { canonicalId: "z-1", code: "ZZZ999" });
+		seedSubject(raw, { canonicalId: "a-1", code: "AAA111" });
+
+		const result = await loadTemario(signedIn());
+		expect(result.subjects.map((s) => s.code)).toEqual(["AAA111", "ZZZ999"]);
+	});
+});
+
 describe("horario loader", () => {
 	it("returns an empty schedule for an anonymous visitor", async () => {
 		const result = await loadHorario(anonymous());
-		expect(result).toEqual({ schedule: [], period: null });
+		expect(result).toEqual({ schedule: [], pending: [], period: null });
 	});
 
 	it("joins the enrollment's blocks with the subjects catalog", async () => {
@@ -213,7 +386,60 @@ describe("horario loader", () => {
 
 		const result = await loadHorario(signedIn());
 		expect(result.schedule).toEqual([]);
+		expect(result.pending).toEqual([]);
 		expect(result.period).toBeNull();
+	});
+
+	// T9.11 — H11: the SIM publishes no schedule for an OFFERED group. The
+	// schedule only exists once the student is enrolled. So an enrolled
+	// group with no blocks is real data with a known cause, not an empty
+	// grid and not a rendering failure.
+
+	it("lists an enrolled group with no blocks as pending, not as an empty schedule", async () => {
+		seedSubject(raw, { canonicalId: "sistemas-1", code: "SCC1027", name: "Programación" });
+		seedGroup(raw, "G-SCC1027-9", "sistemas-1", "9B", CONTROL);
+		seedProgress(raw, CONTROL, "sistemas-1", "ENROLLED", PERIOD);
+
+		const result = await loadHorario(signedIn());
+		expect(result.schedule).toEqual([]);
+		expect(result.pending).toEqual([
+			{
+				subject: { canonicalId: "sistemas-1", code: "SCC1027", name: "Programación" },
+				group: { id: "G-SCC1027-9", groupCode: "9B", teacherName: "Docente Prueba" },
+			},
+		]);
+		expect(result.period).toBe(PERIOD);
+	});
+
+	it("does not list a scheduled group as pending", async () => {
+		seedCurrentEnrollment();
+		const result = await loadHorario(signedIn());
+		expect(result.pending).toEqual([]);
+	});
+
+	it("keeps scheduled and pending groups in one answer when both exist", async () => {
+		seedCurrentEnrollment();
+		seedSubject(raw, { canonicalId: "sistemas-2", code: "SCC1042", name: "Bases de datos" });
+		seedGroup(raw, "G-SCC1042-7", "sistemas-2", "7A", CONTROL);
+		seedProgress(raw, CONTROL, "sistemas-2", "ENROLLED", PERIOD);
+
+		const result = await loadHorario(signedIn());
+		expect(result.schedule).toHaveLength(1);
+		expect(result.pending).toHaveLength(1);
+		expect(result.pending[0]?.subject.code).toBe("SCC1042");
+	});
+
+	it("never lists an offering-catalogue group as this student's pending", async () => {
+		// `student_control_number IS NULL` is a catalogue row, not an
+		// enrolment. Offering groups have no schedule either, so counting
+		// them would paint 468 phantom subjects on the grid.
+		seedSubject(raw, { canonicalId: "sistemas-1", code: "SCC1027" });
+		seedGroup(raw, "G-CATALOGO-1", "sistemas-1", "A", null);
+		seedProgress(raw, CONTROL, "sistemas-1", "ENROLLED", PERIOD);
+
+		const result = await loadHorario(signedIn());
+		expect(result.pending).toEqual([]);
+		expect(result.schedule).toEqual([]);
 	});
 
 	it("sorts the grid by weekday order, not by insertion order", async () => {
@@ -272,7 +498,7 @@ describe("horario loader", () => {
 		seedProgress(raw, CONTROL, "sistemas-1", "APPROVED", PREVIOUS_PERIOD);
 
 		const result = await loadHorario(signedIn());
-		expect(result).toEqual({ schedule: [], period: null });
+		expect(result).toEqual({ schedule: [], pending: [], period: null });
 	});
 
 	it("ignores the enrollment of a different student", async () => {
@@ -514,7 +740,8 @@ describe("trámites loader", () => {
 		expect(result.procedures[0]?.blockedReason).toBe("No autenticado. Inicia sesión.");
 	});
 
-	it("unlocks Servicio Social at 182 approved credits", async () => {
+	it("unlocks Servicio Social at 182 approved credits and 5 complementary credits", async () => {
+		seedComplementary(raw, 5);
 		const result = await loadTramites(signedIn({ approvedCredits: 182, remainingCredits: 78 }));
 		const social = procedureById(result, "servicio-social");
 		expect(social.unlocked).toBe(true);
@@ -524,6 +751,45 @@ describe("trámites loader", () => {
 		const residencia = procedureById(result, "residencia");
 		expect(residencia.unlocked).toBe(false);
 		expect(residencia.blockedReason).toContain("Necesitas 26 créditos más");
+	});
+
+	// T9.13 — the complementary gate is a SECOND gate on the loader, not
+	// only on the pure function.
+
+	it("keeps Servicio Social locked at 182 approved credits with no complementary credits", async () => {
+		const result = await loadTramites(signedIn({ approvedCredits: 182, remainingCredits: 78 }));
+		const social = procedureById(result, "servicio-social");
+		expect(result.complementaryCredits).toBe(0);
+		expect(social.unlocked).toBe(false);
+		expect(social.blockedReason).toContain("5 créditos complementarios más");
+	});
+
+	it("counts only THIS student's complementary activities", async () => {
+		seedComplementary(raw, 5);
+		seedProfile(raw, { controlNumber: "87654321", fullName: "Grace Hopper Ramirez" });
+		raw
+			.prepare(
+				`INSERT INTO complementary_credit_activities
+					(student_control_number, subject_canonical_id, period)
+				 VALUES ('87654321', 'complementario-0', ?)`,
+			)
+			.run(PERIOD);
+		// Six rows exist in the table; this student owns five of them.
+		const total = raw
+			.prepare("SELECT COUNT(*) AS n FROM complementary_credit_activities")
+			.get() as { n: number };
+		expect(total.n).toBe(6);
+		const result = await loadTramites(signedIn());
+		expect(result.complementaryCredits).toBe(5);
+		// 182 reticular + exactly 5 complementary clears both gates.
+		expect(procedureById(result, "servicio-social").unlocked).toBe(true);
+	});
+
+	it("leaves Residencia unlocked even when the complementary gate is unmet", async () => {
+		raw.prepare("UPDATE student_profiles SET approved_credits = 240, remaining_credits = 20").run();
+		const result = await loadTramites(signedIn());
+		expect(procedureById(result, "residencia").unlocked).toBe(true);
+		expect(procedureById(result, "servicio-social").unlocked).toBe(false);
 	});
 
 	it("keeps Titulación locked until both Residencia and Servicio Social are done", async () => {
@@ -621,6 +887,7 @@ describe("loaders without a D1 binding", () => {
 
 		await expect(loadHorario(signedIn())).resolves.toEqual({
 			schedule: [],
+			pending: [],
 			period: null,
 		});
 		await expect(loadKardex(signedIn())).resolves.toEqual({ entries: [] });

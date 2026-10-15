@@ -144,45 +144,77 @@ describe("getDescendants", () => {
 
 describe("evaluateCreditThresholds", () => {
 	it("returns all false for 50 approved credits (below every threshold)", () => {
-		const result = evaluateCreditThresholds(50);
+		const result = evaluateCreditThresholds(50, 5);
 		expect(result.canStartSocialService).toBe(false);
 		expect(result.canStartResidency).toBe(false);
 		expect(result.canTakeTallerInv1).toBe(false);
 	});
 
 	it("returns canTakeTallerInv1 true at exactly 130 approved credits", () => {
-		const result = evaluateCreditThresholds(130);
+		const result = evaluateCreditThresholds(130, 5);
 		expect(result.canTakeTallerInv1).toBe(true);
 		expect(result.canStartSocialService).toBe(false);
 		expect(result.canStartResidency).toBe(false);
 	});
 
 	it("returns canStartSocialService true at exactly 182 approved credits", () => {
-		const result = evaluateCreditThresholds(182);
+		const result = evaluateCreditThresholds(182, 5);
 		expect(result.canStartSocialService).toBe(true);
 		expect(result.canTakeTallerInv1).toBe(true);
 		expect(result.canStartResidency).toBe(false);
 	});
 
 	it("returns all true at exactly 208 approved credits (full residency threshold)", () => {
-		const result = evaluateCreditThresholds(208);
+		const result = evaluateCreditThresholds(208, 5);
 		expect(result.canStartSocialService).toBe(true);
 		expect(result.canStartResidency).toBe(true);
 		expect(result.canTakeTallerInv1).toBe(true);
 	});
 
 	it("returns all true for approved credits above the maximum threshold", () => {
-		const result = evaluateCreditThresholds(260);
+		const result = evaluateCreditThresholds(260, 5);
 		expect(result.canStartSocialService).toBe(true);
 		expect(result.canStartResidency).toBe(true);
 		expect(result.canTakeTallerInv1).toBe(true);
 	});
 
 	it("returns all false for zero approved credits", () => {
-		const result = evaluateCreditThresholds(0);
+		const result = evaluateCreditThresholds(0, 0);
 		expect(result.canStartSocialService).toBe(false);
 		expect(result.canStartResidency).toBe(false);
 		expect(result.canTakeTallerInv1).toBe(false);
+	});
+
+	// T9.13 — the 5 complementary credits are a SECOND gate, not a substitute.
+	// Operator decision, 2026-10-10: Servicio Social needs reticulars >= 182
+	// AND complementary >= 5. Neither gate replaces the other.
+
+	it("blocks Servicio Social at 182 reticulares with 4 complementary — the second gate", () => {
+		const result = evaluateCreditThresholds(182, 4);
+		expect(result.canStartSocialService).toBe(false);
+	});
+
+	it("blocks Servicio Social at 260 reticulares with 0 complementary — the second gate is independent", () => {
+		const result = evaluateCreditThresholds(260, 0);
+		expect(result.canStartSocialService).toBe(false);
+		expect(result.canStartResidency).toBe(true);
+	});
+
+	it("blocks Servicio Social at 5 complementary with 181 reticulares — the first gate still applies", () => {
+		const result = evaluateCreditThresholds(181, 5);
+		expect(result.canStartSocialService).toBe(false);
+	});
+
+	it("unlocks Servicio Social at exactly 182 reticulares and exactly 5 complementary", () => {
+		const result = evaluateCreditThresholds(182, 5);
+		expect(result.canStartSocialService).toBe(true);
+	});
+
+	it("leaves Residencia and Taller untouched by the complementary gate", () => {
+		const result = evaluateCreditThresholds(208, 0);
+		expect(result.canStartResidency).toBe(true);
+		expect(result.canTakeTallerInv1).toBe(true);
+		expect(result.canStartSocialService).toBe(false);
 	});
 });
 

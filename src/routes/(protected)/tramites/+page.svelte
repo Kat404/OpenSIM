@@ -35,6 +35,13 @@ const formNotice = $derived(form && "notice" in form ? (form.notice as string) :
 				<span class="tramites__badge">Servicio Social: completado</span>
 			{/if}
 		</p>
+		<p class="tramites__complementary">
+			<strong>{data.complementaryCredits}</strong>
+			de {data.complementaryRequired} créditos complementarios. Servicio Social exige las dos
+			puertas a la vez: los 182 créditos reticulares <em>y</em> los
+			{data.complementaryRequired}
+			complementarios. Los complementarios no aportan créditos reticulares y no los sustituyen.
+		</p>
 	</header>
 
 	<ProcedureStepper procedures={data.procedures} {formNotice} />
@@ -79,6 +86,13 @@ const formNotice = $derived(form && "notice" in form ? (form.notice as string) :
 	margin: 0;
 	font-size: var(--text-sm);
 	color: var(--fg-secondary);
+}
+
+.tramites__complementary {
+	margin: 0;
+	font-size: var(--text-sm);
+	color: var(--fg-tertiary);
+	max-width: 720px;
 }
 
 .tramites__badge {
