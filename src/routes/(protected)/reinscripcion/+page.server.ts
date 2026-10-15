@@ -7,10 +7,13 @@
  * commit a single signature that enrolls them in the selected set.
  *
  * Data flow:
- *   1. Resolve the current period via `getCurrentPeriod`.
- *   2. Read the student's already-enrolled subjects (same period) so
- *      the page can keep them out of the offer and still resolve the
- *      student's own groups for the schedule preview.
+ *   1. Resolve the term: `?period=` when it carries a value, otherwise the
+ *      current calendar term (T10.1).
+ *   2. Read what the student HOLDS this term — every status, because every
+ *      status occupies the (student, subject, period) key — so the page keeps
+ *      them out of the offer, and separately read which of those are
+ *      ENROLLED, which is the narrower claim the UI makes about a course in
+ *      progress, and resolve their own groups for the schedule preview.
  *   3. Read ONE page of the `course_groups` catalog (joined with
  *      `subjects` so the UI can render area / credits / name without a
  *      second round-trip), narrowed and paged in SQL.
@@ -185,21 +188,30 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	// carries a value — an empty one is not a term.
 	const period = requestedTerm(url) ?? currentAcademicPeriod();
 
-	// 1. Already-enrolled canonicalIds for this period. The offer query
-	//    below excludes them, which is what the browser used to do with
-	//    `if (g.alreadyEnrolled) return false` — the same rule, applied
-	//    before the rows are fetched instead of after.
-	const enrolledRows = await db
-		.select({ subjectCanonicalId: studentProgress.subjectCanonicalId })
+	// Two sets, because they answer two different questions and the difference
+	// is not cosmetic (T10.1). `held` is everything that occupies the
+	// (student, subject, period) triple — APPROVED, ENROLLED and LOCKED all do —
+	// so the offer must exclude all of it, or the page sells something the
+	// action refuses. `enrolled` is the narrower claim the UI actually makes
+	// when it says "ya inscrita" and schedules their blocks: only ENROLLED is a
+	// course in progress. Calling an APPROVED row "enrolled" would be its own
+	// small lie, in the other direction.
+	const heldRows = await db
+		.select({
+			subjectCanonicalId: studentProgress.subjectCanonicalId,
+			status: studentProgress.status,
+		})
 		.from(studentProgress)
 		.where(
 			and(
 				eq(studentProgress.studentControlNumber, u.controlNumber),
-				eq(studentProgress.status, "ENROLLED"),
 				eq(studentProgress.period, period),
 			),
 		);
-	const enrolledCanonicalIds = enrolledRows.map((r) => r.subjectCanonicalId);
+	const heldCanonicalIds = heldRows.map((r) => r.subjectCanonicalId);
+	const enrolledCanonicalIds = heldRows
+		.filter((r) => r.status === "ENROLLED")
+		.map((r) => r.subjectCanonicalId);
 
 	// 2. Filter inputs. The simulator's controls are a plain GET form, so
 	//    the URL is the only place a filter lives.
@@ -239,8 +251,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 				AND ${offeringTwin.teacherName} = ${courseGroups.teacherName}
 		))`,
 	);
-	if (enrolledCanonicalIds.length > 0) {
-		conditions.push(notInArray(courseGroups.subjectCanonicalId, enrolledCanonicalIds));
+	// Exclude everything HELD this term, not just what is ENROLLED: the action
+	// refuses all of it, so offering the rest would sell a 409.
+	if (heldCanonicalIds.length > 0) {
+		conditions.push(notInArray(courseGroups.subjectCanonicalId, heldCanonicalIds));
 	}
 	const needle = foldText(query);
 	if (needle !== "") {
@@ -443,7 +457,7 @@ export const actions: Actions = {
 		for (const c of toEnrol) {
 			if (taken.has(c.subjectCanonicalId)) {
 				return fail(409, {
-					error: "Una materia seleccionada ya está inscrita este periodo.",
+					error: "Una de las materias seleccionadas ya la tienes en este periodo.",
 				});
 			}
 		}

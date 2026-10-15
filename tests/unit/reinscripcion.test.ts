@@ -609,6 +609,25 @@ describe("reinscripcion enroll action", () => {
 		});
 	}
 
+	// `student_progress.status` is TEXT with no CHECK
+	// (drizzle/0006_lush_wild_pack.sql), so a row edited by hand arrives with
+	// any string at all. The rule is not "reject these three statuses", it is
+	// "reject anything already holding this (student, subject, period)" — this
+	// pins the difference, because a guard that enumerated statuses would pass
+	// the loop above and fail here.
+	for (const status of ["approved", "ENROLLED ", "CURSANDO"]) {
+		it(`refuses a subject held under the out-of-union status ${JSON.stringify(status)}`, async () => {
+			const term = calendarTerm();
+			const event = enrolOffering(term);
+			seedProgress(raw, CONTROL, "cat-0001", status, term);
+
+			const result = await reinscripcionActions.enroll(event as never);
+
+			expect(result).toMatchObject({ status: 409 });
+			expect(raw.prepare("SELECT count(*) AS n FROM enrollments").get()).toEqual({ n: 0 });
+		});
+	}
+
 	it("enrols into the calendar term even when the newest row belongs to a later term", async () => {
 		// `getLatestProgressPeriod` ordered by `desc(period)` on the term NAME
 		// as text, so "ENERO-JUNIO/2099" outranked "AGOSTO-DICIEMBRE/2026" and

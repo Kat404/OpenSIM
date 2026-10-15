@@ -123,8 +123,8 @@ Presupuesto: bajo 400 líneas escritas. Si lo rebasa, se corta en el límite de 
 | E3 | cerrada — el guard filtra por periodo y no por estado | `015eb1e` |
 | E4 | cerrada — `getLatestProgressPeriod` borrado; sin llamadores | `015eb1e` |
 | E5 | cerrada — el test que heredaba el periodo ahora lo nombra | `015eb1e` |
-| E6 | **hecha pero no muerde** — pasa contra el código viejo; ver la entrada del log | `015eb1e` |
-| E7 | en curso | `015eb1e` |
+| E6 | **hecha pero no muerde** — pasa contra el código viejo; ver el log | `19a5cc1` |
+| E7 | **cerrada** — QA verde en las cinco capas y auditoría sin blockers | `c58d0f1` |
 
 ## Fuera de alcance
 
@@ -167,3 +167,33 @@ Presupuesto: bajo 400 líneas escritas. Si lo rebasa, se corta en el límite de 
   Un agujero más salió del mismo renglón y quedó cerrado: `?period=` vacío producía un
   término vacío, porque `??` sólo cae ante `null`/`undefined` y `searchParams.get("?period=")`
   devuelve `""`. Por eso el override pasa por `requestedTerm`, que distingue los tres casos.
+- **2026-10-15 — Auditoría independiente: cero blockers, siete advisories.** Tres se
+  corrigieron en `c58d0f1` porque son el mismo tipo de defecto que este fix cerró:
+  - **El `load` seguía vendiendo lo que el action rechaza.** El guard ya no filtraba por
+    estado, pero la oferta sí: la página ofrecía una materia que el action devolvía 409.
+    Ahora hay dos conjuntos y responden preguntas distintas: `held` (todo lo que ocupa la
+    clave, cualquier estado) excluye de la oferta, y `enrolled` (sólo ENROLLED) es lo que la
+    UI afirma al decir "ya la tienes" y lo que agenda sus bloques. Confundirlos metía una
+    mentira pequeña en la dirección contraria: llamar "inscrita" a una materia **aprobada**.
+  - **El JSDoc de `getCurrentPeriod` afirmaba lo contrario de lo cierto.** Decía que los
+    nombres de término ordenan igual que cronológicamente "porque el año y el mes ordenan
+    igual que el ASCII". Es falso — es exactamente el error que este fix acaba de cerrar, y
+    estaba escrito como si fuera una propiedad. Un comentario que miente sobre la trampa
+    la vuelve a sembrar.
+  - **El 409 decía "ya está inscrita"** para una fila `APPROVED` o `LOCKED`. Ahora dice
+    "ya la tienes en este periodo", que es cierto en los tres casos.
+  **Los cuatro que NO se corrigieron, y por qué** — se reportan al mantenedor en vez de
+  colarse en el diff:
+  - `?period=` sigue aceptando basura literal (`BASURA-1234`), y esa basura se propaga a
+    dashboard y horario porque ambos leen el mismo resolvedor. Preexistente, yvalidarlo
+    contra el patrón del término es una guarda nueva, no una parte de este arreglo.
+  - TOCTOU: el guard es un SELECT y el INSERT otro statement. Dos envíos simultáneos
+    pueden pasar ambos. Preexistente y de probabilidad baja, pero real.
+  - El caso `ENROLLED` del loop de estados **no muerde**: el baseline ya lo rechazaba. El
+    criterio de S3 ("tres tests RED, uno por estado") es inalcanzable para `ENROLLED` y la
+    nota dice dos, no tres. En su lugar se añadió lo que sí distingue la regla de una
+    enumeración: estados **fuera de la unión** (`approved`, `ENROLLED ` con espacio,
+    `CURSANDO`), porque `status` es TEXT sin CHECK y una fila editada a mano trae lo que
+    quiera. Un guard que enumerara estados pasaría el loop y fallaría ahí.
+- **2026-10-15 — E7 cerrado.** `qa-fast` 369 → 372 con los estados fuera de unión,
+  Playwright 126, avatar 81, agéntico 11 de 11, `just qa` con build verde.

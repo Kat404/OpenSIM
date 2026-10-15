@@ -18,10 +18,14 @@
  *   - The optional `period` argument filters `student_progress` to a
  *     single period string (e.g. "AGOSTO-DICIEMBRE/2026").
  *   - When omitted, `getCurrentPeriod` picks the most recent period
- *     present in the student's progress rows. The most recent period
- *     is the lexicographic maximum — period strings sort the same way
- *     chronologically because the year suffix and the month order
- *     (AGOSTO > ENERO) line up with the ASCII order.
+ *     present in the student's progress rows, by `desc(period)` on the
+ *     period STRING. That is NOT chronological. "AGOSTO-DICIEMBRE/2026"
+ *     and "ENERO-JUNIO/2027" are the same year to a reader and the wrong
+ *     order to `desc`, because "ENERO" starts with E and "AGOSTO" with A.
+ *     This ordering once put the demo student in a term that had not
+ *     opened (T10.1). Sorting these by text is safe ONLY while the
+ *     rows being compared are all ENROLLED in one term; anything wider
+ *     needs a parsed date, not a string.
  *   - If the student has no progress rows, `getCurrentPeriod` returns
  *     `null` and `getCurrentEnrollment` returns empty arrays — pages
  *     are responsible for the EmptyState.
