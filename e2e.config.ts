@@ -140,7 +140,13 @@ export default {
 				// `supportsStructuredOutputs`; `structuredOutputs` is silently
 				// ignored, which is how it went missing before.
 				supportsStructuredOutputs: false,
-			}).chatModel(process.env.E2E_MODEL ?? "MiniMax-M2.7"),
+				// MiniMax-M3 is the operator's decision (2026-10-14), not the sweep's
+				// winner: the measured sweep ranked M2.7 higher (33% vs 38% on a
+				// first pass) and it was picked on that basis. M3 stays because the
+				// actor lane leans on tool-calling, which M3 does best. Both ids are
+				// real ones from GET /v1/models; `MiniMax-M3.1-Flash-Preview` is not
+				// on this account and 400s.
+			}).chatModel(process.env.E2E_MODEL ?? "MiniMax-M3"),
 			// The default judgment budget is 30 s
 			// (DEFAULT_JUDGMENT_TIMEOUT_MS in node_modules/e2e/dist/config/agent.js).
 			// That is tuned for a fast model on a small screen; a MiniMax
