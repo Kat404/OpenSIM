@@ -3,15 +3,81 @@
 <!-- odd-tracker
 kind: phase-plan
 status: active
-last-verified: 2026-10-08
-reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
+last-verified: 2026-10-15
+reconciled-against: feat/phase-9-verified-curriculum@b52991a
 sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
 -->
 
-**Date:** 2026-10-06 · last reconciled 2026-10-08
-**Status:** **Phase 8 shipped 2026-10-06** (T8.1–T8.3 `[x]`, gate 114/114). Phases 1–7 and 9–10 remain.
+**Date:** 2026-10-06 · last reconciled 2026-10-15
+**Status:** **Fases 9, 10 y 11 ejecutadas.** El `last-verified` de 2026-10-08 quedó antes de ellas, así que el archivo afirmaba 28 cosas abiertas que gran parte ya no lo eran. Ver la reconciliación de abajo.
 **Route:** delegated direct per phase (each phase is one bounded writer)
 **Source:** Codegraph application-surface audit, 2026-10-06. All 27 findings are `pre-existing`.
+
+---
+
+## Reconciliación 2026-10-15
+
+Cada casilla se comprobó contra el código en esta pasada. **Ninguna se cerró por memoria**: una
+casilla se marca sólo con la evidencia que la cerró, y las que siguen vivas dicen por qué.
+
+| Veredicto | Cuántas | Cuáles |
+| --- | --- | --- |
+| ✅ cerrada | 15 | T9.1, T9.2, T9.3, T9.5, T9.6, T10.2, T10.3, T10.4, T10.5, T11.1–T11.5 |
+| 🔴 **viva** | 9 | T10.1, T12.2, T12.3, T13.1, T13.2, T13.5, T13.6, T13.7, T13.8 |
+| ⚠️ parcial | 2 | T9.4, T12.1 |
+| 📌 aceptada con motivo | 1 | T13.3 |
+| 📌 sólo falta el registro | 1 | T10.0 |
+
+### Las nueve vivas, con su evidencia
+
+- **T10.1 — BLOCKER, CONFIRMADA POR EJECUCIÓN.** Es la única que se verificó corriendo el
+  código, con una sonda temporal en `tests/unit/reinscripcion.test.ts`: sembrando un
+  `APPROVED` de `cat-0001` en `AGOSTO-DICIEMBRE/2025` y llamando al action con ese mismo grupo,
+  la respuesta fue
+  `UNIQUE constraint failed: student_progress.student_control_number, student_progress.subject_canonical_id, student_progress.period`.
+  El guard de `reinscripcion/+page.server.ts:420-430` sólo lee filas `ENROLLED`, así que no ve
+  la fila `APPROVED`. Y el arreglo de **T10.4 lo hace más alcanzable**: `getLatestPeriod`
+  resuelve el periodo contra la fila más reciente sea cual sea su estado, así que un alumno
+  sin `ENROLLED` ya no se atasca en el 400 — ahora llega al INSERT y revienta. **Los dos
+  arreglos se estorban entre sí.** Es un 500 en producción.
+- **T12.2** — `src/routes/+page.svelte:61` sigue siendo `<h1>OpenSIM — Inventario de
+  componentes UI</h1>`.
+- **T12.3** — `src/routes/login/recuperar/` contiene sólo `+page.svelte`. Sin `+page.server.ts`.
+- **T13.1** — `annotateConflicts` (`schedule-conflict.ts:107`) no tiene consumidor fuera de
+  su propio archivo y un test.
+- **T13.2** — `clearSessionCookieOptions` se exporta en `auth.ts:557` y **no lo consume
+  nadie**. Los dos sitios de borrado pasan `{ path: "/" }` a mano
+  (`hooks.server.ts:83`, `logout/+server.ts:41`). Ojo: `cookies.delete` sólo acepta `path`,
+  así que el constante completo no hacía falta; lo que sobra hoy es el constante muerto.
+- **T13.5** — `subject_aliases` se define en `schema.ts:75` y no se lee en ningún archivo de
+  `src/` fuera de su propia declaración y sus tipos.
+- **T13.6** — `Drawer` sólo aparece en el barril `src/lib/components/ui/index.ts:16`.
+- **T13.7** — `MAX_GRADE` / `MIN_GRADE` sólo aparecen en tests.
+- **T13.8** — `horario/+page.server.ts:110`: `if (!DAY_LETTERS.has(day as DayLetter)) continue;`
+  descarta en silencio una letra de día desconocida.
+
+### Las dos parciales
+
+- **T9.4** — El primitivo existe (`invalidateAllSessions`, `auth.ts:445`) y
+  `session-lifecycle.test.ts` lo cubre, pero **sus únicos llamadores son los tests**. El
+  hallazgo pedía dos cosas: el primitivo y conectarlo al logout. La primera está hecha, la
+  segunda no.
+- **T12.1** — `/tramites/+page.server.ts:256` tiene ya un `actions`, así que la premisa
+  ("los formularios recolectan input sin nada detrás") cambió. **No se auditó en esta
+  pasada** qué hace ese action con lo que recolecta.
+
+### Las dos que no son trabajo
+
+- **T13.3** — Aceptada con motivo, no pendiente. `scripts/inject-scheduled-handler.mjs:11-17`
+  dice que el SQL inline es deliberado: mantiene el parche autocontenido sin un segundo import
+  dentro del entry del worker. El hallazgo pedía usar el primitivo; la respuesta del código es
+  una decisión consciente y documentada. Si algún día cambia el esquema de esas dos tablas,
+  ese comentario es la trampa.
+- **T10.0** — La PK se resolvió: `(student_control_number, subject_canonical_id, period)`, y
+  `schema.ts:180-182` explica por qué. Faltaba registrarlo **acá**, que es lo que pedía la
+  casilla. Registrado en esta tabla.
+
+---
 
 > **The "Plan v1 — awaiting go-ahead" status this doc carried until 2026-10-08 is stale.** Phase 8
 > ran on 2026-10-06 and closed. The `## Progress` section further down still reads `_Not started._`
@@ -111,7 +177,7 @@ component decision, not a lightness change.
 ## Phase 9 — security hardening
 *Findings: 1 CRITICAL + 4 WARNING. Independent of every other phase.*
 
-- [ ] **T9.1 (CRITICAL, verified)** — `safeInternalRedirect` open redirect.
+- [x] **T9.1 (CRITICAL, verified)** — `safeInternalRedirect` open redirect.
       `src/lib/utils/redirect.ts:45` checks the **raw** string for `//`; line 60 returns the
       **normalised** `url.pathname`. `new URL("/..//evil.com", sentinel)` normalises the path to
       `//evil.com` while `url.origin` still equals the sentinel, so the guard at :57 passes and
@@ -119,17 +185,17 @@ component decision, not a lightness change.
       Verified against the real export: `/..//evil.com/x`, `/a/..//evil.com`, `/./..//evil.com`,
       `/%2e%2e//evil.com` all return a protocol-relative URL.
       **RED first:** add all four vectors to `tests/unit/redirect.test.ts`, observe failure.
-- [ ] **T9.2** — Re-check the normalised pathname for a leading `//` before returning
-- [ ] **T9.3** — `hashIp`: unsalted SHA-256 is brute-forceable across the whole IPv4 space.
+- [x] **T9.2** — Re-check the normalised pathname for a leading `//` before returning
+- [x] **T9.3** — `hashIp`: unsalted SHA-256 is brute-forceable across the whole IPv4 space.
       Add a per-install server-side secret pepper (`env`), or drop the privacy claim in the
       schema comment at `schema.ts:213-215` and say plainly that IPs are pseudonymous, not
       anonymous.
 - [ ] **T9.4** — Session revocation: no code path deletes `auth_sessions` by
       `student_control_number`, though `schema.ts:219-221` claims `idx_auth_sessions_student`
       supports it. Add the bulk-delete primitive and wire it to logout.
-- [ ] **T9.5** — Sliding session: `validateSessionToken` returns `expiresAt` and never extends
+- [x] **T9.5** — Sliding session: `validateSessionToken` returns `expiresAt` and never extends
       it, so a student is hard-logged-out at exactly 30 days with no renewal.
-- [ ] **T9.6** — Timing-equalisation dummy at `login/+page.server.ts:117` runs **100 000**
+- [x] **T9.6** — Timing-equalisation dummy at `login/+page.server.ts:117` runs **100 000**
       iterations vs production's `PBKDF2_ITERATIONS = 10 000`, and decodes a 3-byte salt from
       `"AAAA"`. The branches differ measurably in both work and input size.
 
@@ -143,17 +209,17 @@ Route: `src/routes/(protected)/reinscripcion/+page.server.ts`
       `:213-230` filters `status = 'ENROLLED' AND period = <current>`, so the guard cannot see
       the 32 `APPROVED` rows. **RED first:** a test that enrols a subject the student already
       completed, expecting a clean `fail()`.
-- [ ] **T10.2** — BLOCKER: `groupId` is deduped at `:185-186`; the resolved
+- [x] **T10.2** — BLOCKER: `groupId` is deduped at `:185-186`; the resolved
       `subjectCanonicalId` never is. Two groups of one subject → two rows, one PK → 500.
-- [ ] **T10.3** — CRITICAL: `:271` calls `findConflicts(candidateBlocks, enrolledBlocks)` only.
+- [x] **T10.3** — CRITICAL: `:271` calls `findConflicts(candidateBlocks, enrolledBlocks)` only.
       `SchedulePreview.svelte:67` proves candidate-vs-candidate is a known pattern, but it exists
       only client-side and does not gate submit. The JSDoc at `:168-169` claims the action
       fails on overlap.
-- [ ] **T10.4** — CRITICAL: first-enrolment deadlock. `getCurrentPeriod`
+- [x] **T10.4** — CRITICAL: first-enrolment deadlock. `getCurrentPeriod`
       (`src/lib/server/enrollment.ts:63-79`) reads existing `ENROLLED` rows; `load` returns an
       empty catalog at `:80-91` before the offer query at `:112`, and the action 400s at
       `:193-196`. A student with no enrolment can never create one.
-- [ ] **T10.5** — Constraint for the tests: `enroll` guards `locals.user` explicitly at
+- [x] **T10.5** — Constraint for the tests: `enroll` guards `locals.user` explicitly at
       `:172-180` because a SvelteKit 3 action runs **before** any layout `load`, so the layout
       middleware does not cover form actions. Tests must exercise the exported action directly.
 
@@ -166,14 +232,14 @@ or any `(protected)/**/+page.server.ts`. 149 tests pass while the entire request
 and every loader and form action are untested. Codegraph's own blast radius for `createSession`
 reports "no tests found within 3 caller hops".
 
-- [ ] **T11.1** — `hooks.server.ts:53` `handle`: locals.user, stale-cookie deletion, the six
+- [x] **T11.1** — `hooks.server.ts:53` `handle`: locals.user, stale-cookie deletion, the six
       security headers
-- [ ] **T11.2** — `login/+page.server.ts`: rate-limit branch, timing branch, redirect target,
+- [x] **T11.2** — `login/+page.server.ts`: rate-limit branch, timing branch, redirect target,
       failure payloads
-- [ ] **T11.3** — Session lifecycle: `createSession`, `validateSessionToken`, `invalidateSession`,
+- [x] **T11.3** — Session lifecycle: `createSession`, `validateSessionToken`, `invalidateSession`,
       `getUserFromSessionToken`, `getCredential`
-- [ ] **T11.4** — `logout/+server.ts` and `api/export/carga/+server.ts`
-- [ ] **T11.5** — Remaining `(protected)/**` loaders: horario, dashboard, reticula, kardex, tramites
+- [x] **T11.4** — `logout/+server.ts` and `api/export/carga/+server.ts`
+- [x] **T11.5** — Remaining `(protected)/**` loaders: horario, dashboard, reticula, kardex, tramites
 
 Tests land **with** the fixes in Phases 9–10 as well; this phase closes the surface those
 phases do not already cover.
