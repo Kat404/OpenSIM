@@ -26,6 +26,7 @@ import { existsSync } from "node:fs";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { web } from "@e2e-dev/web";
 import type { E2EConfig } from "e2e";
+import { withTolerantStructuredOutput } from "./e2e-structured-output-shim";
 
 // e2e deliberately loads no `.env` of its own (reference/config.mdx
 // §Loading). Without this line the model key and the telemetry opt-out are
@@ -71,10 +72,9 @@ export default {
 
 	agents: {
 		default: {
-			// THE AGENTIC LANE DOES NOT RUN ON THIS GATEWAY. Two real misconfigurations
-			// were found and fixed while diagnosing it (see below); what remains is
-			// the provider itself. Measured, not assumed, and reproducible with
-			// the scripts in scripts/.
+			// This gateway does not implement `response_format`, so the model is
+			// wrapped in `withTolerantStructuredOutput` (e2e-structured-output-shim.ts).
+			// Measured, not assumed, and reproducible with the scripts in scripts/.
 			//
 			// `agent.assert` / `agent.extract` need valid structured output. What
 			// was actually wrong here, in order of discovery:
@@ -89,16 +89,27 @@ export default {
 			//    reports STEP_TIMEOUT, which reads like a test bug and is not one.
 			//    Raised to 120 s; the per-test timeout went to 300 s to match.
 			// 3. With those fixed the error changed back to MODEL_OUTPUT_INVALID,
-			//    and THAT one is the provider: this endpoint ignores every
-			//    `response_format` variant (scripts/probe-response-format.mjs) and
-			//    answers with reasoning wrapped around the value, renaming schema
-			//    fields on the way (`withTemario` → `published`).
+			//    and THAT one is the provider, but not for the reason first
+			//    assumed. Measured with scripts/probe-response-format.mjs
+			//    (2026-10-15, 12 calls per mode): all three `response_format`
+			//    modes score 0, yet the JSON that comes back is VALID and its
+			//    values are RIGHT. What the model will not do is repeat the key
+			//    it was given — `withTemario` comes back as `publicadas` or
+			//    `publicados`, and it does that even when handed the exact key it
+			//    likes best. It sometimes also answers with several candidate
+			//    objects and prose around them.
+			//
+			//    So the shim drops `response_format`, picks the candidate object
+			//    that fits the requested shape and renames its keys. It never
+			//    touches a value, so a wrong guess fails an assertion instead of
+			//    passing a test.
 			//
 			// Ruled out with measurement, so nobody repeats them:
 			//
 			//   · Unknown ids silently substituted — no, a bogus id 400s.
-			//   · Thinking blocks — no, M3 "skips thinking" per the docs and
-			//     tool-calling stays at 0% with the blocks gone.
+			//   · The connection — no, 0 network events in 24 calls, ~1 s median
+			//     against a 120 s budget (scripts/probe-models.mjs).
+			//   · Thinking blocks — no, M3 "skips thinking" per the docs.
 			//   · Token budget — no, 4 000 and 12 000 max_tokens score alike.
 			//   · Retries — no, 12 → 36 model calls with the pass rate unmoved,
 			//     which is why no test carries a `retries` key.
@@ -106,47 +117,40 @@ export default {
 			//     (scripts/probe-sdk-path.ts), but the runner's judgments do not
 			//     use it.
 			//
-			// To fix this, point E2E_MODEL at a model whose endpoint honours
-			// `response_format`. The tests in tests/phase10-pages.e2e.ts are
-			// sound and need no changes. Until then vitest and Playwright remain
-			// the gate, and `just qa-fast` does not depend on any of this.
-			model: createOpenAICompatible({
-				name: "openai-compatible",
-				baseURL: "https://api.minimax.io/v1",
-				apiKey: process.env.LLM_API_KEY,
-				// NOT set, deliberately. The SDK picks `response_format` from this
-				// flag and nothing else (node_modules/@ai-sdk/openai-compatible/
-				// dist/index.js:430):
-				//
-				//   true  → { type: "json_schema", json_schema: {...} }
-				//   false → { type: "json_object" }
-				//
-				// Measured against this endpoint with
-				// scripts/probe-response-format.mjs, ALL THREE variants
-				// (no flag, json_object, json_schema) score 0: the flag changes
-				// what is sent and the endpoint honours none of them. The model
-				// answers with its reasoning wrapped around the answer —
-				//
-				//   {"published": 7, "total": 68} or maybe {"published": 7,
-				//   "total": 68}. They said "sin texto alrededor"…
-				//
-				// — note also that it renamed `withTemario` to `published`, so
-				// even a well-formed parse would fail a strict schema.
-				//
-				// Leaving it false keeps the default, which is the least
-				// specific request and therefore the only one with any chance on
-				// a provider that does support it. Set it to true ONLY for a
-				// provider that implements `json_schema`. The flag name is
-				// `supportsStructuredOutputs`; `structuredOutputs` is silently
-				// ignored, which is how it went missing before.
-				supportsStructuredOutputs: false,
-				// MiniMax-M3 is the operator's decision (2026-10-14), not the sweep's
-				// winner: the measured sweep ranked M2.7 higher (33% vs 38% on a
-				// first pass) and it was picked on that basis. M3 stays because the
-				// actor lane leans on tool-calling, which M3 does best. Both ids are
-				// real ones from GET /v1/models; `MiniMax-M3.1-Flash-Preview` is not
-				// on this account and 400s.
-			}).chatModel(process.env.E2E_MODEL ?? "MiniMax-M3"),
+			// A gateway that DOES honour `response_format` should be used without
+			// the shim; `E2E_MODEL` swaps the id but not the wrapper, so point
+			// the config at `withTolerantStructuredOutput` only while the endpoint
+			// needs it. vitest and Playwright remain the gate either way, and
+			// `just qa-fast` does not depend on any of this.
+			model: withTolerantStructuredOutput(
+				createOpenAICompatible({
+					name: "openai-compatible",
+					baseURL: "https://api.minimax.io/v1",
+					apiKey: process.env.LLM_API_KEY,
+					// NOT set, deliberately. The SDK picks `response_format` from this
+					// flag and nothing else (node_modules/@ai-sdk/openai-compatible/
+					// dist/index.js:430):
+					//
+					//   true  → { type: "json_schema", json_schema: {...} }
+					//   false → { type: "json_object" }
+					//
+					// Measured against this endpoint with
+					// scripts/probe-response-format.mjs, ALL THREE variants
+					// (no flag, json_object, json_schema) score 0: the flag changes
+					// what is sent and the endpoint honours none of them. The shim
+					// above strips the flag's result on the way back, so this stays
+					// false — the least specific request. Set it to true ONLY for a
+					// provider that implements `json_schema`. The flag name is
+					// `supportsStructuredOutputs`; `structuredOutputs` is silently
+					// ignored, which is how it went missing before.
+					supportsStructuredOutputs: false,
+					// MiniMax-M3 is the operator's decision (2026-10-14), not the
+					// sweep's winner: the measured sweep ranked M2.7 higher. M3 stays
+					// because the actor lane leans on tool-calling. Both ids are real
+					// ones from GET /v1/models; `MiniMax-M3.1-Flash-Preview` is not on
+					// this account and 400s.
+				}).chatModel(process.env.E2E_MODEL ?? "MiniMax-M3"),
+			),
 			// The default judgment budget is 30 s
 			// (DEFAULT_JUDGMENT_TIMEOUT_MS in node_modules/e2e/dist/config/agent.js).
 			// That is tuned for a fast model on a small screen; a MiniMax
