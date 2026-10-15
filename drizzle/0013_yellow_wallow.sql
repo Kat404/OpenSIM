@@ -1,0 +1,1 @@
+ALTER TABLE `course_groups` ADD `student_control_number` text REFERENCES student_profiles(control_number) ON DELETE CASCADE;

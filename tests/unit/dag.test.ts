@@ -10,12 +10,38 @@ import { describe, expect, it } from "vitest";
 import type { Edge } from "../../src/lib/utils/dag";
 import {
 	buildAdjacency,
+	decomposeChains,
+	describeSeriation,
 	evaluateCreditThresholds,
 	getAncestors,
 	getAncestorsFromMap,
 	getDescendants,
 	getDescendantsFromMap,
 } from "../../src/lib/utils/dag";
+
+/**
+ * The 14 verified prerequisite edges of ISIC-2010-224, mirrored from
+ * `subject_prerequisites` as seeded from
+ * `src/lib/server/db/data/curriculum-isic-2010-224.json`. Canonical ids
+ * are the lowercased subject codes, so these ids are stable against the
+ * Spanish display names.
+ */
+const VERIFIED_EDGES: Edge[] = [
+	{ from: "acf-0901", to: "acf-0902" },
+	{ from: "acf-0902", to: "acf-0904" },
+	{ from: "aed-1285", to: "aed-1286" },
+	{ from: "aed-1286", to: "aed-1026" },
+	{ from: "aed-1026", to: "scd-1027" },
+	{ from: "aef-1031", to: "sca-1025" },
+	{ from: "sca-1025", to: "scb-1001" },
+	{ from: "scc-1007", to: "scd-1011" },
+	{ from: "scd-1011", to: "scg-1009" },
+	{ from: "aec-1034", to: "scd-1021" },
+	{ from: "scd-1021", to: "scd-1004" },
+	{ from: "scd-1004", to: "sca-1002" },
+	{ from: "scd-1015", to: "scd-1016" },
+	{ from: "scc-1014", to: "scc-1023" },
+];
 
 describe("getAncestors", () => {
 	it("returns an empty set when the target has no parents", () => {
@@ -344,5 +370,158 @@ describe("cycle contract", () => {
 		const map = buildAdjacency(edges);
 		expect(getAncestorsFromMap("a", map).has("a")).toBe(false);
 		expect(getDescendantsFromMap("a", map).has("a")).toBe(false);
+	});
+});
+
+describe("decomposeChains", () => {
+	it("returns no chains for an edge-less graph", () => {
+		const { chains, chainIndexBySubject } = decomposeChains([]);
+		expect(chains).toEqual([]);
+		expect(chainIndexBySubject.size).toBe(0);
+	});
+
+	it("splits the 14 verified ISIC-2010-224 edges into the seven documented chains", () => {
+		const { chains } = decomposeChains(VERIFIED_EDGES);
+		const asText = chains.map((c) => c.join(" -> ")).sort();
+		expect(asText).toEqual([
+			"acf-0901 -> acf-0902 -> acf-0904",
+			"aec-1034 -> scd-1021 -> scd-1004 -> sca-1002",
+			"aed-1285 -> aed-1286 -> aed-1026 -> scd-1027",
+			"aef-1031 -> sca-1025 -> scb-1001",
+			"scc-1007 -> scd-1011 -> scg-1009",
+			"scc-1014 -> scc-1023",
+			"scd-1015 -> scd-1016",
+		]);
+	});
+
+	it("covers exactly the 21 SERIALIZED subjects, each in exactly one chain", () => {
+		const { chains, chainIndexBySubject } = decomposeChains(VERIFIED_EDGES);
+		const members = chains.flat();
+		expect(members).toHaveLength(21);
+		expect(new Set(members).size).toBe(21);
+		expect(chainIndexBySubject.size).toBe(21);
+		for (const id of members) {
+			const chain = chains[chainIndexBySubject.get(id) ?? -1];
+			expect(chain.includes(id)).toBe(true);
+		}
+	});
+
+	it("orders every chain prerequisite-first for every edge", () => {
+		const { chains } = decomposeChains(VERIFIED_EDGES);
+		for (const chain of chains) {
+			for (const edge of VERIFIED_EDGES) {
+				const from = chain.indexOf(edge.from);
+				const to = chain.indexOf(edge.to);
+				if (from < 0 || to < 0) continue;
+				expect(from).toBeLessThan(to);
+			}
+		}
+	});
+
+	it("keeps a subject with no incoming edge out of every chain and every traversal", () => {
+		// `aca-0910` is one of the 16 specialty modules: no verified edge
+		// reaches it, so it is not part of any seriation chain and its
+		// traversal sets are empty.
+		const map = buildAdjacency(VERIFIED_EDGES);
+		const { chainIndexBySubject } = decomposeChains(VERIFIED_EDGES);
+		expect(map.parents.get("aca-0910")).toBeUndefined();
+		expect(chainIndexBySubject.has("aca-0910")).toBe(false);
+		expect(getAncestorsFromMap("aca-0910", map).size).toBe(0);
+		expect(getDescendantsFromMap("aca-0910", map).size).toBe(0);
+	});
+
+	it("keeps a branching subject in a single chain, still prerequisite-first", () => {
+		// a -> b, a -> c, b -> d, c -> d: a diamond, not a path.
+		const { chains, chainIndexBySubject } = decomposeChains([
+			{ from: "a", to: "b" },
+			{ from: "a", to: "c" },
+			{ from: "b", to: "d" },
+			{ from: "c", to: "d" },
+		]);
+		expect(chains).toHaveLength(1);
+		expect([...chains[0]].sort()).toEqual(["a", "b", "c", "d"]);
+		expect(chains[0].indexOf("a")).toBeLessThan(chains[0].indexOf("d"));
+		expect(chainIndexBySubject.get("d")).toBe(0);
+	});
+
+	it("terminates on a cyclic input, emitting every subject exactly once", () => {
+		// Same cycle contract as the traversals: the walk must not hang and
+		// must not drop or duplicate a node.
+		const { chains, chainIndexBySubject } = decomposeChains([
+			{ from: "a", to: "b" },
+			{ from: "b", to: "c" },
+			{ from: "c", to: "a" },
+		]);
+		expect(chains).toHaveLength(1);
+		expect([...chains[0]].sort()).toEqual(["a", "b", "c"]);
+		expect(chainIndexBySubject.size).toBe(3);
+	});
+
+	it("separates a cycle from the acyclic chain next to it", () => {
+		const { chains } = decomposeChains([
+			{ from: "a", to: "b" },
+			{ from: "b", to: "a" },
+			{ from: "x", to: "y" },
+		]);
+		expect(chains).toHaveLength(2);
+		expect([...chains[0]].sort()).toEqual(["a", "b"]);
+		expect([...chains[1]].sort()).toEqual(["x", "y"]);
+	});
+});
+
+describe("describeSeriation", () => {
+	const decomposition = decomposeChains(VERIFIED_EDGES);
+
+	it("returns the chain and position of a SERIALIZED subject", () => {
+		const info = describeSeriation("aed-1026", "SERIALIZED", decomposition);
+		expect(info.state).toBe("SERIALIZED");
+		if (info.state !== "SERIALIZED") throw new Error("expected SERIALIZED");
+		expect(info.chain?.subjects).toEqual(["aed-1285", "aed-1286", "aed-1026", "scd-1027"]);
+		expect(info.chain?.position).toBe(2);
+		expect(decomposition.chains[info.chain?.index ?? -1]).toEqual(info.chain?.subjects);
+	});
+
+	it("returns INDEPENDENT with no chain field at all", () => {
+		// The documented triple: the INDEPENDENT verdict is a source
+		// statement, not an inference from an empty edge list.
+		expect(describeSeriation("scc-1017", "INDEPENDENT", decomposition)).toStrictEqual({
+			state: "INDEPENDENT",
+		});
+	});
+
+	it("never reports an UNKNOWN subject as INDEPENDENT", () => {
+		const info = describeSeriation("scc-1017", "UNKNOWN", decomposition);
+		expect(info).toStrictEqual({ state: "UNKNOWN" });
+		expect(info.state).not.toBe("INDEPENDENT");
+		expect("chain" in info).toBe(false);
+	});
+
+	it("does not invent a chain for an UNKNOWN subject that sits in one", () => {
+		// Even when the edge list locates the subject, a stored UNKNOWN
+		// state is returned verbatim — it means "not established", never
+		// "independent" and never "serialized".
+		expect(describeSeriation("acf-0902", "UNKNOWN", decomposition)).toStrictEqual({
+			state: "UNKNOWN",
+		});
+	});
+
+	it("surfaces a SERIALIZED subject that no edge locates as a null chain", () => {
+		// Data defect: the column claims a chain the edge list cannot
+		// produce. Reported honestly instead of being hidden.
+		expect(describeSeriation("aca-0910", "SERIALIZED", decomposition)).toStrictEqual({
+			state: "SERIALIZED",
+			chain: null,
+		});
+	});
+
+	it("hands out a copy of the chain so a caller cannot reorder the decomposition", () => {
+		const info = describeSeriation("acf-0901", "SERIALIZED", decomposition);
+		if (info.state !== "SERIALIZED" || !info.chain) throw new Error("expected a chain");
+		info.chain.subjects.reverse();
+		expect(decomposeChains(VERIFIED_EDGES).chains[info.chain.index]).toEqual([
+			"acf-0901",
+			"acf-0902",
+			"acf-0904",
+		]);
 	});
 });

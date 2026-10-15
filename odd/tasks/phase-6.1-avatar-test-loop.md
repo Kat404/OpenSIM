@@ -1,5 +1,13 @@
 # Phase 6.1 — Playwright AC6-AC11 Loop (U3 acceptance criteria closure)
 
+<!-- odd-tracker
+kind: phase-plan
+status: closed
+last-verified: 2026-10-08
+reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
+sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
+-->
+
 **Feature:** `phase-6.1-avatar-test-loop`
 **Branch:** `main` (continuing — same default as Phase 6)
 **Goal:** Close the 6 open acceptance criteria (AC6-AC11) for the U3 Avatar status dot. AC1-AC5 (axe-detectable) already pass via `tests/e2e/axe/*.spec.ts`. AC6-AC11 require Playwright geometry + contrast + box-shadow assertions, none of which exist yet.

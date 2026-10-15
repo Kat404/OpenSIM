@@ -1,16 +1,35 @@
 # Phase 6 — UI/UX Polish (post-deploy live feedback)
 
+<!-- odd-tracker
+kind: phase-plan
+status: closed
+last-verified: 2026-10-08
+reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
+sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
+-->
+
 **Feature:** `phase-6-ui-polish`
 **Branch:** `feat/phase-1-foundation` (continuing — same default as Phase 5)
 **Goal:** Resolve 4 UI/UX issues observed by el maintainer on the live production deployment (`https://opensim.jose-luis-rs.workers.dev`) on 2026-10-03. All 4 are **non-blocking** but visibly degrade the first-impression polish.
 **Status:** CLOSED 2026-10-06 (bookkeeping sync). U1 closed via `1294c91`, U2 via `5d7ac9c`, U4 via `e7facd3`, U3 via the Phase 6.1 cycle (`a90ba55`/`2531434`/`3608369`/`281b9b5`/`d789930` + `7007561`/`d7d0a45`/`ccd490f`). Tooling + audit closure recorded in `odd/tasks/opensim.md` §6.5, hardening in §7.
 
-> **UNRESOLVED CONTRADICTION — deploy state (bookkeeping sync 2026-10-06).** Two facts are both true and must not be silently reconciled:
+> **RESOLVED CONTRADICTION — deploy state (reconciled 2026-10-08).** The banner below recorded a
+> genuine contradiction on 2026-10-06. It is preserved verbatim; the resolution follows.
 >
-> - This doc's Context says the app is **live at `https://opensim.jose-luis-rs.workers.dev`** as of 2026-10-03.
-> - Canonical Task 5.2 (`odd/tasks/opensim.md:419`) is the **only unchecked box in the spec**, and the deploy checklist `odd/tasks/phase-5.md:80-98` (5.2.1–5.2.5) **never ran**.
+> > **UNRESOLVED CONTRADICTION — deploy state (bookkeeping sync 2026-10-06).** Two facts are both true and must not be silently reconciled:
+> > - This doc's Context says the app is **live at `https://opensim.jose-luis-rs.workers.dev`** as of 2026-10-03.
+> > - Canonical Task 5.2 (`odd/tasks/opensim.md:419`) is the **only unchecked box in the spec**, and the deploy checklist `odd/tasks/phase-5.md:80-98` (5.2.1–5.2.5) **never ran**.
+> >
+> > **Operator question that settles it:** which deploy actually happened, and does a **production D1 with a real `database_id`** exist in `wrangler.jsonc`? Until that is answered, Task 5.2 stays open. **Do not mark it complete from this doc.**
 >
-> **Operator question that settles it:** which deploy actually happened, and does a **production D1 with a real `database_id`** exist in `wrangler.jsonc`? Until that is answered, Task 5.2 stays open. **Do not mark it complete from this doc.**
+> **Answer (2026-10-08).** This doc's Context was the correct record; the spec checkbox was the
+> stale one.
+> - **Real `database_id`:** yes. `wrangler.jsonc:36` → `"390df78e-c4c2-4ace-94f4-6baebf1eb88f"`, `database_name: "opensim"`. It was never the `00000000-…` placeholder. `odd/tasks/phase-5.md:83-85` had already recorded this on 2026-10-06 — **`odd/README.md` was the file that was stale.**
+> - **Which deploy:** a Workers deploy from outside the Phase 5 checklist — i.e. **this doc's Context block was the correct record all along**. Workers Builds was relinked by the operator on 2026-10-08 after the repo was deleted and recreated; **the Worker itself was never deleted**. B7 closed.
+> - **Remote D1:** brought to `0008` on 2026-10-08 (`0006`–`0008` applied, zero row loss). `wrangler d1 migrations list opensim --remote` → `✅ No migrations to apply!` B6 closed.
+> - **Task 5.2 is now `[x]`** in `odd/tasks/opensim.md` §8, on infrastructure state rather than smoke evidence. The production axe sweep (step 5.2.4) remains **NOT VERIFIED**.
+>
+> **This doc's SHAs are dead.** The 2026-10-08 GPG re-sign rewrite changed every commit SHA in the repository. Re-derive with `git log --oneline --grep='<subject>'`.
 
 > **Acceptance-criteria bookkeeping (bookkeeping sync 2026-10-06):** the 4 ticked ACs rest on the Progress blocks below — U1-A1 on `1294c91`, U2-A1/U2-A3 on `5d7ac9c` (700ms cubic-bezier, honors `prefers-reduced-motion`), U4-A1 on `e7facd3` (`.btn__icon` flex wrapper). The 7 boxes left unchecked have **no evidence anywhere in this file**: the `MapPin` icon (U1-A2 — never implemented; the real U1 fix was in `tokens.css`), the U1 contrast measurement (A3) and U1 test run (A4), the U2 visual "no jumps" check (A2), and all four U4 coverage/regression claims (A2–A4). They are visual or matrix criteria that the recorded verification runs (`just check` / `just test` / axe) do not assert.
 

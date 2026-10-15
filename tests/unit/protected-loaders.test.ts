@@ -58,7 +58,7 @@ function seedCurrentEnrollment(subject = { id: "sistemas-1", code: "SCC1027" }):
 		code: subject.code,
 		name: `Materia ${subject.code}`,
 	});
-	seedGroup(raw, `G-${subject.code}-1`, subject.id);
+	seedGroup(raw, `G-${subject.code}-1`, subject.id, "A", CONTROL);
 	seedBlock(raw, {
 		groupId: `G-${subject.code}-1`,
 		day: "L",
@@ -267,7 +267,7 @@ describe("horario loader", () => {
 		// not fixed here. Characterization test: it passes because the
 		// current (incomplete) behaviour is what is pinned.
 		seedSubject(raw, { canonicalId: "sistemas-1", code: "SCC1027" });
-		seedGroup(raw, "G-SCC1027-1", "sistemas-1");
+		seedGroup(raw, "G-SCC1027-1", "sistemas-1", "A", CONTROL);
 		seedBlock(raw, { groupId: "G-SCC1027-1", day: "L", startTime: "08:00", endTime: "10:00" });
 		seedProgress(raw, CONTROL, "sistemas-1", "APPROVED", PREVIOUS_PERIOD);
 
@@ -280,7 +280,7 @@ describe("horario loader", () => {
 		// Offer catalog exists, but the ENROLLED row belongs to the other
 		// student, so the signed-in student's grid must stay empty.
 		seedSubject(raw, { canonicalId: "sistemas-1", code: "SCC1027" });
-		seedGroup(raw, "G-SCC1027-1", "sistemas-1");
+		seedGroup(raw, "G-SCC1027-1", "sistemas-1", "A", CONTROL);
 		seedBlock(raw, {
 			groupId: "G-SCC1027-1",
 			day: "L",
@@ -345,7 +345,7 @@ describe("dashboard loader", () => {
 		const { getTodayDayLetter } = await import("../../src/lib/utils/time");
 		const today = getTodayDayLetter();
 		seedSubject(raw, { canonicalId: "algebra-1", code: "SCC0901", name: "Álgebra" });
-		seedGroup(raw, "G-SCC0901-1", "algebra-1");
+		seedGroup(raw, "G-SCC0901-1", "algebra-1", "A", CONTROL);
 		seedProgress(raw, CONTROL, "algebra-1", "ENROLLED", PERIOD);
 		const otherDay = today === "V" ? "L" : "V";
 		seedBlock(raw, {

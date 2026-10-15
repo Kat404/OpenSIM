@@ -32,7 +32,10 @@ export interface CargaPdfInput {
 		currentSemester: number;
 	};
 	period: string;
-	groups: CourseGroup[];
+	// The renderer only ever reads `id` + `subjectCanonicalId` off a group
+	// (it resolves code/name through `subjects`). Narrowing here keeps the
+	// PDF independent of the columns `course_groups` grows.
+	groups: Pick<CourseGroup, "id" | "subjectCanonicalId">[];
 	blocks: CourseScheduleBlock[];
 	/** code + name per subject canonical id; the caller resolves the catalog. */
 	subjects: Map<string, { code: string; name: string }>;

@@ -20,8 +20,18 @@
  * moment .env set a different password: D1 got one credential and this
  * posted another, the login bounced back to /login, and every protected
  * spec failed on a 15 s waitForURL timeout.
+ *
+ * `.env` is loaded here because Playwright does not load it for the test
+ * process — only Vite loads it, for the dev server it spawns. Without this the
+ * lookup above always fell through to the default while D1 held the real
+ * password, and the failure looked like a broken app rather than a missing
+ * variable. `.env` is gitignored, so nothing here is committed.
  */
 import { expect, test as setup } from "@playwright/test";
+
+if (process.env.OPENSIM_TEST_PASSWORD === undefined) {
+	process.loadEnvFile();
+}
 
 const AUTH_FILE = "playwright/.auth/storage.json";
 

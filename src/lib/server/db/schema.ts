@@ -56,11 +56,18 @@ export const subjects = sqliteTable("subjects", {
 	canonicalId: text("canonical_id").primaryKey(),
 	code: text("code").notNull().unique(),
 	name: text("name").notNull(),
-	semester: integer("semester").notNull(),
-	ht: integer("ht").notNull(),
-	hp: integer("hp").notNull(),
+	// NULL where no source establishes the value: `area` is unclassified
+	// across the whole verified plan (H4), and `semester`/`ht`/`hp` are
+	// unknown for the 16 specialty modules (H8).
+	semester: integer("semester"),
+	ht: integer("ht"),
+	hp: integer("hp"),
 	credits: integer("credits").notNull(),
-	area: text("area").notNull(),
+	area: text("area"),
+	// 'UNKNOWN' is the honest default: the rows already in the database
+	// were never classified against a seriation source.
+	seriationState: text("seriation_state").notNull().default("UNKNOWN"),
+	component: text("component").notNull().default("GENERIC"),
 	specialtyCode: text("specialty_code").references(() => specialties.code),
 });
 
@@ -92,6 +99,15 @@ export const subjectPrerequisites = sqliteTable(
 );
 
 // 6. Temarios (Unidades y Subtemas)
+//
+// `subtopicsJson` holds the subtopic objects verbatim as the SIM states
+// them: `{ index, title, evalFrom, evalTo }`. The per-subtopic evaluation
+// windows belong to the subtopic, not to the unit, and Phase 9 rejected a
+// separate `subject_subtopics` table — so they stay inside this column
+// rather than being flattened away or promoted to columns of their own.
+//
+// The four evaluation columns are nullable on purpose: a unit whose temario
+// omits a window stores NULL instead of a value no source establishes.
 export const subjectUnits = sqliteTable("subject_units", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
 	subjectCanonicalId: text("subject_canonical_id")
@@ -100,6 +116,12 @@ export const subjectUnits = sqliteTable("subject_units", {
 	unitNumber: integer("unit_number").notNull(),
 	title: text("title").notNull(),
 	subtopicsJson: text("subtopics_json").notNull(),
+	evalFrom: text("eval_from"),
+	evalTo: text("eval_to"),
+	/** JSON string array of evaluation instruments. */
+	instruments: text("instruments"),
+	/** JSON string array of evaluation criteria. */
+	criteria: text("criteria"),
 });
 
 // 7. Perfil de Estudiantes (FIXES v2.0 applied)
@@ -154,7 +176,47 @@ export const studentProgress = sqliteTable(
 	}),
 );
 
-// 9. Oferta de Grupos
+// 9. Actividades Complementarias
+//
+// One row per completed complementary activity, keyed by
+// (student, subject, period) exactly like `student_progress`. The
+// graduation rule is a COUNT against the dataset's
+// `complementaryCredits.requiredForGraduation`, so there is deliberately
+// no `social_service_unlocked` column and no stored total: both are
+// derived, and a stored copy would drift the moment a row is corrected.
+// The four offering subjects already exist with `component = COMPLEMENTARY`;
+// this table records only that a student completed one.
+export const complementaryCreditActivities = sqliteTable(
+	"complementary_credit_activities",
+	{
+		studentControlNumber: text("student_control_number")
+			.notNull()
+			.references(() => studentProfiles.controlNumber, { onDelete: "cascade" }),
+		subjectCanonicalId: text("subject_canonical_id")
+			.notNull()
+			.references(() => subjects.canonicalId),
+		period: text("period").notNull(),
+	},
+	(table) => ({
+		pk: primaryKey({
+			columns: [table.studentControlNumber, table.subjectCanonicalId, table.period],
+		}),
+	}),
+);
+
+// 10. Oferta de Grupos
+//
+// Three distinct meanings live in this table and they must not be conflated:
+//   studentControlNumber NULL  -> a SIM offering catalogue entry that no
+//                                 student has enrolled in; set -> an
+//                                 enrolment, that student's own group.
+//   hasLab       "this group HAS a laboratory"  — the FontAwesome flask
+//                icon on the SIM offering row.
+//   isLabSession "this group IS the laboratory session" — the separate
+//                zero-credit group of the same subject, in its own
+//                classroom and keyed by its own lab group code.
+// Both are true for every lab session group; only hasLab is true for the
+// paired theory group.
 export const courseGroups = sqliteTable(
 	"course_groups",
 	{
@@ -165,16 +227,37 @@ export const courseGroups = sqliteTable(
 		groupCode: text("group_code").notNull(),
 		teacherName: text("teacher_name").notNull(),
 		hasLab: integer("has_lab", { mode: "boolean" }).notNull().default(false),
+		// The discriminator between a catalogue entry and an enrolment.
+		// NULL is a catalogue row: it belongs to no student, so a reader
+		// asking for "this student's groups" must exclude it. Without it
+		// the offering catalogue and the enrolments are indistinguishable
+		// and every subject-only join leaks 468 rows.
+		studentControlNumber: text("student_control_number").references(
+			() => studentProfiles.controlNumber,
+			{ onDelete: "cascade" },
+		),
+		// SIM term number as text ("1".."9"); NULL for the offering rows
+		// the portal publishes without a term filter.
+		period: text("period"),
+		// NULL for the lab sessions: the offering export carries no credit
+		// figure for them, and the 0 of the written rule is not a source.
+		credits: integer("credits"),
+		isLabSession: integer("is_lab_session", { mode: "boolean" }).notNull().default(false),
 	},
 	(table) => ({
-		// Hot path: the enrollment helper joins course_groups on
-		// subjectCanonicalId for the student's enrolled set. Without
-		// this index the join is a full table scan (audit M2, Round 4).
+		// Serves two access paths with opposite predicates:
+		//   1. catalogue reads — "every group of subject X", used by the
+		//      reinscripcion offer list;
+		//   2. enrolment reads — "the groups of subject X this student is
+		//      enrolled in", which now also filter on
+		//      `studentControlNumber` and so this index narrows the
+		//      candidate set before that filter runs.
+		// Either way the predicate is index-backed rather than a scan.
 		subjectCanonicalIdx: index("idx_course_groups_subject_canonical").on(table.subjectCanonicalId),
 	}),
 );
 
-// 10. Bloques de Horario
+// 11. Bloques de Horario
 export const courseScheduleBlocks = sqliteTable(
 	"course_schedule_blocks",
 	{
@@ -200,7 +283,51 @@ export const courseScheduleBlocks = sqliteTable(
 	}),
 );
 
-// 11. Credenciales de Acceso (PBKDF2 / SHA-256 via Web Crypto API)
+// 11b. Inscripciones: la eleccion de grupo del estudiante
+//
+// `student_progress` records THAT a student took a subject in a term. It
+// never records WHICH offering group they chose, so after enrolling through
+// /reinscripcion the student had no group row at all: `enrolledGroupIds`
+// resolved to nothing and `course_schedule_blocks` had nothing to hang
+// from. This table is that missing record.
+//
+// `period` is the institution TERM NAME — "AGOSTO-DICIEMBRE/2026" — the
+// exact string `student_progress.period` holds. It is NOT
+// `course_groups.period`, which is a SIM term NUMBER ("1".."9", nullable)
+// and cannot be joined against a term name. The two columns share a name
+// and mean different things; this one follows `student_progress`.
+//
+// Composite primary key over (student, group, period), no surrogate: the
+// natural key is the whole fact being recorded, so a duplicate insert is
+// the same fact twice and nothing else. SQLite prefers an
+// `INTEGER PRIMARY KEY` for its rowid optimisation, but nothing here reads
+// by rowid — every reader filters on the leading columns — so the rowid
+// optimisation would buy nothing and the extra column would have to be
+// invented to fill it.
+//
+// The FK to `student_profiles` is `ON DELETE CASCADE`: an enrollment is
+// a fact about a profile, so removing the profile (egreso,
+// control-number correction) takes it with it.
+export const enrollments = sqliteTable(
+	"enrollments",
+	{
+		studentControlNumber: text("student_control_number")
+			.notNull()
+			.references(() => studentProfiles.controlNumber, { onDelete: "cascade" }),
+		groupId: text("group_id")
+			.notNull()
+			.references(() => courseGroups.id),
+		// Term NAME, matching `student_progress.period` — see the header.
+		period: text("period").notNull(),
+	},
+	(table) => ({
+		pk: primaryKey({
+			columns: [table.studentControlNumber, table.groupId, table.period],
+		}),
+	}),
+);
+
+// 12. Credenciales de Acceso (PBKDF2 / SHA-256 via Web Crypto API)
 //
 // Stores the PBKDF2-derived key, salt, and iteration count for each
 // student. Hash and salt are base64url-encoded. passwordUpdatedAt is
@@ -219,7 +346,7 @@ export const studentCredentials = sqliteTable("student_credentials", {
 	passwordUpdatedAt: integer("password_updated_at", { mode: "timestamp" }),
 });
 
-// 12. Sesiones de Autenticacion (cookie-backed)
+// 13. Sesiones de Autenticacion (cookie-backed)
 //
 // `id` is the SHA-256 of the random session token (base64url). The
 // raw token is held only in the HttpOnly cookie; the database stores
@@ -256,7 +383,7 @@ export const authSessions = sqliteTable(
 	}),
 );
 
-// 13. Auth Attempts (login rate limiting).
+// 14. Auth Attempts (login rate limiting).
 //
 // Counters for failed login attempts, scoped by `attempt_key`. Keys are
 // two flavors — `control:<8-digit-control>` for per-account throttling
@@ -330,6 +457,12 @@ export type NewStudentProfile = typeof studentProfiles.$inferInsert;
 export type StudentProgress = typeof studentProgress.$inferSelect;
 export type NewStudentProgress = typeof studentProgress.$inferInsert;
 
+export type ComplementaryCreditActivity = typeof complementaryCreditActivities.$inferSelect;
+export type NewComplementaryCreditActivity = typeof complementaryCreditActivities.$inferInsert;
+
+export type Enrollment = typeof enrollments.$inferSelect;
+export type NewEnrollment = typeof enrollments.$inferInsert;
+
 export type CourseGroup = typeof courseGroups.$inferSelect;
 export type NewCourseGroup = typeof courseGroups.$inferInsert;
 
@@ -346,6 +479,15 @@ export type NewAuthSession = typeof authSessions.$inferInsert;
 
 export const STUDENT_PROGRESS_STATUSES = ["APPROVED", "ENROLLED", "AVAILABLE", "LOCKED"] as const;
 export type StudentProgressStatus = (typeof STUDENT_PROGRESS_STATUSES)[number];
+
+// ---- Subject domain unions (TypeScript-side enforcement; SQLite stores TEXT) ----
+
+// `UNKNOWN` means "not established from a source", NOT "not serialized".
+export const SUBJECT_SERIATION_STATES = ["SERIALIZED", "INDEPENDENT", "UNKNOWN"] as const;
+export type SubjectSeriationState = (typeof SUBJECT_SERIATION_STATES)[number];
+
+export const SUBJECT_COMPONENTS = ["GENERIC", "COMPLEMENTARY", "PRACTICE", "SPECIALTY"] as const;
+export type SubjectComponent = (typeof SUBJECT_COMPONENTS)[number];
 
 // Evaluation types live in `#lib/utils/academic` (client-safe home)
 // so the kardex UI can read the array at runtime without dragging

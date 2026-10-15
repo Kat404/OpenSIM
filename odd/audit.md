@@ -1,5 +1,12 @@
 # OpenSIM Spec Audit — Pre-Implementation Review
 
+<!-- odd-tracker
+kind: audit
+status: superseded
+last-verified: 2026-10-08
+reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
+-->
+
 > [!WARNING]
 > **PRE-IMPLEMENTATION RECORD — SUPERSEDED BY SPEC v2.2.** This audit ran 2026-10-01 against the *pre-v2* spec (SvelteKit 2, no implementation). Every finding below was either resolved during v2.0–v2.2 or re-decided; the spec is now at v2.2 (`odd/tasks/opensim.md`). The findings (AG-1…AG-22, CF-1…CF-5) are preserved verbatim as the historical decision record — **do not read them as current state.** For current status see `odd/README.md` and `odd/tasks/opensim.md`.
 >

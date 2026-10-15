@@ -46,7 +46,7 @@ async function exportPdf(user: ReturnType<typeof makeUser> | null): Promise<Resp
 /** A student with one ENROLLED subject, one group and one block. */
 function seedEnrolledStudent(): void {
 	seedSubject(raw, { canonicalId: "sistemas-1", code: "SCC1027", name: "Programación" });
-	seedGroup(raw, "G-SCC1027-1", "sistemas-1");
+	seedGroup(raw, "G-SCC1027-1", "sistemas-1", "A", CONTROL);
 	seedBlock(raw, {
 		groupId: "G-SCC1027-1",
 		day: "L",
@@ -166,7 +166,7 @@ describe("POST /api/export/carga — content contract", () => {
 		seedEnrolledStudent();
 		seedProfile(raw, { controlNumber: "87654321", fullName: "Grace Hopper Ramirez" });
 		seedSubject(raw, { canonicalId: "redes-1", code: "SCC2001", name: "Redes" });
-		seedGroup(raw, "G-SCC2001-1", "redes-1");
+		seedGroup(raw, "G-SCC2001-1", "redes-1", "A", "87654321");
 		seedProgress(raw, "87654321", "redes-1", "ENROLLED", PERIOD);
 
 		const response = await exportPdf(makeUser({ controlNumber: "87654321" }));
@@ -180,7 +180,7 @@ describe("POST /api/export/carga — content contract", () => {
 		// Only ENROLLED rows in the current term reach the PDF; a graded
 		// row from a past term must not resurrect its group.
 		seedSubject(raw, { canonicalId: "sistemas-1", code: "SCC1027", name: "Programación" });
-		seedGroup(raw, "G-SCC1027-1", "sistemas-1");
+		seedGroup(raw, "G-SCC1027-1", "sistemas-1", "A", CONTROL);
 		seedBlock(raw, {
 			groupId: "G-SCC1027-1",
 			day: "L",
@@ -209,7 +209,7 @@ describe("POST /api/export/carga — content contract", () => {
 		// Only the AGOSTO-DICIEMBRE/2026 subject has an offer group, so the
 		// export can only succeed if that term is the one resolved.
 		seedSubject(raw, { canonicalId: "algebra-1", code: "SCC0901", name: "Álgebra Lineal" });
-		seedGroup(raw, "G-SCC0901-1", "algebra-1");
+		seedGroup(raw, "G-SCC0901-1", "algebra-1", "A", CONTROL);
 		seedBlock(raw, {
 			groupId: "G-SCC0901-1",
 			day: "L",

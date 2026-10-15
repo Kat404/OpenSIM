@@ -1,5 +1,13 @@
 # Phase 5 Prep — Spec sync + audit backlog hardening
 
+<!-- odd-tracker
+kind: prep
+status: closed
+last-verified: 2026-10-08
+reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
+sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
+-->
+
 **Feature:** `phase-5-prep`
 **Branch:** `feat/phase-1-foundation` (continuing — not on default; no new branch)
 **Goal:** Close the spec/implementation drift and resolve the 10 non-blocking mcode M3.1 audit findings that the 6th round (Phase 4 audit) documented, so Tarea 5.1 (`@axe-core/playwright` WCAG 2.1 AA) and Tarea 5.2 (Cloudflare deploy) start from a clean floor.

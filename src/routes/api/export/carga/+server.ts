@@ -85,13 +85,20 @@ export const POST: RequestHandler = async ({ locals }) => {
 		return new Response("Student profile not found", { status: 404 });
 	}
 
-	// 3. Enrolled subjects for the period.
+	// 3. Enrolled subjects for the period. The join is scoped to the
+	//    requesting student's own groups: `course_groups` also holds the
+	//    SIM offering catalogue, whose rows carry no student, so a
+	//    subject-only join would make every enrolled subject look
+	//    enrolled in every offering group of it.
 	const enrolledRows = await db
 		.select({ subjectCanonicalId: courseGroups.subjectCanonicalId })
 		.from(studentProgress)
 		.innerJoin(
 			courseGroups,
-			and(eq(courseGroups.subjectCanonicalId, studentProgress.subjectCanonicalId)),
+			and(
+				eq(courseGroups.subjectCanonicalId, studentProgress.subjectCanonicalId),
+				eq(courseGroups.studentControlNumber, u.controlNumber),
+			),
 		)
 		.where(
 			and(
@@ -116,7 +123,12 @@ export const POST: RequestHandler = async ({ locals }) => {
 		db
 			.select()
 			.from(courseGroups)
-			.where(inArray(courseGroups.subjectCanonicalId, enrolledCanonicalIds)),
+			.where(
+				and(
+					eq(courseGroups.studentControlNumber, u.controlNumber),
+					inArray(courseGroups.subjectCanonicalId, enrolledCanonicalIds),
+				),
+			),
 		db
 			.select({ canonicalId: subjects.canonicalId, code: subjects.code, name: subjects.name })
 			.from(subjects)

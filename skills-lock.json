@@ -1,17 +1,23 @@
 {
-	"version": 1,
-	"skills": {
-		"drizzle-orm-patterns": {
-			"source": "giuseppe-trisciuoglio/developer-kit",
-			"sourceType": "github",
-			"skillPath": "plugins/developer-kit-typescript/skills/drizzle-orm-patterns/SKILL.md",
-			"computedHash": "d63e6d73a9f579b505a5694af2f3b3200c2b5eeea147e88b9b6d1e5fce23bcbb"
-		},
-		"valibot": {
-			"source": "open-circle/agent-skills",
-			"sourceType": "github",
-			"skillPath": "skills/valibot/SKILL.md",
-			"computedHash": "dc7ad7dc09548808d26aef0bc58786a4ee3559e153a1e83c9c4574f3a294ea1b"
-		}
-	}
+  "version": 1,
+  "skills": {
+    "create-verification-skill": {
+      "source": "tester-army/e2e",
+      "sourceType": "github",
+      "skillPath": "skills/create-verification-skill/SKILL.md",
+      "computedHash": "f116527d971c85537cb128ceaaf7b9cada6e7c897ab71ed574b14d7bb535cacc"
+    },
+    "drizzle-orm-patterns": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-typescript/skills/drizzle-orm-patterns/SKILL.md",
+      "computedHash": "d63e6d73a9f579b505a5694af2f3b3200c2b5eeea147e88b9b6d1e5fce23bcbb"
+    },
+    "valibot": {
+      "source": "open-circle/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/valibot/SKILL.md",
+      "computedHash": "dc7ad7dc09548808d26aef0bc58786a4ee3559e153a1e83c9c4574f3a294ea1b"
+    }
+  }
 }

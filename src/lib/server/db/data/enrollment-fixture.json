@@ -1,450 +1,520 @@
 {
-	"version": "ENROLLMENT-2026-AGO",
-	"controlNumber": "12345678",
-	"student_profile": {
-		"controlNumber": "12345678",
-		"fullName": "Ana Gabriela Hernández Ruiz",
-		"curp": "HERA000615MMNRZNA3",
-		"birthState": "Michoacán",
-		"careerCode": "ISIC-2010-224",
-		"specialtyCode": "ISIE-TDS-2024-01",
-		"currentSemester": 7,
-		"certifiedAverage": 8.7,
-		"arithmeticAverage": 8.6,
-		"passedAverage": 8.5,
-		"approvedCredits": 175,
-		"remainingCredits": 85,
-		"completedCredits": 175,
-		"inProgressCredits": 24,
-		"advancePercentage": 67.3,
-		"status": "Activo regular",
-		"healthService": "IMSS",
-		"enrollmentPeriod": "AGOSTO-DICIEMBRE/2026"
-	},
-	"student_progress": [
-		{
-			"subjectCanonicalId": "calculo-diferencial",
-			"status": "APPROVED",
-			"grade": 8.5,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2022"
-		},
-		{
-			"subjectCanonicalId": "fundamentos-programacion",
-			"status": "APPROVED",
-			"grade": 9.0,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2022"
-		},
-		{
-			"subjectCanonicalId": "introduccion-ingenieria-sistemas",
-			"status": "APPROVED",
-			"grade": 9.2,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2022"
-		},
-		{
-			"subjectCanonicalId": "matematicas-discretas",
-			"status": "APPROVED",
-			"grade": 7.8,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2022"
-		},
-		{
-			"subjectCanonicalId": "taller-etica",
-			"status": "APPROVED",
-			"grade": 9.5,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2022"
-		},
-		{
-			"subjectCanonicalId": "fundamentos-investigacion",
-			"status": "APPROVED",
-			"grade": 8.0,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2022"
-		},
-		{
-			"subjectCanonicalId": "calculo-integral",
-			"status": "APPROVED",
-			"grade": 7.5,
-			"evaluationType": "ORDINARIO",
-			"period": "ENERO-JUNIO/2023"
-		},
-		{
-			"subjectCanonicalId": "algebra-lineal",
-			"status": "APPROVED",
-			"grade": 8.0,
-			"evaluationType": "ORDINARIO",
-			"period": "ENERO-JUNIO/2023"
-		},
-		{
-			"subjectCanonicalId": "programacion-orientada-objetos",
-			"status": "APPROVED",
-			"grade": 8.7,
-			"evaluationType": "ORDINARIO",
-			"period": "ENERO-JUNIO/2023"
-		},
-		{
-			"subjectCanonicalId": "estructura-datos",
-			"status": "APPROVED",
-			"grade": 7.0,
-			"evaluationType": "REPETICION",
-			"period": "ENERO-JUNIO/2023"
-		},
-		{
-			"subjectCanonicalId": "contabilidad-financiera",
-			"status": "APPROVED",
-			"grade": 8.5,
-			"evaluationType": "ORDINARIO",
-			"period": "ENERO-JUNIO/2023"
-		},
-		{
-			"subjectCanonicalId": "calculo-vectorial",
-			"status": "APPROVED",
-			"grade": 8.2,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2023"
-		},
-		{
-			"subjectCanonicalId": "analisis-algoritmos",
-			"status": "APPROVED",
-			"grade": 8.8,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2023"
-		},
-		{
-			"subjectCanonicalId": "programacion-visual",
-			"status": "APPROVED",
-			"grade": 9.0,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2023"
-		},
-		{
-			"subjectCanonicalId": "fisica-general",
-			"status": "APPROVED",
-			"grade": 7.2,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2023"
-		},
-		{
-			"subjectCanonicalId": "arquitectura-computadoras",
-			"status": "APPROVED",
-			"grade": 8.0,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2023"
-		},
-		{
-			"subjectCanonicalId": "ecuaciones-diferenciales",
-			"status": "APPROVED",
-			"grade": 7.8,
-			"evaluationType": "ORDINARIO",
-			"period": "ENERO-JUNIO/2024"
-		},
-		{
-			"subjectCanonicalId": "metodos-numericos",
-			"status": "APPROVED",
-			"grade": 8.5,
-			"evaluationType": "ORDINARIO",
-			"period": "ENERO-JUNIO/2024"
-		},
-		{
-			"subjectCanonicalId": "base-datos",
-			"status": "APPROVED",
-			"grade": 9.0,
-			"evaluationType": "ORDINARIO",
-			"period": "ENERO-JUNIO/2024"
-		},
-		{
-			"subjectCanonicalId": "circuitos-electricos",
-			"status": "APPROVED",
-			"grade": 7.5,
-			"evaluationType": "ORDINARIO",
-			"period": "ENERO-JUNIO/2024"
-		},
-		{
-			"subjectCanonicalId": "sistemas-operativos",
-			"status": "APPROVED",
-			"grade": 8.8,
-			"evaluationType": "ORDINARIO",
-			"period": "ENERO-JUNIO/2024"
-		},
-		{
-			"subjectCanonicalId": "variable-compleja",
-			"status": "APPROVED",
-			"grade": 7.0,
-			"evaluationType": "REPETICION",
-			"period": "AGOSTO-DICIEMBRE/2024"
-		},
-		{
-			"subjectCanonicalId": "programacion-logica-funcional",
-			"status": "APPROVED",
-			"grade": 8.5,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2024"
-		},
-		{
-			"subjectCanonicalId": "redes-computadoras",
-			"status": "APPROVED",
-			"grade": 8.7,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2024"
-		},
-		{
-			"subjectCanonicalId": "lenguajes-automatas",
-			"status": "APPROVED",
-			"grade": 8.0,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2024"
-		},
-		{
-			"subjectCanonicalId": "ingenieria-software",
-			"status": "APPROVED",
-			"grade": 9.2,
-			"evaluationType": "ORDINARIO",
-			"period": "AGOSTO-DICIEMBRE/2024"
-		},
-		{
-			"subjectCanonicalId": "probabilidad-estadistica",
-			"status": "APPROVED",
-			"grade": 8.0,
-			"evaluationType": "ESPECIAL",
-			"period": "ENERO-JUNIO/2025"
-		},
-		{
-			"subjectCanonicalId": "inteligencia-artificial",
-			"status": "APPROVED",
-			"grade": 8.8,
-			"evaluationType": "ORDINARIO",
-			"period": "ENERO-JUNIO/2025"
-		},
-		{
-			"subjectCanonicalId": "sistemas-informacion",
-			"status": "APPROVED",
-			"grade": 8.5,
-			"evaluationType": "ORDINARIO",
-			"period": "ENERO-JUNIO/2025"
-		},
-		{
-			"subjectCanonicalId": "diseno-interfaces",
-			"status": "APPROVED",
-			"grade": 9.0,
-			"evaluationType": "ORDINARIO",
-			"period": "ENERO-JUNIO/2025"
-		},
-		{
-			"subjectCanonicalId": "graficacion",
-			"status": "ENROLLED",
-			"grade": null,
-			"evaluationType": null,
-			"period": "AGOSTO-DICIEMBRE/2026"
-		},
-		{
-			"subjectCanonicalId": "administracion-bases-datos",
-			"status": "ENROLLED",
-			"grade": null,
-			"evaluationType": null,
-			"period": "AGOSTO-DICIEMBRE/2026"
-		},
-		{
-			"subjectCanonicalId": "taller-investigacion-1",
-			"status": "ENROLLED",
-			"grade": null,
-			"evaluationType": null,
-			"period": "AGOSTO-DICIEMBRE/2026"
-		},
-		{
-			"subjectCanonicalId": "programacion-web",
-			"status": "ENROLLED",
-			"grade": null,
-			"evaluationType": null,
-			"period": "AGOSTO-DICIEMBRE/2026"
-		},
-		{
-			"subjectCanonicalId": "gestion-proyectos-software",
-			"status": "ENROLLED",
-			"grade": null,
-			"evaluationType": null,
-			"period": "AGOSTO-DICIEMBRE/2026"
-		},
-		{
-			"subjectCanonicalId": "taller-investigacion-2",
-			"status": "ENROLLED",
-			"grade": null,
-			"evaluationType": null,
-			"period": "AGOSTO-DICIEMBRE/2026"
-		},
-		{
-			"subjectCanonicalId": "servicio-social",
-			"status": "LOCKED",
-			"grade": null,
-			"evaluationType": null,
-			"period": "ENERO-JUNIO/2027"
-		},
-		{
-			"subjectCanonicalId": "residencia-profesional",
-			"status": "LOCKED",
-			"grade": null,
-			"evaluationType": null,
-			"period": "AGOSTO-DICIEMBRE/2027"
-		}
-	],
-	"course_groups": [
-		{
-			"id": "G-SCC1027-1",
-			"subjectCanonicalId": "graficacion",
-			"groupCode": "SCC-1027-A",
-			"teacherName": "DOC-005",
-			"hasLab": true
-		},
-		{
-			"id": "G-SCC1028-1",
-			"subjectCanonicalId": "administracion-bases-datos",
-			"groupCode": "SCC-1028-A",
-			"teacherName": "DOC-002",
-			"hasLab": true
-		},
-		{
-			"id": "G-ACA0909-1",
-			"subjectCanonicalId": "taller-investigacion-1",
-			"groupCode": "ACA-0909-A",
-			"teacherName": "DOC-007",
-			"hasLab": false
-		},
-		{
-			"id": "G-SCC1029-1",
-			"subjectCanonicalId": "programacion-web",
-			"groupCode": "SCC-1029-A",
-			"teacherName": "DOC-003",
-			"hasLab": true
-		},
-		{
-			"id": "G-SCC1031-1",
-			"subjectCanonicalId": "gestion-proyectos-software",
-			"groupCode": "SCC-1031-A",
-			"teacherName": "DOC-001",
-			"hasLab": false
-		},
-		{
-			"id": "G-ACA0910-1",
-			"subjectCanonicalId": "taller-investigacion-2",
-			"groupCode": "ACA-0910-A",
-			"teacherName": "DOC-007",
-			"hasLab": false
-		},
-		{
-			"id": "G-SCC1027-2",
-			"subjectCanonicalId": "graficacion",
-			"groupCode": "SCC-1027-B",
-			"teacherName": "DOC-006 León",
-			"hasLab": true
-		},
-		{
-			"id": "G-SCC1028-2",
-			"subjectCanonicalId": "administracion-bases-datos",
-			"groupCode": "SCC-1028-B",
-			"teacherName": "DOC-004",
-			"hasLab": true
-		}
-	],
-	"course_schedule_blocks": [
-		{
-			"groupId": "G-SCC1027-1",
-			"day": "L",
-			"startTime": "08:00",
-			"endTime": "10:00",
-			"classroom": "Lab. Cómputo 3"
-		},
-		{
-			"groupId": "G-SCC1027-1",
-			"day": "X",
-			"startTime": "08:00",
-			"endTime": "10:00",
-			"classroom": "Lab. Cómputo 3"
-		},
-		{
-			"groupId": "G-SCC1028-1",
-			"day": "M",
-			"startTime": "10:00",
-			"endTime": "12:00",
-			"classroom": "Lab. Bases de Datos"
-		},
-		{
-			"groupId": "G-SCC1028-1",
-			"day": "J",
-			"startTime": "10:00",
-			"endTime": "12:00",
-			"classroom": "Lab. Bases de Datos"
-		},
-		{
-			"groupId": "G-ACA0909-1",
-			"day": "V",
-			"startTime": "12:00",
-			"endTime": "14:00",
-			"classroom": "Aula 12"
-		},
-		{
-			"groupId": "G-SCC1029-1",
-			"day": "M",
-			"startTime": "14:00",
-			"endTime": "16:00",
-			"classroom": "Lab. Cómputo 1"
-		},
-		{
-			"groupId": "G-SCC1029-1",
-			"day": "V",
-			"startTime": "08:00",
-			"endTime": "10:00",
-			"classroom": "Lab. Cómputo 1"
-		},
-		{
-			"groupId": "G-SCC1031-1",
-			"day": "L",
-			"startTime": "12:00",
-			"endTime": "14:00",
-			"classroom": "Aula 8"
-		},
-		{
-			"groupId": "G-SCC1031-1",
-			"day": "J",
-			"startTime": "12:00",
-			"endTime": "14:00",
-			"classroom": "Aula 8"
-		},
-		{
-			"groupId": "G-ACA0910-1",
-			"day": "X",
-			"startTime": "12:00",
-			"endTime": "14:00",
-			"classroom": "Aula 4"
-		},
-		{
-			"groupId": "G-SCC1027-2",
-			"day": "L",
-			"startTime": "16:00",
-			"endTime": "18:00",
-			"classroom": "Lab. Cómputo 2"
-		},
-		{
-			"groupId": "G-SCC1027-2",
-			"day": "X",
-			"startTime": "16:00",
-			"endTime": "18:00",
-			"classroom": "Lab. Cómputo 2"
-		},
-		{
-			"groupId": "G-SCC1028-2",
-			"day": "M",
-			"startTime": "16:00",
-			"endTime": "18:00",
-			"classroom": "Lab. Bases de Datos"
-		},
-		{
-			"groupId": "G-SCC1028-2",
-			"day": "J",
-			"startTime": "16:00",
-			"endTime": "18:00",
-			"classroom": "Lab. Bases de Datos"
-		}
-	]
+  "version": "ENROLLMENT-2026-AGO",
+  "controlNumber": "12345678",
+  "student_profile": {
+    "controlNumber": "12345678",
+    "fullName": "Ana Gabriela Hernández Ruiz",
+    "curp": "HERA000615MMNRZNA3",
+    "birthState": "Michoacán",
+    "careerCode": "ISIC-2010-224",
+    "specialtyCode": "ISIE-TDD-2026-01",
+    "currentSemester": 7,
+    "certifiedAverage": 8.7,
+    "arithmeticAverage": 8.6,
+    "passedAverage": 8.5,
+    "approvedCredits": 175,
+    "remainingCredits": 85,
+    "completedCredits": 175,
+    "inProgressCredits": 24,
+    "advancePercentage": 67.3,
+    "status": "Activo regular",
+    "healthService": "IMSS",
+    "enrollmentPeriod": "AGOSTO-DICIEMBRE/2026"
+  },
+  "student_progress": [
+    {
+      "subjectCanonicalId": "aca-0907",
+      "status": "APPROVED",
+      "grade": 8.5,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2022"
+    },
+    {
+      "subjectCanonicalId": "acc-0906",
+      "status": "APPROVED",
+      "grade": 9.0,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2022"
+    },
+    {
+      "subjectCanonicalId": "acf-0901",
+      "status": "APPROVED",
+      "grade": 7.8,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2022"
+    },
+    {
+      "subjectCanonicalId": "aed-1285",
+      "status": "APPROVED",
+      "grade": 9.2,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2022"
+    },
+    {
+      "subjectCanonicalId": "aef-1041",
+      "status": "APPROVED",
+      "grade": 8.0,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2022"
+    },
+    {
+      "subjectCanonicalId": "itm-100",
+      "status": "APPROVED",
+      "grade": null,
+      "evaluationType": null,
+      "period": "AGOSTO-DICIEMBRE/2022"
+    },
+    {
+      "subjectCanonicalId": "itm-104",
+      "status": "APPROVED",
+      "grade": null,
+      "evaluationType": null,
+      "period": "AGOSTO-DICIEMBRE/2022"
+    },
+    {
+      "subjectCanonicalId": "sch-1024",
+      "status": "APPROVED",
+      "grade": 7.5,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2022"
+    },
+    {
+      "subjectCanonicalId": "acf-0902",
+      "status": "APPROVED",
+      "grade": 8.7,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2023"
+    },
+    {
+      "subjectCanonicalId": "acf-0903",
+      "status": "APPROVED",
+      "grade": 7.0,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2023"
+    },
+    {
+      "subjectCanonicalId": "aec-1008",
+      "status": "APPROVED",
+      "grade": 8.5,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2023"
+    },
+    {
+      "subjectCanonicalId": "aec-1058",
+      "status": "APPROVED",
+      "grade": 8.2,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2023"
+    },
+    {
+      "subjectCanonicalId": "aed-1286",
+      "status": "APPROVED",
+      "grade": 8.8,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2023"
+    },
+    {
+      "subjectCanonicalId": "aef-1052",
+      "status": "APPROVED",
+      "grade": 9.0,
+      "evaluationType": "REPETICION",
+      "period": "ENERO-JUNIO/2023"
+    },
+    {
+      "subjectCanonicalId": "itm-105",
+      "status": "APPROVED",
+      "grade": null,
+      "evaluationType": null,
+      "period": "ENERO-JUNIO/2023"
+    },
+    {
+      "subjectCanonicalId": "acd-0908",
+      "status": "APPROVED",
+      "grade": 7.2,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2023"
+    },
+    {
+      "subjectCanonicalId": "acf-0904",
+      "status": "APPROVED",
+      "grade": 8.0,
+      "evaluationType": "ESPECIAL",
+      "period": "AGOSTO-DICIEMBRE/2023"
+    },
+    {
+      "subjectCanonicalId": "aed-1026",
+      "status": "APPROVED",
+      "grade": 7.8,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2023"
+    },
+    {
+      "subjectCanonicalId": "scc-1005",
+      "status": "APPROVED",
+      "grade": 8.5,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2023"
+    },
+    {
+      "subjectCanonicalId": "scc-1013",
+      "status": "APPROVED",
+      "grade": 9.0,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2023"
+    },
+    {
+      "subjectCanonicalId": "scf-1006",
+      "status": "APPROVED",
+      "grade": 7.5,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2023"
+    },
+    {
+      "subjectCanonicalId": "acf-0905",
+      "status": "APPROVED",
+      "grade": 8.8,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2024"
+    },
+    {
+      "subjectCanonicalId": "aef-1031",
+      "status": "APPROVED",
+      "grade": 7.0,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2024"
+    },
+    {
+      "subjectCanonicalId": "scc-1017",
+      "status": "APPROVED",
+      "grade": 8.5,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2024"
+    },
+    {
+      "subjectCanonicalId": "scd-1018",
+      "status": "APPROVED",
+      "grade": 8.7,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2024"
+    },
+    {
+      "subjectCanonicalId": "scd-1022",
+      "status": "APPROVED",
+      "grade": 8.0,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2024"
+    },
+    {
+      "subjectCanonicalId": "scd-1027",
+      "status": "APPROVED",
+      "grade": 9.2,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2024"
+    },
+    {
+      "subjectCanonicalId": "aec-1034",
+      "status": "APPROVED",
+      "grade": 8.0,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2024"
+    },
+    {
+      "subjectCanonicalId": "aec-1061",
+      "status": "APPROVED",
+      "grade": 8.8,
+      "evaluationType": "REPETICION",
+      "period": "AGOSTO-DICIEMBRE/2024"
+    },
+    {
+      "subjectCanonicalId": "sca-1025",
+      "status": "APPROVED",
+      "grade": 8.5,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2024"
+    },
+    {
+      "subjectCanonicalId": "scc-1007",
+      "status": "APPROVED",
+      "grade": 9.0,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2024"
+    },
+    {
+      "subjectCanonicalId": "scc-1010",
+      "status": "APPROVED",
+      "grade": 8.4,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2024"
+    },
+    {
+      "subjectCanonicalId": "scd-1003",
+      "status": "APPROVED",
+      "grade": 7.6,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2024"
+    },
+    {
+      "subjectCanonicalId": "tdd-2301",
+      "status": "APPROVED",
+      "grade": 8.9,
+      "evaluationType": "ORDINARIO",
+      "period": "AGOSTO-DICIEMBRE/2024"
+    },
+    {
+      "subjectCanonicalId": "aeb-1055",
+      "status": "APPROVED",
+      "grade": 9.3,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2025"
+    },
+    {
+      "subjectCanonicalId": "sca-1026",
+      "status": "APPROVED",
+      "grade": 8.1,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2025"
+    },
+    {
+      "subjectCanonicalId": "scb-1001",
+      "status": "APPROVED",
+      "grade": 7.9,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2025"
+    },
+    {
+      "subjectCanonicalId": "scc-1014",
+      "status": "APPROVED",
+      "grade": 8.6,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2025"
+    },
+    {
+      "subjectCanonicalId": "scd-1011",
+      "status": "APPROVED",
+      "grade": 7.4,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2025"
+    },
+    {
+      "subjectCanonicalId": "scd-1021",
+      "status": "APPROVED",
+      "grade": 8.8,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2025"
+    },
+    {
+      "subjectCanonicalId": "tdd-2302",
+      "status": "APPROVED",
+      "grade": 9.1,
+      "evaluationType": "ORDINARIO",
+      "period": "ENERO-JUNIO/2025"
+    },
+    {
+      "subjectCanonicalId": "aca-0909",
+      "status": "ENROLLED",
+      "grade": null,
+      "evaluationType": null,
+      "period": "AGOSTO-DICIEMBRE/2026"
+    },
+    {
+      "subjectCanonicalId": "itm-101",
+      "status": "ENROLLED",
+      "grade": null,
+      "evaluationType": null,
+      "period": "AGOSTO-DICIEMBRE/2026"
+    },
+    {
+      "subjectCanonicalId": "scc-1023",
+      "status": "ENROLLED",
+      "grade": null,
+      "evaluationType": null,
+      "period": "AGOSTO-DICIEMBRE/2026"
+    },
+    {
+      "subjectCanonicalId": "scd-1004",
+      "status": "ENROLLED",
+      "grade": null,
+      "evaluationType": null,
+      "period": "AGOSTO-DICIEMBRE/2026"
+    },
+    {
+      "subjectCanonicalId": "scd-1015",
+      "status": "ENROLLED",
+      "grade": null,
+      "evaluationType": null,
+      "period": "AGOSTO-DICIEMBRE/2026"
+    },
+    {
+      "subjectCanonicalId": "scg-1009",
+      "status": "ENROLLED",
+      "grade": null,
+      "evaluationType": null,
+      "period": "AGOSTO-DICIEMBRE/2026"
+    },
+    {
+      "subjectCanonicalId": "sca-1002",
+      "status": "LOCKED",
+      "grade": null,
+      "evaluationType": null,
+      "period": "ENERO-JUNIO/2027"
+    },
+    {
+      "subjectCanonicalId": "scd-1016",
+      "status": "LOCKED",
+      "grade": null,
+      "evaluationType": null,
+      "period": "ENERO-JUNIO/2027"
+    }
+  ],
+  "course_groups": [
+    {
+      "id": "G-SCD1004-1",
+      "subjectCanonicalId": "scd-1004",
+      "groupCode": "B7A",
+      "teacherName": "DOC-001",
+      "hasLab": false
+    },
+    {
+      "id": "G-SCD1004-2",
+      "subjectCanonicalId": "scd-1004",
+      "groupCode": "B7B",
+      "teacherName": "DOC-002",
+      "hasLab": false
+    },
+    {
+      "id": "G-SCD1015-1",
+      "subjectCanonicalId": "scd-1015",
+      "groupCode": "B7C",
+      "teacherName": "DOC-003",
+      "hasLab": false
+    },
+    {
+      "id": "G-ACA0909-1",
+      "subjectCanonicalId": "aca-0909",
+      "groupCode": "B7D",
+      "teacherName": "DOC-004",
+      "hasLab": false
+    },
+    {
+      "id": "G-SCG1009-1",
+      "subjectCanonicalId": "scg-1009",
+      "groupCode": "B7E",
+      "teacherName": "DOC-005",
+      "hasLab": false
+    },
+    {
+      "id": "G-SCG1009-2",
+      "subjectCanonicalId": "scg-1009",
+      "groupCode": "B7F",
+      "teacherName": "DOC-006",
+      "hasLab": false
+    },
+    {
+      "id": "G-SCC1023-1",
+      "subjectCanonicalId": "scc-1023",
+      "groupCode": "B5LA",
+      "teacherName": "DOC-007",
+      "hasLab": true
+    }
+  ],
+  "course_schedule_blocks": [
+    {
+      "groupId": "G-SCD1004-1",
+      "day": "L",
+      "startTime": "08:00",
+      "endTime": "10:00",
+      "classroom": "Lab. Redes"
+    },
+    {
+      "groupId": "G-SCD1004-1",
+      "day": "J",
+      "startTime": "08:00",
+      "endTime": "10:00",
+      "classroom": "Lab. Redes"
+    },
+    {
+      "groupId": "G-SCD1004-2",
+      "day": "L",
+      "startTime": "10:00",
+      "endTime": "12:00",
+      "classroom": "Lab. Redes"
+    },
+    {
+      "groupId": "G-SCD1004-2",
+      "day": "J",
+      "startTime": "10:00",
+      "endTime": "12:00",
+      "classroom": "Lab. Redes"
+    },
+    {
+      "groupId": "G-SCD1015-1",
+      "day": "M",
+      "startTime": "10:00",
+      "endTime": "12:00",
+      "classroom": "Aula 12"
+    },
+    {
+      "groupId": "G-SCD1015-1",
+      "day": "V",
+      "startTime": "10:00",
+      "endTime": "12:00",
+      "classroom": "Aula 12"
+    },
+    {
+      "groupId": "G-ACA0909-1",
+      "day": "L",
+      "startTime": "12:00",
+      "endTime": "14:00",
+      "classroom": "Aula 8"
+    },
+    {
+      "groupId": "G-ACA0909-1",
+      "day": "M",
+      "startTime": "12:00",
+      "endTime": "14:00",
+      "classroom": "Aula 8"
+    },
+    {
+      "groupId": "G-SCG1009-1",
+      "day": "X",
+      "startTime": "14:00",
+      "endTime": "16:00",
+      "classroom": "Aula 6"
+    },
+    {
+      "groupId": "G-SCG1009-1",
+      "day": "V",
+      "startTime": "14:00",
+      "endTime": "16:00",
+      "classroom": "Aula 6"
+    },
+    {
+      "groupId": "G-SCG1009-2",
+      "day": "X",
+      "startTime": "16:00",
+      "endTime": "18:00",
+      "classroom": "Aula 6"
+    },
+    {
+      "groupId": "G-SCG1009-2",
+      "day": "V",
+      "startTime": "16:00",
+      "endTime": "18:00",
+      "classroom": "Aula 6"
+    },
+    {
+      "groupId": "G-SCC1023-1",
+      "day": "L",
+      "startTime": "16:00",
+      "endTime": "18:00",
+      "classroom": "Lab. Electrónica"
+    },
+    {
+      "groupId": "G-SCC1023-1",
+      "day": "X",
+      "startTime": "16:00",
+      "endTime": "18:00",
+      "classroom": "Lab. Electrónica"
+    }
+  ]
 }

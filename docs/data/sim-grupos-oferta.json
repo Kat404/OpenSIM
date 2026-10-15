@@ -1,0 +1,4220 @@
+{
+	"source": "SIM TecNM Morelia · /reinscripcion/grupos",
+	"retrieved": "2026-10-07",
+	"note": "hasLab = icono de matraz (fa-flask) en la fila del grupo, segun la nota 'Los grupos marcados con (matraz) indican que tienen laboratorio'",
+	"groups": [
+		{
+			"period": null,
+			"code": "ITM-104",
+			"name": "ACTIVIDADES FISICAS PARA LA SALUD Y LA PREVENCION",
+			"group": "A",
+			"teacher": "DOC-053",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ITM-104",
+			"name": "ACTIVIDADES FISICAS PARA LA SALUD Y LA PREVENCION",
+			"group": "B",
+			"teacher": "DOC-074",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ITM-104",
+			"name": "ACTIVIDADES FISICAS PARA LA SALUD Y LA PREVENCION",
+			"group": "C",
+			"teacher": "DOC-085",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ITM-104",
+			"name": "ACTIVIDADES FISICAS PARA LA SALUD Y LA PREVENCION",
+			"group": "D",
+			"teacher": "DOC-056",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-2301",
+			"name": "CALCULO DIFERENCIAL",
+			"group": "A",
+			"teacher": "DOC-083",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-2301",
+			"name": "CALCULO DIFERENCIAL",
+			"group": "B",
+			"teacher": "DOC-059",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-2301",
+			"name": "CALCULO DIFERENCIAL",
+			"group": "C",
+			"teacher": "DOC-028",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-2301",
+			"name": "CALCULO DIFERENCIAL",
+			"group": "D",
+			"teacher": "DOC-026",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-2301",
+			"name": "CALCULO DIFERENCIAL",
+			"group": "REP1",
+			"teacher": "DOC-037",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-2301",
+			"name": "CALCULO DIFERENCIAL",
+			"group": "REP2",
+			"teacher": "DOC-025",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-2301",
+			"name": "CALCULO DIFERENCIAL",
+			"group": "rep2",
+			"teacher": "DOC-084",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACC-0906",
+			"name": "FUNDAMENTOS DE INVESTIGACION",
+			"group": "A",
+			"teacher": "DOC-115",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACC-0906",
+			"name": "FUNDAMENTOS DE INVESTIGACION",
+			"group": "B",
+			"teacher": "DOC-115",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACC-0906",
+			"name": "FUNDAMENTOS DE INVESTIGACION",
+			"group": "C",
+			"teacher": "DOC-115",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACC-0906",
+			"name": "FUNDAMENTOS DE INVESTIGACION",
+			"group": "D",
+			"teacher": "DOC-073",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACC-0906",
+			"name": "FUNDAMENTOS DE INVESTIGACION",
+			"group": "E",
+			"teacher": "DOC-049",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "A",
+			"teacher": "DOC-080",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "B",
+			"teacher": "DOC-080",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "C",
+			"teacher": "DOC-113",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "D",
+			"teacher": "DOC-113",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "E",
+			"teacher": "DOC-073",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "F",
+			"teacher": "DOC-006",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "G",
+			"teacher": "DOC-017",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "REP",
+			"teacher": "DOC-096",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEF-1041",
+			"name": "MATEMÁTICAS DISCRETAS",
+			"group": "A",
+			"teacher": "DOC-103",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEF-1041",
+			"name": "MATEMÁTICAS DISCRETAS",
+			"group": "B",
+			"teacher": "DOC-082",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEF-1041",
+			"name": "MATEMÁTICAS DISCRETAS",
+			"group": "C",
+			"teacher": "DOC-035",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEF-1041",
+			"name": "MATEMÁTICAS DISCRETAS",
+			"group": "D",
+			"teacher": "DOC-103",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEF-1041",
+			"name": "MATEMÁTICAS DISCRETAS",
+			"group": "E",
+			"teacher": "DOC-016",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCH-1024",
+			"name": "TALLER DE ADMINISTRACION",
+			"group": "A",
+			"teacher": "DOC-060",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCH-1024",
+			"name": "TALLER DE ADMINISTRACION",
+			"group": "B",
+			"teacher": "DOC-060",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCH-1024",
+			"name": "TALLER DE ADMINISTRACION",
+			"group": "C",
+			"teacher": "DOC-089",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCH-1024",
+			"name": "TALLER DE ADMINISTRACION",
+			"group": "D",
+			"teacher": "DOC-021",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCH-1024",
+			"name": "TALLER DE ADMINISTRACION",
+			"group": "E",
+			"teacher": "DOC-076",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACH-2307",
+			"name": "TALLER DE ETICA",
+			"group": "A",
+			"teacher": "DOC-103",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACH-2307",
+			"name": "TALLER DE ETICA",
+			"group": "B",
+			"teacher": "DOC-035",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACH-2307",
+			"name": "TALLER DE ETICA",
+			"group": "C",
+			"teacher": "DOC-092",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACH-2307",
+			"name": "TALLER DE ETICA",
+			"group": "D",
+			"teacher": "DOC-069",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACH-2307",
+			"name": "TALLER DE ETICA",
+			"group": "E",
+			"teacher": "DOC-109",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ITM-100",
+			"name": "TUTORIA",
+			"group": "A",
+			"teacher": "DOC-115",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ITM-100",
+			"name": "TUTORIA",
+			"group": "B",
+			"teacher": "DOC-036",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ITM-100",
+			"name": "TUTORIA",
+			"group": "C",
+			"teacher": "DOC-118",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ITM-100",
+			"name": "TUTORIA",
+			"group": "D",
+			"teacher": "DOC-013",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0903",
+			"name": "ALGEBRA LINEAL",
+			"group": "A",
+			"teacher": "DOC-084",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0903",
+			"name": "ALGEBRA LINEAL",
+			"group": "B",
+			"teacher": "DOC-030",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0903",
+			"name": "ALGEBRA LINEAL",
+			"group": "C",
+			"teacher": "DOC-004",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0903",
+			"name": "ALGEBRA LINEAL",
+			"group": "E",
+			"teacher": "DOC-025",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ITM-105",
+			"name": "APRECIACION DE LAS ARTES Y DIVERSIDAD CULTURAL",
+			"group": "A",
+			"teacher": "DOC-068",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ITM-105",
+			"name": "APRECIACION DE LAS ARTES Y DIVERSIDAD CULTURAL",
+			"group": "B",
+			"teacher": "DOC-068",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ITM-105",
+			"name": "APRECIACION DE LAS ARTES Y DIVERSIDAD CULTURAL",
+			"group": "C",
+			"teacher": "DOC-091",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0902",
+			"name": "CALCULO INTEGRAL",
+			"group": "A",
+			"teacher": "DOC-045",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0902",
+			"name": "CALCULO INTEGRAL",
+			"group": "B",
+			"teacher": "DOC-100",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0902",
+			"name": "CALCULO INTEGRAL",
+			"group": "C",
+			"teacher": "DOC-043",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0902",
+			"name": "CALCULO INTEGRAL",
+			"group": "D",
+			"teacher": "DOC-045",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0902",
+			"name": "CALCULO INTEGRAL",
+			"group": "E",
+			"teacher": "DOC-120",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEC-1008",
+			"name": "CONTABILIDAD FINANCIERA",
+			"group": "A",
+			"teacher": "DOC-111",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEC-1008",
+			"name": "CONTABILIDAD FINANCIERA",
+			"group": "B",
+			"teacher": "DOC-023",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEC-1008",
+			"name": "CONTABILIDAD FINANCIERA",
+			"group": "C",
+			"teacher": "DOC-011",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEF-1052",
+			"name": "PROBABILIDAD Y ESTADÍSTICA",
+			"group": "A",
+			"teacher": "DOC-112",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEF-1052",
+			"name": "PROBABILIDAD Y ESTADÍSTICA",
+			"group": "B",
+			"teacher": "DOC-112",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEF-1052",
+			"name": "PROBABILIDAD Y ESTADÍSTICA",
+			"group": "C",
+			"teacher": "DOC-097",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1286",
+			"name": "PROGRAMACION ORIENTADA A OBJETOS",
+			"group": "A",
+			"teacher": "DOC-055",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1286",
+			"name": "PROGRAMACION ORIENTADA A OBJETOS",
+			"group": "B",
+			"teacher": "DOC-036",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1286",
+			"name": "PROGRAMACION ORIENTADA A OBJETOS",
+			"group": "C",
+			"teacher": "DOC-055",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEC-1058",
+			"name": "QUIMICA",
+			"group": "A",
+			"teacher": "DOC-108",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B2L4",
+			"name": "LABORATORIO DE QUIMICA QUIMICA / A",
+			"group": "AA",
+			"teacher": "DOC-012",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B2L4",
+			"name": "LABORATORIO DE QUIMICA QUIMICA / A",
+			"group": "AB",
+			"teacher": "DOC-088",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B2L4",
+			"name": "LABORATORIO DE QUIMICA QUIMICA / A",
+			"group": "APR",
+			"teacher": "DOC-119",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B2L4",
+			"name": "LABORATORIO DE QUIMICA QUIMICA / A",
+			"group": "BA",
+			"teacher": "DOC-108",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B2L4",
+			"name": "LABORATORIO DE QUIMICA QUIMICA / A",
+			"group": "BB",
+			"teacher": "DOC-020",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "AEC-1058",
+			"name": "QUIMICA",
+			"group": "B",
+			"teacher": "DOC-020",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "AEC-1058",
+			"name": "QUIMICA",
+			"group": "C",
+			"teacher": "DOC-003",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "ACF-0904",
+			"name": "CALCULO VECTORIAL",
+			"group": "A",
+			"teacher": "DOC-070",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0904",
+			"name": "CALCULO VECTORIAL",
+			"group": "B",
+			"teacher": "DOC-072",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0904",
+			"name": "CALCULO VECTORIAL",
+			"group": "C",
+			"teacher": "DOC-050",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0904",
+			"name": "CALCULO VECTORIAL",
+			"group": "D",
+			"teacher": "DOC-007",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0904",
+			"name": "CALCULO VECTORIAL",
+			"group": "E",
+			"teacher": "DOC-072",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0904",
+			"name": "CALCULO VECTORIAL",
+			"group": "E",
+			"teacher": "DOC-090",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1005",
+			"name": "CULTURA EMPRESARIAL",
+			"group": "A",
+			"teacher": "DOC-060",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1005",
+			"name": "CULTURA EMPRESARIAL",
+			"group": "B",
+			"teacher": "DOC-098",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1005",
+			"name": "CULTURA EMPRESARIAL",
+			"group": "C",
+			"teacher": "DOC-018",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1005",
+			"name": "CULTURA EMPRESARIAL",
+			"group": "D",
+			"teacher": "DOC-029",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACD-0908",
+			"name": "DESARROLLO SUSTENTABLE",
+			"group": "A",
+			"teacher": "DOC-032",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACD-0908",
+			"name": "DESARROLLO SUSTENTABLE",
+			"group": "B",
+			"teacher": "DOC-058",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACD-0908",
+			"name": "DESARROLLO SUSTENTABLE",
+			"group": "C",
+			"teacher": "DOC-009",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACD-0908",
+			"name": "DESARROLLO SUSTENTABLE",
+			"group": "D",
+			"teacher": "DOC-014",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACD-0908",
+			"name": "DESARROLLO SUSTENTABLE",
+			"group": "E",
+			"teacher": "DOC-093",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACD-0908",
+			"name": "DESARROLLO SUSTENTABLE",
+			"group": "E",
+			"teacher": "DOC-032",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACD-0908",
+			"name": "DESARROLLO SUSTENTABLE",
+			"group": "F",
+			"teacher": "DOC-019",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1026",
+			"name": "ESTRUCTURA DE DATOS",
+			"group": "A",
+			"teacher": "DOC-006",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1026",
+			"name": "ESTRUCTURA DE DATOS",
+			"group": "B",
+			"teacher": "DOC-036",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1026",
+			"name": "ESTRUCTURA DE DATOS",
+			"group": "C",
+			"teacher": "DOC-038",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AED-1026",
+			"name": "ESTRUCTURA DE DATOS",
+			"group": "D",
+			"teacher": "DOC-036",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCF-1006",
+			"name": "FISICA GENERAL",
+			"group": "A",
+			"teacher": "DOC-037",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B3LA",
+			"name": "LABORATORIO DE FISICA GENERAL FISICA GENERAL / A",
+			"group": "AA",
+			"teacher": "DOC-044",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B3LA",
+			"name": "LABORATORIO DE FISICA GENERAL FISICA GENERAL / A",
+			"group": "AB",
+			"teacher": "DOC-027",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B3LA",
+			"name": "LABORATORIO DE FISICA GENERAL FISICA GENERAL / A",
+			"group": "APR",
+			"teacher": "DOC-119",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B3LA",
+			"name": "LABORATORIO DE FISICA GENERAL FISICA GENERAL / A",
+			"group": "BA",
+			"teacher": "DOC-044",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B3LA",
+			"name": "LABORATORIO DE FISICA GENERAL FISICA GENERAL / A",
+			"group": "BB",
+			"teacher": "DOC-044",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B3LA",
+			"name": "LABORATORIO DE FISICA GENERAL FISICA GENERAL / A",
+			"group": "BC",
+			"teacher": "DOC-106",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B3LA",
+			"name": "LABORATORIO DE FISICA GENERAL FISICA GENERAL / A",
+			"group": "CA",
+			"teacher": "DOC-086",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "SCF-1006",
+			"name": "FISICA GENERAL",
+			"group": "B",
+			"teacher": "DOC-095",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "SCF-1006",
+			"name": "FISICA GENERAL",
+			"group": "C",
+			"teacher": "DOC-026",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "SCF-1006",
+			"name": "FISICA GENERAL",
+			"group": "D",
+			"teacher": "DOC-037",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "SCC-1013",
+			"name": "INVESTIGACION DE OPERACIONES",
+			"group": "A",
+			"teacher": "DOC-101",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1013",
+			"name": "INVESTIGACION DE OPERACIONES",
+			"group": "B",
+			"teacher": "DOC-101",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1013",
+			"name": "INVESTIGACION DE OPERACIONES",
+			"group": "C",
+			"teacher": "DOC-121",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1013",
+			"name": "INVESTIGACION DE OPERACIONES",
+			"group": "D",
+			"teacher": "DOC-121",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0905",
+			"name": "ECUACIONES DIFERENCIALES",
+			"group": "A",
+			"teacher": "DOC-043",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0905",
+			"name": "ECUACIONES DIFERENCIALES",
+			"group": "B",
+			"teacher": "DOC-067",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACF-0905",
+			"name": "ECUACIONES DIFERENCIALES",
+			"group": "C",
+			"teacher": "DOC-117",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEF-1031",
+			"name": "FUNDAMENTOS DE BASE DE DATOS",
+			"group": "A",
+			"teacher": "DOC-065",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEF-1031",
+			"name": "FUNDAMENTOS DE BASE DE DATOS",
+			"group": "B",
+			"teacher": "DOC-063",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEF-1031",
+			"name": "FUNDAMENTOS DE BASE DE DATOS",
+			"group": "C",
+			"teacher": "DOC-063",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1017",
+			"name": "METODOS NUMERICOS",
+			"group": "A",
+			"teacher": "DOC-105",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1017",
+			"name": "METODOS NUMERICOS",
+			"group": "B",
+			"teacher": "DOC-116",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1017",
+			"name": "METODOS NUMERICOS",
+			"group": "C",
+			"teacher": "DOC-062",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1017",
+			"name": "METODOS NUMERICOS",
+			"group": "D",
+			"teacher": "DOC-052",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1018",
+			"name": "PRINCIPIOS ELECTRICOS Y APLICACIONES DIGITALES",
+			"group": "A",
+			"teacher": "DOC-048",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B4LA",
+			"name": "LAB PRINCIPIOS ELECTRICOS PRIN ELEC AP / A",
+			"group": "AA",
+			"teacher": "DOC-048",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B4LA",
+			"name": "LAB PRINCIPIOS ELECTRICOS PRIN ELEC AP / A",
+			"group": "AB",
+			"teacher": "DOC-048",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B4LA",
+			"name": "LAB PRINCIPIOS ELECTRICOS PRIN ELEC AP / A",
+			"group": "BA",
+			"teacher": "DOC-048",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B4LA",
+			"name": "LAB PRINCIPIOS ELECTRICOS PRIN ELEC AP / A",
+			"group": "BB",
+			"teacher": "DOC-048",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "SCD-1018",
+			"name": "PRINCIPIOS ELECTRICOS Y APLICACIONES DIGITALES",
+			"group": "B",
+			"teacher": "DOC-048",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "SCD-1018",
+			"name": "PRINCIPIOS ELECTRICOS Y APLICACIONES DIGITALES",
+			"group": "C",
+			"teacher": "DOC-010",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B4LA",
+			"name": "LAB PRINCIPIOS ELECTRICOS PRIN ELEC AP / C",
+			"group": "CA",
+			"teacher": "DOC-010",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "SCD-1022",
+			"name": "SIMULACION",
+			"group": "A",
+			"teacher": "DOC-112",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1022",
+			"name": "SIMULACION",
+			"group": "B",
+			"teacher": "DOC-097",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1022",
+			"name": "SIMULACION",
+			"group": "C",
+			"teacher": "DOC-066",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1027",
+			"name": "TOPICOS AVANZADOS DE PROGRAMACION",
+			"group": "A",
+			"teacher": "DOC-005",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1027",
+			"name": "TOPICOS AVANZADOS DE PROGRAMACION",
+			"group": "B",
+			"teacher": "DOC-005",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1027",
+			"name": "TOPICOS AVANZADOS DE PROGRAMACION",
+			"group": "C",
+			"teacher": "DOC-118",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1003",
+			"name": "ARQUITECTURA DE COMPUTADORAS",
+			"group": "A",
+			"teacher": "DOC-048",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B5LB",
+			"name": "LABORATORIO DE ARQUITECTURA DE COMPUTADORAS ARQ COMP / A",
+			"group": "AA",
+			"teacher": "DOC-048",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B5LB",
+			"name": "LABORATORIO DE ARQUITECTURA DE COMPUTADORAS ARQ COMP / A",
+			"group": "AB",
+			"teacher": "DOC-048",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "SCD-1003",
+			"name": "ARQUITECTURA DE COMPUTADORAS",
+			"group": "B",
+			"teacher": "DOC-054",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B5LB",
+			"name": "LABORATORIO DE ARQUITECTURA DE COMPUTADORAS ARQ COMP / B",
+			"group": "BA",
+			"teacher": "DOC-048",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B5LB",
+			"name": "LABORATORIO DE ARQUITECTURA DE COMPUTADORAS ARQ COMP / B",
+			"group": "BB",
+			"teacher": "DOC-001",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "SCD-1003",
+			"name": "ARQUITECTURA DE COMPUTADORAS",
+			"group": "C",
+			"teacher": "DOC-001",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B5LB",
+			"name": "LABORATORIO DE ARQUITECTURA DE COMPUTADORAS ARQ COMP / C",
+			"group": "CA",
+			"teacher": "DOC-001",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "SCC-1007",
+			"name": "FUNDAMENTOS DE INGENIERIA DE SOFTWARE",
+			"group": "A",
+			"teacher": "DOC-039",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1007",
+			"name": "FUNDAMENTOS DE INGENIERIA DE SOFTWARE",
+			"group": "B",
+			"teacher": "DOC-008",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1007",
+			"name": "FUNDAMENTOS DE INGENIERIA DE SOFTWARE",
+			"group": "C",
+			"teacher": "DOC-039",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEC-1034",
+			"name": "FUNDAMENTOS DE TELECOMUNICACIONES",
+			"group": "A",
+			"teacher": "DOC-077",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEC-1034",
+			"name": "FUNDAMENTOS DE TELECOMUNICACIONES",
+			"group": "B",
+			"teacher": "DOC-061",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEC-1034",
+			"name": "FUNDAMENTOS DE TELECOMUNICACIONES",
+			"group": "C",
+			"teacher": "DOC-065",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1010",
+			"name": "GRAFICACION",
+			"group": "A",
+			"teacher": "DOC-061",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1010",
+			"name": "GRAFICACION",
+			"group": "B",
+			"teacher": "DOC-069",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1010",
+			"name": "GRAFICACION",
+			"group": "C",
+			"teacher": "DOC-069",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEC-1061",
+			"name": "SISTEMAS OPERATIVOS",
+			"group": "A",
+			"teacher": "DOC-016",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEC-1061",
+			"name": "SISTEMAS OPERATIVOS",
+			"group": "B",
+			"teacher": "DOC-016",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEC-1061",
+			"name": "SISTEMAS OPERATIVOS",
+			"group": "C",
+			"teacher": "DOC-051",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCA-1025",
+			"name": "TALLER DE BASE DE DATOS",
+			"group": "A",
+			"teacher": "DOC-013",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCA-1025",
+			"name": "TALLER DE BASE DE DATOS",
+			"group": "B",
+			"teacher": "DOC-017",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCA-1025",
+			"name": "TALLER DE BASE DE DATOS",
+			"group": "C",
+			"teacher": "DOC-038",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCB-1001",
+			"name": "ADMINISTRACION DE BASE DE DATOS",
+			"group": "A",
+			"teacher": "DOC-113",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCB-1001",
+			"name": "ADMINISTRACION DE BASE DE DATOS",
+			"group": "B",
+			"teacher": "DOC-041",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCB-1001",
+			"name": "ADMINISTRACION DE BASE DE DATOS",
+			"group": "C",
+			"teacher": "DOC-063",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1011",
+			"name": "INGENIERIA DE SOFTWARE",
+			"group": "A",
+			"teacher": "DOC-033",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1011",
+			"name": "INGENIERIA DE SOFTWARE",
+			"group": "B",
+			"teacher": "DOC-022",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1011",
+			"name": "INGENIERIA DE SOFTWARE",
+			"group": "C",
+			"teacher": "DOC-008",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1014",
+			"name": "LENGUAJES DE INTERFAZ",
+			"group": "A",
+			"teacher": "DOC-064",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B6LE",
+			"name": "LAB LENGUAJES DE INTERFAZ LENG INTERFAZ / A",
+			"group": "AA",
+			"teacher": "DOC-064",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B6LE",
+			"name": "LAB LENGUAJES DE INTERFAZ LENG INTERFAZ / A",
+			"group": "AB",
+			"teacher": "DOC-064",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B6LE",
+			"name": "LAB LENGUAJES DE INTERFAZ LENG INTERFAZ / A",
+			"group": "BA",
+			"teacher": "DOC-064",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B6LE",
+			"name": "LAB LENGUAJES DE INTERFAZ LENG INTERFAZ / A",
+			"group": "BB",
+			"teacher": "DOC-064",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B6LE",
+			"name": "LAB LENGUAJES DE INTERFAZ LENG INTERFAZ / A",
+			"group": "CA",
+			"teacher": "DOC-064",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "SCC-1014",
+			"name": "LENGUAJES DE INTERFAZ",
+			"group": "B",
+			"teacher": "DOC-064",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "SCC-1014",
+			"name": "LENGUAJES DE INTERFAZ",
+			"group": "C",
+			"teacher": "DOC-064",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "AEB-1055",
+			"name": "PROGRAMACION WEB",
+			"group": "A",
+			"teacher": "DOC-041",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEB-1055",
+			"name": "PROGRAMACION WEB",
+			"group": "B",
+			"teacher": "DOC-008",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "AEB-1055",
+			"name": "PROGRAMACION WEB",
+			"group": "C",
+			"teacher": "DOC-008",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1021",
+			"name": "REDES DE COMPUTADORAS",
+			"group": "A",
+			"teacher": "DOC-015",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1021",
+			"name": "REDES DE COMPUTADORAS",
+			"group": "B",
+			"teacher": "DOC-114",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1021",
+			"name": "REDES DE COMPUTADORAS",
+			"group": "C",
+			"teacher": "DOC-015",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1021",
+			"name": "REDES DE COMPUTADORAS",
+			"group": "D",
+			"teacher": "DOC-031",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCA-1026",
+			"name": "TALLER DE SISTEMAS OPERATIVOS",
+			"group": "A",
+			"teacher": "DOC-016",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCA-1026",
+			"name": "TALLER DE SISTEMAS OPERATIVOS",
+			"group": "B",
+			"teacher": "DOC-016",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCA-1026",
+			"name": "TALLER DE SISTEMAS OPERATIVOS",
+			"group": "C",
+			"teacher": "DOC-114",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1004",
+			"name": "CONMUTACION Y ENRUTAMIENTO EN REDES DE DATOS",
+			"group": "A",
+			"teacher": "DOC-002",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1004",
+			"name": "CONMUTACION Y ENRUTAMIENTO EN REDES DE DATOS",
+			"group": "B",
+			"teacher": "DOC-002",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1004",
+			"name": "CONMUTACION Y ENRUTAMIENTO EN REDES DE DATOS",
+			"group": "C",
+			"teacher": "DOC-002",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1004",
+			"name": "CONMUTACION Y ENRUTAMIENTO EN REDES DE DATOS",
+			"group": "D",
+			"teacher": "DOC-002",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCG-1009",
+			"name": "GESTION DE PROYECTOS DE SOFTWARE",
+			"group": "A",
+			"teacher": "DOC-046",
+			"credits": 6,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCG-1009",
+			"name": "GESTION DE PROYECTOS DE SOFTWARE",
+			"group": "B",
+			"teacher": "DOC-046",
+			"credits": 6,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCG-1009",
+			"name": "GESTION DE PROYECTOS DE SOFTWARE",
+			"group": "C",
+			"teacher": "DOC-046",
+			"credits": 6,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "TND-2301",
+			"name": "INTEGRACION CONTINUA DE PROYECTOS WEB",
+			"group": "A",
+			"teacher": "DOC-005",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1015",
+			"name": "LENGUAJES Y AUTOMATAS I",
+			"group": "A",
+			"teacher": "DOC-069",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1015",
+			"name": "LENGUAJES Y AUTOMATAS I",
+			"group": "B",
+			"teacher": "DOC-063",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1015",
+			"name": "LENGUAJES Y AUTOMATAS I",
+			"group": "C",
+			"teacher": "DOC-038",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SID-2301",
+			"name": "SEGURIDAD EN INFRAESTRUCTURA",
+			"group": "A",
+			"teacher": "DOC-036",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1023",
+			"name": "SISTEMAS PROGRAMABLES",
+			"group": "A",
+			"teacher": "DOC-081",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B5LA",
+			"name": "LABORATORIO DE SISTEMAS PROGRAMABLES SIST PROG / A",
+			"group": "AA",
+			"teacher": "DOC-081",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B5LA",
+			"name": "LABORATORIO DE SISTEMAS PROGRAMABLES SIST PROG / A",
+			"group": "AB",
+			"teacher": "DOC-081",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "SCC-1023",
+			"name": "SISTEMAS PROGRAMABLES",
+			"group": "B",
+			"teacher": "DOC-087",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B5LA",
+			"name": "LABORATORIO DE SISTEMAS PROGRAMABLES SIST PROG / B",
+			"group": "BA",
+			"teacher": "DOC-087",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B5LA",
+			"name": "LABORATORIO DE SISTEMAS PROGRAMABLES SIST PROG / B",
+			"group": "BB",
+			"teacher": "DOC-087",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "SCC-1023",
+			"name": "SISTEMAS PROGRAMABLES",
+			"group": "C",
+			"teacher": "DOC-107",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "B5LA",
+			"name": "LABORATORIO DE SISTEMAS PROGRAMABLES SIST PROG / C",
+			"group": "CA",
+			"teacher": "DOC-107",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": null,
+			"code": "ACA-0909",
+			"name": "TALLER DE INVESTIGACION I",
+			"group": "A",
+			"teacher": "DOC-069",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACA-0909",
+			"name": "TALLER DE INVESTIGACION I",
+			"group": "B",
+			"teacher": "DOC-034",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACA-0909",
+			"name": "TALLER DE INVESTIGACION I",
+			"group": "C",
+			"teacher": "DOC-051",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "TDD-2301",
+			"name": "TOPICOS SELECTOS DE INGENIERIA DE SOFTWARE",
+			"group": "A",
+			"teacher": "DOC-094",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "TDD-2301",
+			"name": "TOPICOS SELECTOS DE INGENIERIA DE SOFTWARE",
+			"group": "B",
+			"teacher": "DOC-046",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCA-1002",
+			"name": "ADMINISTRACION DE REDES",
+			"group": "A",
+			"teacher": "DOC-031",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCA-1002",
+			"name": "ADMINISTRACION DE REDES",
+			"group": "B",
+			"teacher": "DOC-031",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCA-1002",
+			"name": "ADMINISTRACION DE REDES",
+			"group": "C",
+			"teacher": "DOC-065",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "TND-2302",
+			"name": "APLICACIONES MOVILES",
+			"group": "A",
+			"teacher": "DOC-055",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "TND-2303",
+			"name": "CIENCIA DE DATOS",
+			"group": "A",
+			"teacher": "DOC-013",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "TDD-2303",
+			"name": "DISEÑO DE EXPERIENCIA DE USUARIO",
+			"group": "A",
+			"teacher": "DOC-022",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SID-2303",
+			"name": "HARDENING DE SERVIDORES",
+			"group": "A",
+			"teacher": "DOC-075",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1016",
+			"name": "LENGUAJES Y AUTOMATAS II",
+			"group": "A",
+			"teacher": "DOC-055",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1016",
+			"name": "LENGUAJES Y AUTOMATAS II",
+			"group": "B",
+			"teacher": "DOC-008",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCD-1016",
+			"name": "LENGUAJES Y AUTOMATAS II",
+			"group": "C",
+			"teacher": "DOC-073",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1019",
+			"name": "PROGRAMACION LOGICA Y FUNCIONAL",
+			"group": "A",
+			"teacher": "DOC-057",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1019",
+			"name": "PROGRAMACION LOGICA Y FUNCIONAL",
+			"group": "B",
+			"teacher": "DOC-114",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1019",
+			"name": "PROGRAMACION LOGICA Y FUNCIONAL",
+			"group": "C",
+			"teacher": "DOC-038",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "TDD-2302",
+			"name": "SEGURIDAD DEL SOFTWARE",
+			"group": "A",
+			"teacher": "DOC-094",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SID-2302",
+			"name": "SEGURIDAD EN LA NUBE",
+			"group": "A",
+			"teacher": "DOC-040",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ITM-102",
+			"name": "SERVICIO SOCIAL",
+			"group": "A",
+			"teacher": "DOC-119",
+			"credits": 10,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACA-0910",
+			"name": "TALLER DE INVESTIGACION II",
+			"group": "A",
+			"teacher": "DOC-115",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACA-0910",
+			"name": "TALLER DE INVESTIGACION II",
+			"group": "B",
+			"teacher": "DOC-078",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ACA-0910",
+			"name": "TALLER DE INVESTIGACION II",
+			"group": "C",
+			"teacher": "DOC-069",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SID-2305",
+			"name": "AUDITORIA Y GESTION EN SEGURIDAD INFORMATICA",
+			"group": "A",
+			"teacher": "DOC-075",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "TND-2305",
+			"name": "INFRAESTRUCTURA DE SERVICIOS",
+			"group": "A",
+			"teacher": "DOC-113",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1012",
+			"name": "INTELIGENCIA ARTIFICIAL",
+			"group": "A",
+			"teacher": "DOC-057",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1012",
+			"name": "INTELIGENCIA ARTIFICIAL",
+			"group": "B",
+			"teacher": "DOC-057",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SCC-1012",
+			"name": "INTELIGENCIA ARTIFICIAL",
+			"group": "C",
+			"teacher": "DOC-061",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "TND-2304",
+			"name": "INTERNET DE TODAS LAS COSAS",
+			"group": "A",
+			"teacher": "DOC-075",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "TND-2306",
+			"name": "RECUPERACION DE INFORMACION DE LA WEB",
+			"group": "A",
+			"teacher": "DOC-071",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "ITM-103",
+			"name": "RESIDENCIA PROFESIONAL",
+			"group": "A",
+			"teacher": "DOC-119",
+			"credits": 10,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "SID-2304",
+			"name": "SEGURIDAD EN SERVICIOS",
+			"group": "A",
+			"teacher": "DOC-114",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "TDD-2305",
+			"name": "TECNOLOGIAS PARA SISTEMAS DE INTELIGENCIA DE NEGOCIOS",
+			"group": "A",
+			"teacher": "DOC-104",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": null,
+			"code": "TDD-2304",
+			"name": "TOPICOS SELECTOS DE TECNOLOGIAS WEB Y MOVIL",
+			"group": "A",
+			"teacher": "DOC-057",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ITM-104",
+			"name": "ACTIVIDADES FISICAS PARA LA SALUD Y LA PREVENCION",
+			"group": "A",
+			"teacher": "DOC-053",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ITM-104",
+			"name": "ACTIVIDADES FISICAS PARA LA SALUD Y LA PREVENCION",
+			"group": "B",
+			"teacher": "DOC-074",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ITM-104",
+			"name": "ACTIVIDADES FISICAS PARA LA SALUD Y LA PREVENCION",
+			"group": "C",
+			"teacher": "DOC-085",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ITM-104",
+			"name": "ACTIVIDADES FISICAS PARA LA SALUD Y LA PREVENCION",
+			"group": "D",
+			"teacher": "DOC-056",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACF-2301",
+			"name": "CALCULO DIFERENCIAL",
+			"group": "A",
+			"teacher": "DOC-083",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACF-2301",
+			"name": "CALCULO DIFERENCIAL",
+			"group": "B",
+			"teacher": "DOC-059",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACF-2301",
+			"name": "CALCULO DIFERENCIAL",
+			"group": "C",
+			"teacher": "DOC-028",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACF-2301",
+			"name": "CALCULO DIFERENCIAL",
+			"group": "D",
+			"teacher": "DOC-026",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACF-2301",
+			"name": "CALCULO DIFERENCIAL",
+			"group": "REP1",
+			"teacher": "DOC-037",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACF-2301",
+			"name": "CALCULO DIFERENCIAL",
+			"group": "REP2",
+			"teacher": "DOC-025",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACF-2301",
+			"name": "CALCULO DIFERENCIAL",
+			"group": "rep2",
+			"teacher": "DOC-084",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACC-0906",
+			"name": "FUNDAMENTOS DE INVESTIGACION",
+			"group": "A",
+			"teacher": "DOC-115",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACC-0906",
+			"name": "FUNDAMENTOS DE INVESTIGACION",
+			"group": "B",
+			"teacher": "DOC-115",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACC-0906",
+			"name": "FUNDAMENTOS DE INVESTIGACION",
+			"group": "C",
+			"teacher": "DOC-115",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACC-0906",
+			"name": "FUNDAMENTOS DE INVESTIGACION",
+			"group": "D",
+			"teacher": "DOC-073",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACC-0906",
+			"name": "FUNDAMENTOS DE INVESTIGACION",
+			"group": "E",
+			"teacher": "DOC-049",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "A",
+			"teacher": "DOC-080",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "B",
+			"teacher": "DOC-080",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "C",
+			"teacher": "DOC-113",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "D",
+			"teacher": "DOC-113",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "E",
+			"teacher": "DOC-073",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "F",
+			"teacher": "DOC-006",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "G",
+			"teacher": "DOC-017",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "AED-1285",
+			"name": "FUNDAMENTOS DE PROGRAMACION",
+			"group": "REP",
+			"teacher": "DOC-096",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "AEF-1041",
+			"name": "MATEMÁTICAS DISCRETAS",
+			"group": "A",
+			"teacher": "DOC-103",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "AEF-1041",
+			"name": "MATEMÁTICAS DISCRETAS",
+			"group": "B",
+			"teacher": "DOC-082",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "AEF-1041",
+			"name": "MATEMÁTICAS DISCRETAS",
+			"group": "C",
+			"teacher": "DOC-035",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "AEF-1041",
+			"name": "MATEMÁTICAS DISCRETAS",
+			"group": "D",
+			"teacher": "DOC-103",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "AEF-1041",
+			"name": "MATEMÁTICAS DISCRETAS",
+			"group": "E",
+			"teacher": "DOC-016",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "SCH-1024",
+			"name": "TALLER DE ADMINISTRACION",
+			"group": "A",
+			"teacher": "DOC-060",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "SCH-1024",
+			"name": "TALLER DE ADMINISTRACION",
+			"group": "B",
+			"teacher": "DOC-060",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "SCH-1024",
+			"name": "TALLER DE ADMINISTRACION",
+			"group": "C",
+			"teacher": "DOC-089",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "SCH-1024",
+			"name": "TALLER DE ADMINISTRACION",
+			"group": "D",
+			"teacher": "DOC-021",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "SCH-1024",
+			"name": "TALLER DE ADMINISTRACION",
+			"group": "E",
+			"teacher": "DOC-076",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACH-2307",
+			"name": "TALLER DE ETICA",
+			"group": "A",
+			"teacher": "DOC-103",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACH-2307",
+			"name": "TALLER DE ETICA",
+			"group": "B",
+			"teacher": "DOC-035",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACH-2307",
+			"name": "TALLER DE ETICA",
+			"group": "C",
+			"teacher": "DOC-092",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACH-2307",
+			"name": "TALLER DE ETICA",
+			"group": "D",
+			"teacher": "DOC-069",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ACH-2307",
+			"name": "TALLER DE ETICA",
+			"group": "E",
+			"teacher": "DOC-109",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ITM-100",
+			"name": "TUTORIA",
+			"group": "A",
+			"teacher": "DOC-115",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ITM-100",
+			"name": "TUTORIA",
+			"group": "B",
+			"teacher": "DOC-036",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ITM-100",
+			"name": "TUTORIA",
+			"group": "C",
+			"teacher": "DOC-118",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": "1",
+			"code": "ITM-100",
+			"name": "TUTORIA",
+			"group": "D",
+			"teacher": "DOC-013",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "ACF-0903",
+			"name": "ALGEBRA LINEAL",
+			"group": "A",
+			"teacher": "DOC-084",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "ACF-0903",
+			"name": "ALGEBRA LINEAL",
+			"group": "B",
+			"teacher": "DOC-030",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "ACF-0903",
+			"name": "ALGEBRA LINEAL",
+			"group": "C",
+			"teacher": "DOC-004",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "ACF-0903",
+			"name": "ALGEBRA LINEAL",
+			"group": "E",
+			"teacher": "DOC-025",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "ITM-105",
+			"name": "APRECIACION DE LAS ARTES Y DIVERSIDAD CULTURAL",
+			"group": "A",
+			"teacher": "DOC-068",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "ITM-105",
+			"name": "APRECIACION DE LAS ARTES Y DIVERSIDAD CULTURAL",
+			"group": "B",
+			"teacher": "DOC-068",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "ITM-105",
+			"name": "APRECIACION DE LAS ARTES Y DIVERSIDAD CULTURAL",
+			"group": "C",
+			"teacher": "DOC-091",
+			"credits": 0,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "ACF-0902",
+			"name": "CALCULO INTEGRAL",
+			"group": "A",
+			"teacher": "DOC-045",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "ACF-0902",
+			"name": "CALCULO INTEGRAL",
+			"group": "B",
+			"teacher": "DOC-100",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "ACF-0902",
+			"name": "CALCULO INTEGRAL",
+			"group": "C",
+			"teacher": "DOC-043",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "ACF-0902",
+			"name": "CALCULO INTEGRAL",
+			"group": "D",
+			"teacher": "DOC-045",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "ACF-0902",
+			"name": "CALCULO INTEGRAL",
+			"group": "E",
+			"teacher": "DOC-120",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "AEC-1008",
+			"name": "CONTABILIDAD FINANCIERA",
+			"group": "A",
+			"teacher": "DOC-111",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "AEC-1008",
+			"name": "CONTABILIDAD FINANCIERA",
+			"group": "B",
+			"teacher": "DOC-023",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "AEC-1008",
+			"name": "CONTABILIDAD FINANCIERA",
+			"group": "C",
+			"teacher": "DOC-011",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "AEF-1052",
+			"name": "PROBABILIDAD Y ESTADÍSTICA",
+			"group": "A",
+			"teacher": "DOC-112",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "AEF-1052",
+			"name": "PROBABILIDAD Y ESTADÍSTICA",
+			"group": "B",
+			"teacher": "DOC-112",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "AEF-1052",
+			"name": "PROBABILIDAD Y ESTADÍSTICA",
+			"group": "C",
+			"teacher": "DOC-097",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "AED-1286",
+			"name": "PROGRAMACION ORIENTADA A OBJETOS",
+			"group": "A",
+			"teacher": "DOC-055",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "AED-1286",
+			"name": "PROGRAMACION ORIENTADA A OBJETOS",
+			"group": "B",
+			"teacher": "DOC-036",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "AED-1286",
+			"name": "PROGRAMACION ORIENTADA A OBJETOS",
+			"group": "C",
+			"teacher": "DOC-055",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "2",
+			"code": "AEC-1058",
+			"name": "QUIMICA",
+			"group": "A",
+			"teacher": "DOC-108",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": "2",
+			"code": "B2L4",
+			"name": "LABORATORIO DE QUIMICA QUIMICA / A",
+			"group": "AA",
+			"teacher": "DOC-012",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "2",
+			"code": "B2L4",
+			"name": "LABORATORIO DE QUIMICA QUIMICA / A",
+			"group": "AB",
+			"teacher": "DOC-088",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "2",
+			"code": "B2L4",
+			"name": "LABORATORIO DE QUIMICA QUIMICA / A",
+			"group": "APR",
+			"teacher": "DOC-119",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "2",
+			"code": "B2L4",
+			"name": "LABORATORIO DE QUIMICA QUIMICA / A",
+			"group": "BA",
+			"teacher": "DOC-108",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "2",
+			"code": "B2L4",
+			"name": "LABORATORIO DE QUIMICA QUIMICA / A",
+			"group": "BB",
+			"teacher": "DOC-020",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "2",
+			"code": "AEC-1058",
+			"name": "QUIMICA",
+			"group": "B",
+			"teacher": "DOC-020",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": "2",
+			"code": "AEC-1058",
+			"name": "QUIMICA",
+			"group": "C",
+			"teacher": "DOC-003",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": "3",
+			"code": "ACF-0904",
+			"name": "CALCULO VECTORIAL",
+			"group": "A",
+			"teacher": "DOC-070",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "ACF-0904",
+			"name": "CALCULO VECTORIAL",
+			"group": "B",
+			"teacher": "DOC-072",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "ACF-0904",
+			"name": "CALCULO VECTORIAL",
+			"group": "C",
+			"teacher": "DOC-050",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "ACF-0904",
+			"name": "CALCULO VECTORIAL",
+			"group": "D",
+			"teacher": "DOC-007",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "ACF-0904",
+			"name": "CALCULO VECTORIAL",
+			"group": "E",
+			"teacher": "DOC-072",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "ACF-0904",
+			"name": "CALCULO VECTORIAL",
+			"group": "E",
+			"teacher": "DOC-090",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "SCC-1005",
+			"name": "CULTURA EMPRESARIAL",
+			"group": "A",
+			"teacher": "DOC-060",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "SCC-1005",
+			"name": "CULTURA EMPRESARIAL",
+			"group": "B",
+			"teacher": "DOC-098",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "SCC-1005",
+			"name": "CULTURA EMPRESARIAL",
+			"group": "C",
+			"teacher": "DOC-018",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "SCC-1005",
+			"name": "CULTURA EMPRESARIAL",
+			"group": "D",
+			"teacher": "DOC-029",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "ACD-0908",
+			"name": "DESARROLLO SUSTENTABLE",
+			"group": "A",
+			"teacher": "DOC-032",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "ACD-0908",
+			"name": "DESARROLLO SUSTENTABLE",
+			"group": "B",
+			"teacher": "DOC-058",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "ACD-0908",
+			"name": "DESARROLLO SUSTENTABLE",
+			"group": "C",
+			"teacher": "DOC-009",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "ACD-0908",
+			"name": "DESARROLLO SUSTENTABLE",
+			"group": "D",
+			"teacher": "DOC-014",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "ACD-0908",
+			"name": "DESARROLLO SUSTENTABLE",
+			"group": "E",
+			"teacher": "DOC-093",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "ACD-0908",
+			"name": "DESARROLLO SUSTENTABLE",
+			"group": "E",
+			"teacher": "DOC-032",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "ACD-0908",
+			"name": "DESARROLLO SUSTENTABLE",
+			"group": "F",
+			"teacher": "DOC-019",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "AED-1026",
+			"name": "ESTRUCTURA DE DATOS",
+			"group": "A",
+			"teacher": "DOC-006",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "AED-1026",
+			"name": "ESTRUCTURA DE DATOS",
+			"group": "B",
+			"teacher": "DOC-036",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "AED-1026",
+			"name": "ESTRUCTURA DE DATOS",
+			"group": "C",
+			"teacher": "DOC-038",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "AED-1026",
+			"name": "ESTRUCTURA DE DATOS",
+			"group": "D",
+			"teacher": "DOC-036",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "SCF-1006",
+			"name": "FISICA GENERAL",
+			"group": "A",
+			"teacher": "DOC-037",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": "3",
+			"code": "B3LA",
+			"name": "LABORATORIO DE FISICA GENERAL FISICA GENERAL / A",
+			"group": "AA",
+			"teacher": "DOC-044",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "3",
+			"code": "B3LA",
+			"name": "LABORATORIO DE FISICA GENERAL FISICA GENERAL / A",
+			"group": "AB",
+			"teacher": "DOC-027",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "3",
+			"code": "B3LA",
+			"name": "LABORATORIO DE FISICA GENERAL FISICA GENERAL / A",
+			"group": "APR",
+			"teacher": "DOC-119",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "3",
+			"code": "B3LA",
+			"name": "LABORATORIO DE FISICA GENERAL FISICA GENERAL / A",
+			"group": "BA",
+			"teacher": "DOC-044",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "3",
+			"code": "B3LA",
+			"name": "LABORATORIO DE FISICA GENERAL FISICA GENERAL / A",
+			"group": "BB",
+			"teacher": "DOC-044",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "3",
+			"code": "B3LA",
+			"name": "LABORATORIO DE FISICA GENERAL FISICA GENERAL / A",
+			"group": "BC",
+			"teacher": "DOC-106",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "3",
+			"code": "B3LA",
+			"name": "LABORATORIO DE FISICA GENERAL FISICA GENERAL / A",
+			"group": "CA",
+			"teacher": "DOC-086",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "3",
+			"code": "SCF-1006",
+			"name": "FISICA GENERAL",
+			"group": "B",
+			"teacher": "DOC-095",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": "3",
+			"code": "SCF-1006",
+			"name": "FISICA GENERAL",
+			"group": "C",
+			"teacher": "DOC-026",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": "3",
+			"code": "SCF-1006",
+			"name": "FISICA GENERAL",
+			"group": "D",
+			"teacher": "DOC-037",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": "3",
+			"code": "SCC-1013",
+			"name": "INVESTIGACION DE OPERACIONES",
+			"group": "A",
+			"teacher": "DOC-101",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "SCC-1013",
+			"name": "INVESTIGACION DE OPERACIONES",
+			"group": "B",
+			"teacher": "DOC-101",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "SCC-1013",
+			"name": "INVESTIGACION DE OPERACIONES",
+			"group": "C",
+			"teacher": "DOC-121",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "3",
+			"code": "SCC-1013",
+			"name": "INVESTIGACION DE OPERACIONES",
+			"group": "D",
+			"teacher": "DOC-121",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "ACF-0905",
+			"name": "ECUACIONES DIFERENCIALES",
+			"group": "A",
+			"teacher": "DOC-043",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "ACF-0905",
+			"name": "ECUACIONES DIFERENCIALES",
+			"group": "B",
+			"teacher": "DOC-067",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "ACF-0905",
+			"name": "ECUACIONES DIFERENCIALES",
+			"group": "C",
+			"teacher": "DOC-117",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "AEF-1031",
+			"name": "FUNDAMENTOS DE BASE DE DATOS",
+			"group": "A",
+			"teacher": "DOC-065",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "AEF-1031",
+			"name": "FUNDAMENTOS DE BASE DE DATOS",
+			"group": "B",
+			"teacher": "DOC-063",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "AEF-1031",
+			"name": "FUNDAMENTOS DE BASE DE DATOS",
+			"group": "C",
+			"teacher": "DOC-063",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "SCC-1017",
+			"name": "METODOS NUMERICOS",
+			"group": "A",
+			"teacher": "DOC-105",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "SCC-1017",
+			"name": "METODOS NUMERICOS",
+			"group": "B",
+			"teacher": "DOC-116",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "SCC-1017",
+			"name": "METODOS NUMERICOS",
+			"group": "C",
+			"teacher": "DOC-062",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "SCC-1017",
+			"name": "METODOS NUMERICOS",
+			"group": "D",
+			"teacher": "DOC-052",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "SCD-1018",
+			"name": "PRINCIPIOS ELECTRICOS Y APLICACIONES DIGITALES",
+			"group": "A",
+			"teacher": "DOC-048",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": "4",
+			"code": "B4LA",
+			"name": "LAB PRINCIPIOS ELECTRICOS PRIN ELEC AP / A",
+			"group": "AA",
+			"teacher": "DOC-048",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "4",
+			"code": "B4LA",
+			"name": "LAB PRINCIPIOS ELECTRICOS PRIN ELEC AP / A",
+			"group": "AB",
+			"teacher": "DOC-048",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "4",
+			"code": "B4LA",
+			"name": "LAB PRINCIPIOS ELECTRICOS PRIN ELEC AP / A",
+			"group": "BA",
+			"teacher": "DOC-048",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "4",
+			"code": "B4LA",
+			"name": "LAB PRINCIPIOS ELECTRICOS PRIN ELEC AP / A",
+			"group": "BB",
+			"teacher": "DOC-048",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "4",
+			"code": "SCD-1018",
+			"name": "PRINCIPIOS ELECTRICOS Y APLICACIONES DIGITALES",
+			"group": "B",
+			"teacher": "DOC-048",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": "4",
+			"code": "SCD-1018",
+			"name": "PRINCIPIOS ELECTRICOS Y APLICACIONES DIGITALES",
+			"group": "C",
+			"teacher": "DOC-010",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": "4",
+			"code": "B4LA",
+			"name": "LAB PRINCIPIOS ELECTRICOS PRIN ELEC AP / C",
+			"group": "CA",
+			"teacher": "DOC-010",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "4",
+			"code": "SCD-1022",
+			"name": "SIMULACION",
+			"group": "A",
+			"teacher": "DOC-112",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "SCD-1022",
+			"name": "SIMULACION",
+			"group": "B",
+			"teacher": "DOC-097",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "SCD-1022",
+			"name": "SIMULACION",
+			"group": "C",
+			"teacher": "DOC-066",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "SCD-1027",
+			"name": "TOPICOS AVANZADOS DE PROGRAMACION",
+			"group": "A",
+			"teacher": "DOC-005",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "SCD-1027",
+			"name": "TOPICOS AVANZADOS DE PROGRAMACION",
+			"group": "B",
+			"teacher": "DOC-005",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "4",
+			"code": "SCD-1027",
+			"name": "TOPICOS AVANZADOS DE PROGRAMACION",
+			"group": "C",
+			"teacher": "DOC-118",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "SCD-1003",
+			"name": "ARQUITECTURA DE COMPUTADORAS",
+			"group": "A",
+			"teacher": "DOC-048",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": "5",
+			"code": "B5LB",
+			"name": "LABORATORIO DE ARQUITECTURA DE COMPUTADORAS ARQ COMP / A",
+			"group": "AA",
+			"teacher": "DOC-048",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "5",
+			"code": "B5LB",
+			"name": "LABORATORIO DE ARQUITECTURA DE COMPUTADORAS ARQ COMP / A",
+			"group": "AB",
+			"teacher": "DOC-048",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "5",
+			"code": "SCD-1003",
+			"name": "ARQUITECTURA DE COMPUTADORAS",
+			"group": "B",
+			"teacher": "DOC-054",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": "5",
+			"code": "B5LB",
+			"name": "LABORATORIO DE ARQUITECTURA DE COMPUTADORAS ARQ COMP / B",
+			"group": "BA",
+			"teacher": "DOC-048",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "5",
+			"code": "B5LB",
+			"name": "LABORATORIO DE ARQUITECTURA DE COMPUTADORAS ARQ COMP / B",
+			"group": "BB",
+			"teacher": "DOC-001",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "5",
+			"code": "SCD-1003",
+			"name": "ARQUITECTURA DE COMPUTADORAS",
+			"group": "C",
+			"teacher": "DOC-001",
+			"credits": 5,
+			"hasLab": true
+		},
+		{
+			"period": "5",
+			"code": "B5LB",
+			"name": "LABORATORIO DE ARQUITECTURA DE COMPUTADORAS ARQ COMP / C",
+			"group": "CA",
+			"teacher": "DOC-001",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "5",
+			"code": "SCC-1007",
+			"name": "FUNDAMENTOS DE INGENIERIA DE SOFTWARE",
+			"group": "A",
+			"teacher": "DOC-039",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "SCC-1007",
+			"name": "FUNDAMENTOS DE INGENIERIA DE SOFTWARE",
+			"group": "B",
+			"teacher": "DOC-008",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "SCC-1007",
+			"name": "FUNDAMENTOS DE INGENIERIA DE SOFTWARE",
+			"group": "C",
+			"teacher": "DOC-039",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "AEC-1034",
+			"name": "FUNDAMENTOS DE TELECOMUNICACIONES",
+			"group": "A",
+			"teacher": "DOC-077",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "AEC-1034",
+			"name": "FUNDAMENTOS DE TELECOMUNICACIONES",
+			"group": "B",
+			"teacher": "DOC-061",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "AEC-1034",
+			"name": "FUNDAMENTOS DE TELECOMUNICACIONES",
+			"group": "C",
+			"teacher": "DOC-065",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "SCC-1010",
+			"name": "GRAFICACION",
+			"group": "A",
+			"teacher": "DOC-061",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "SCC-1010",
+			"name": "GRAFICACION",
+			"group": "B",
+			"teacher": "DOC-069",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "SCC-1010",
+			"name": "GRAFICACION",
+			"group": "C",
+			"teacher": "DOC-069",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "AEC-1061",
+			"name": "SISTEMAS OPERATIVOS",
+			"group": "A",
+			"teacher": "DOC-016",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "AEC-1061",
+			"name": "SISTEMAS OPERATIVOS",
+			"group": "B",
+			"teacher": "DOC-016",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "AEC-1061",
+			"name": "SISTEMAS OPERATIVOS",
+			"group": "C",
+			"teacher": "DOC-051",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "SCA-1025",
+			"name": "TALLER DE BASE DE DATOS",
+			"group": "A",
+			"teacher": "DOC-013",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "SCA-1025",
+			"name": "TALLER DE BASE DE DATOS",
+			"group": "B",
+			"teacher": "DOC-017",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "5",
+			"code": "SCA-1025",
+			"name": "TALLER DE BASE DE DATOS",
+			"group": "C",
+			"teacher": "DOC-038",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "SCB-1001",
+			"name": "ADMINISTRACION DE BASE DE DATOS",
+			"group": "A",
+			"teacher": "DOC-113",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "SCB-1001",
+			"name": "ADMINISTRACION DE BASE DE DATOS",
+			"group": "B",
+			"teacher": "DOC-041",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "SCB-1001",
+			"name": "ADMINISTRACION DE BASE DE DATOS",
+			"group": "C",
+			"teacher": "DOC-063",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "SCD-1011",
+			"name": "INGENIERIA DE SOFTWARE",
+			"group": "A",
+			"teacher": "DOC-033",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "SCD-1011",
+			"name": "INGENIERIA DE SOFTWARE",
+			"group": "B",
+			"teacher": "DOC-022",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "SCD-1011",
+			"name": "INGENIERIA DE SOFTWARE",
+			"group": "C",
+			"teacher": "DOC-008",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "SCC-1014",
+			"name": "LENGUAJES DE INTERFAZ",
+			"group": "A",
+			"teacher": "DOC-064",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": "6",
+			"code": "B6LE",
+			"name": "LAB LENGUAJES DE INTERFAZ LENG INTERFAZ / A",
+			"group": "AA",
+			"teacher": "DOC-064",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "6",
+			"code": "B6LE",
+			"name": "LAB LENGUAJES DE INTERFAZ LENG INTERFAZ / A",
+			"group": "AB",
+			"teacher": "DOC-064",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "6",
+			"code": "B6LE",
+			"name": "LAB LENGUAJES DE INTERFAZ LENG INTERFAZ / A",
+			"group": "BA",
+			"teacher": "DOC-064",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "6",
+			"code": "B6LE",
+			"name": "LAB LENGUAJES DE INTERFAZ LENG INTERFAZ / A",
+			"group": "BB",
+			"teacher": "DOC-064",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "6",
+			"code": "B6LE",
+			"name": "LAB LENGUAJES DE INTERFAZ LENG INTERFAZ / A",
+			"group": "CA",
+			"teacher": "DOC-064",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "6",
+			"code": "SCC-1014",
+			"name": "LENGUAJES DE INTERFAZ",
+			"group": "B",
+			"teacher": "DOC-064",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": "6",
+			"code": "SCC-1014",
+			"name": "LENGUAJES DE INTERFAZ",
+			"group": "C",
+			"teacher": "DOC-064",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": "6",
+			"code": "AEB-1055",
+			"name": "PROGRAMACION WEB",
+			"group": "A",
+			"teacher": "DOC-041",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "AEB-1055",
+			"name": "PROGRAMACION WEB",
+			"group": "B",
+			"teacher": "DOC-008",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "AEB-1055",
+			"name": "PROGRAMACION WEB",
+			"group": "C",
+			"teacher": "DOC-008",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "SCD-1021",
+			"name": "REDES DE COMPUTADORAS",
+			"group": "A",
+			"teacher": "DOC-015",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "SCD-1021",
+			"name": "REDES DE COMPUTADORAS",
+			"group": "B",
+			"teacher": "DOC-114",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "SCD-1021",
+			"name": "REDES DE COMPUTADORAS",
+			"group": "C",
+			"teacher": "DOC-015",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "SCD-1021",
+			"name": "REDES DE COMPUTADORAS",
+			"group": "D",
+			"teacher": "DOC-031",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "SCA-1026",
+			"name": "TALLER DE SISTEMAS OPERATIVOS",
+			"group": "A",
+			"teacher": "DOC-016",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "SCA-1026",
+			"name": "TALLER DE SISTEMAS OPERATIVOS",
+			"group": "B",
+			"teacher": "DOC-016",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "6",
+			"code": "SCA-1026",
+			"name": "TALLER DE SISTEMAS OPERATIVOS",
+			"group": "C",
+			"teacher": "DOC-114",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "SCD-1004",
+			"name": "CONMUTACION Y ENRUTAMIENTO EN REDES DE DATOS",
+			"group": "A",
+			"teacher": "DOC-002",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "SCD-1004",
+			"name": "CONMUTACION Y ENRUTAMIENTO EN REDES DE DATOS",
+			"group": "B",
+			"teacher": "DOC-002",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "SCD-1004",
+			"name": "CONMUTACION Y ENRUTAMIENTO EN REDES DE DATOS",
+			"group": "C",
+			"teacher": "DOC-002",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "SCD-1004",
+			"name": "CONMUTACION Y ENRUTAMIENTO EN REDES DE DATOS",
+			"group": "D",
+			"teacher": "DOC-002",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "SCG-1009",
+			"name": "GESTION DE PROYECTOS DE SOFTWARE",
+			"group": "A",
+			"teacher": "DOC-046",
+			"credits": 6,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "SCG-1009",
+			"name": "GESTION DE PROYECTOS DE SOFTWARE",
+			"group": "B",
+			"teacher": "DOC-046",
+			"credits": 6,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "SCG-1009",
+			"name": "GESTION DE PROYECTOS DE SOFTWARE",
+			"group": "C",
+			"teacher": "DOC-046",
+			"credits": 6,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "TND-2301",
+			"name": "INTEGRACION CONTINUA DE PROYECTOS WEB",
+			"group": "A",
+			"teacher": "DOC-005",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "SCD-1015",
+			"name": "LENGUAJES Y AUTOMATAS I",
+			"group": "A",
+			"teacher": "DOC-069",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "SCD-1015",
+			"name": "LENGUAJES Y AUTOMATAS I",
+			"group": "B",
+			"teacher": "DOC-063",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "SCD-1015",
+			"name": "LENGUAJES Y AUTOMATAS I",
+			"group": "C",
+			"teacher": "DOC-038",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "SID-2301",
+			"name": "SEGURIDAD EN INFRAESTRUCTURA",
+			"group": "A",
+			"teacher": "DOC-036",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "SCC-1023",
+			"name": "SISTEMAS PROGRAMABLES",
+			"group": "A",
+			"teacher": "DOC-081",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": "7",
+			"code": "B5LA",
+			"name": "LABORATORIO DE SISTEMAS PROGRAMABLES SIST PROG / A",
+			"group": "AA",
+			"teacher": "DOC-081",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "7",
+			"code": "B5LA",
+			"name": "LABORATORIO DE SISTEMAS PROGRAMABLES SIST PROG / A",
+			"group": "AB",
+			"teacher": "DOC-081",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "7",
+			"code": "SCC-1023",
+			"name": "SISTEMAS PROGRAMABLES",
+			"group": "B",
+			"teacher": "DOC-087",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": "7",
+			"code": "B5LA",
+			"name": "LABORATORIO DE SISTEMAS PROGRAMABLES SIST PROG / B",
+			"group": "BA",
+			"teacher": "DOC-087",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "7",
+			"code": "B5LA",
+			"name": "LABORATORIO DE SISTEMAS PROGRAMABLES SIST PROG / B",
+			"group": "BB",
+			"teacher": "DOC-087",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "7",
+			"code": "SCC-1023",
+			"name": "SISTEMAS PROGRAMABLES",
+			"group": "C",
+			"teacher": "DOC-107",
+			"credits": 4,
+			"hasLab": true
+		},
+		{
+			"period": "7",
+			"code": "B5LA",
+			"name": "LABORATORIO DE SISTEMAS PROGRAMABLES SIST PROG / C",
+			"group": "CA",
+			"teacher": "DOC-107",
+			"credits": null,
+			"hasLab": true
+		},
+		{
+			"period": "7",
+			"code": "ACA-0909",
+			"name": "TALLER DE INVESTIGACION I",
+			"group": "A",
+			"teacher": "DOC-069",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "ACA-0909",
+			"name": "TALLER DE INVESTIGACION I",
+			"group": "B",
+			"teacher": "DOC-034",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "ACA-0909",
+			"name": "TALLER DE INVESTIGACION I",
+			"group": "C",
+			"teacher": "DOC-051",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "TDD-2301",
+			"name": "TOPICOS SELECTOS DE INGENIERIA DE SOFTWARE",
+			"group": "A",
+			"teacher": "DOC-094",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "7",
+			"code": "TDD-2301",
+			"name": "TOPICOS SELECTOS DE INGENIERIA DE SOFTWARE",
+			"group": "B",
+			"teacher": "DOC-046",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "SCA-1002",
+			"name": "ADMINISTRACION DE REDES",
+			"group": "A",
+			"teacher": "DOC-031",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "SCA-1002",
+			"name": "ADMINISTRACION DE REDES",
+			"group": "B",
+			"teacher": "DOC-031",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "SCA-1002",
+			"name": "ADMINISTRACION DE REDES",
+			"group": "C",
+			"teacher": "DOC-065",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "TND-2302",
+			"name": "APLICACIONES MOVILES",
+			"group": "A",
+			"teacher": "DOC-055",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "TND-2303",
+			"name": "CIENCIA DE DATOS",
+			"group": "A",
+			"teacher": "DOC-013",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "TDD-2303",
+			"name": "DISEÑO DE EXPERIENCIA DE USUARIO",
+			"group": "A",
+			"teacher": "DOC-022",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "SID-2303",
+			"name": "HARDENING DE SERVIDORES",
+			"group": "A",
+			"teacher": "DOC-075",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "SCD-1016",
+			"name": "LENGUAJES Y AUTOMATAS II",
+			"group": "A",
+			"teacher": "DOC-055",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "SCD-1016",
+			"name": "LENGUAJES Y AUTOMATAS II",
+			"group": "B",
+			"teacher": "DOC-008",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "SCD-1016",
+			"name": "LENGUAJES Y AUTOMATAS II",
+			"group": "C",
+			"teacher": "DOC-073",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "SCC-1019",
+			"name": "PROGRAMACION LOGICA Y FUNCIONAL",
+			"group": "A",
+			"teacher": "DOC-057",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "SCC-1019",
+			"name": "PROGRAMACION LOGICA Y FUNCIONAL",
+			"group": "B",
+			"teacher": "DOC-114",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "SCC-1019",
+			"name": "PROGRAMACION LOGICA Y FUNCIONAL",
+			"group": "C",
+			"teacher": "DOC-038",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "TDD-2302",
+			"name": "SEGURIDAD DEL SOFTWARE",
+			"group": "A",
+			"teacher": "DOC-094",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "SID-2302",
+			"name": "SEGURIDAD EN LA NUBE",
+			"group": "A",
+			"teacher": "DOC-040",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "ITM-102",
+			"name": "SERVICIO SOCIAL",
+			"group": "A",
+			"teacher": "DOC-119",
+			"credits": 10,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "ACA-0910",
+			"name": "TALLER DE INVESTIGACION II",
+			"group": "A",
+			"teacher": "DOC-115",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "ACA-0910",
+			"name": "TALLER DE INVESTIGACION II",
+			"group": "B",
+			"teacher": "DOC-078",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "8",
+			"code": "ACA-0910",
+			"name": "TALLER DE INVESTIGACION II",
+			"group": "C",
+			"teacher": "DOC-069",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "9",
+			"code": "SID-2305",
+			"name": "AUDITORIA Y GESTION EN SEGURIDAD INFORMATICA",
+			"group": "A",
+			"teacher": "DOC-075",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "9",
+			"code": "TND-2305",
+			"name": "INFRAESTRUCTURA DE SERVICIOS",
+			"group": "A",
+			"teacher": "DOC-113",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "9",
+			"code": "SCC-1012",
+			"name": "INTELIGENCIA ARTIFICIAL",
+			"group": "A",
+			"teacher": "DOC-057",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "9",
+			"code": "SCC-1012",
+			"name": "INTELIGENCIA ARTIFICIAL",
+			"group": "B",
+			"teacher": "DOC-057",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "9",
+			"code": "SCC-1012",
+			"name": "INTELIGENCIA ARTIFICIAL",
+			"group": "C",
+			"teacher": "DOC-061",
+			"credits": 4,
+			"hasLab": false
+		},
+		{
+			"period": "9",
+			"code": "TND-2304",
+			"name": "INTERNET DE TODAS LAS COSAS",
+			"group": "A",
+			"teacher": "DOC-075",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "9",
+			"code": "TND-2306",
+			"name": "RECUPERACION DE INFORMACION DE LA WEB",
+			"group": "A",
+			"teacher": "DOC-071",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "9",
+			"code": "ITM-103",
+			"name": "RESIDENCIA PROFESIONAL",
+			"group": "A",
+			"teacher": "DOC-119",
+			"credits": 10,
+			"hasLab": false
+		},
+		{
+			"period": "9",
+			"code": "SID-2304",
+			"name": "SEGURIDAD EN SERVICIOS",
+			"group": "A",
+			"teacher": "DOC-114",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "9",
+			"code": "TDD-2305",
+			"name": "TECNOLOGIAS PARA SISTEMAS DE INTELIGENCIA DE NEGOCIOS",
+			"group": "A",
+			"teacher": "DOC-104",
+			"credits": 5,
+			"hasLab": false
+		},
+		{
+			"period": "9",
+			"code": "TDD-2304",
+			"name": "TOPICOS SELECTOS DE TECNOLOGIAS WEB Y MOVIL",
+			"group": "A",
+			"teacher": "DOC-057",
+			"credits": 5,
+			"hasLab": false
+		}
+	],
+	"redaction": "teacher = alias sintético DOC-NNN. Los 114 nombres reales del SIM se redaccionaron antes de versionar: el repo es público y ningún código consume el campo. Alias ordenados alfabéticamente sobre el nombre real."
+}

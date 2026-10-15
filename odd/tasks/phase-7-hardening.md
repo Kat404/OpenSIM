@@ -1,5 +1,13 @@
 # Phase 7 — Hardening: pre-prod bug fixes (post-Gemini cross-audit, mcode-R21 refined)
 
+<!-- odd-tracker
+kind: phase-plan
+status: closed
+last-verified: 2026-10-08
+reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
+sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
+-->
+
 **Feature:** `phase-7-hardening`
 **Branch:** `main` (continuing — same default as Phase 6.1)
 **Goal:** Fix the 3 critical + 4 important issues that Gemini 3.8 Flash High caught in a cross-audit of the Phase 6 + 6.1 cycle. mcode R11-R19 (9 rounds, same model family) did not catch them. **mcode R21 (this plan's audit) caught 3 additional blockers in the proposed fixes** — all applied in v2. This phase must complete BEFORE Phase 5.2 deploy.

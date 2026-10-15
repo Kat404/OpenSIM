@@ -65,9 +65,15 @@ format:
     pnpm exec biome format --write .
 
 # Verify formatting (CI mode, no writes)
+#
+# Biome 2.x removed `biome format --check`; the flag only ever worked
+# under Prettier, and the 2026-10-04 Biome 2.5.15 migration carried the
+# Prettier spelling over verbatim. Nothing ran this recipe, so it sat
+# broken for five days. `biome ci` with the linter and the import assist
+# disabled is the format-only equivalent and exits non-zero on a diff.
 [group('check')]
 format-check:
-    pnpm exec biome format --check .
+    pnpm exec biome ci --formatter-enabled=true --linter-enabled=false --assist-enabled=false
 
 # Run Biome ci (format + lint + organizeImports, no writes) — CI gate
 [group('check')]
@@ -103,14 +109,20 @@ test-e2e-avatar:
 #
 # Order matters and is already correct: `just` runs recipe dependencies
 # sequentially in written order, so `db-reset` (which re-runs `db-seed`)
-# completes before `db-set-password` writes the credential. The
-# credential's control number is distinct from the catalog student's, so
-# a later re-seed cannot displace it either — see seed-password.ts.
+# completes before `db-set-password` writes the credential. The ordering
+# is load-bearing: `db-seed` destroys a credential belonging to the
+# enrolment's control number (see the `db-seed` comment above), so
+# re-running it without re-running `db-set-password` afterwards leaves the
+# suite unable to log in. It only happens to be safe today because
+# `db:set-password` defaults to a different control number than the
+# enrolment fixture — see seed-password.ts and .env.example.
 [doc('Full pipeline: reset D1, provision the test student credential, then run the Playwright + axe-core suite. The webServer block auto-spawns pnpm dev and tears it down on exit.')]
 test-e2e: db-reset db-set-password
     pnpm exec playwright test
 
-# Run E2E with UI mode (interactive; assumes DB is ready)
+# Run E2E with UI mode (interactive; assumes DB is ready). `db-set-password`
+# is a dependency for the same reason as in `test-e2e`: a `db:seed` run
+# between here and login would drop the credential.
 test-e2e-ui: db-set-password
     pnpm exec playwright test --ui
 
@@ -133,6 +145,14 @@ db-seed-remote:
     wrangler d1 execute opensim --remote --file=./src/lib/server/db/seed.sql
 
 # Seed local D1 (regenerates seed.sql + applies)
+#
+# ⚠  Invalidates the student credential. The seed upserts the enrolment
+# profile with INSERT OR REPLACE, which in SQLite is a DELETE plus an
+# INSERT; that DELETE cascades into `student_credentials`. A credential
+# provisioned for the enrolment's control number is destroyed here, so
+# `db-set-password` must run afterwards. A credential belonging to any
+# other control number is untouched. Re-running this recipe is otherwise
+# idempotent — same rows, same counts.
 db-seed:
     pnpm run db:seed
 
@@ -156,6 +176,10 @@ db-studio:
     pnpm run db:studio
 
 # Full local D1 reset (delete state + migrate + seed)
+#
+# Ends with `db-seed`, so it carries the same credential caveat: follow it
+# with `db-set-password` if the credential belongs to the enrolment's
+# control number. `test-e2e` already sequences them in that order.
 db-reset:
     @echo "⚠  Deleting local D1 state + reapplying migrations + seeding..."
     rm -rf .wrangler/state/v3/d1
@@ -273,18 +297,29 @@ ci-clean:
 ci-drift:
     #!/usr/bin/env bash
     set -euo pipefail
+    SNAP=.wrangler/state/v3/d1.snapshot
+    # `cp -r src dst` copies INTO dst when dst exists, so a snapshot left
+    # over from an aborted run nests a `d1/` directory that every later run
+    # then reports as drift. Clear first, unconditionally.
+    rm -rf "$SNAP"
+    trap 'rm -rf "$SNAP"' EXIT
     if [ ! -d .wrangler/state/v3/d1 ]; then
         echo "no .wrangler/state/v3/d1 — run `just db-migrate` first"
         exit 1
     fi
-    cp -r .wrangler/state/v3/d1 .wrangler/state/v3/d1.snapshot
+    cp -r .wrangler/state/v3/d1 "$SNAP"
     pnpm run db:migrate:apply
-    if diff -r .wrangler/state/v3/d1.snapshot .wrangler/state/v3/d1 > /dev/null; then
+    # Miniflare keeps -wal and -shm beside the database and rewrites them
+    # on any read, so a bare `diff -r` reported drift on every run no matter
+    # what the migrations did. They are scratch, not state.
+    #
+    # `diff | head` under `pipefail` aborts the script the moment head
+    # closes the pipe, which skipped the cleanup and made the failure
+    # self-perpetuating. Capture the diff, then truncate it for display.
+    if diff -r -x '*-wal' -x '*-shm' -x '*.sqlite-journal' "$SNAP" .wrangler/state/v3/d1 > /tmp/ci-drift.diff; then
         echo "no drift"
-        rm -rf .wrangler/state/v3/d1.snapshot
     else
         echo "DRIFT DETECTED — investigate migrations:"
-        diff -r .wrangler/state/v3/d1.snapshot .wrangler/state/v3/d1 | head -50
-        rm -rf .wrangler/state/v3/d1.snapshot
+        head -50 /tmp/ci-drift.diff
         exit 1
     fi

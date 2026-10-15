@@ -328,13 +328,14 @@ export function seedGroup(
 	groupId: string,
 	subjectCanonicalId: string,
 	groupCode = "A",
+	controlNumber: string | null = null,
 ): void {
 	raw
 		.prepare(
-			`INSERT INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab)
-			 VALUES (?, ?, ?, 'Docente Prueba', 1)`,
+			`INSERT INTO course_groups (id, subject_canonical_id, group_code, teacher_name, has_lab, student_control_number)
+			 VALUES (?, ?, ?, 'Docente Prueba', 1, ?)`,
 		)
-		.run(groupId, subjectCanonicalId, groupCode);
+		.run(groupId, subjectCanonicalId, groupCode, controlNumber);
 }
 
 export function seedBlock(raw: DatabaseSync, seed: SeedBlock): void {

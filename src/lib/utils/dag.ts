@@ -5,7 +5,10 @@
  * Used by the curriculum retícula (Phase 3 Tarea 3.4) to compute the
  * prerequisite fan-in/fan-out of a subject node and to decide whether
  * a student can start procedures (social service, residency) based on
- * approved credits.
+ * approved credits. T9.9 added the seriation view: which prerequisite
+ * chain a subject belongs to, and what the retícula may honestly say
+ * about a subject whose seriation is SERIALIZED / INDEPENDENT /
+ * UNKNOWN.
  *
  * Edge convention:
  *   { from, to }  means  from -> to   (i.e. `from` is a prerequisite of `to`).
@@ -22,6 +25,8 @@
  *
  * See: odd/tasks/opensim.md §7.1
  */
+
+import type { SubjectSeriationState } from "#lib/server/db/schema";
 
 // ---------- Edge model ----------
 
@@ -161,6 +166,135 @@ export function getDescendantsFromMap(targetId: string, map: ParentMap): Set<str
 	}
 	traverse(targetId);
 	return descendants;
+}
+
+// ---------- Chains ----------
+
+/**
+ * The seriation chains of a graph: one connected group of subjects per
+ * entry, each listed prerequisite-first.
+ *
+ * A subject touched by no edge is in no chain. "No verified edge" is what
+ * INDEPENDENT and UNKNOWN both look like from the edge list alone, so the
+ * chain decomposition cannot tell them apart — only `describeSeriation`,
+ * which is given the stored tri-state, can.
+ */
+export interface ChainDecomposition {
+	/** One entry per connected group, prerequisite-first. */
+	chains: string[][];
+	/** Subject id -> index into `chains`. Nodes without an edge are absent. */
+	chainIndexBySubject: Map<string, number>;
+}
+
+/**
+ * Splits an edge list into chains in O(V+E).
+ *
+ * A chain is a connected group, not a path, so a subject that is both a
+ * prerequisite and a dependent of others stays in a single chain — that is
+ * the general case; the verified ISIC-2010-224 graph happens to decompose
+ * into seven simple paths.
+ *
+ * Within a chain the subjects are ordered prerequisite-first by a post-order
+ * DFS whose result is reversed: for every edge `p -> c` the walk finishes
+ * `c` before `p`, so `p` lands first. The `visited` set is marked before
+ * recursing, so a cyclic input terminates with every subject emitted
+ * exactly once (same cycle tolerance as the traversals above).
+ *
+ * Called once per render by the retícula DAG when it needs to know which
+ * chain a hovered subject belongs to.
+ */
+export function decomposeChains(edges: Edge[]): ChainDecomposition {
+	const { children, parents } = buildAdjacency(edges);
+	const chains: string[][] = [];
+	const chainIndexBySubject = new Map<string, number>();
+
+	// First-appearance node order over the edge list. The walks below are
+	// deterministic, so the same edge list always yields the same chains
+	// in the same order (SSR / CSR parity for the retícula).
+	const nodes = new Set<string>();
+	for (const { from, to } of edges) {
+		nodes.add(from);
+		nodes.add(to);
+	}
+
+	const assigned = new Set<string>();
+	for (const root of nodes) {
+		if (assigned.has(root)) continue;
+		const component: string[] = [];
+		// Undirected flood fill: walk children and parents alike, because a
+		// chain is defined by connectivity, not by direction.
+		const collect = (id: string): void => {
+			if (assigned.has(id)) return;
+			assigned.add(id);
+			component.push(id);
+			for (const next of children.get(id) ?? []) collect(next);
+			for (const next of parents.get(id) ?? []) collect(next);
+		};
+		collect(root);
+
+		const visited = new Set<string>();
+		const postOrder: string[] = [];
+		const postVisit = (id: string): void => {
+			if (visited.has(id)) return;
+			visited.add(id);
+			for (const child of children.get(id) ?? []) postVisit(child);
+			postOrder.push(id);
+		};
+		// Seeding the walk with every member of the component covers the
+		// branches that no single root reaches by following children only.
+		for (const id of component) postVisit(id);
+
+		const index = chains.length;
+		chains.push(postOrder.reverse());
+		for (const id of component) chainIndexBySubject.set(id, index);
+	}
+	return { chains, chainIndexBySubject };
+}
+
+// ---------- Seriation ----------
+
+/**
+ * What the retícula may honestly say about one subject's seriation. The
+ * union is discriminated on `state`, so the three states cannot collapse
+ * into one another: reading `chain` first requires narrowing to
+ * SERIALIZED, and an UNKNOWN subject is never handed a chain.
+ *
+ * The literal states mirror `SUBJECT_SERIATION_STATES` in
+ * `#lib/server/db/schema` (imported as a type only — this module runs in
+ * the browser and must not drag drizzle-orm into the bundle).
+ */
+export type SeriationInfo =
+	| { state: "SERIALIZED"; chain: { index: number; subjects: string[]; position: number } | null }
+	| { state: "INDEPENDENT" }
+	| { state: "UNKNOWN" };
+
+/**
+ * Describes one subject's seriation against a chain decomposition.
+ *
+ * `UNKNOWN` is returned verbatim: it means "not established from a source",
+ * not "not serialized", so this never invents a chain for it and never
+ * reports it as INDEPENDENT. `chain` is null only for a subject that claims
+ * SERIALIZED but that the edge list does not place in a chain — a data
+ * defect the UI should surface rather than hide.
+ *
+ * Called per subject by the retícula when it decides what to render.
+ */
+export function describeSeriation(
+	subjectId: string,
+	state: SubjectSeriationState,
+	decomposition: ChainDecomposition,
+): SeriationInfo {
+	if (state === "SERIALIZED") {
+		const index = decomposition.chainIndexBySubject.get(subjectId);
+		if (index === undefined) return { state: "SERIALIZED", chain: null };
+		const subjects = decomposition.chains[index];
+		const position = subjects.indexOf(subjectId);
+		if (position < 0) return { state: "SERIALIZED", chain: null };
+		// `subjects` is copied so a caller cannot reorder the shared chain array.
+		return { state: "SERIALIZED", chain: { index, subjects: [...subjects], position } };
+	}
+	if (state === "INDEPENDENT") return { state: "INDEPENDENT" };
+	return { state: "UNKNOWN" };
 }
 
 // ---------- Credit thresholds ----------
