@@ -371,7 +371,7 @@ Presupuesto: ~400 líneas escritas acumuladas. Si lo rebasa, se corta en el lím
   **Los dos tests que quedaban rojos eran culpa del test, no de la app.** `/tramites` es un
   stepper: sólo el procedimiento seleccionado enseña su bloqueo, así que "todos los
   bloqueados dicen por qué" es una pregunta que no tiene respuesta en una vista y el modelo
- .contestó `ASSERTION_INCONCLUSIVE` con razón. Ahora pregunta por procedimiento, pulsando
+  contestó `ASSERTION_INCONCLUSIVE` con razón. Ahora pregunta por procedimiento, pulsando
   cada pestaña: tres comprobaciones donde había una vaga. Y el Kardex pedía tabla cuando la
   sesión `alumno` es `99999999` y todas las filas de `student_progress` son de `12345678`:
   la página enseña su estado vacío y acierta.
