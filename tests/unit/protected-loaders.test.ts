@@ -168,23 +168,20 @@ interface TramitesData {
 }
 
 /**
- * T9.13: one row per completed complementary activity = one complementary
- * credit. The four complementary subjects are 0-credit transversal modules,
- * so the row count IS the credit count.
+ * Phase 10 S1 (2026-10-15): the credit lives on the activity row, not on the
+ * subject. A transversal subject is worth one complementary credit for being
+ * taken; the row records what it actually paid out.
  */
-function seedComplementary(raw: DatabaseSync, count: number, weight = 1): void {
+function seedComplementary(raw: DatabaseSync, count: number, credits = 1): void {
 	for (let i = 0; i < count; i++) {
 		seedSubject(raw, { canonicalId: `complementario-${i}`, code: `ITM-1${i}0` });
 		raw
-			.prepare("UPDATE subjects SET complementary_credits = ? WHERE canonical_id = ?")
-			.run(weight, `complementario-${i}`);
-		raw
 			.prepare(
 				`INSERT INTO complementary_credit_activities
-					(student_control_number, subject_canonical_id, period)
-				 VALUES (?, ?, ?)`,
+					(student_control_number, subject_canonical_id, period, credits)
+				 VALUES (?, ?, ?, ?)`,
 			)
-			.run(CONTROL, `complementario-${i}`, PERIOD);
+			.run(CONTROL, `complementario-${i}`, PERIOD, credits);
 	}
 }
 
@@ -767,11 +764,11 @@ describe("trámites loader", () => {
 		expect(social.blockedReason).toContain("5 créditos complementarios más");
 	});
 
-	// Phase 10 S1/S4: the total is the SUM of subject weights, not a row
-	// count. This is the assertion T9.13 could not have made, because at the
+	// Phase 10 S1/S4: the total is the SUM of what each activity paid out, not a
+	// row count. This is the assertion T9.13 could not have made, because at the
 	// time every subject carried no weight and both readings coincided.
 
-	it("sums each completed activity's subject weight, not the number of rows", async () => {
+	it("sums each completed activity's own credit, not the number of rows", async () => {
 		seedComplementary(raw, 3, 2);
 		const result = await loadTramites(signedIn());
 		expect(result.complementaryCredits).toBe(6);
@@ -808,6 +805,59 @@ describe("trámites loader", () => {
 		const result = await loadTramites(signedIn());
 		expect(result.complementaryCredits).toBe(5);
 		// 182 reticular + exactly 5 complementary clears both gates.
+		expect(procedureById(result, "servicio-social").unlocked).toBe(true);
+	});
+
+	it("counts an external complementary activity that has no subject", async () => {
+		// Phase 10 S1 (2026-10-15): the four transversal subjects are not the
+		// only route to the block. A course, a workshop or an outside
+		// participation is an activity with NO subject, and it still counts.
+		// Before this the column was NOT NULL and the credit came from the
+		// subject, so an external activity was not even representable.
+		raw
+			.prepare(
+				`INSERT INTO complementary_credit_activities
+					(student_control_number, subject_canonical_id, period, credits)
+				 VALUES (?, NULL, ?, 1)`,
+			)
+			.run(CONTROL, PERIOD);
+		const result = await loadTramites(signedIn());
+		expect(result.complementaryCredits).toBe(1);
+	});
+
+	it("reaches the 5-credit block with the four transversals plus one external activity", async () => {
+		// The operator's rule in one test: the four transversal subjects are
+		// worth 1 each and stop at 4, and the fifth comes from outside them.
+		// Under 0015 this was impossible by construction — the weights had to
+		// add up to 5 or the seed refused to run.
+		seedComplementary(raw, 4, 1);
+		raw
+			.prepare(
+				`INSERT INTO complementary_credit_activities
+					(student_control_number, subject_canonical_id, period, credits)
+				 VALUES (?, NULL, ?, 1)`,
+			)
+			.run(CONTROL, PERIOD);
+		const result = await loadTramites(signedIn({ approvedCredits: 182, remainingCredits: 78 }));
+		expect(result.complementaryCredits).toBe(5);
+		expect(procedureById(result, "servicio-social").unlocked).toBe(true);
+	});
+
+	it("sums a subject-less activity at whatever weight it was recognised with", async () => {
+		// S1: the weight belongs to the ACTIVITY, so an external course is worth
+		// what the institution gave it for. A 5-credit course is exactly how the
+		// block is completed without touching the four transversals — which is
+		// what makes `subjects.complementary_credits` impossible to keep.
+		seedComplementary(raw, 4, 1);
+		raw
+			.prepare(
+				`INSERT INTO complementary_credit_activities
+					(student_control_number, subject_canonical_id, period, credits)
+				 VALUES (?, NULL, ?, 5)`,
+			)
+			.run(CONTROL, PERIOD);
+		const result = await loadTramites(signedIn({ approvedCredits: 182, remainingCredits: 78 }));
+		expect(result.complementaryCredits).toBe(9);
 		expect(procedureById(result, "servicio-social").unlocked).toBe(true);
 	});
 

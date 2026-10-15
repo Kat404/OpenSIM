@@ -68,13 +68,6 @@ export const subjects = sqliteTable("subjects", {
 	// were never classified against a seriation source.
 	seriationState: text("seriation_state").notNull().default("UNKNOWN"),
 	component: text("component").notNull().default("GENERIC"),
-	// Complementary credits this subject is worth (Phase 10, S1). Zero for
-	// every reticular subject — that is the point: a complementary subject
-	// contributes to the 5-credit block and NEVER to the reticular total,
-	// so the two counts cannot overlap. The weight lives on the subject,
-	// not on a student's activity row, so re-weighting a subject corrects
-	// every student at once.
-	complementaryCredits: integer("complementary_credits").notNull().default(0),
 	specialtyCode: text("specialty_code").references(() => specialties.code),
 });
 
@@ -187,22 +180,41 @@ export const studentProgress = sqliteTable(
 //
 // One row per completed complementary activity, keyed by
 // (student, subject, period) exactly like `student_progress`. The
-// graduation rule is a COUNT against the dataset's
+// graduation rule is a SUM against the dataset's
 // `complementaryCredits.requiredForGraduation`, so there is deliberately
 // no `social_service_unlocked` column and no stored total: both are
 // derived, and a stored copy would drift the moment a row is corrected.
-// The four offering subjects already exist with `component = COMPLEMENTARY`;
-// this table records only that a student completed one.
+//
+// `credits` is the whole point of this table: the credit belongs to the
+// ACTIVITY, not to the subject. The four transversal subjects exist to earn
+// one complementary credit each, but they are not the only route — a course,
+// a workshop or an outside participation earns one too, and none of those
+// is a subject. Hence a NULL `subject_canonical_id`.
+//
+// A NULL cannot be deduplicated by a UNIQUE index, so there is deliberately no
+// unique guard over the subject-less rows: a partial index on (student, period)
+// was measured and it rejects a student who takes two external activities in
+// one term — which the institution allows — while still letting one course
+// recorded in two terms pay out twice. Until the institution says how an
+// external activity is identified, a subject-less row has no natural key and
+// this table cannot dedupe it. v1 never writes one: `just db-seed` emits only
+// subject-backed rows, because anything else would be invented data.
 export const complementaryCreditActivities = sqliteTable(
 	"complementary_credit_activities",
 	{
 		studentControlNumber: text("student_control_number")
 			.notNull()
 			.references(() => studentProfiles.controlNumber, { onDelete: "cascade" }),
-		subjectCanonicalId: text("subject_canonical_id")
-			.notNull()
-			.references(() => subjects.canonicalId),
+		subjectCanonicalId: text("subject_canonical_id").references(() => subjects.canonicalId),
 		period: text("period").notNull(),
+		// Replaces the seed validator withdrawn in 0016: it used to reject a
+		// negative complementary weight at the subject, and this is the same
+		// guard at the row the weight moved to. The `CHECK (credits >= 1)` itself
+		// lives in migration 0016, not here — the installed Drizzle has no
+		// column-level `check()`, and the migrations, not this object, are what
+		// create the table. A weight above 1 stays legal on purpose: a 5-credit
+		// external course is how the block is completed.
+		credits: integer("credits").notNull().default(1),
 	},
 	(table) => ({
 		pk: primaryKey({

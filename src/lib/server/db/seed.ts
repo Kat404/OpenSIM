@@ -52,7 +52,6 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SUBJECT_COMPONENTS, SUBJECT_SERIATION_STATES } from "#lib/server/db/schema";
-import { COMPLEMENTARY_CREDITS_REQUIRED } from "#lib/utils/dag";
 
 // ---------- Types matching the dataset JSON ----------
 
@@ -78,9 +77,6 @@ interface SubjectDataset {
 	specialtyCode: string | null;
 	seriationState: (typeof SUBJECT_SERIATION_STATES)[number];
 	component: (typeof SUBJECT_COMPONENTS)[number];
-	/** Complementary credits this subject is worth (Phase 10, S1). Zero for
-	 * every reticular subject. Absent in older datasets, hence the default. */
-	complementaryCredits?: number;
 }
 
 /** One verified seriation edge. The dataset states both ends by `code`; the
@@ -297,7 +293,7 @@ function insertSubjects(subjects: SubjectDataset[]): string {
 	const lines: string[] = ["-- subjects"];
 	for (const s of subjects) {
 		lines.push(
-			`INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES (${sqlStr(s.canonicalId)}, ${sqlStr(s.code)}, ${sqlStr(s.name)}, ${sqlNullableNum(s.semester)}, ${sqlNullableNum(s.ht)}, ${sqlNullableNum(s.hp)}, ${sqlNum(s.credits)}, ${sqlNullableStr(s.area)}, ${sqlStr(s.seriationState)}, ${sqlStr(s.component)}, ${sqlNullableStr(s.specialtyCode)}, ${sqlNum(s.complementaryCredits ?? 0)});`,
+			`INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES (${sqlStr(s.canonicalId)}, ${sqlStr(s.code)}, ${sqlStr(s.name)}, ${sqlNullableNum(s.semester)}, ${sqlNullableNum(s.ht)}, ${sqlNullableNum(s.hp)}, ${sqlNum(s.credits)}, ${sqlNullableStr(s.area)}, ${sqlStr(s.seriationState)}, ${sqlStr(s.component)}, ${sqlNullableStr(s.specialtyCode)});`,
 		);
 		lines.push("--> statement-breakpoint");
 		for (const alias of s.aliases ?? []) {
@@ -375,6 +371,13 @@ function insertOfferingGroups(rows: ResolvedOfferingGroup[]): string {
  * One row per completed complementary activity. Derived from the fixture's
  * progress rows whose subject carries `component = COMPLEMENTARY`: only
  * APPROVED counts, because an ENROLLED activity has not been completed.
+ *
+ * `credits` is left to its column default of 1, which IS the rule: the
+ * transversal subjects are worth one complementary credit each. The fixture
+ * seeds no subject-less activity because an external course, workshop or
+ * participation would be invented data, and this repo does not invent what it
+ * cannot source. The column exists so the route is representable, not so the
+ * demo can pretend to have taken one.
  */
 function insertComplementaryCreditActivities(
 	controlNumber: string,
@@ -446,10 +449,10 @@ function insertFooter(): string {
 		"--> statement-breakpoint",
 		"SELECT COUNT(*) AS complementary_activities FROM complementary_credit_activities;",
 		"--> statement-breakpoint",
-		// Phase 10 S1: the four weights must add up to the 5-credit block the
-		// plan publishes. A drift here means a complementary subject lost its
-		// weight and no gate would ever notice.
-		"SELECT SUM(complementary_credits) AS complementary_weight_total FROM subjects;",
+		// Phase 10 S1 (2026-10-15): the credit lives on the activity row, so
+		// this reads the sum the student actually earned rather than a total
+		// that has to be engineered to add up to the block.
+		"SELECT SUM(credits) AS complementary_credit_total FROM complementary_credit_activities;",
 		"--> statement-breakpoint",
 		"SELECT COUNT(*) AS progress_rows FROM student_progress;",
 		"--> statement-breakpoint",
@@ -772,33 +775,13 @@ function main(): void {
 		}
 	}
 
-	// Phase 10 S1: a subject may carry complementary weight ONLY if it is a
-	// complementary subject, and the weights must add up to the 5-credit
-	// block the plan publishes. Without this the seed would happily write a
-	// reticular subject with weight 3 and the Servicio Social gate would
-	// open on credits that do not exist.
-	const complementaryTotal = dataset.subjects.reduce(
-		(total, s) => total + (s.complementaryCredits ?? 0),
-		0,
-	);
-	for (const s of dataset.subjects) {
-		const weight = s.complementaryCredits ?? 0;
-		if (weight > 0 && s.component !== "COMPLEMENTARY") {
-			throw new Error(
-				`Subject ${s.canonicalId} has component "${s.component}" but carries ${weight} complementary credits.`,
-			);
-		}
-		if (!Number.isInteger(weight) || weight < 0) {
-			throw new Error(
-				`Subject ${s.canonicalId} has a non-integer complementary weight: ${weight}.`,
-			);
-		}
-	}
-	if (complementaryTotal !== COMPLEMENTARY_CREDITS_REQUIRED) {
-		throw new Error(
-			`Complementary weights sum to ${complementaryTotal}, but the plan's block is ${COMPLEMENTARY_CREDITS_REQUIRED}.`,
-		);
-	}
+	// Phase 10 S1, 2026-10-15: the complementary weight belongs to the
+	// ACTIVITY, not to the subject, and the seed validator no longer has
+	// anything to say about subjects here. The check that used to live here —
+	// "the weights must add up to the 5-credit block" — is gone with the
+	// premise it enforced: the four transversals carry 1 each and add up to
+	// 4, and the fifth credit comes from an activity with no subject. That
+	// invariant was what made ITM-101 = 2 look correct.
 
 	// The dataset keys every edge end by `code`; the table stores `canonical_id`.
 	const edges = dataset.prerequisites.map((e) => {

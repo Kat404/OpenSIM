@@ -33,7 +33,6 @@ import {
 	complementaryCreditActivities,
 	studentProfiles,
 	studentProgress,
-	subjects,
 } from "#lib/server/db/schema";
 import { COMPLEMENTARY_CREDITS_REQUIRED, evaluateCreditThresholds } from "#lib/utils/dag";
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
@@ -168,19 +167,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 			})
 			.from(studentProgress)
 			.where(eq(studentProgress.studentControlNumber, u.controlNumber)),
-		// Complementary credits are the SUM of each completed activity's
-		// subject weight, NOT a row count (Phase 10, S1). T9.13 counted rows,
-		// which was wrong the moment two subjects carry different weights:
-		// ITM-100/104/105 are worth 1 each and ITM-101 is worth 2. The weight
-		// lives on `subjects.complementary_credits`, so re-weighting a
-		// subject corrects every student without rewriting a row.
+		// Complementary credits are the SUM of each completed ACTIVITY's own
+		// weight (Phase 10 S1, 2026-10-15). Not a row count, which was T9.13's
+		// mistake, and not the sum of subject weights, which was 0015's: the
+		// four transversal subjects are worth 1 each and add up to 4, and the
+		// fifth credit comes from an activity with no subject at all. That is
+		// why there is no join here — an inner join would silently drop every
+		// external course, workshop or participation.
 		db
-			.select({ credits: subjects.complementaryCredits })
+			.select({ credits: complementaryCreditActivities.credits })
 			.from(complementaryCreditActivities)
-			.innerJoin(
-				subjects,
-				eq(subjects.canonicalId, complementaryCreditActivities.subjectCanonicalId),
-			)
 			.where(eq(complementaryCreditActivities.studentControlNumber, u.controlNumber)),
 	]);
 

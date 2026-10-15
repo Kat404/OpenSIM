@@ -308,9 +308,12 @@ export interface CreditThresholds {
 /**
  * Complementary credits required for graduation, and therefore to unlock
  * Servicio Social (Phase 10, S1). This is the 5-credit block the ISIC-2010-224
- * plan publishes, NOT a count of activities: the per-subject weights in
- * `subjects.complementary_credits` add up to it, and that sum is what a
- * student accumulates.
+ * plan publishes, and it is NOT reachable by any single route: a transversal
+ * subject pays one credit for being taken, and a course, a workshop or an
+ * outside participation pays whatever the institution recognises. What a
+ * student accumulates is therefore the SUM of `credits` over their rows in
+ * `complementary_credit_activities`, and the four transversals together only
+ * account for 4 of the 5.
  *
  * It lives here, in a client-safe module, rather than beside the schema: the
  * retícula renders on the client and imports from this file, so a value
