@@ -334,3 +334,25 @@ Presupuesto: ~400 líneas escritas acumuladas. Si lo rebasa, se corta en el lím
   pantalla tenía 329 nodos. Lo que falla es `agent.extract`, el paso de structured output, y
   sólo ese. Cero `STEP_TIMEOUT` en todo el run: el presupuesto de 120 s ni se acercó. T6
   sigue bloqueada por el proveedor, con el alcance más estrecho de lo que se creía.
+
+- **2026-10-15 — T6 deja de estar bloqueada: el diagnóstico anterior era FALSO.** El
+  shim `e2e-structured-output-shim.ts` repara la respuesta en `wrapLanguageModel` y el
+  carril pasa de 4/10 a **8/10**, sin un solo `MODEL_OUTPUT_INVALID`.
+  Lo que la sonda midió y lo que la documentation decía no coinciden. No es que el endpoint
+  "ignore `response_format`": lo ignora y da igual, porque el JSON que vuelve es válido y
+  sus **valores son correctos**. Lo que no hace es repetir la clave que le pides —
+  `withTemario` vuelve como `publicadas` o `publicados`, `conTemario` como `con_temario` o
+  `materias_con_temario`, y `publicadas` vuelve como `publicados`: renombra incluso cuando
+  se le da la clave exacta que más le gusta, así que renombrar el campo NO es el arreglo.
+  También suelta dos o tres objetos candidatos con prosa alrededor, y a `agent.extract` le
+  llega la respuesta interior sin el sobre `found`/`value`/`missing`.
+  El shim sólo renombra claves, nunca valores: un acierto equivocado se ve como un assert
+  rojo, nunca como un verde. Texto que no encaja con nada se deja igual y falla la
+  validación — un modelo que no respondió no puede convertirse en un test que pasó.
+  La guía oficial de e2e para `MODEL_OUTPUT_INVALID` dice "simplify the schema or question;
+  pick a stronger model": el runner no trae reparador, así que esto no reinventa nada.
+  Quedan dos rojos que **no son del proveedor**: (1) el modelo se negó a avalar una
+  afirmación que la UI en stepper no puede mostrar, que es exactamente lo que debe hacer;
+  (2) un locator puro sin modelo, que además es un test mal escrito: el alumno de la sesión
+  e2e es `99999999`, que no tiene historial académico, y el comentario del test da por hecho
+  que sí. Commit `054be20`.
