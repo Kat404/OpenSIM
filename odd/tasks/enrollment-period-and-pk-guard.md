@@ -118,13 +118,13 @@ Presupuesto: bajo 400 líneas escritas. Si lo rebasa, se corta en el límite de 
 
 | Task | Estado | Commit |
 | --- | --- | --- |
-| E1 | abierta | — |
-| E2 | abierta | — |
-| E3 | abierta | — |
-| E4 | abierta | — |
-| E5 | abierta | — |
-| E6 | abierta | — |
-| E7 | abierta | — |
+| E1 | cerrada — tres RED observados: APPROVED y LOCKED con `UNIQUE constraint failed`, periodo heredado con el término equivocado | `015eb1e` |
+| E2 | cerrada — `requestedTerm(url) ?? currentAcademicPeriod()` en load y action | `015eb1e` |
+| E3 | cerrada — el guard filtra por periodo y no por estado | `015eb1e` |
+| E4 | cerrada — `getLatestProgressPeriod` borrado; sin llamadores | `015eb1e` |
+| E5 | cerrada — el test que heredaba el periodo ahora lo nombra | `015eb1e` |
+| E6 | **hecha pero no muerde** — pasa contra el código viejo; ver la entrada del log | `015eb1e` |
+| E7 | en curso | `015eb1e` |
 
 ## Fuera de alcance
 
@@ -147,3 +147,23 @@ Presupuesto: bajo 400 líneas escritas. Si lo rebasa, se corta en el límite de 
   `desc(period)` es sobre texto, y "ENERO-JUNIO/2027" le gana a "AGOSTO-DICIEMBRE/2026". Sin
   eso, S1 habría sido "ampliar el filtro de estado" y habríamos arreglado el síntoma dejando
   al alumno de demo inscribiéndose en un término que no ha abierto.
+- **2026-10-15 — E6 dio un resultado que no era el esperado.** La
+  prueba agéntica **pasó contra el código viejo**. Verde falso, y la causa es la misma
+  limitación que ya había mordido en el Kardex: el alumno de la sesión e2e es `99999999`,
+  que tiene **cero** filas en `student_progress`. Entonces `getLatestProgressPeriod` devolvía
+  `null` y la cadena caía igual a `currentAcademicPeriod()` — exactamente el valor contra el
+  que el test compara. El bug del orden lexicográfico **sólo es alcanzable para un alumno que
+  tiene filas**.
+  Consecuencia honesta, escrita en el propio test: `tests/reinscripcion-term.e2e.ts` guarda
+  contra que el término se pinte y resuelva, **no** muerde el bug que nació para cazar. La
+  mordida está en `tests/unit/reinscripcion.test.ts`, que sí siembra un alumno con filas.
+  Ampliar lo que el carril agéntico alcanza significa darle un historial realista a la
+  credencial de e2e, y eso es una decisión con consecuencias — entre ellas que el test del
+  Kardex dejaría de ver el estado vacío — no un cambio tranquilo dentro de este fix. No se
+  tomó aquí.
+- **2026-10-15 — E2–E5 hechos y commiteados** (`015eb1e`). Tres tests RED antes del arreglo:
+  `APPROVED` y `LOCKED` reprodujeron `UNIQUE constraint failed` literal, y el de periodo
+  reprodujo el término equivocado. Después: 27 verdes en el archivo, 369 en la suite.
+  Un agujero más salió del mismo renglón y quedó cerrado: `?period=` vacío producía un
+  término vacío, porque `??` sólo cae ante `null`/`undefined` y `searchParams.get("?period=")`
+  devuelve `""`. Por eso el override pasa por `requestedTerm`, que distingue los tres casos.
