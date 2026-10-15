@@ -322,3 +322,15 @@ Presupuesto: ~400 líneas escritas acumuladas. Si lo rebasa, se corta en el lím
   es lo que hay. Consecuencia honesta: M3 mide 17% contra el 33% de M2.7, así que T6 sigue
   bloqueada con M3 y con M2.7. No hay modelo de la cuenta que devuelva structured output
   válido; los ocho que declara `GET /v1/models` fallan en `response_format`.
+
+- **2026-10-15 — T6 reintentado con `MiniMax-M3` y vuelve a cerrarse por proveedor.** El
+  operador lo pidió expresamente. `just e2e-dev`: 10 tests, 4 verdes, 6 rojos, 12 llamadas
+  al modelo, 60 s en total. Los 6 rojos son todos
+  `MODEL_OUTPUT_INVALID: provider response did not match the closed response grammar`, y
+  cada uno consumió exactamente 2 llamadas — 6 × 2 = 12 se come el run entero, así que los
+  4 verdes no llamaron al modelo: son los deterministas. O sea: **6 de 6** de los tests que
+  necesitan juicio de modelo fallaron, y los que no lo necesitan pasaron.
+  Lo que sí funciona es el carril del actor: `app.open` llegó a `/temario` en 513 ms y la
+  pantalla tenía 329 nodos. Lo que falla es `agent.extract`, el paso de structured output, y
+  sólo ese. Cero `STEP_TIMEOUT` en todo el run: el presupuesto de 120 s ni se acercó. T6
+  sigue bloqueada por el proveedor, con el alcance más estrecho de lo que se creía.
