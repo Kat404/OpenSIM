@@ -68,6 +68,13 @@ export const subjects = sqliteTable("subjects", {
 	// were never classified against a seriation source.
 	seriationState: text("seriation_state").notNull().default("UNKNOWN"),
 	component: text("component").notNull().default("GENERIC"),
+	// Complementary credits this subject is worth (Phase 10, S1). Zero for
+	// every reticular subject — that is the point: a complementary subject
+	// contributes to the 5-credit block and NEVER to the reticular total,
+	// so the two counts cannot overlap. The weight lives on the subject,
+	// not on a student's activity row, so re-weighting a subject corrects
+	// every student at once.
+	complementaryCredits: integer("complementary_credits").notNull().default(0),
 	specialtyCode: text("specialty_code").references(() => specialties.code),
 });
 

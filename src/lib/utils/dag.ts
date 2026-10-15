@@ -307,37 +307,82 @@ export interface CreditThresholds {
 
 /**
  * Complementary credits required for graduation, and therefore to unlock
- * Servicio Social. Operator decision (T9.13): this is a SECOND gate, not a
- * replacement for the reticular threshold — the two are counted separately
- * because complementary subjects carry 0 reticular credits by definition.
+ * Servicio Social (Phase 10, S1). This is the 5-credit block the ISIC-2010-224
+ * plan publishes, NOT a count of activities: the per-subject weights in
+ * `subjects.complementary_credits` add up to it, and that sum is what a
+ * student accumulates.
+ *
+ * It lives here, in a client-safe module, rather than beside the schema: the
+ * retícula renders on the client and imports from this file, so a value
+ * imported from the server-only schema module would trip SvelteKit's
+ * `server_only_import` guard. The seed validator imports it from here too, so
+ * both read one definition.
  */
 export const COMPLEMENTARY_CREDITS_REQUIRED = 5;
 
 /**
- * Returns whether a student with the given number of approved credits can
- * start the named academic procedure. Thresholds are computed as fixed
- * percentages of the ISIC-2010-224 plan total of 260 credits:
+ * Phase 10 S2. The ISIC-2010-224 plan publishes a 260-credit total, but only
+ * 235 of those credits are RETICULAR. The other 25 are the 5 complementary
+ * credits, the 10 of Residencia Profesional and the 10 of Servicio Social —
+ * none of which a student can put toward the reticular total.
  *
- *   Taller de Investigación I  >= 50%  (130 credits)
- *   Residencia Profesional     >= 80%  (208 credits)
+ * The distinction matters because `RETICULAR_CREDITS_TOTAL` is what the
+ * reticular thresholds are measured against, and using the 260 plan total as
+ * that denominator would credit a student with credits they structurally
+ * cannot have.
+ */
+export const PLAN_CREDITS_TOTAL = 260;
+export const RETICULAR_CREDITS_TOTAL = 235;
+export const COMPLEMENTARY_BLOCK = COMPLEMENTARY_CREDITS_REQUIRED;
+export const RESIDENCY_CREDITS = 10;
+export const SOCIAL_SERVICE_CREDITS = 10;
+
+/**
+ * Reticular-credit thresholds. These are the operator's numbers for this
+ * career (Phase 10 S3) and are deliberately NOT derived at runtime.
  *
- * Servicio Social is the exception: it is gated TWICE (T9.13). It needs
- * reticular credits >= 70% (182) AND complementary credits >= 5. The
- * complementary subjects contribute 0 reticular credits, so the two
- * numbers never overlap and neither gate can stand in for the other.
+ * They were originally documented as 50% / 70% / 80% of 260, and they do
+ * equal those percentages exactly. That provenance is retired anyway: the 260
+ * plan total counts the 5 complementary credits, which Servicio Social now
+ * requires as a SEPARATE gate, so measuring reticular progress as a share of
+ * 260 would let the complementary block stand in for reticular progress.
+ * The numbers are the operator's rule and stand on their own — 235 * 0.7 is
+ * 164.5, not 182, and it is not a threshold either.
+ *
+ * A test pins each constant to its literal value and to NOT matching a
+ * percentage of RETICULAR_CREDITS_TOTAL, so neither derivation can creep
+ * back in.
+ */
+export const TALLER_INV1_RETICULAR = 130;
+export const SOCIAL_SERVICE_RETICULAR = 182;
+export const RESIDENCY_RETICULAR = 208;
+
+/**
+ * Returns whether a student with the given number of approved RETICULAR
+ * credits (and completed complementary credits) can start the named
+ * academic procedure.
+ *
+ *   Taller de Investigación I  >= 130 reticular
+ *   Servicio Social            >= 182 reticular AND >= 5 complementary
+ *   Residencia Profesional     >= 208 reticular
+ *
+ * Servicio Social is the exception: it is gated TWICE (T9.13). The
+ * complementary subjects contribute 0 reticular credits by construction, so
+ * the two numbers never overlap and neither gate can stand in for the other.
  * Residencia and Taller keep the single reticular gate.
  *
  * Pure function: no side effects, safe to call from form loaders and
  * Vitest without setup.
  */
 export function evaluateCreditThresholds(
-	approvedCredits: number,
+	approvedReticularCredits: number,
 	complementaryCredits: number,
 ): CreditThresholds {
 	return {
 		canStartSocialService:
-			approvedCredits >= 182 && complementaryCredits >= COMPLEMENTARY_CREDITS_REQUIRED,
-		canStartResidency: approvedCredits >= 208,
-		canTakeTallerInv1: approvedCredits >= 130,
+			approvedReticularCredits >= SOCIAL_SERVICE_RETICULAR &&
+			complementaryCredits >= COMPLEMENTARY_CREDITS_REQUIRED,
+		canStartResidency: approvedReticularCredits >= RESIDENCY_RETICULAR,
+		canTakeTallerInv1: approvedReticularCredits >= TALLER_INV1_RETICULAR,
 	};
 }

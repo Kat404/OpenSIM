@@ -216,7 +216,7 @@ describe("getUserFromSessionToken", () => {
 		const session = await createSession(db, CONTROL, "vitest", "iphash");
 		const user = await getUserFromSessionToken(db, session.id);
 		expect(user?.controlNumber).toBe(CONTROL);
-		expect(user?.fullName).toBe("Ada Lovelace Ortiz");
+		expect(user?.fullName).toBe("Valeria Moreno Ortiz");
 	});
 
 	it("returns null for an unknown token", async () => {

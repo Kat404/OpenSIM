@@ -172,9 +172,12 @@ interface TramitesData {
  * credit. The four complementary subjects are 0-credit transversal modules,
  * so the row count IS the credit count.
  */
-function seedComplementary(raw: DatabaseSync, count: number): void {
+function seedComplementary(raw: DatabaseSync, count: number, weight = 1): void {
 	for (let i = 0; i < count; i++) {
 		seedSubject(raw, { canonicalId: `complementario-${i}`, code: `ITM-1${i}0` });
+		raw
+			.prepare("UPDATE subjects SET complementary_credits = ? WHERE canonical_id = ?")
+			.run(weight, `complementario-${i}`);
 		raw
 			.prepare(
 				`INSERT INTO complementary_credit_activities
@@ -762,6 +765,29 @@ describe("trámites loader", () => {
 		expect(result.complementaryCredits).toBe(0);
 		expect(social.unlocked).toBe(false);
 		expect(social.blockedReason).toContain("5 créditos complementarios más");
+	});
+
+	// Phase 10 S1/S4: the total is the SUM of subject weights, not a row
+	// count. This is the assertion T9.13 could not have made, because at the
+	// time every subject carried no weight and both readings coincided.
+
+	it("sums each completed activity's subject weight, not the number of rows", async () => {
+		seedComplementary(raw, 3, 2);
+		const result = await loadTramites(signedIn());
+		expect(result.complementaryCredits).toBe(6);
+		expect(result.complementaryRequired).toBe(5);
+	});
+
+	it("unlocks Servicio Social on 4 credits when one activity is worth 2", async () => {
+		// Two rows, four credits: a row count would have said 2 and kept the
+		// gate closed with the gate's own data sitting in the table.
+		seedComplementary(raw, 2, 2);
+		const result = await loadTramites(signedIn());
+		expect(result.complementaryCredits).toBe(4);
+		expect(procedureById(result, "servicio-social").unlocked).toBe(false);
+		expect(procedureById(result, "servicio-social").blockedReason).toContain(
+			"1 créditos complementarios más",
+		);
 	});
 
 	it("counts only THIS student's complementary activities", async () => {

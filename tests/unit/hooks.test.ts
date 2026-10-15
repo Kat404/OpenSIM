@@ -104,7 +104,7 @@ describe("handle — locals.user", () => {
 
 		expect(event.locals.user).toMatchObject({
 			controlNumber: CONTROL,
-			fullName: "Ada Lovelace Ortiz",
+			fullName: "Valeria Moreno Ortiz",
 		});
 	});
 

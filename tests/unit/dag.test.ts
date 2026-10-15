@@ -10,6 +10,7 @@ import { describe, expect, it } from "vitest";
 import type { Edge } from "../../src/lib/utils/dag";
 import {
 	buildAdjacency,
+	COMPLEMENTARY_BLOCK,
 	decomposeChains,
 	describeSeriation,
 	evaluateCreditThresholds,
@@ -17,6 +18,13 @@ import {
 	getAncestorsFromMap,
 	getDescendants,
 	getDescendantsFromMap,
+	PLAN_CREDITS_TOTAL,
+	RESIDENCY_CREDITS,
+	RESIDENCY_RETICULAR,
+	RETICULAR_CREDITS_TOTAL,
+	SOCIAL_SERVICE_CREDITS,
+	SOCIAL_SERVICE_RETICULAR,
+	TALLER_INV1_RETICULAR,
 } from "../../src/lib/utils/dag";
 
 /**
@@ -139,6 +147,44 @@ describe("getDescendants", () => {
 		const edges: Edge[] = [{ from: "a", to: "b" }];
 		const result = getDescendants("a", edges);
 		expect(result.has("a")).toBe(false);
+	});
+});
+
+describe("credit plan arithmetic (Phase 10 S2, S3)", () => {
+	it("separates the reticular total from the plan total", () => {
+		// 210 generic + 25 specialty is what a student can actually hold as
+		// reticular credit. The plan's 260 also contains the 25 credits that
+		// no reticular threshold may count.
+		expect(RETICULAR_CREDITS_TOTAL).toBe(210 + 25);
+		expect(PLAN_CREDITS_TOTAL).toBe(
+			RETICULAR_CREDITS_TOTAL + COMPLEMENTARY_BLOCK + RESIDENCY_CREDITS + SOCIAL_SERVICE_CREDITS,
+		);
+	});
+
+	it("pins the thresholds to the operator's numbers, not to any derived percentage", () => {
+		// Phase 10 S3. 130/182/208 happen to equal 50/70/80% of 260, so the
+		// original provenance was "percentage of the plan total". That
+		// derivation is retired: the 260 denominator counts the 5
+		// complementary credits that Servicio Social requires as a SEPARATE
+		// gate, so crediting a student by a percentage of 260 would let the
+		// complementary block stand in for reticular progress. The numbers
+		// are the operator's rule and stand on their own.
+		//
+		// The guard is therefore against the RETICULAR total, which is the
+		// tempting "correct" recomputation (235 * 0.7 = 164.5, not 182):
+		// these constants must never be re-derived from it either.
+		expect(TALLER_INV1_RETICULAR).toBe(130);
+		expect(SOCIAL_SERVICE_RETICULAR).toBe(182);
+		expect(RESIDENCY_RETICULAR).toBe(208);
+		expect(TALLER_INV1_RETICULAR).not.toBe(RETICULAR_CREDITS_TOTAL * 0.5);
+		expect(SOCIAL_SERVICE_RETICULAR).not.toBe(RETICULAR_CREDITS_TOTAL * 0.7);
+		expect(RESIDENCY_RETICULAR).not.toBe(RETICULAR_CREDITS_TOTAL * 0.8);
+	});
+
+	it("keeps the three thresholds below the reticular total", () => {
+		expect(SOCIAL_SERVICE_RETICULAR).toBeLessThan(RETICULAR_CREDITS_TOTAL);
+		expect(RESIDENCY_RETICULAR).toBeLessThan(RETICULAR_CREDITS_TOTAL);
+		expect(TALLER_INV1_RETICULAR).toBeLessThan(RETICULAR_CREDITS_TOTAL);
 	});
 });
 

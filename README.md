@@ -1,9 +1,29 @@
 # OpenSIM — Sistema Integral Modular (FOSS)
 
-FOSS rewrite of TecNM Morelia's academic management system.
+A FOSS redesign of TecNM Morelia's academic management system, built as a working demo.
+
+This is **not** a replica of the SIM and not a data mirror. The institution publishes some
+of its academic data and none of its scheduling, so a faithful copy is impossible by
+construction — scraping classmates would not close the gap either, because the schedule of
+an offered group simply does not exist until the SIM assigns it at enrolment (see
+`odd/tasks/phase-9-ui-integration.md`, finding H11). So OpenSIM takes the published half
+seriously and declares the other half.
+
+| Verified from the SIM | Design invention of this project |
+| --- | --- |
+| Subjects, codes, credits, seriation | Classrooms, buildings, schedules |
+| The offering catalogue (468 groups) | The demo student's name and curriculum |
+| The published syllabus (7 of 68 subjects — see `/temario`) | The 25 specialty credits that carry no syllabus |
+
+Coverage is stated on screen rather than hidden: `/temario` names its real 7-of-68 ratio and
+explains that the gap comes from the portal publishing only the active period, not from the
+institution lacking the syllabus. When a source is silent, the UI says so instead of filling
+the gap.
+
+**v1 covers one career: ISIC-2010-224 (Ingeniería en Sistemas Computacionales).** The other
+programmes are out of scope until their data is obtainable.
 
 - **Stack:** SvelteKit `3.0.0` + Svelte `5.57.1` (Runes) + Cloudflare D1 + Drizzle ORM `0.45.3`
-- **Plan:** ISIC-2010-224 (Ingeniería en Sistemas Computacionales)
 - **UI language:** Spanish (es-MX)
 - **Code language:** English
 - **A11y target:** WCAG 2.1 AA
@@ -162,6 +182,16 @@ OPENSIM_TEST_CONTROL_NUMBER=12345678 OPENSIM_TEST_PASSWORD=… just db-set-passw
 
 DO NOT use these credentials in any deployed environment. `db-set-password-remote` refuses
 the default password outright.
+
+## Demo data
+
+The demo student in `src/lib/server/db/data/enrollment-fixture.json` carries an invented
+name and an invented CURP. **No field in that file identifies a real person** (Phase 10, S5).
+
+The schedule blocks and classroom names in the same file came from a real capture of the
+SIM's carga académica. They are kept because they are installation names, not personal
+data, and they are what makes the weekly grid credible. If you would rather the fixture be
+entirely synthetic, that is a one-file change.
 
 ## Conventions
 

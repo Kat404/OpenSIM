@@ -166,6 +166,19 @@ COMPLEMENTARY = {
     "unlocksServiceSocial": True,
     "source": "ITM-100, ITM-104, ITM-105 y horas de ITM-101",
     "reticularCredits": False,
+    # Phase 10 S1. Operator dictum 2026-10-13: Tutoría, Actividades Físicas
+    # y Apreciación de Artes son opcionales para el avance curricular y
+    # existen únicamente para ganar UN crédito complementario POR MATERIA.
+    # ITM-101 carga el resto del bloque de 5 del plan; su peso exacto es un
+    # supuesto sin confirmar y está marcado como tal en el plan ODD.
+    "weights": {
+        "ITM-100": 1,
+        "ITM-104": 1,
+        "ITM-105": 1,
+        "ITM-101": 2,
+    },
+    "weightsNote": "ITM-101 = 2 es supuesto: completa el bloque de 5. "
+    "Las tres primeras están dictadas por el operador.",
 }
 SPECIALTY_RULE = {
     "minSemester": 6,
@@ -295,6 +308,9 @@ def build(groups: dict):
                 "specialtyCode": None,
                 "seriationState": "INDEPENDENT",
                 "component": "COMPLEMENTARY" if cr == 0 else "PRACTICE",
+                # 0 for every reticular subject, by definition: that is what
+                # keeps the complementary block out of the reticular total.
+                "complementaryCredits": COMPLEMENTARY["weights"].get(code, 0),
             }
         )
 

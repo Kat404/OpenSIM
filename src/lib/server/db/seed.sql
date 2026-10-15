@@ -22,149 +22,149 @@ INSERT OR IGNORE INTO specialties (code, career_code, name) VALUES ('ISIE-SID-20
 INSERT OR IGNORE INTO specialties (code, career_code, name) VALUES ('ISIE-TND-2026-01', 'ISIC-2010-224', 'Nube');
 --> statement-breakpoint
 -- subjects
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('acf-0901', 'ACF-0901', 'Cálculo Diferencial', 1, 3, 2, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('acf-0901', 'ACF-0901', 'Cálculo Diferencial', 1, 3, 2, 5, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
 INSERT OR IGNORE INTO subject_aliases (subject_canonical_id, alias_code) VALUES ('acf-0901', 'ACF-2301');
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aed-1285', 'AED-1285', 'Fundamentos de Programación', 1, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('aed-1285', 'AED-1285', 'Fundamentos de Programación', 1, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
 INSERT OR IGNORE INTO subject_aliases (subject_canonical_id, alias_code) VALUES ('aed-1285', 'SCD-1008');
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aca-0907', 'ACA-0907', 'Taller de Ética', 1, 0, 4, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('aca-0907', 'ACA-0907', 'Taller de Ética', 1, 0, 4, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
 INSERT OR IGNORE INTO subject_aliases (subject_canonical_id, alias_code) VALUES ('aca-0907', 'ACH-2307');
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aef-1041', 'AEF-1041', 'Matemáticas Discretas', 1, 3, 2, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('aef-1041', 'AEF-1041', 'Matemáticas Discretas', 1, 3, 2, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('sch-1024', 'SCH-1024', 'Taller de Administración', 1, 1, 3, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('sch-1024', 'SCH-1024', 'Taller de Administración', 1, 1, 3, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('acc-0906', 'ACC-0906', 'Fundamentos de Investigación', 1, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('acc-0906', 'ACC-0906', 'Fundamentos de Investigación', 1, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('acf-0902', 'ACF-0902', 'Cálculo Integral', 2, 3, 2, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('acf-0902', 'ACF-0902', 'Cálculo Integral', 2, 3, 2, 5, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aed-1286', 'AED-1286', 'Programación Orientada a Objetos', 2, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('aed-1286', 'AED-1286', 'Programación Orientada a Objetos', 2, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
 INSERT OR IGNORE INTO subject_aliases (subject_canonical_id, alias_code) VALUES ('aed-1286', 'SCD-1020');
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aec-1008', 'AEC-1008', 'Contabilidad Financiera', 2, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('aec-1008', 'AEC-1008', 'Contabilidad Financiera', 2, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aec-1058', 'AEC-1058', 'Química', 2, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('aec-1058', 'AEC-1058', 'Química', 2, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('acf-0903', 'ACF-0903', 'Álgebra Lineal', 2, 3, 2, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('acf-0903', 'ACF-0903', 'Álgebra Lineal', 2, 3, 2, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aef-1052', 'AEF-1052', 'Probabilidad y Estadística', 2, 3, 2, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('aef-1052', 'AEF-1052', 'Probabilidad y Estadística', 2, 3, 2, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('acf-0904', 'ACF-0904', 'Cálculo Vectorial', 3, 3, 2, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('acf-0904', 'ACF-0904', 'Cálculo Vectorial', 3, 3, 2, 5, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aed-1026', 'AED-1026', 'Estructura de Datos', 3, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('aed-1026', 'AED-1026', 'Estructura de Datos', 3, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scc-1005', 'SCC-1005', 'Cultura Empresarial', 3, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scc-1005', 'SCC-1005', 'Cultura Empresarial', 3, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('acd-0908', 'ACD-0908', 'Desarrollo Sustentable', 3, 2, 3, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('acd-0908', 'ACD-0908', 'Desarrollo Sustentable', 3, 2, 3, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scc-1013', 'SCC-1013', 'Investigación de Operaciones', 3, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scc-1013', 'SCC-1013', 'Investigación de Operaciones', 3, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scf-1006', 'SCF-1006', 'Física General', 3, 3, 2, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scf-1006', 'SCF-1006', 'Física General', 3, 3, 2, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('acf-0905', 'ACF-0905', 'Ecuaciones Diferenciales', 4, 3, 2, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('acf-0905', 'ACF-0905', 'Ecuaciones Diferenciales', 4, 3, 2, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scc-1017', 'SCC-1017', 'Métodos Numéricos', 4, 2, 2, 4, NULL, 'UNKNOWN', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scc-1017', 'SCC-1017', 'Métodos Numéricos', 4, 2, 2, 4, NULL, 'UNKNOWN', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scd-1027', 'SCD-1027', 'Tópicos Avanzados de Programación', 4, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scd-1027', 'SCD-1027', 'Tópicos Avanzados de Programación', 4, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aef-1031', 'AEF-1031', 'Fundamentos de Bases de Datos', 4, 3, 2, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('aef-1031', 'AEF-1031', 'Fundamentos de Bases de Datos', 4, 3, 2, 5, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scd-1022', 'SCD-1022', 'Simulación', 4, 2, 3, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scd-1022', 'SCD-1022', 'Simulación', 4, 2, 3, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scd-1018', 'SCD-1018', 'Principios Eléctricos y Aplicaciones Digitales', 4, 2, 3, 5, NULL, 'UNKNOWN', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scd-1018', 'SCD-1018', 'Principios Eléctricos y Aplicaciones Digitales', 4, 2, 3, 5, NULL, 'UNKNOWN', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scc-1010', 'SCC-1010', 'Graficación', 5, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scc-1010', 'SCC-1010', 'Graficación', 5, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aec-1034', 'AEC-1034', 'Fundamentos de Telecomunicaciones', 5, 2, 2, 4, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('aec-1034', 'AEC-1034', 'Fundamentos de Telecomunicaciones', 5, 2, 2, 4, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aec-1061', 'AEC-1061', 'Sistemas Operativos', 5, 2, 2, 4, NULL, 'UNKNOWN', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('aec-1061', 'AEC-1061', 'Sistemas Operativos', 5, 2, 2, 4, NULL, 'UNKNOWN', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('sca-1025', 'SCA-1025', 'Taller de Base de Datos', 5, 0, 4, 4, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('sca-1025', 'SCA-1025', 'Taller de Base de Datos', 5, 0, 4, 4, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scc-1007', 'SCC-1007', 'Fundamentos de Ingeniería de Software', 5, 2, 2, 4, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scc-1007', 'SCC-1007', 'Fundamentos de Ingeniería de Software', 5, 2, 2, 4, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scd-1003', 'SCD-1003', 'Arquitectura de Computadoras', 5, 2, 3, 5, NULL, 'UNKNOWN', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scd-1003', 'SCD-1003', 'Arquitectura de Computadoras', 5, 2, 3, 5, NULL, 'UNKNOWN', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aeb-1055', 'AEB-1055', 'Programación Web', 6, 1, 4, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('aeb-1055', 'AEB-1055', 'Programación Web', 6, 1, 4, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scd-1021', 'SCD-1021', 'Redes de Computadoras', 6, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scd-1021', 'SCD-1021', 'Redes de Computadoras', 6, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('sca-1026', 'SCA-1026', 'Taller de Sistemas Operativos', 6, 0, 4, 4, NULL, 'UNKNOWN', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('sca-1026', 'SCA-1026', 'Taller de Sistemas Operativos', 6, 0, 4, 4, NULL, 'UNKNOWN', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scb-1001', 'SCB-1001', 'Administración de Bases de Datos', 6, 1, 4, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scb-1001', 'SCB-1001', 'Administración de Bases de Datos', 6, 1, 4, 5, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scd-1011', 'SCD-1011', 'Ingeniería de Software', 6, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scd-1011', 'SCD-1011', 'Ingeniería de Software', 6, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scc-1014', 'SCC-1014', 'Lenguajes de Interfaz', 6, 2, 2, 4, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scc-1014', 'SCC-1014', 'Lenguajes de Interfaz', 6, 2, 2, 4, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scd-1004', 'SCD-1004', 'Conmutación y Enrutamiento en Redes de Datos', 7, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scd-1004', 'SCD-1004', 'Conmutación y Enrutamiento en Redes de Datos', 7, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scd-1015', 'SCD-1015', 'Lenguajes y Autómatas I', 7, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scd-1015', 'SCD-1015', 'Lenguajes y Autómatas I', 7, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aca-0909', 'ACA-0909', 'Taller de Investigación I', 7, 0, 4, 4, NULL, 'UNKNOWN', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('aca-0909', 'ACA-0909', 'Taller de Investigación I', 7, 0, 4, 4, NULL, 'UNKNOWN', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scg-1009', 'SCG-1009', 'Gestión de Proyectos de Software', 7, 3, 3, 6, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scg-1009', 'SCG-1009', 'Gestión de Proyectos de Software', 7, 3, 3, 6, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scc-1023', 'SCC-1023', 'Sistemas Programables', 7, 2, 2, 4, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scc-1023', 'SCC-1023', 'Sistemas Programables', 7, 2, 2, 4, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scc-1019', 'SCC-1019', 'Programación Lógica y Funcional', 8, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scc-1019', 'SCC-1019', 'Programación Lógica y Funcional', 8, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('sca-1002', 'SCA-1002', 'Administración de Redes', 8, 0, 4, 4, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('sca-1002', 'SCA-1002', 'Administración de Redes', 8, 0, 4, 4, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aca-0910', 'ACA-0910', 'Taller de Investigación II', 8, 0, 4, 4, NULL, 'UNKNOWN', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('aca-0910', 'ACA-0910', 'Taller de Investigación II', 8, 0, 4, 4, NULL, 'UNKNOWN', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scd-1016', 'SCD-1016', 'Lenguajes y Autómatas II', 8, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scd-1016', 'SCD-1016', 'Lenguajes y Autómatas II', 8, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('scc-1012', 'SCC-1012', 'Inteligencia Artificial', 9, 2, 2, 4, NULL, 'UNKNOWN', 'GENERIC', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('scc-1012', 'SCC-1012', 'Inteligencia Artificial', 9, 2, 2, 4, NULL, 'UNKNOWN', 'GENERIC', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('itm-100', 'ITM-100', 'Tutoría', 1, 0, 0, 0, NULL, 'INDEPENDENT', 'COMPLEMENTARY', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('itm-100', 'ITM-100', 'Tutoría', 1, 0, 0, 0, NULL, 'INDEPENDENT', 'COMPLEMENTARY', NULL, 1);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('itm-104', 'ITM-104', 'Actividades Físicas para la Salud y la Prevención', 1, 0, 0, 0, NULL, 'INDEPENDENT', 'COMPLEMENTARY', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('itm-104', 'ITM-104', 'Actividades Físicas para la Salud y la Prevención', 1, 0, 0, 0, NULL, 'INDEPENDENT', 'COMPLEMENTARY', NULL, 1);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('itm-105', 'ITM-105', 'Apreciación de Artes y Diversidad Cultural', 2, 0, 0, 0, NULL, 'INDEPENDENT', 'COMPLEMENTARY', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('itm-105', 'ITM-105', 'Apreciación de Artes y Diversidad Cultural', 2, 0, 0, 0, NULL, 'INDEPENDENT', 'COMPLEMENTARY', NULL, 1);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('itm-101', 'ITM-101', 'Actividades Complementarias', 7, 0, 0, 0, NULL, 'INDEPENDENT', 'COMPLEMENTARY', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('itm-101', 'ITM-101', 'Actividades Complementarias', 7, 0, 0, 0, NULL, 'INDEPENDENT', 'COMPLEMENTARY', NULL, 2);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('itm-102', 'ITM-102', 'Servicio Social', 8, 0, 0, 10, NULL, 'INDEPENDENT', 'PRACTICE', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('itm-102', 'ITM-102', 'Servicio Social', 8, 0, 0, 10, NULL, 'INDEPENDENT', 'PRACTICE', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('itm-103', 'ITM-103', 'Residencia Profesional', 9, 0, 0, 10, NULL, 'INDEPENDENT', 'PRACTICE', NULL);
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('itm-103', 'ITM-103', 'Residencia Profesional', 9, 0, 0, 10, NULL, 'INDEPENDENT', 'PRACTICE', NULL, 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('sid-2301', 'SID-2301', 'SEGURIDAD EN INFRAESTRUCTURA', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-SID-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('sid-2301', 'SID-2301', 'SEGURIDAD EN INFRAESTRUCTURA', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-SID-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('sid-2302', 'SID-2302', 'SEGURIDAD EN LA NUBE', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-SID-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('sid-2302', 'SID-2302', 'SEGURIDAD EN LA NUBE', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-SID-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('sid-2303', 'SID-2303', 'HARDENING DE SERVIDORES', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-SID-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('sid-2303', 'SID-2303', 'HARDENING DE SERVIDORES', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-SID-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('sid-2304', 'SID-2304', 'SEGURIDAD EN SERVICIOS', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-SID-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('sid-2304', 'SID-2304', 'SEGURIDAD EN SERVICIOS', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-SID-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('sid-2305', 'SID-2305', 'AUDITORIA Y GESTION EN SEGURIDAD INFORMATICA', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-SID-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('sid-2305', 'SID-2305', 'AUDITORIA Y GESTION EN SEGURIDAD INFORMATICA', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-SID-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('tdd-2301', 'TDD-2301', 'TOPICOS SELECTOS DE INGENIERIA DE SOFTWARE', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TDD-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('tdd-2301', 'TDD-2301', 'TOPICOS SELECTOS DE INGENIERIA DE SOFTWARE', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TDD-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('tdd-2302', 'TDD-2302', 'SEGURIDAD DEL SOFTWARE', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TDD-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('tdd-2302', 'TDD-2302', 'SEGURIDAD DEL SOFTWARE', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TDD-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('tdd-2303', 'TDD-2303', 'DISEÑO DE EXPERIENCIA DE USUARIO', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TDD-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('tdd-2303', 'TDD-2303', 'DISEÑO DE EXPERIENCIA DE USUARIO', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TDD-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('tdd-2304', 'TDD-2304', 'TOPICOS SELECTOS DE TECNOLOGIAS WEB Y MOVIL', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TDD-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('tdd-2304', 'TDD-2304', 'TOPICOS SELECTOS DE TECNOLOGIAS WEB Y MOVIL', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TDD-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('tdd-2305', 'TDD-2305', 'TECNOLOGIAS PARA SISTEMAS DE INTELIGENCIA DE NEGOCIOS', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TDD-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('tdd-2305', 'TDD-2305', 'TECNOLOGIAS PARA SISTEMAS DE INTELIGENCIA DE NEGOCIOS', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TDD-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('tnd-2301', 'TND-2301', 'INTEGRACION CONTINUA DE PROYECTOS WEB', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TND-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('tnd-2301', 'TND-2301', 'INTEGRACION CONTINUA DE PROYECTOS WEB', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TND-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('tnd-2302', 'TND-2302', 'APLICACIONES MOVILES', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TND-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('tnd-2302', 'TND-2302', 'APLICACIONES MOVILES', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TND-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('tnd-2303', 'TND-2303', 'CIENCIA DE DATOS', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TND-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('tnd-2303', 'TND-2303', 'CIENCIA DE DATOS', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TND-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('tnd-2304', 'TND-2304', 'INTERNET DE TODAS LAS COSAS', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TND-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('tnd-2304', 'TND-2304', 'INTERNET DE TODAS LAS COSAS', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TND-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('tnd-2305', 'TND-2305', 'INFRAESTRUCTURA DE SERVICIOS', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TND-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('tnd-2305', 'TND-2305', 'INFRAESTRUCTURA DE SERVICIOS', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TND-2026-01', 0);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('tnd-2306', 'TND-2306', 'RECUPERACION DE INFORMACION DE LA WEB', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TND-2026-01');
+INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code, complementary_credits) VALUES ('tnd-2306', 'TND-2306', 'RECUPERACION DE INFORMACION DE LA WEB', NULL, NULL, NULL, 5, NULL, 'UNKNOWN', 'SPECIALTY', 'ISIE-TND-2026-01', 0);
 --> statement-breakpoint
 -- subject_prerequisites
 INSERT OR IGNORE INTO subject_prerequisites (subject_canonical_id, prerequisite_canonical_id) VALUES ('acf-0902', 'acf-0901');
@@ -1206,7 +1206,7 @@ DELETE FROM enrollments WHERE student_control_number = '12345678';
 DELETE FROM course_schedule_blocks WHERE group_id IN (SELECT id FROM course_groups WHERE student_control_number = '12345678');
 --> statement-breakpoint
 -- student_profiles (test student)
-INSERT INTO student_profiles (control_number, full_name, curp, birth_state, career_code, specialty_code, current_semester, certified_average, arithmetic_average, passed_average, approved_credits, remaining_credits, completed_credits, in_progress_credits, advance_percentage, status, health_service, enrollment_period) VALUES ('12345678', 'Ana Gabriela Hernández Ruiz', 'HERA000615MMNRZNA3', 'Michoacán', 'ISIC-2010-224', 'ISIE-TDD-2026-01', 7, 8.7, 8.6, 8.5, 175, 85, 175, 24, 67.3, 'Activo regular', 'IMSS', 'AGOSTO-DICIEMBRE/2026') ON CONFLICT(control_number) DO UPDATE SET full_name = excluded.full_name, curp = excluded.curp, birth_state = excluded.birth_state, career_code = excluded.career_code, specialty_code = excluded.specialty_code, current_semester = excluded.current_semester, certified_average = excluded.certified_average, arithmetic_average = excluded.arithmetic_average, passed_average = excluded.passed_average, approved_credits = excluded.approved_credits, remaining_credits = excluded.remaining_credits, completed_credits = excluded.completed_credits, in_progress_credits = excluded.in_progress_credits, advance_percentage = excluded.advance_percentage, status = excluded.status, health_service = excluded.health_service, enrollment_period = excluded.enrollment_period;
+INSERT INTO student_profiles (control_number, full_name, curp, birth_state, career_code, specialty_code, current_semester, certified_average, arithmetic_average, passed_average, approved_credits, remaining_credits, completed_credits, in_progress_credits, advance_percentage, status, health_service, enrollment_period) VALUES ('12345678', 'Sofía Ramírez Aguirre', 'RAGA000615MMZNRX3', 'Michoacán', 'ISIC-2010-224', 'ISIE-TDD-2026-01', 7, 8.7, 8.6, 8.5, 175, 85, 175, 24, 67.3, 'Activo regular', 'IMSS', 'AGOSTO-DICIEMBRE/2026') ON CONFLICT(control_number) DO UPDATE SET full_name = excluded.full_name, curp = excluded.curp, birth_state = excluded.birth_state, career_code = excluded.career_code, specialty_code = excluded.specialty_code, current_semester = excluded.current_semester, certified_average = excluded.certified_average, arithmetic_average = excluded.arithmetic_average, passed_average = excluded.passed_average, approved_credits = excluded.approved_credits, remaining_credits = excluded.remaining_credits, completed_credits = excluded.completed_credits, in_progress_credits = excluded.in_progress_credits, advance_percentage = excluded.advance_percentage, status = excluded.status, health_service = excluded.health_service, enrollment_period = excluded.enrollment_period;
 --> statement-breakpoint
 -- student_progress (49 rows for 12345678)
 INSERT OR REPLACE INTO student_progress (student_control_number, subject_canonical_id, status, grade, evaluation_type, period) VALUES ('12345678', 'aca-0907', 'APPROVED', 8.5, 'ORDINARIO', 'AGOSTO-DICIEMBRE/2022');
@@ -1392,6 +1392,8 @@ SELECT COUNT(*) AS prerequisites FROM subject_prerequisites;
 SELECT COUNT(*) AS units FROM subject_units;
 --> statement-breakpoint
 SELECT COUNT(*) AS complementary_activities FROM complementary_credit_activities;
+--> statement-breakpoint
+SELECT SUM(complementary_credits) AS complementary_weight_total FROM subjects;
 --> statement-breakpoint
 SELECT COUNT(*) AS progress_rows FROM student_progress;
 --> statement-breakpoint

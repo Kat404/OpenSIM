@@ -33,6 +33,7 @@ import {
 	complementaryCreditActivities,
 	studentProfiles,
 	studentProgress,
+	subjects,
 } from "#lib/server/db/schema";
 import { COMPLEMENTARY_CREDITS_REQUIRED, evaluateCreditThresholds } from "#lib/utils/dag";
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
@@ -167,19 +168,25 @@ export const load: PageServerLoad = async ({ locals }) => {
 			})
 			.from(studentProgress)
 			.where(eq(studentProgress.studentControlNumber, u.controlNumber)),
-		// One row per COMPLETED complementary activity, and one activity
-		// counts as one complementary credit (T9.13). The table carries no
-		// credit column because the four complementary subjects are
-		// 0-credit transversal modules by construction.
+		// Complementary credits are the SUM of each completed activity's
+		// subject weight, NOT a row count (Phase 10, S1). T9.13 counted rows,
+		// which was wrong the moment two subjects carry different weights:
+		// ITM-100/104/105 are worth 1 each and ITM-101 is worth 2. The weight
+		// lives on `subjects.complementary_credits`, so re-weighting a
+		// subject corrects every student without rewriting a row.
 		db
-			.select({ subjectCanonicalId: complementaryCreditActivities.subjectCanonicalId })
+			.select({ credits: subjects.complementaryCredits })
 			.from(complementaryCreditActivities)
+			.innerJoin(
+				subjects,
+				eq(subjects.canonicalId, complementaryCreditActivities.subjectCanonicalId),
+			)
 			.where(eq(complementaryCreditActivities.studentControlNumber, u.controlNumber)),
 	]);
 
 	const profile = profileRows[0];
 	const approvedCredits = profile?.approvedCredits ?? u.approvedCredits;
-	const complementaryCredits = complementaryRows.length;
+	const complementaryCredits = complementaryRows.reduce((total, row) => total + row.credits, 0);
 	const socialServiceDone = progressRows.some(
 		(r) => r.subjectCanonicalId === SOCIAL_SERVICE_CANONICAL_ID && r.status === "APPROVED",
 	);

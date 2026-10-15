@@ -40,7 +40,14 @@
 		"requiredForGraduation": 5,
 		"unlocksServiceSocial": true,
 		"source": "ITM-100, ITM-104, ITM-105 y horas de ITM-101",
-		"reticularCredits": false
+		"reticularCredits": false,
+		"weights": {
+			"ITM-100": 1,
+			"ITM-104": 1,
+			"ITM-105": 1,
+			"ITM-101": 2
+		},
+		"weightsNote": "ITM-101 = 2 es supuesto: completa el bloque de 5. Las tres primeras están dictadas por el operador."
 	},
 	"subjects": [
 		{
@@ -707,7 +714,8 @@
 			"area": null,
 			"specialtyCode": null,
 			"seriationState": "INDEPENDENT",
-			"component": "COMPLEMENTARY"
+			"component": "COMPLEMENTARY",
+			"complementaryCredits": 1
 		},
 		{
 			"canonicalId": "itm-104",
@@ -721,7 +729,8 @@
 			"area": null,
 			"specialtyCode": null,
 			"seriationState": "INDEPENDENT",
-			"component": "COMPLEMENTARY"
+			"component": "COMPLEMENTARY",
+			"complementaryCredits": 1
 		},
 		{
 			"canonicalId": "itm-105",
@@ -735,7 +744,8 @@
 			"area": null,
 			"specialtyCode": null,
 			"seriationState": "INDEPENDENT",
-			"component": "COMPLEMENTARY"
+			"component": "COMPLEMENTARY",
+			"complementaryCredits": 1
 		},
 		{
 			"canonicalId": "itm-101",
@@ -749,7 +759,8 @@
 			"area": null,
 			"specialtyCode": null,
 			"seriationState": "INDEPENDENT",
-			"component": "COMPLEMENTARY"
+			"component": "COMPLEMENTARY",
+			"complementaryCredits": 2
 		},
 		{
 			"canonicalId": "itm-102",
@@ -763,7 +774,8 @@
 			"area": null,
 			"specialtyCode": null,
 			"seriationState": "INDEPENDENT",
-			"component": "PRACTICE"
+			"component": "PRACTICE",
+			"complementaryCredits": 0
 		},
 		{
 			"canonicalId": "itm-103",
@@ -777,7 +789,8 @@
 			"area": null,
 			"specialtyCode": null,
 			"seriationState": "INDEPENDENT",
-			"component": "PRACTICE"
+			"component": "PRACTICE",
+			"complementaryCredits": 0
 		},
 		{
 			"canonicalId": "sid-2301",

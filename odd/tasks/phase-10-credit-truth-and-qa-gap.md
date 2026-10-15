@@ -1,0 +1,241 @@
+<!-- odd-tracker
+kind: phase-plan
+status: active
+last-verified: 2026-10-13
+branch: feat/phase-9-verified-curriculum
+test-runner: vitest (just qa-fast) · Playwright (just test-e2e) · runner agéntico (just e2e-dev)
+-->
+
+# Phase 10 — La aritmética de créditos, la verdad del fixture y el gap del runner agéntico
+
+Creado 2026-10-13, después de cerrar T9.11–T9.14. Cubre tres cosas que el mantenedor
+pidó resolver juntas: corregir la relación entre créditos reticulares y complementarios,
+fijar el proyecto como rediseño FOSS del SIM con v1 = Sistemas, y cerrar el gap de
+cobertura del runner e2e agéntico.
+
+---
+
+## El error que origina este plan
+
+T9.13 implementó la puerta doble tal como se dictó: `reticulares ≥ 182` **y**
+`complementarios ≥ 5`. La regla es del operador y no se toca. **El conteo sí estaba mal.**
+
+La fuente que faltaba estaba en el repo desde el principio,
+`docs/data/reticula-isc-2010-224.md`:
+
+| Componente | Créditos |
+| --- | --- |
+| Estructura Genérica | 210 |
+| Especialidad | 25 |
+| Residencia Profesional | 10 |
+| Servicio Social | 10 |
+| Actividades Complementarias | 5 |
+| **Total** | **260** |
+
+De ahí salen tres hechos que T9.13 ignoró:
+
+1. **El total reticular es 235, no 260.** Los 25 créditos no reticulares son los 5
+   complementarios, los 10 de Residencia y los 10 de Servicio Social.
+2. **182 salió de 70% de 260** (commit `6a3afee`: *"Credit thresholds correspond to the
+   ISIC-2010-224 plan total of 260 credits (50/70/80%)"*). Ese denominador cuenta los 5
+   complementarios, que son precisamente los que la puerta nueva exige aparte. El
+   porcentaje se calculó sobre un total que incluye lo que la puerta excluye.
+3. **Los 5 complementarios no son "5 actividades".** El plan los numera como un bloque
+   agregado. `complementary_credit_activities` no tiene columna de créditos, y las cuatro
+   materias transversales guardan `credits = 0`, así que la regla no era representable y
+   T9.13 salvó contando renglones.
+
+---
+
+## Specs
+
+### S1 — Cada materia complementaria vale un crédito, y el peso vive en la materia
+
+> Dictamen del operador, 2026-10-13, textual: *"Tutoría, Actividad Física y Artes son
+> materias opcionales para el avance curricular del estudiante, es decir, el estudiante
+> técnicamente podría graduarse sin tener que agarrar y/o cursar dichas materias, son
+> materias únicamente con el propósito de obtener un crédito complementario por materia."*
+
+El peso pertenece a la **materia**, no a la actividad del alumno: si cambia el peso de una
+materia, todos los alumnos quedan corregidos de una vez y no hay que reescribir filas.
+
+| Materia | Peso complementario | Fuente |
+| --- | --- | --- |
+| `ITM-100` Tutoría | 1 | dictamen del operador |
+| `ITM-104` Actividades Físicas | 1 | dictamen del operador |
+| `ITM-105` Apreciación de Artes | 1 | dictamen del operador |
+| `ITM-101` Actividades Complementarias | 2 | **supuesto** — el resto del bloque de 5; falta confirmación |
+
+Alcance aceptado: `subjects.complementary_credits INTEGER NOT NULL DEFAULT 0` más una
+migración de Drizzle y los cuatro valores en el seed. La suma del alumno es
+`SUM(subjects.complementary_credits)` sobre sus actividades complementarias acreditadas.
+
+Lo que **no** cambia: el número 182. Es la regla del operador, reafirmada el 2026-10-13.
+
+### S2 — El total reticular es 235 y el total del plan es 260, y son cosas distintas
+
+`260` sigue siendo el total del plan. `235` es lo que un alumno puede tener en créditos
+reticulares. Ninguna puerta puede derivar su umbral de `260 / approvedCredits` porque el
+numerador y el denominador deben ser del mismo conjunto.
+
+Criterio de aceptación: el código expone ambos números con nombre y un test afirma que
+`235 = 210 + 25` y que `260 = 235 + 5 + 10 + 10`.
+
+### S3 — 182 es un número del operador, y queda escrito como constante, no como porcentaje
+
+> El 182 se derivó como 70% de 260, y esa derivación es incorrecta porque 260 incluye los
+> 5 complementarios. El umbral se conserva porque es la regla del operador, pero deja de
+> justificarse aritméticamente en el código.
+
+Criterio de aceptación: un comentario junto a la constante dice exactamente esto, y un
+test afirma que `182` **no** es `0.7 * 260` — para que nadie lo "simplifique" de vuelta.
+
+### S4 — El copy de `/tramites` habla de créditos, y el número viene de la suma
+
+Hoy la página dice "tienes 3 de 5 créditos complementarios" contando renglones. Con S1 el
+número es la suma de pesos. La página no cambia de texto: cambia de ser verdad.
+
+Criterio de aceptación: un test de loader con una materia de peso 2 acreditada afirma que
+el total sube 2, no 1.
+
+### S5 — Toda la PII del fixture pasa a sintética, con sentido
+
+> Decisión del mantenedor, 2026-10-13: *"sustituir toda la PII por datos claramente
+> sintéticos pero con sentido, es decir no vamos a poner como nombre 'Estudiante123' sino
+> algo como 'Panfilo Ruíz'."*
+
+Se sustituyen nombre, CURP y cualquier otro campo que identifique a una persona. Se usan
+nombres y CURP estructuralmente válidos pero inventados. **No** se sustituyen los nombres
+de salón ni las horas: son nombres de instalación del instituto, no datos de una persona, y
+son lo que hace el demo creíble.
+
+**Supuesto declarado**: el mantenedor afirma que el nombre actual ya era ficticio. No hay
+registro de eso en la memoria del proyecto, así que se trata como PII real y se sustituye.
+El archivo queda con un encabezado que declare su origen y su condición de sintético.
+
+### S6 — El proyecto se declara como rediseño FOSS del SIM, v1 = Sistemas
+
+> Decisión del mantenedor, 2026-10-13: *"nunca vamos a obtener por completo todos los datos
+> de todas las carreras disponibles de la institución, aunque me pudiera apoyar de hacer
+> web scraping de demás compañeros [...] nunca acabaríamos. Tomemos como base las materias
+> que ya sabemos así como serialización, los créditos y demás. Lo que inventaremos serán
+> los salones, edificios y horarios. Para v1 quedamos igual únicamente con la carrera de
+> Sistemas."*
+
+El README y `AGENTS.md` pasan a declarar, sin ambigüedad, qué es dato verificado y qué es
+dato de diseño:
+
+| Verificado del SIM | Invención de diseño |
+| --- | --- |
+| Materias, códigos, créditos, serialización | Salones, edificios, horarios |
+| Catálogo de oferta (468 grupos) | Nombre y curriculum del alumno |
+| Temario (7 de 68, cobertura parcial) | Los 25 créditos de especialidad sin temario |
+
+Y queda escrito que el scraping queda fuera de alcance, con el motivo.
+
+### S7 — El runner agéntico deja de tener un solo test real
+
+Hoy hay tres archivos `*.e2e.ts`: uno es `example.e2e.ts`. Contra un gateway real eso es
+la capa más cara del QA y la que menos cubre.
+
+Alcance aceptado: tests agénticos para las superficies que hoy no tienen ninguno —
+`/temario`, `/horario`, `/tramites`, `/academico/kardex`, y el flujo de auth. El criterio
+de cierre no es "el agente no falló": es que **vitest y Playwright siguen siendo el gate**
+y el runner se suma como capa probabilística. Nada de esto cambia `just qa-fast`.
+
+---
+
+## Tasks
+
+| # | Task | Specs | Ruta | Riesgo |
+| --- | --- | --- | --- | --- |
+| T1 | Migración `subjects.complementary_credits` + los 4 pesos en el seed | S1 | inline | item 1 — toca `drizzle/**` |
+| T2 | `evaluateCreditThresholds` con créditos reales + constantes 182/208/130/235/260 | S1 S2 S3 | inline | item 3 — contrato compartido |
+| T3 | Loader y copy de `/tramites` sumando pesos | S4 | inline | ninguno |
+| T4 | Fixture: PII sintética con sentido + encabezado de origen | S5 | inline | item 1 — PII en repo público |
+| T5 | README + `AGENTS.md`: posicionamiento de rediseño FOSS, v1 Sistemas | S6 | inline | ninguno |
+| T6 | Tests agénticos para las rutas sin cobertura | S7 | inline | ninguno |
+
+Presupuesto: ~400 líneas escritas acumuladas. Si lo rebasa, se corta en el límite de T4.
+
+### Estado
+
+| Task | Estado | Commit |
+| --- | --- | --- |
+| T1 | cerrada — migración 0015 aplicada, pesos en la D1 local, invariante suma 5 verificada | `68e6979` |
+| T2 | cerrada — constantes 235/260 y los tres umbrales; derivación de 260 documentada como retirada | `68e6979` |
+| T3 | cerrada — el loader suma `subjects.complementary_credits`; 350 tests verdes | `68e6979` |
+| T4 | cerrada — nombre y CURP sintéticos, `_NOTICE` en el fixture, PII vieja ausente del código | `5e2e936` |
+| T5 | en curso | — |
+| T6 | pendiente | — |
+
+---
+
+## Fuera de alcance
+
+- Cambiar 182, 208 o 130. Son números del operador.
+- Web scraping de la institución o de compañeros. Descartado por el mantenedor, con motivo.
+- Cubrir las demás carreras. v1 = Sistemas.
+- Cambiar el gate de `just qa-fast` para que dependa del runner agéntico.
+
+---
+
+## Log
+
+- **2026-10-13 — L1.** Petición del mantenedor, textual: *"Planeemos de manera ODD la
+  resolución de lo siguiente: Fixear de manera correcta la relación entre los créditos
+  reticulares y los créditos complementarios, teniendo como regla de diseño lo que ya
+  hemos hablado antes. En cuanto a decisión del proyecto me gustaría ir con la C [...]
+  Lo que inventaremos serán los salones, edificios y horarios. Para v1 quedamos igual
+  únicamente con la carrera de Sistemas. Cierra el gap del runner agéntico, tengo tokens
+  para gastar así que no temas en realizar varios test e2e agénticos [...] aunque eso no
+  reemplaza vitest ni Playwright debido a que los agentes son probabilístico y no
+  deterministas."*
+- **2026-10-13 — Dictamen sobre el peso complementario**, textual: *"Tutoría, Actividad
+  Física y Artes son materias opcionales para el avance curricular del estudiante [...]
+  son materias únicamente con el propósito de obtener un crédito complementario por
+  materia."* De ahí sale S1.
+- **2026-10-13 — Decisión sobre la PII del fixture**, textual: *"El nombre de dicha
+  persona es demo por lo cual no existe pero por si acaso lo puedes cambiar para sustituir
+  toda la PII por datos claramente sintéticos pero con sentido."* De ahí sale S5.
+- **2026-10-13 — Búsqueda en memoria sin resultado.** Se buscó el nombre del fixture, su
+  CURP, "datos personales" y el control number antiguo: no hay registro de que el nombre sea
+  ficticio. La premisa del mantenedor no pudo verificarse y se trata como PII real.
+- **2026-10-13 — Falsa alarma descartada con evidencia.** La memoria #2173 afirma que
+  "30 filas APPROVED sumando 175 créditos" es imposible, porque las 30 mayores del plan
+  suman 161. Consultado contra la D1 local: `student_progress` tiene **41** filas APPROVED
+  y sus créditos suman **exactamente 175**, que es lo que declara
+  `student_profiles.approved_credits`. El fixture es aritméticamente consistente y la
+  premisa de #2173 describe un estado anterior. No se "corrige" nada aquí; queda anotado
+  para que nadie toque un número que ya está bien.
+- **2026-10-13 — Conflicto de memoria resuelto.** #2359 ("la unidad es el renglón") queda
+  marcado como sustituido por este plan: el dictamen del operador sobre el crédito por
+  materia responde exactamente la pregunta que #2359 dejó abierta.
+- **2026-10-13 — Defecto de redacción corregido.** Al escribir este documento se colaron
+  cuatro cadenas corruptas (`动机`, `bridó`, `必须是`, `覆盖`) que reemplazaron texto en
+  español. Corregidas. Es la segunda vez que ocurre en los planes de `odd/`; el síntoma
+  es siempre el mismo: un token foráneo en medio de una frase en español.
+- **2026-10-13 — T1–T3 cerradas** (`68e6979`). La migración 0015 agrega
+  `subjects.complementary_credits`; los cuatro pesos quedaron en la D1 local y el seed los
+  valida (falla ruidosamente si un subject reticular cargara peso, o si la suma no fuera 5).
+  El generador Python es la fuente y se regeneró el JSON con él, sin edición a mano.
+  `RETICULAR_CREDITS_TOTAL = 235` y `PLAN_CREDITS_TOTAL = 260` conviven; los tres umbrales
+  son ahora constantes con nombre.
+- **2026-10-13 — T4 cerrada** (`5e2e936`). Nombre y CURP del fixture sustituidos por
+  valores sintéticos con la misma forma estructurada, `_NOTICE` al inicio del JSON, y el
+  nombre default del harness de tests alineado. La PII anterior ya no aparece en ningún
+  `.ts`/`.json`/`.sql` del repo; sólo queda citada en planes históricos de `odd/`, que son
+  registro de lo ocurrido y no se reescriben.
+- **2026-10-13 — Regresión encontrada y corregida durante T4.** Poner
+  `COMPLEMENTARY_CREDITS_REQUIRED` en `schema.ts` y re-exportarla desde `dag.ts` arrastró el
+  módulo de servidor al cliente: `/reticula` (que importa de `dag.ts` en el cliente) tiró
+  `server_only_import` y falló el e2e. La constante volvió a `dag.ts` (client-safe) y el
+  seed la importa de ahí, de modo que ambos leen una sola definición sin cruzar el límite
+  server/client.
+- **2026-10-13 — Defecto propio en S3, capturado por un test.** El test que S3 especificaba
+  ("182 no es 70% de 260") es una afirmación falsa: 182 = 0.7 × 260 exactamente, igual que
+  130 y 208. Los tres umbrales SÍ son porcentajes de 260. Lo que se retira es la
+  *procedencia*, no el número: medir avance reticular como fracción de 260 dejaría que los
+  5 complementarios sustituyeran progreso reticular. El test que S3 especificaba ahora fija las
+  constantes a sus literales y a que NO coincidan con un porcentaje del total reticular
+  (235 × 0.7 = 164.5, no 182), que es la recálculo "correcto" tentador.
