@@ -48,15 +48,26 @@ const filtered = $derived(
 	filter === "ALL" ? entries : entries.filter((e) => e.evaluationType === filter),
 );
 
-function gradeBadgeVariant(grade: number | null, status: StudentProgressStatus) {
-	if (status === "ENROLLED" || grade == null) return "warning" as const;
+function gradeBadgeVariant(grade: number | null) {
+	if (grade == null) return "neutral" as const;
 	if (isPassing(grade)) return "success" as const;
 	return "danger" as const;
 }
 
-function gradeText(grade: number | null, status: StudentProgressStatus): string {
-	if (status === "ENROLLED" || grade == null) return "En curso";
-	return grade.toFixed(1);
+/**
+ * A subject with no grade has a HOLE, not a state.
+ *
+ * This used to say "En curso" for every row without a grade, which put a
+ * status word in a column that holds grades — and made the row contradict
+ * itself: the three approved complementary subjects (ITM-100, ITM-104,
+ * ITM-105, evaluated without a 0–10 grade) and the two locked ones said
+ * "En curso" while the Estado column beside them said "Aprobado" or
+ * "Bloqueado". The Estado column carries the state; this one carries the
+ * grade, and the sibling Evaluación column already renders a missing value
+ * as "—".
+ */
+function gradeText(grade: number | null): string {
+	return grade == null ? "—" : grade.toFixed(1);
 }
 
 function statusBadgeVariant(status: StudentProgressStatus) {
@@ -76,8 +87,8 @@ function evalLabel(t: EvaluationType | null): string {
 {#snippet gradeCell(
 	e: KardexEntry,
 )}
-	<Badge variant={gradeBadgeVariant(e.grade, e.status)} size="sm">
-		{gradeText(e.grade, e.status)}
+	<Badge variant={gradeBadgeVariant(e.grade)} size="sm">
+		{gradeText(e.grade)}
 	</Badge>
 {/snippet}
 
