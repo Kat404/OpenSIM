@@ -103,12 +103,12 @@ Criterio de aceptación: `e2e.config.ts` sólo cambia la credencial del alumno.
 
 | # | Task | Specs | Ruta | Riesgo | Estado |
 | --- | --- | --- | --- | --- | --- |
-| T1 | El seeder lee el `.env`; `12345678` aprovisionada con la contraseña real | S2 | inline | ninguno | ☐ |
-| T2 | La llamada a la acción del panel deja de afirmar un total de materias | S3 | inline | ninguno | ☐ |
-| T3 | El corredor firma con `12345678` | S1 | inline | ninguno | ☐ |
-| T4 | Las pruebas existentes se actualizan al alumno con historial | S4 | inline | ninguno | ☐ |
-| T5 | Las cuatro aserciones de datos | S5 S6 | inline | ninguno | ☐ |
-| T6 | La corrida del corredor: verde, sin reintentos | S5 | inline | ninguno | ☐ |
+| T1 | El seeder lee el `.env`; `12345678` aprovisionada con la contraseña real | S2 | inline | ninguno | ✅ `ca5839f` |
+| T2 | La llamada a la acción del panel deja de afirmar un total de materias | S3 | inline | ninguno | ✅ `614c414` |
+| T3 | El corredor firma con `12345678` | S1 | inline | ninguno | ✅ `7f0f537` |
+| T4 | Las pruebas existentes se actualizan al alumno con historial | S4 | inline | ninguno | ✅ `7f0f537` |
+| T5 | Las cuatro aserciones de datos | S5 S6 | inline | ninguno | ✅ `6788e0a`, `7f0f537` |
+| T6 | La corrida del corredor: verde, sin reintentos | S5 | inline | ninguno | ✅ 15 de 15 |
 
 ## Log
 
@@ -129,3 +129,19 @@ Criterio de aceptación: `e2e.config.ts` sólo cambia la credencial del alumno.
   db-set-password` escribía la contraseña por defecto porque `seed-password.ts` no leía el
   `.env`, mientras el setup de Playwright sí lo leía. Con la variable sin exportar en el
   shell, las dos rutas discrepaban y el login rebotaba en `/login`.
+
+- **2026-10-19 — El corredor encontró un defecto que nadie había visto.** La columna Calificación
+  del Kardex decía "En curso" en toda fila sin nota, y `gradeText` lo hacía también cuando
+  `grade == null`: las tres materias complementarias **aprobadas** (ITM-100, ITM-104, ITM-105,
+  que no llevan nota de 0 a 10) y las dos **bloqueadas** se contradecían con su propia columna
+  Estado, que decía "Aprobada" o "Bloqueada" justo al lado. Ahora una nota que no existe es un
+  hueco, como la columna Evaluación ya hacía, y el estado vive en la columna Estado. El
+  corredor lo encontró; el gate determinista lo fija (`tests/e2e/kardex.spec.ts`).
+- **2026-10-19 — La mordida, medida y no supuesta.** El test del término se corrió contra el
+  código **pre-arreglo** (`015eb1e^`): falló con *"The 'Periodo:' line in the offer region
+  reads 'ENERO-JUNIO/2027', not 'AGOSTO-DICIEMBLE/2026'"* — el bug lexicográfico, el que el
+  test del 2026-10-15 **pasaba** porque el alumno estaba vacío. Con `12345678` el corredor
+  llega al bug que fue escrito para cazar. Es la primera vez que el carril agéntico muerde un
+  defecto real, y se verificó con el código viejo, no con una opinión.
+- **2026-10-19 — La corrida completa:** 15 de 15 en 6 archivos, 20 llamadas al modelo, 81 mil
+  tokens, 54 segundos. Sin reintentos, que era la condición de cierre del Tramo 2.
