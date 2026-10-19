@@ -12,7 +12,7 @@
   `prefers-color-scheme` media query (handled by tokens.css).
 -->
 <script lang="ts">
-import { Moon, Search, Sun } from "lucide-svelte";
+import { Moon, Search, Sun } from "@lucide/svelte";
 import { onMount } from "svelte";
 import { Avatar } from "#lib/components/ui";
 

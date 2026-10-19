@@ -27,7 +27,7 @@
   is Spanish.
 -->
 <script lang="ts">
-import { Filter } from "lucide-svelte";
+import { Funnel } from "@lucide/svelte";
 import { Badge, Button, Input, Select } from "#lib/components/ui";
 
 interface Props {
@@ -60,7 +60,7 @@ const creditOptions = [
 
 	<header class="filter__header">
 		<h2 class="filter__title">
-			<Filter size={16} strokeWidth={1.75} aria-hidden="true" />
+			<Funnel size={16} strokeWidth={1.75} aria-hidden="true" />
 			Filtrar oferta
 		</h2>
 		<Badge variant="neutral" size="sm"> {totalCount} grupos </Badge>

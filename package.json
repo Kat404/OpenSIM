@@ -27,8 +27,8 @@
 		"test:e2e": "e2e run"
 	},
 	"dependencies": {
+		"@lucide/svelte": "^1.59.0",
 		"drizzle-orm": "0.45.3",
-		"lucide-svelte": "1.0.1",
 		"pdf-lib": "1.17.1",
 		"valibot": "1.5.0"
 	},

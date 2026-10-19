@@ -3,7 +3,7 @@
 
   Collapsible on narrow screens, default-open on viewports >= 1024px
   (controlled by the parent LayoutShell via the `collapsed` prop +
-  a manual toggle button). Nav items use the existing lucide-svelte
+  a manual toggle button). Nav items use the existing @lucide/svelte
   icons; the active route is matched by the current `$page.url.pathname`
   prefix (with exact match for `/dashboard` so `/dashboard/whatever`
   does not always win).
@@ -23,7 +23,7 @@ import {
 	Network,
 	PencilLine,
 	ScrollText,
-} from "lucide-svelte";
+} from "@lucide/svelte";
 import { page } from "$app/state";
 
 interface NavItem {

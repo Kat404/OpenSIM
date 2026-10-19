@@ -8,7 +8,7 @@
   data fetching.
 -->
 <script lang="ts">
-import { ArrowRight, FileDown, ShieldOff } from "lucide-svelte";
+import { ArrowRight, FileDown, ShieldOff } from "@lucide/svelte";
 import KpiCard from "#lib/components/dashboard/KpiCard.svelte";
 import TodayClasses from "#lib/components/dashboard/TodayClasses.svelte";
 import { Button, Card, EmptyState } from "#lib/components/ui";

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Moon, Sun } from "lucide-svelte";
+import { Moon, Sun } from "@lucide/svelte";
 import { onMount } from "svelte";
 import { Button, Card, Input } from "#lib/components/ui";
 import { page } from "$app/state";

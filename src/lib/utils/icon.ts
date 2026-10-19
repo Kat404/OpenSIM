@@ -1,14 +1,21 @@
 /**
  * OpenSIM — Icon component type shared across UI atoms.
  *
- * Lucide-svelte 1.0.1 exports icons as classes that extend
- * `SvelteComponentTyped` with strict prop / event / slot generics.
- * Re-declaring a permissive `Component<Props, ...>` shape does not
- * match those generics (the audit, L2 Round 4, hit this in
- * `TodayClasses.svelte` and the horario empty state). Using the
- * lucide `Icon` class as the canonical type — which is re-exported
- * from the package's main entry — makes every icon assignment pass
- * without a cast.
+ * @lucide/svelte exports each icon as a component typed `LucideIcon`
+ * (`Component<LucideProps>`). The package ALSO exports a generic
+ * `Icon` component, but that one is a different animal: its props are
+ * a union that REQUIRES either `icon` (icon data) or `iconNode` (the
+ * node array), so `typeof Icon` is not the type of an icon component
+ * and does not accept one.
+ *
+ * The type therefore comes from the package's own `LucideIcon`.
+ *
+ * History: with lucide-svelte 1.0.1 the icons extended
+ * `SvelteComponentTyped` with strict prop / event / slot generics, and
+ * re-declaring a permissive `Component<Props, ...>` shape did not match
+ * those generics (the audit, L2 Round 4, hit this in
+ * `TodayClasses.svelte` and the horario empty state). Using the package's
+ * own type keeps every icon assignment passing without a cast.
  *
  * Consumers that need to pass any lucide icon use this type as the
  * prop type. Default values in atoms (e.g. `EmptyState`'s `Inbox`
@@ -16,6 +23,6 @@
  * `as unknown as` escape hatch.
  */
 
-import type { Icon } from "lucide-svelte";
+import type { LucideIcon } from "@lucide/svelte";
 
-export type IconComponent = typeof Icon;
+export type IconComponent = LucideIcon;
