@@ -7,7 +7,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { isPassing, MAX_GRADE, MIN_GRADE, MIN_PASSING_GRADE } from "../../src/lib/utils/academic";
+import { isPassing, MIN_PASSING_GRADE } from "../../src/lib/utils/academic";
 
 describe("academic scale constants", () => {
 	it("declares the TecNM minimum passing grade as 6.0", () => {
@@ -16,16 +16,6 @@ describe("academic scale constants", () => {
 		// kardex badge and any future \"passed / failed\" logic depend
 		// on it.
 		expect(MIN_PASSING_GRADE).toBe(6.0);
-	});
-
-	it("declares the floor and ceiling of the 0-10 scale", () => {
-		expect(MIN_GRADE).toBe(0.0);
-		expect(MAX_GRADE).toBe(10.0);
-	});
-
-	it("places the passing threshold strictly between the floor and the ceiling", () => {
-		expect(MIN_PASSING_GRADE).toBeGreaterThan(MIN_GRADE);
-		expect(MIN_PASSING_GRADE).toBeLessThan(MAX_GRADE);
 	});
 });
 

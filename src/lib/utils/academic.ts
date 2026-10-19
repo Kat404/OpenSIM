@@ -22,12 +22,6 @@
 /** Minimum grade that counts as a pass on the TecNM 0-10 scale. */
 export const MIN_PASSING_GRADE = 6.0;
 
-/** Maximum grade achievable on the TecNM 0-10 scale. */
-export const MAX_GRADE = 10.0;
-
-/** Minimum grade achievable (failing floor) on the TecNM 0-10 scale. */
-export const MIN_GRADE = 0.0;
-
 /** The three evaluation types TecNM recognises for a subject. */
 export const EVALUATION_TYPES = ["ORDINARIO", "REPETICION", "ESPECIAL"] as const;
 

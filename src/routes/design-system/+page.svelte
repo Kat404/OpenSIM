@@ -63,7 +63,7 @@ function notify() {
 	<header class="page__header">
 		<p class="page__back"><a href="/">← Volver a la portada</a></p>
 		<h1>OpenSIM — Inventario de componentes UI</h1>
-		<p class="page__sub">Verificación visual de los 18 átomos. WCAG 2.1 AA sobre tokens.</p>
+		<p class="page__sub">Verificación visual de los 17 átomos. WCAG 2.1 AA sobre tokens.</p>
 	</header>
 
 	<section class="page__section">
