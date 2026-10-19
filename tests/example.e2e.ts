@@ -10,8 +10,9 @@
  * learn something a locator already knows.
  *
  * The agent lane belongs on `/reinscripcion`, where the flow does change and
- * no source publishes the catalogue timetable. That test is not written yet;
- * see `odd/tasks/phase-9-unblock.md`.
+ * no source publishes the catalogue timetable: that test is
+ * `tests/reinscripcion-term.e2e.ts`, and since 2026-10-19 it runs against a
+ * student with a history, so it reaches the bug it was written for.
  *
  * The password reaches the field as a `Secret`, so it is never part of the
  * model input, the report, or a screenshot. The control number is a plain
@@ -36,9 +37,20 @@ test("signs in with the demo student credential", async ({ app, screen, browser 
 	await screen.getByRole("button", "Entrar").tap();
 
 	await expect(browser).toHaveURL("/dashboard");
-	// The credential belongs to `99999999`, the placeholder student with no
-	// enrolment history. The 175-credit student is `12345678`, whose
-	// credential the seed destroys on every re-run, so the suite cannot
-	// depend on it.
-	await expect(screen.getByRole("heading", "Bienvenido, Estudiante")).toBeVisible();
+
+	// The credential is the catalogue student, `12345678`: 175 approved
+	// credits, 49 rows in `student_progress`, 3 complementary ones. The
+	// old comment here said the seed destroyed that credential on every
+	// re-run, which stopped being true when the profile write became an
+	// upsert (`ON CONFLICT ... DO UPDATE`, no DELETE, so nothing cascades
+	// into `student_credentials`). The agentic lane signs in as this
+	// student for the same reason: a judgment about DATA needs a student
+	// who has data.
+	//
+	// The greeting is matched loosely on purpose — the fixture's first
+	// name is synthetic PII and may change — and the identity is pinned
+	// by the data instead: the placeholder student has no record at all,
+	// so the approved credits on the panel are what proves who signed in.
+	await expect(screen.getByRole("heading", /^Bienvenido, /)).toBeVisible();
+	await expect(screen.getByText("175 / 260")).toBeVisible();
 });

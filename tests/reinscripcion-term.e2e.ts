@@ -12,20 +12,23 @@
  * expected term with the same pure function the server uses and asks the agent
  * whether the screen agrees — the expensive part buying a claim about data.
  *
- * WHAT IT DOES NOT PROVE, measured rather than assumed: this test was run
- * against the PRE-FIX code and it PASSED. The `alumno` session is `99999999`,
+ * WHAT IT USED NOT TO PROVE, measured rather than assumed: this test was run
+ * against the PRE-FIX code and it PASSED. The `alumno` session was `99999999`,
  * who has zero `student_progress` rows, so `getLatestProgressPeriod` returned
  * null and the chain fell through to `currentAcademicPeriod()` — the very value
  * the test compares against. The ordering bug is only reachable for a student
  * who HAS rows.
  *
- * So this is a guard on the term rendering and resolving at all, not a bite on
- * the lexicographic bug. The bite is in
+ * Since 2026-10-19 the session student is `12345678`, who has 49 rows and a
+ * newest one in `ENERO-JUNIO/2027` — the exact shape that made
+ * "ENERO-JUNIO/2027" outrank "AGOSTO-DICIEMBRE/2026". So the test now
+ * reaches the bug it was written for: the page must offer the calendar term
+ * even though the student's most recent row belongs to a later one. The bite
+ * is verified by running this file against the pre-fix code.
+ *
+ * The unit-level bite stays where it is, in
  * `tests/unit/reinscripcion.test.ts` ("enrols into the calendar term even when
- * the newest row belongs to a later term"), which seeds a student who has rows.
- * Widening what the agentic lane can reach means giving the e2e credential a
- * realistic history, and that is a decision with consequences, not a quiet
- * change here.
+ * the newest row belongs to a later term").
  *
  * Read-only on purpose. Enrolling from a test would mutate the local D1 and the
  * next run would see a different page, so the lane would stop being repeatable.
