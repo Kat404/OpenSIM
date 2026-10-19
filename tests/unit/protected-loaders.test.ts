@@ -22,6 +22,7 @@ import type { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { currentAcademicPeriod } from "../../src/lib/server/enrollment";
 import { getTodayDayLetter } from "../../src/lib/utils/time";
+import { PROCEDURE_UNAVAILABLE_NOTICE } from "../../src/lib/utils/procedure-labels";
 import { load as kardexLoad } from "../../src/routes/(protected)/academico/kardex/+page.server";
 import { load as dashboardLoad } from "../../src/routes/(protected)/dashboard/+page.server";
 import { load as horarioLoad } from "../../src/routes/(protected)/horario/+page.server";
@@ -954,7 +955,7 @@ describe("trámites form action", () => {
 		expect(result.data.procedure).toBe("inventado");
 	});
 
-	it("accepts the three known procedure ids and returns the 'in development' notice", async () => {
+	it("refuses the three known procedure ids: OpenSIM does not store trámites yet", async () => {
 		for (const procedure of ["servicio-social", "residencia", "titulacion"]) {
 			const event = makeEvent({
 				user: makeUser(),
@@ -965,9 +966,11 @@ describe("trámites form action", () => {
 				status: number;
 				data: { notice: string };
 			};
-			// Phase 12 T12.1 flags this stub as dishonest; pinned as-is.
-			expect(result.status).toBe(202);
-			expect(result.data.notice).toBe("Trámite en desarrollo");
+			// Phase 12 T12.1: the stub is no longer dressed as "accepted".
+			// 202 said "we took it"; nothing was taken, and the forms are
+			// disabled on screen, so the honest answer is 501.
+			expect(result.status).toBe(501);
+			expect(result.data.notice).toBe(PROCEDURE_UNAVAILABLE_NOTICE);
 		}
 	});
 });

@@ -19,9 +19,14 @@ import { PROCEDURE_STATE_LABEL } from "#lib/utils/procedure-labels";
 
 interface Props {
 	unlocked: boolean;
+	/**
+	 * The whole form is disabled while the procedure flow does not store
+	 * anything. Set by `ProcedureStepper`, not by the credit thresholds.
+	 */
+	disabled?: boolean;
 }
 
-let { unlocked }: Props = $props();
+let { unlocked, disabled = false }: Props = $props();
 
 const _dependencyOptions = [
 	{ value: "", label: "Selecciona una dependencia" },
@@ -50,7 +55,7 @@ const modalityOptions = [
 		</div>
 	{/snippet}
 
-	<fieldset class="form" disabled={!unlocked}>
+	<fieldset class="form" disabled={!unlocked || disabled}>
 		<Input
 			label="Dependencia receptora"
 			helper="Organización donde realizarás las 500 horas."
@@ -76,11 +81,11 @@ const modalityOptions = [
 				rows="4"
 				placeholder="Apoyar al área de TI en el mantenimiento..."
 				name="objective"
-				disabled={!unlocked}
+				disabled={!unlocked || disabled}
 			></textarea>
 		</label>
 
-		<Button type="submit" variant="primary" size="md" disabled={!unlocked}>
+		<Button type="submit" variant="primary" size="md" disabled={!unlocked || disabled}>
 			Enviar solicitud
 		</Button>
 	</fieldset>
