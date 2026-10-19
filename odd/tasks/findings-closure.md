@@ -227,3 +227,30 @@ más los e2e que tocan lo cambiado.
 - **2026-10-19 — El gate de la rama:** `just qa-fast` en verde (374 tests), `just qa` con build
   en verde, y `just test-e2e` con 138 pruebas en verde y 0 rojas. El carril agéntico no se tocó:
   `just e2e-dev` gasta tokens contra un gateway real y no es el gate de nada.
+
+- **2026-10-19 — Verificación independiente (`gentle-ai-verify`).** El verificador corrió sus
+  propias sondas —no las de esta rama— contra el baseline `48e20d6` y la rama: 11 de 12 specs
+  cumplidas con evidencia, la migración sin pérdida de filas, el prune roto a propósito para
+  comprobar que su test muerde, y el `Set-Cookie` del logout **byte a byte igual** en ambos
+  commits. Salieron **dos blockers**:
+  - **B1 — un bug que esta rama introdujo**: `REVOCATION_NOTICES[reason]` era un índice a secas
+    sobre un literal de objeto, así que `?reason=constructor` renderizaba
+    `function Object() { [native code] }` en el banner del login. Ahora es un `Map`, que no
+    consulta el prototipo. El test que lo caza (`tests/e2e/login-reason-notice.spec.ts`) falló
+    antes del arreglo y pasó después.
+  - **B2 — el ledger citaba el commit equivocado** en la casilla T12.3.
+  Se corrigieron ambos en **una** tanda, junto con los advisories (conteos de filas, comentarios
+  obsoletos, la variable sin usar, el doc de migraciones) y adopting las cuatro sondas del
+  verificador como tests de regresión. Recheck: `just qa-fast` 380 verdes, `just test-e2e` 150
+  verdes, 0 rojos.
+- **2026-10-19 — La credencial de `12345678` sí quedó restaurada, y esta vez de verdad.** La
+  primera vez se corrió `just db-set-password`, que aprovisiona `99999999` por defecto —la
+  credencial del suite de Playwright—, no `12345678`. El verificador lo detectó al leer la base:
+  `student_credentials` tenía una sola fila. Se aprovisionó con
+  `pnpm run db:set-password 12345678`, que deja las dos credenciales conviviendo: `99999999`
+  para Playwright (que debe ver el estado vacío del alumno de pruebas) y `12345678` para el
+  carril agéntico, que necesita datos reales.
+- **2026-10-19 — Una sonda del verificador era flaky y la causa no era el código:** un click que
+  cae antes de que SvelteKit hidrate la página no hace nada. En dev, con la ruta recién
+  compilada, el click se perdía y el stepper no cambiaba. La sonda reintenta hasta que el paso
+  cambia, y ahora corre 5 de 5.
