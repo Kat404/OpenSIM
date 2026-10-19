@@ -21,6 +21,7 @@
 import type { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { currentAcademicPeriod } from "../../src/lib/server/enrollment";
+import { getTodayDayLetter } from "../../src/lib/utils/time";
 import { load as kardexLoad } from "../../src/routes/(protected)/academico/kardex/+page.server";
 import { load as dashboardLoad } from "../../src/routes/(protected)/dashboard/+page.server";
 import { load as horarioLoad } from "../../src/routes/(protected)/horario/+page.server";
@@ -522,6 +523,21 @@ describe("horario loader", () => {
 });
 
 describe("dashboard loader", () => {
+	// The dashboard widget shows only the blocks of TODAY's weekday, and
+	// the loader asks the real clock which day that is. The fixture
+	// above pins its block to Monday, so without a frozen clock this
+	// suite failed every Monday. Wednesday 2026-10-14 12:00 in Morelia
+	// is a Wednesday, which is neither the fixture's Monday nor the
+	// letter the test builds its own blocks around.
+	beforeEach(() => {
+		vi.useFakeTimers({ toFake: ["Date"] });
+		vi.setSystemTime(new Date("2026-10-14T18:00:00Z"));
+	});
+
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
 	it("redirects an anonymous visitor to /login", async () => {
 		// The only loader of the five that refuses outright rather than
 		// rendering an empty shell.
@@ -568,7 +584,6 @@ describe("dashboard loader", () => {
 		seedCurrentEnrollment();
 		// A second block on a different day, plus one on today's letter in
 		// the afternoon: `getTodayDayLetter` decides which survive.
-		const { getTodayDayLetter } = await import("../../src/lib/utils/time");
 		const today = getTodayDayLetter();
 		seedSubject(raw, { canonicalId: "algebra-1", code: "SCC0901", name: "Álgebra" });
 		seedGroup(raw, "G-SCC0901-1", "algebra-1", "A", CONTROL);
