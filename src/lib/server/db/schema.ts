@@ -71,16 +71,7 @@ export const subjects = sqliteTable("subjects", {
 	specialtyCode: text("specialty_code").references(() => specialties.code),
 });
 
-// 4. Claves Alias / Historicas
-export const subjectAliases = sqliteTable("subject_aliases", {
-	id: integer("id").primaryKey({ autoIncrement: true }),
-	subjectCanonicalId: text("subject_canonical_id")
-		.notNull()
-		.references(() => subjects.canonicalId),
-	aliasCode: text("alias_code").notNull().unique(),
-});
-
-// 5. Prerrequisitos (Aristas DAG) — composite PK (a,b)
+// 4. Prerrequisitos (Aristas DAG) — composite PK (a,b)
 export const subjectPrerequisites = sqliteTable(
 	"subject_prerequisites",
 	{
@@ -98,7 +89,7 @@ export const subjectPrerequisites = sqliteTable(
 	}),
 );
 
-// 6. Temarios (Unidades y Subtemas)
+// 5. Temarios (Unidades y Subtemas)
 //
 // `subtopicsJson` holds the subtopic objects verbatim as the SIM states
 // them: `{ index, title, evalFrom, evalTo }`. The per-subtopic evaluation
@@ -124,7 +115,7 @@ export const subjectUnits = sqliteTable("subject_units", {
 	criteria: text("criteria"),
 });
 
-// 7. Perfil de Estudiantes (FIXES v2.0 applied)
+// 6. Perfil de Estudiantes (FIXES v2.0 applied)
 export const studentProfiles = sqliteTable("student_profiles", {
 	controlNumber: text("control_number").primaryKey(),
 	fullName: text("full_name").notNull(),
@@ -148,7 +139,7 @@ export const studentProfiles = sqliteTable("student_profiles", {
 	enrollmentPeriod: text("enrollment_period").notNull().default(""),
 });
 
-// 8. Historial Academico (FIX v2.0: status union includes LOCKED)
+// 7. Historial Academico (FIX v2.0: status union includes LOCKED)
 export const studentProgress = sqliteTable(
 	"student_progress",
 	{
@@ -176,7 +167,7 @@ export const studentProgress = sqliteTable(
 	}),
 );
 
-// 9. Actividades Complementarias
+// 8. Actividades Complementarias
 //
 // One row per completed complementary activity, keyed by
 // (student, subject, period) exactly like `student_progress`. The
@@ -223,7 +214,7 @@ export const complementaryCreditActivities = sqliteTable(
 	}),
 );
 
-// 10. Oferta de Grupos
+// 9. Oferta de Grupos
 //
 // Three distinct meanings live in this table and they must not be conflated:
 //   studentControlNumber NULL  -> a SIM offering catalogue entry that no
@@ -276,7 +267,7 @@ export const courseGroups = sqliteTable(
 	}),
 );
 
-// 11. Bloques de Horario
+// 10. Bloques de Horario
 export const courseScheduleBlocks = sqliteTable(
 	"course_schedule_blocks",
 	{
@@ -302,7 +293,7 @@ export const courseScheduleBlocks = sqliteTable(
 	}),
 );
 
-// 11b. Inscripciones: la eleccion de grupo del estudiante
+// 10b. Inscripciones: la eleccion de grupo del estudiante
 //
 // `student_progress` records THAT a student took a subject in a term. It
 // never records WHICH offering group they chose, so after enrolling through
@@ -346,7 +337,7 @@ export const enrollments = sqliteTable(
 	}),
 );
 
-// 12. Credenciales de Acceso (PBKDF2 / SHA-256 via Web Crypto API)
+// 11. Credenciales de Acceso (PBKDF2 / SHA-256 via Web Crypto API)
 //
 // Stores the PBKDF2-derived key, salt, and iteration count for each
 // student. Hash and salt are base64url-encoded. passwordUpdatedAt is
@@ -365,7 +356,7 @@ export const studentCredentials = sqliteTable("student_credentials", {
 	passwordUpdatedAt: integer("password_updated_at", { mode: "timestamp" }),
 });
 
-// 13. Sesiones de Autenticacion (cookie-backed)
+// 12. Sesiones de Autenticacion (cookie-backed)
 //
 // `id` is the SHA-256 of the random session token (base64url). The
 // raw token is held only in the HttpOnly cookie; the database stores
@@ -402,7 +393,7 @@ export const authSessions = sqliteTable(
 	}),
 );
 
-// 14. Auth Attempts (login rate limiting).
+// 13. Auth Attempts (login rate limiting).
 //
 // Counters for failed login attempts, scoped by `attempt_key`. Keys are
 // two flavors — `control:<8-digit-control>` for per-account throttling
@@ -460,9 +451,6 @@ export type NewSpecialty = typeof specialties.$inferInsert;
 
 export type Subject = typeof subjects.$inferSelect;
 export type NewSubject = typeof subjects.$inferInsert;
-
-export type SubjectAlias = typeof subjectAliases.$inferSelect;
-export type NewSubjectAlias = typeof subjectAliases.$inferInsert;
 
 export type SubjectPrerequisite = typeof subjectPrerequisites.$inferSelect;
 export type NewSubjectPrerequisite = typeof subjectPrerequisites.$inferInsert;

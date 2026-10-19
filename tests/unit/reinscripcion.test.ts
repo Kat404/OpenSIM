@@ -667,7 +667,6 @@ describe("seed.sql idempotence", () => {
 		const tables = [
 			"careers",
 			"subjects",
-			"subject_aliases",
 			"subject_prerequisites",
 			"subject_units",
 			"course_groups",
