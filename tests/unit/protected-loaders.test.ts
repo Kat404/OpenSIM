@@ -21,8 +21,8 @@
 import type { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { currentAcademicPeriod } from "../../src/lib/server/enrollment";
-import { getTodayDayLetter } from "../../src/lib/utils/time";
 import { PROCEDURE_UNAVAILABLE_NOTICE } from "../../src/lib/utils/procedure-labels";
+import { getTodayDayLetter } from "../../src/lib/utils/time";
 import { load as kardexLoad } from "../../src/routes/(protected)/academico/kardex/+page.server";
 import { load as dashboardLoad } from "../../src/routes/(protected)/dashboard/+page.server";
 import { load as horarioLoad } from "../../src/routes/(protected)/horario/+page.server";
