@@ -112,7 +112,7 @@ trae 32 filas. No hay nada que cambiar.
 
 > Decisión del operador, 2026-10-19, textual: *"Borrar la tabla"*.
 
-La tabla guarda tres códigos legacy del SIM que nadie lee, al contrario que
+La tabla guarda cuatro códigos legacy del SIM que nadie lee, al contrario que
 `subject_prerequisites`, que sí lee la retícula. Se borra la tabla, sus tipos y sus
 `INSERT` del seed.
 
@@ -178,11 +178,12 @@ más los e2e que tocan lo cambiado.
 - **L1 — 2026-10-19, decisiones de producto, textuales:** *"Mover la galería a
   /design-system y hacer de / una landing honesta"*; *"Deshabilitar los formularios y
   decirlo en pantalla"*; *"Tarjeta 'Seguridad' en el dashboard"*; *"Borrar la tabla"*.
-- **2026-10-19 — La credencial de `12345678` restaurada en la D1 local** con
-  `just db-set-password` (idempotente). Antes sólo existía `99999999`, el alumno del
-  runner agéntico, que tiene cero filas en `student_progress`; por eso el test agéntico
-  del término dio verde falso contra el código viejo. El carril agéntico del Tramo 2
-  usará `12345678`, que tiene 49 filas reales. Fuera de este plan.
+- **2026-10-19 — La credencial de `12345678` restaurada en la D1 local.** Antes sólo
+  existía `99999999`, el alumno del runner agéntico, que tiene cero filas en
+  `student_progress`; por eso el test agéntico del término dio verde falso contra el
+  código viejo. El carril agéntico del Tramo 2 usará `12345678`, que tiene 49 filas
+  reales. Fuera de este plan. (El comando exacto y el tropiezo están al final de este
+  Log: la primera vez se corrió el que aprovisiona `99999999`.)
 - **2026-10-19 — Cinco hallazgos resultaron stale al verificarlos.** T12.3, T13.4, T10.1 y
   T10.0 ya estaban resueltos; T9.4 y T13.3 estaban a medias. La causa es la misma que el
   roadmap del 2026-10-15: un ledger sin reconciliar miente con
@@ -224,9 +225,10 @@ más los e2e que tocan lo cambiado.
   16–19 de la tabla de trazabilidad (`T12.4`, los cuatro marcadores `ponytail:`) siguen abiertos
   **a propósito**: son atajos documentados con su techo nombrado y cerrarlos es una decisión del
   mantenedor, no remediación.
-- **2026-10-19 — El gate de la rama:** `just qa-fast` en verde (374 tests), `just qa` con build
-  en verde, y `just test-e2e` con 138 pruebas en verde y 0 rojas. El carril agéntico no se tocó:
-  `just e2e-dev` gasta tokens contra un gateway real y no es el gate de nada.
+- **2026-10-19 — El gate de la rama:** `just qa-fast` en verde, `just qa` con build en verde, y
+  `just test-e2e` con 0 rojas. El carril agéntico no se tocó: `just e2e-dev` gasta tokens contra
+  un gateway real y no es el gate de nada. (Las cifras finales, tras la tanda de corrección del
+  verificador, están más abajo en este Log.)
 
 - **2026-10-19 — Verificación independiente (`gentle-ai-verify`).** El verificador corrió sus
   propias sondas —no las de esta rama— contra el baseline `48e20d6` y la rama: 11 de 12 specs
@@ -240,7 +242,7 @@ más los e2e que tocan lo cambiado.
     antes del arreglo y pasó después.
   - **B2 — el ledger citaba el commit equivocado** en la casilla T12.3.
   Se corrigieron ambos en **una** tanda, junto con los advisories (conteos de filas, comentarios
-  obsoletos, la variable sin usar, el doc de migraciones) y adopting las cuatro sondas del
+  obsoletos, la variable sin usar, el doc de migraciones) y adoptando las cuatro sondas del
   verificador como tests de regresión. Recheck: `just qa-fast` 380 verdes, `just test-e2e` 150
   verdes, 0 rojos.
 - **2026-10-19 — La credencial de `12345678` sí quedó restaurada, y esta vez de verdad.** La
