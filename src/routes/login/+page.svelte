@@ -9,11 +9,14 @@ import { page } from "$app/state";
 // when the form action returns `fail(...)`.
 let { form }: { form: { error?: string } | null } = $props();
 
-// `?reason=logged-out` lands here after POST /login/logout; show
-// a confirmation toast-style line. Anything else is ignored.
-const notice = $derived(
-	page.url.searchParams.get("reason") === "logged-out" ? "Sesión cerrada correctamente." : null,
-);
+// `?reason=logged-out` lands here after POST /login/logout;
+// `?reason=sessions-revoked` after POST /login/logout-all. Show a
+// confirmation toast-style line. Anything else is ignored.
+const REVOCATION_NOTICES: Record<string, string> = {
+	"logged-out": "Sesión cerrada correctamente.",
+	"sessions-revoked": "Se cerraron todas las sesiones de tu cuenta.",
+};
+const notice = $derived(REVOCATION_NOTICES[page.url.searchParams.get("reason") ?? ""] ?? null);
 
 // Minimal theme toggle for the unauthenticated login surface
 // (audit M8, Round 4). The inline script in `app.html` already
