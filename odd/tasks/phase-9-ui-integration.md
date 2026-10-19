@@ -1,7 +1,7 @@
 <!-- odd-tracker
 kind: phase-plan
-status: active
-last-verified: 2026-10-10
+status: closed
+last-verified: 2026-10-19
 reconciled-against: feat/phase-9-verified-curriculum@d3db09e
 sha-warning: re-derive current SHAs with `git log --oneline --grep='<subject>'`
 -->
@@ -183,6 +183,9 @@ bloqueada.
 
 ## Log
 
+
+- **2026-10-19 — Cerrado.** T9.11, T9.12, T9.13 y T9.14 están cerradas y con su commit; el
+  bloque de tareas de este plan ya no tiene nada pendiente.
 - **2026-10-13 — L1.** El operador responde las dos decisiones que bloqueaban el plan:
   *"T9.13 Habíamos que 5 complementarios + 182 reticulares / T9.12 Cobertura explícita.
   Procede."* T9.13 confirma la puerta adicional ya escrita el 2026-10-10; T9.12 elige la

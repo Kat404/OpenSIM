@@ -465,3 +465,10 @@ The 5 Phase 7 commits (all GPG-signed, key `3335F4A0…`):
 - Working tree dirty files preserved: `tests/e2e/reports/axe-findings.json`, `tests/e2e/reports/results.json`, `.agents/`, `skills-lock.json` (user decision required)
 - 24 commits ahead of origin/main (19 from Phase 6 + 5 from Phase 7), all GPG-signed
 - Ready for Phase 5.2 (Cloudflare Workers deploy — human-owned, requires `wrangler login` + `wrangler d1 create` + `wrangler d1 migrations apply --remote` + `pnpm build` + `wrangler deploy` per `docs/deploy.md`)
+
+## Log
+
+- **2026-10-19 — Las siete casillas sin marcar son criterios visuales**: posición del icono
+  del mapa, contraste medido a ojo, que el valor no dé saltos y que el botón conserve su
+  área táctil. El contraste sí quedó cubierto por el barrido axe-core de la fase 5 (14/14),
+  pero el resto necesita un ojo humano y un dedo. Se dejan abiertas a propósito.

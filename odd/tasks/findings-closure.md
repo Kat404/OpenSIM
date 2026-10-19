@@ -1,6 +1,6 @@
 <!-- odd-tracker
 kind: phase-plan
-status: active
+status: closed
 last-verified: 2026-10-19
 branch: chore/findings-closure
 delivery: work-unit commits en la rama de feature
@@ -170,6 +170,10 @@ más los e2e que tocan lo cambiado.
 
 ## Log
 
+
+- **2026-10-19 — Cerrado.** Las ocho tareas están hechas, con verificación independiente y
+  su recheck. Lo único que quedó de este plan fuera de su alcance —el carril agéntico del
+  Tramo 2— es trabajo de otro documento: `odd/tasks/roadmap-2026-10-15.md`.
 - **L1 — 2026-10-19, petición del mantenedor, textual:** *"?En dónde nos quedamos la
   sesión pasada sobre el desarrollo de OpenSIM? Para esta sesión cualquier duda, pregunta
   o incógnita házmela saber mediante question tool."*

@@ -125,3 +125,9 @@ sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign re
 - Manual smoke (deferred to user): `just dev` → login as `<NUMERO DE CONTROL PURGADO>` / `opensim-dev-2026`. Verify (a) no FOUC on first paint with stored override, (b) OS theme change flips the app when no override exists, (c) toggle icon stays correct, (d) Cmd+K re-open lands focus on the input, (e) deep-link Cmd+K → `/reticula#<subject>` round-trips, (f) kardex filter pills and cells share the same label set, (g) procedure badges show `Disponible` / `Bloqueado` from the shared map.
 
 **Findings closed:** N2, N3, N4, N5, M4, M6, L1, L3, N7, N8 — all 10 documented mcode M3.1 round-6 non-blocking findings are now resolved. Phase 5.1 (axe-core WCAG sweep) and Phase 5.2 (Cloudflare deploy) can start from a clean floor.
+
+## Log
+
+- **2026-10-19 — La casilla del commit queda cerrada**: `017123b chore(phase-5-prep): verify
+  pass + work-unit close` existe. La del smoke manual sigue abierta porque es una
+  comprobación con ojos y teclado: nadie la puede firmar desde el repo.

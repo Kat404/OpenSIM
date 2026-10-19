@@ -2,8 +2,8 @@
 
 <!-- odd-tracker
 kind: phase-plan
-status: active
-last-verified: 2026-10-10
+status: closed
+last-verified: 2026-10-19
 reconciled-against: feat/phase-9-verified-curriculum@c49caea (main@fee9d60)
 sha-warning: los SHA 6ca7c12, 8f40837, ffcd595 y b3fef41 citados en el cuerpo de este archivo predicen la reescritura de firmas GPG del 2026-10-08 y están MUERTOS; los SHA de la sección "Commits que importan" verificados con `git cat-file -e` sí están vivos
 -->
@@ -911,3 +911,11 @@ verse, no porque se baje el volumen. Un test cubre cada rama.
 ### Fuera de alcance
 
 Paginación de la oferta (T9.14), detalle de temario (T9.12), `/horario` (T9.11).
+
+## Log
+
+- **2026-10-19 — Cerrado.** T9.10 quedó cerrada: la decisión del mantenedor del 2026-10-13
+  (cobertura explícita) y el código la cumplen — `SubjectNode.svelte:85` muestra «Semestre
+  sin registrar» y la etiqueta `S—` en vez de descartar la materia. **H8 sigue abierta como
+  hueco de dato, no como tarea**: el semestre de las 16 materias de especialidad no tiene
+  fuente publicada, y no se inventa. Ese es el estado que el plan dice que queda.

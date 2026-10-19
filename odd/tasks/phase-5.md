@@ -180,3 +180,12 @@ Procedimiento completo: `docs/deploy.md`.
 - mcode review outputs.
 - axe findings JSON.
 - Production URL + smoke test output.
+
+## Log
+
+- **2026-10-19 — Las nueve casillas sin marcar de este plan son el despliegue remoto**, y
+  siguen abiertas a propósito: `db-migrate-remote`, `db-seed-remote`,
+  `db-set-password-remote`, `deploy-worker` y las sondas contra la URL desplegada tocan la
+  D1 de producción y el Worker en vivo, y el AGENTS.md exige autorización explícita del
+  mantenedor **cada vez**, sin excepción. La fase local está cerrada; esto es una lista de
+  comprobación pendiente de una autorización que nadie ha pedido.

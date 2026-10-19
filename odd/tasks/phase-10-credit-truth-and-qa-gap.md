@@ -1,7 +1,7 @@
 <!-- odd-tracker
 kind: phase-plan
-status: active
-last-verified: 2026-10-15
+status: closed
+last-verified: 2026-10-19
 branch: feat/phase-9-verified-curriculum
 test-runner: vitest (just qa-fast) · Playwright (just test-e2e) · runner agéntico (just e2e-dev)
 -->
@@ -201,6 +201,10 @@ Presupuesto: ~400 líneas escritas acumuladas. Si lo rebasa, se corta en el lím
 
 ## Log
 
+
+- **2026-10-19 — Cerrado.** T1, T2 y T3 reopenings del 2026-10-15 quedaron cerradas por
+  `68e6979` y `3a07e0e` (la migración 0016 y el peso del crédito en la actividad). T4, T5 y
+  T6 ya lo estaban. Ninguna tarea de este plan queda pendiente.
 - **2026-10-13 — L1.** Petición del mantenedor, textual: *"Planeemos de manera ODD la
   resolución de lo siguiente: Fixear de manera correcta la relación entre los créditos
   reticulares y los créditos complementarios, teniendo como regla de diseño lo que ya
