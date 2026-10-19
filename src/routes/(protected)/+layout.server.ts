@@ -11,7 +11,7 @@
  * In addition to the auth gate we also return the curriculum subjects
  * catalog (canonicalId + code + name) so the Cmd+K palette has an
  * in-memory index to filter on the client without per-keystroke D1
- * traffic. The catalog is small (~42 rows) and stable, so this is the
+ * traffic. The catalog is small (68 rows) and stable, so this is the
  * right place to fetch it.
  *
  * Replacing the old prefix-based guard (`/academico/*`) with a route
