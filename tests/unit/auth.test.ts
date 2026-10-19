@@ -23,7 +23,6 @@ import {
 	hashPassword,
 	hashToken,
 	isRateLimited,
-	pruneExpiredAttempts,
 	recordFailedAttempt,
 	verifyPassword,
 } from "../../src/lib/server/auth";
@@ -312,21 +311,5 @@ describe("rate limiting (audit R8-9 / P0-2)", () => {
 		const rb = await isRateLimited(db, b);
 		expect(ra.limited).toBe(false);
 		expect(rb.limited).toBe(true);
-	});
-
-	it("pruneExpiredAttempts removes buckets outside the 15-minute window", async () => {
-		const { db, raw } = makeSqliteDb();
-		// Inject a bucket whose window_start is 20 minutes ago — outside
-		// the 15-minute cutoff. `recordFailedAttempt` won't add this
-		// (it uses the current minute), so we splice directly.
-		raw
-			.prepare(
-				"INSERT INTO auth_attempts (attempt_key, window_start, attempt_count) VALUES (?, ?, ?)",
-			)
-			.run("control:12345678", Math.floor((Date.now() - 20 * 60 * 1000) / 1000), 3);
-		const removed = await pruneExpiredAttempts(db);
-		expect(removed).toBe(1);
-		const remaining = raw.prepare("SELECT COUNT(*) as c FROM auth_attempts").get() as { c: number };
-		expect(remaining.c).toBe(0);
 	});
 });

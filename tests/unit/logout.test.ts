@@ -12,6 +12,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+	clearSessionCookieOptions,
 	createSession,
 	getUserFromSessionToken,
 	SESSION_COOKIE_NAME,
@@ -97,7 +98,9 @@ describe("POST /login/logout", () => {
 		expect(cookies.ops).toContainEqual({
 			type: "delete",
 			name: SESSION_COOKIE_NAME,
-			options: { path: "/" },
+			// The shared options, not a hand-rolled `{ path: "/" }`: the
+			// two places that clear this cookie must not drift apart.
+			options: clearSessionCookieOptions,
 		});
 		expect(cookies.entries()).not.toHaveProperty(SESSION_COOKIE_NAME);
 	});

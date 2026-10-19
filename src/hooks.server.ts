@@ -45,6 +45,7 @@ const SECURITY_HEADERS: Readonly<Record<string, string>> = Object.freeze({
 import { env as workerEnv } from "cloudflare:workers";
 import type { Handle } from "@sveltejs/kit/hooks";
 import {
+	clearSessionCookieOptions,
 	extendSession,
 	getUserFromSessionToken,
 	invalidateSession,
@@ -80,7 +81,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		} else {
 			// Stale or invalid session — clear the cookie so the client
 			// does not keep presenting a dead token.
-			event.cookies.delete(SESSION_COOKIE_NAME, { path: "/" });
+			event.cookies.delete(SESSION_COOKIE_NAME, clearSessionCookieOptions);
 			// Best-effort: prune the row in D1.
 			await invalidateSession(db, token).catch(() => {
 				/* swallow — invalidation is a tidy-up, not a critical path */
