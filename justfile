@@ -126,8 +126,8 @@ test-e2e-avatar: db-set-password
 # matters, prune expired rows (add a DELETE ON the expiry column to
 # db-set-password, which already touches the credential tables).
 [group('test')]
-[doc('Run the Playwright + axe-core suite against the existing local D1 (non-destructive: migrate + credential, no reset). Use test-e2e-fresh for a pristine database.')]
-test-e2e: db-migrate db-set-password
+[doc('Run the Playwright + axe-core suite against the existing local D1 (non-destructive: migrate + credentials, no reset). Use test-e2e-fresh for a pristine database.')]
+test-e2e: db-migrate db-set-password db-set-password-alumno
     pnpm exec playwright test
 
 # Same suite from a pristine database. `db-reset` deletes local D1 state,
@@ -135,7 +135,7 @@ test-e2e: db-migrate db-set-password
 # runs after it so the credential the suite signs in with exists again.
 [group('test')]
 [doc('DESTRUCTIVE: delete local D1 state, re-migrate, re-seed, provision the credential, then run the Playwright + axe-core suite.')]
-test-e2e-fresh: db-reset db-set-password
+test-e2e-fresh: db-reset db-set-password db-set-password-alumno
     pnpm exec playwright test
 
 # Run E2E with UI mode (interactive; assumes DB is ready). `db-set-password`
@@ -151,23 +151,25 @@ test-e2e-ui: db-set-password
 # a migrated database with that credential provisioned is the setup it
 # needs.
 #
-# `db-set-password` reads OPENSIM_TEST_PASSWORD; the runner signs in
-# with E2E_USER_ALUMNO_PASSWORD from `.env`. Nothing enforces that the
-# two agree, so they can silently disagree and the run fails at login —
-# they are two independent settings, not one.
+# `db-set-password` reads OPENSIM_TEST_PASSWORD from the environment and
+# falls back to the `.env` file; the runner signs in with
+# E2E_USER_ALUMNO_PASSWORD from `.env`. They are two variables in the
+# same file and nothing enforces that they hold the same value, so if
+# they ever disagree the run fails at login — which reads like broken
+# auth and is not.
 #
 # A run drives a real model gateway: it costs tokens and is far slower
 # than the Playwright suite. Reach for it for flows that selectors
 # cannot honestly assert, not as the default check.
 [group('test')]
 [doc('Run the agentic e2e suite (MiniMax-M3 driving a real browser; the runner spawns and owns the local dev server).')]
-e2e-dev: db-migrate db-set-password
+e2e-dev: db-migrate db-set-password db-set-password-alumno
     pnpm exec e2e run
 
 # Same run with the browser visible, for watching the agent work.
 [group('test')]
 [doc('Run the agentic e2e suite with --headed so the browser is visible (debugging).')]
-e2e-web: db-migrate db-set-password
+e2e-web: db-migrate db-set-password db-set-password-alumno
     pnpm exec e2e run --headed
 
 # ===== Database (D1 / Drizzle) =====
@@ -205,8 +207,27 @@ db-seed:
     pnpm run db:seed
 
 # Set the default test student password (dev only — see seed-password.ts header)
+#
+# This is the PLACEHOLDER student (99999999), the one the Playwright suite
+# signs in with, on purpose: it owns no `student_progress` rows, so the
+# deterministic suite can assert the empty state.
 db-set-password:
     pnpm run db:set-password
+
+# Set the CATALOGUE student's password (dev only — see seed-password.ts header)
+#
+# 12345678 is the student the fixture describes: 175 approved credits, 49
+# rows in `student_progress`, 3 complementary credits. The agentic lane
+# signs in as this one, because a judgment about DATA needs a student who
+# has data — with the placeholder every screen renders an empty state and
+# the tests can only assert things that cannot fail.
+#
+# Both recipes are idempotent upserts of one credential row each, and the
+# password comes from the same `.env` the test setups read.
+[group('db')]
+[doc('Set the catalogue student (12345678) password on the local D1 — the student the agentic lane signs in with.')]
+db-set-password-alumno:
+    pnpm run db:set-password 12345678
 
 # Set the test student password on the REMOTE D1 (⚠ production).
 #
