@@ -458,7 +458,7 @@ describe("horario loader", () => {
 		expect(result.schedule.map((c) => c.block.day)).toEqual(["L", "X"]);
 	});
 
-	it("drops a block whose day letter is not on the TecNM grid", async () => {
+	it("drops a block whose day letter is not on the TecNM grid, and says so", async () => {
 		seedCurrentEnrollment();
 		raw
 			.prepare(
@@ -467,8 +467,17 @@ describe("horario loader", () => {
 			)
 			.run();
 
-		const result = await loadHorario(signedIn());
-		expect(result.schedule.map((c) => c.block.day)).toEqual(["L"]);
+		// A block that vanishes without a trace is a class the student
+		// does not see and cannot explain. The drop is logged, with the
+		// value that caused it.
+		const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+		try {
+			const result = await loadHorario(signedIn());
+			expect(result.schedule.map((c) => c.block.day)).toEqual(["L"]);
+			expect(warn).toHaveBeenCalledWith(expect.stringContaining('"Q"'));
+		} finally {
+			warn.mockRestore();
+		}
 	});
 
 	it("skips a block whose subject is missing from the catalog", async () => {
