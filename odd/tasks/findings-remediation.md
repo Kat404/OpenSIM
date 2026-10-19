@@ -319,7 +319,7 @@ Three separate surfaces promise capability that does not exist:
       **Cerrada 2026-10-19 por evidencia, no por código:** la página ya decía que OpenSIM no gestiona
       el restablecimiento de contraseñas y listaba el procedimiento institucional; el hallazgo
       describía una versión anterior. Se corrigió además una palabra en inglés dentro del texto
-      español ("identificación *official* vigente"). Commit `fa66ed8`.
+      español ("identificación *official* vigente"). Commit `e5e8c96`.
 
 ## Phase 13 — dead code
 *Findings: 8 SUGGESTION. Zero risk. Independent; do last.*

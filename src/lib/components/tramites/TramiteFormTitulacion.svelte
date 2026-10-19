@@ -3,8 +3,8 @@
 
   Static form surface. Requires all credits + Servicio Social done.
   Submission is a Phase 5+ concern; for now the form posts to the
-  page's default action which returns a 'Trámite en desarrollo'
-  notice.
+  page's default action, which refuses the submission: OpenSIM
+  stores no procedure request yet.
 -->
 <script lang="ts">
 import { Badge, Button, Card, Input, Select } from "#lib/components/ui";

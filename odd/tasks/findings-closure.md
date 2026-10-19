@@ -30,8 +30,8 @@ con el código es peor que no tener archivo.
 | T13.1 | `annotateConflicts` test-only | vivo | **vivo** |
 | T13.2 | `clearSessionCookieOptions` no se adopta | vivo: los 2 sitios limpian a mano | **vivo** |
 | T13.3 | `pruneExpiredSessions` duplica el SQL del cron | más grave de lo que dice: `pruneExpiredSessions` **no lo llama nadie**, `pruneExpiredAttempts` sólo un test | **vivo** |
-| T13.4 | `subject_units` nunca se selecciona | **falso**: lo lee `/temario/+page.server.ts`; `seed.sql` tiene 35 filas | **stale** |
-| T13.5 | `subject_aliases` se escribe y nunca se lee | vivo: 3 filas legacy, ni un SELECT | **vivo** |
+| T13.4 | `subject_units` nunca se selecciona | **falso**: lo lee `/temario/+page.server.ts`; `seed.sql` tiene 32 filas | **stale** |
+| T13.5 | `subject_aliases` se escribe y nunca se lee | vivo: 4 filas legacy, ni un SELECT | **vivo** |
 | T13.6 | `Drawer.svelte` sin consumidores | vivo | **vivo** |
 | T13.7 | `MAX_GRADE` / `MIN_GRADE` test-only | vivo | **vivo** |
 | T13.8 | letras de día desconocidas se descartan en silencio | vivo: `horario/+page.server.ts:110` | **vivo** |
@@ -106,7 +106,7 @@ advertir sobre una copia que ya no existe. El cron sigue podando igual.
 ### S7 — `subject_units` ya tiene consumidor
 
 T13.4 queda cerrado por evidencia: `/temario/+page.server.ts` la consulta y `seed.sql`
-trae 35 filas. No hay nada que cambiar.
+trae 32 filas. No hay nada que cambiar.
 
 ### S8 — `subject_aliases` se va
 

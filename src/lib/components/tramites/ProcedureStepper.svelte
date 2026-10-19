@@ -64,6 +64,9 @@ const active = $derived(procedures[current] ?? null);
 		</Card>
 	{/if}
 
+	<!-- The action's own notice only appears once the flow exists. While
+	     it does not, the static notice above says the same thing and
+	     showing both would repeat it. -->
 	{#if formNotice && PROCEDURES_AVAILABLE}
 		<Card padding="sm">
 			<div class="proc__notice" role="status">

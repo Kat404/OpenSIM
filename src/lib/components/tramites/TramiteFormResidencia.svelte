@@ -2,8 +2,8 @@
   OpenSIM — Residencia Profesional form (Phase 4 Tarea 4.2).
 
   Static form surface. Requires >= 208 CR (80% of 260). Submission
-  is a Phase 5+ concern; for now the form posts to the page's
-  default action which returns a 'Trámite en desarrollo' notice.
+  is a Phase 5+ concern: the form renders disabled, because the
+  page's default action refuses what the flow would have to store.
 -->
 <script lang="ts">
 import { Badge, Button, Card, Input, Select } from "#lib/components/ui";

@@ -18,13 +18,7 @@
  */
 import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import {
-	clearWorkerEnv,
-	seedCareer,
-	seedProfile,
-	type TestDb,
-	withTestDb,
-} from "./_helpers/harness";
+import { clearWorkerEnv, seedCareer, seedProfile, withTestDb } from "./_helpers/harness";
 
 const SCRIPT_PATH = "scripts/inject-scheduled-handler.mjs";
 const script = readFileSync(SCRIPT_PATH, "utf8");
@@ -33,7 +27,6 @@ const script = readFileSync(SCRIPT_PATH, "utf8");
 const SESSION_SQL = /prepare\('(DELETE FROM auth_sessions[^']+)'\)/.exec(script)?.[1];
 const ATTEMPT_SQL = /prepare\('(DELETE FROM auth_attempts[^']+)'\)/.exec(script)?.[1];
 
-let db: TestDb;
 let raw: ReturnType<typeof withTestDb>["raw"];
 
 function rowCount(table: string): number {
@@ -41,7 +34,7 @@ function rowCount(table: string): number {
 }
 
 beforeEach(() => {
-	({ db, raw } = withTestDb());
+	({ raw } = withTestDb());
 	seedCareer(raw);
 	seedProfile(raw, { controlNumber: "12345678", fullName: "Ada Lovelace Ortiz" });
 });

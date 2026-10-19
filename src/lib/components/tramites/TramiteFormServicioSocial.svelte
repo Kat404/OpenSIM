@@ -3,7 +3,8 @@
 
   Static form surface for the academic procedure. Submission is a
   Phase 5+ concern; for now the form posts to the page's default
-  action which returns a 'Trámite en desarrollo' notice.
+  action, which refuses the submission: OpenSIM stores no
+  procedure request yet.
 
   The component is *content-only*: the parent stepper controls the
   layout and the disabled state. The form's submit button is the

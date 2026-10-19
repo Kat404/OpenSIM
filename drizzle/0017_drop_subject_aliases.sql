@@ -10,7 +10,7 @@
 --
 -- Operator, 2026-10-19, textual: "Borrar la tabla".
 --
--- Three rows of reference data go with it. Nothing queries them, and
+-- Four rows of reference data go with it. Nothing queries them, and
 -- the seed no longer writes them, so the data is not recoverable from
 -- the database — but it IS recoverable from the dataset it came from
 -- (`data/curriculum-isic-2010-224.json` still declares the aliases,
