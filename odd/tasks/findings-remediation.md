@@ -3,19 +3,55 @@
 <!-- odd-tracker
 kind: phase-plan
 status: active
-last-verified: 2026-10-15
-reconciled-against: feat/phase-9-verified-curriculum@b52991a
+last-verified: 2026-10-19
+reconciled-against: chore/findings-closure@e5e8c96
 sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
 -->
 
-**Date:** 2026-10-06 · last reconciled 2026-10-15
-**Status:** **Fases 9, 10 y 11 ejecutadas.** El `last-verified` de 2026-10-08 quedó antes de ellas, así que el archivo afirmaba 28 cosas abiertas que gran parte ya no lo eran. Ver la reconciliación de abajo.
+**Date:** 2026-10-06 · last reconciled 2026-10-19
+**Status:** **Ninguna casilla abierta.** Reconciliada dos veces: el 2026-10-15 (fases 9, 10 y 11) y el 2026-10-19 (las 14 que quedaban). Ver las dos reconciliaciones de abajo.
 **Route:** delegated direct per phase (each phase is one bounded writer)
 **Source:** Codegraph application-surface audit, 2026-10-06. All 27 findings are `pre-existing`.
 
 ---
 
+## Reconciliación 2026-10-19
+
+Las catorce casillas que la pasada anterior dejó vivas se comprobaron **una por una contra el
+código** antes de tocar nada, y cinco resultaron **stale**: el archivo afirmaba defectos que ya
+no existían. Éste es el mismo riesgo que la reconciliación anterior señaló y que volvió a
+morderse: un ledger desalineado miente con la misma seguridad con la que dice la verdad.
+
+| Veredicto | Cuántas | Cuáles |
+| --- | --- | --- |
+| ✅ cerrada con código | 11 | T9.4, T10.1, T12.1, T12.2, T13.1, T13.2, T13.3, T13.5, T13.6, T13.7, T13.8 |
+| ✅ cerrada por evidencia | 3 | T12.3, T13.4, T10.0 |
+
+**Las cinco que el archivo describía y el código no tenía:**
+
+- **T12.3** — la página de recuperar ya decía que OpenSIM no gestiona el restablecimiento y
+  listaba el procedimiento institucional. El hallazgo describía una versión anterior.
+- **T13.4** — `subject_units` ya la lee `/temario/+page.server.ts`, y `seed.sql` trae sus 32
+  unidades.
+- **T10.0** — la PK ya estaba decidida; faltaba registrarla aquí.
+- **T9.4** — a medias: el primitivo existía y estaba probado, pero ningún camino lo llamaba.
+- **T13.3** — peor de lo que decía: `pruneExpiredSessions` no lo llamaba nadie, y
+  `pruneExpiredAttempts` sólo un test.
+
+**Lo que queda abierto, y no es una casilla:** los hallazgos 16–19 de la tabla de trazabilidad
+(`T12.4`, los cuatro marcadores `ponytail:`) siguen siendo una decisión del mantenedor, no
+remediación: son atajos documentados con su techo nombrado, y cerrarlos significa aceptar el
+costo que el propio comentario difiere.
+
+**Plan:** `odd/tasks/findings-closure.md` — commit `3fc41db` y siguientes en la rama
+`chore/findings-closure`.
+
+---
+
 ## Reconciliación 2026-10-15
+
+> **Estado histórico.** Esta tabla describe el 2026-10-15. Las casillas que aquí están vivas se
+> cerraron el 2026-10-19 — ver la reconciliación de arriba.
 
 Cada casilla se comprobó contra el código en esta pasada. **Ninguna se cerró por memoria**: una
 casilla se marca sólo con la evidencia que la cerró, y las que siguen vivas dicen por qué.
@@ -190,9 +226,13 @@ component decision, not a lightness change.
       Add a per-install server-side secret pepper (`env`), or drop the privacy claim in the
       schema comment at `schema.ts:213-215` and say plainly that IPs are pseudonymous, not
       anonymous.
-- [ ] **T9.4** — Session revocation: no code path deletes `auth_sessions` by
+- [x] **T9.4** — Session revocation: no code path deletes `auth_sessions` by
       `student_control_number`, though `schema.ts:219-221` claims `idx_auth_sessions_student`
       supports it. Add the bulk-delete primitive and wire it to logout.
+      **Cerrada 2026-10-19:** el primitivo ya existía (`invalidateAllSessions`); lo que faltaba era el
+      camino. Ahora `POST /login/logout-all` lo llama y una tarjeta "Seguridad" en el dashboard lo
+      ofrece al alumno. Un POST anónimo no revoca nada. Commit `6c2a3a2`; test `tests/unit/logout-
+      all.test.ts`.
 - [x] **T9.5** — Sliding session: `validateSessionToken` returns `expiresAt` and never extends
       it, so a student is hard-logged-out at exactly 30 days with no renewal.
 - [x] **T9.6** — Timing-equalisation dummy at `login/+page.server.ts:117` runs **100 000**
@@ -204,11 +244,19 @@ component decision, not a lightness change.
 
 Route: `src/routes/(protected)/reinscripcion/+page.server.ts`
 
-- [ ] **T10.0** — Resolve the PK decision (A / B / C) and record it here
-- [ ] **T10.1** — BLOCKER: PK collision on any subject with a prior-period row → 500.
+- [x] **T10.0** — Resolve the PK decision (A / B / C) and record it here
+      **Registrada 2026-10-19:** la PK es `(student_control_number, subject_canonical_id, period)` y
+      una inscripción nueva cae en el término del calendario, no en el de la última fila. Decisión y
+      criterios en `odd/tasks/enrollment-period-and-pk-guard.md` (S1). Commits `47d6109` (plan) y
+      `015eb1e` (arreglo).
+- [x] **T10.1** — BLOCKER: PK collision on any subject with a prior-period row → 500.
       `:213-230` filters `status = 'ENROLLED' AND period = <current>`, so the guard cannot see
       the 32 `APPROVED` rows. **RED first:** a test that enrols a subject the student already
       completed, expecting a clean `fail()`.
+      **Cerrada 2026-10-19:** era el único BLOCKER vivo. Arreglada en `015eb1e` —el guard ve toda fila
+      que ocupa la PK y el periodo es el del calendario—, con el test agéntico `19a5cc1` y tres
+      correcciones de la auditoría independiente `eaf9712`. Plan: `odd/tasks/enrollment-period-and-pk-
+      guard.md`.
 - [x] **T10.2** — BLOCKER: `groupId` is deduped at `:185-186`; the resolved
       `subjectCanonicalId` never is. Two groups of one subject → two rows, one PK → 500.
 - [x] **T10.3** — CRITICAL: `:271` calls `findConflicts(candidateBlocks, enrolledBlocks)` only.
@@ -249,35 +297,68 @@ phases do not already cover.
 
 Three separate surfaces promise capability that does not exist:
 
-- [ ] **T12.1** — The three Trámites forms (`ProcedureStepper.svelte:94-98`) collect input;
+- [x] **T12.1** — The three Trámites forms (`ProcedureStepper.svelte:94-98`) collect input;
       the action at `tramites/+page.server.ts:227-251` reads the FormData and discards it,
       returning `fail(202, { notice: "Trámite en desarrollo" })`. Either implement persistence or
       disable the inputs and say plainly in the UI that the flow is not available.
-- [ ] **T12.2** — The public homepage (`src/routes/+page.svelte`) is a component gallery with 15
+      **Cerrada 2026-10-19:** los tres formularios se renderizan deshabilitados y la razón está en
+      pantalla ANTES del primer campo; el action responde `501` en vez de disfrazar un descarte de
+      `202 Accepted`. Commit `834b81b`; tests `tests/unit/protected-loaders.test.ts` y
+      `tests/e2e/tramites.spec.ts`.
+- [x] **T12.2** — The public homepage (`src/routes/+page.svelte`) is a component gallery with 15
       hardcoded demo fixtures and is the **sole consumer** of Toast, Tabs, Skeleton, Tooltip, Kbd,
       Modal, Dropdown and ProgressBar. Either give the atoms real consumers or accept the
       homepage is a design-system page and document it as such.
-- [ ] **T12.3** — `/login/recuperar` ships a complete card UI with **no `+page.server.ts`**
+      **Cerrada 2026-10-19:** la galería se movió a `/design-system` y `/` pasó a ser la portada
+      honesta del rediseño (qué publica el TecNM, qué no se inventa, el alcance de v1). Commit
+      `fa66ed8`; tests `tests/e2e/landing.spec.ts` y `tests/e2e/axe/index.spec.ts`.
+- [x] **T12.3** — `/login/recuperar` ships a complete card UI with **no `+page.server.ts`**
       (`route_meta_data.json` records `[]`) and no reset-token table anywhere in the schema.
       There is no self-service recovery path. Decide: build the token flow, or make the page say
       "contacta a soporte" without pretending to be a form.
+      **Cerrada 2026-10-19 por evidencia, no por código:** la página ya decía que OpenSIM no gestiona
+      el restablecimiento de contraseñas y listaba el procedimiento institucional; el hallazgo
+      describía una versión anterior. Se corrigió además una palabra en inglés dentro del texto
+      español ("identificación *official* vigente"). Commit `fa66ed8`.
 
 ## Phase 13 — dead code
 *Findings: 8 SUGGESTION. Zero risk. Independent; do last.*
 
 All verified zero-caller:
 
-- [ ] **T13.1** — `annotateConflicts` (`schedule-conflict.ts:107-113`) — test-only
-- [ ] **T13.2** — `clearSessionCookieOptions` (`auth.ts:497-504`) — both clear sites hand-roll
+- [x] **T13.1** — `annotateConflicts` (`schedule-conflict.ts:107-113`) — test-only
+      **Cerrada 2026-10-19:** `annotateConflicts` eliminado; su único consumidor era su propio test.
+      Commit `99c5f9a`.
+- [x] **T13.2** — `clearSessionCookieOptions` (`auth.ts:497-504`) — both clear sites hand-roll
       `cookies.delete(...)`; either adopt it or delete it
-- [ ] **T13.3** — `pruneExpiredSessions` (`auth.ts:406-418`) — the cron injects equivalent raw
+      **Cerrada 2026-10-19:** los dos sitios que borran la cookie (`hooks.server.ts`,
+      `login/logout/+server.ts`) usan ahora `clearSessionCookieOptions`; ya no hay dos formas de
+      borrarla. Commit `c29ed38`.
+- [x] **T13.3** — `pruneExpiredSessions` (`auth.ts:406-418`) — the cron injects equivalent raw
       SQL; not even tested, unlike its sibling
-- [ ] **T13.4** — `subject_units` table — never selected, absent from `seed.sql`
-- [ ] **T13.5** — `subject_aliases` — written by `seed.ts:188`, never read
-- [ ] **T13.6** — `Drawer.svelte` — barrel re-export, zero consumers
-- [ ] **T13.7** — `MAX_GRADE` / `MIN_GRADE` — test-only
-- [ ] **T13.8** — `horario/+page.server.ts:83` — unknown day letters dropped by a silent
+      **Cerrada 2026-10-19:** los dos helpers muertos (`pruneExpiredSessions`, que no llamaba nadie, y
+      `pruneExpiredAttempts`, que sólo llamaba un test) se eliminaron: el SQL del cron inyectado es
+      ahora la única implementación, y su comentario ya no pide mantener dos copias en sincronía. Ese
+      SQL se ejecuta contra una base real en `tests/unit/scheduled-prune.test.ts`. Commit `c29ed38`.
+- [x] **T13.4** — `subject_units` table — never selected, absent from `seed.sql`
+      **Cerrada 2026-10-19 por evidencia:** `subject_units` ya tiene consumidor —
+      `/temario/+page.server.ts` la consulta y `seed.sql` trae sus 32 unidades. El hallazgo describía
+      un estado anterior.
+- [x] **T13.5** — `subject_aliases` — written by `seed.ts:188`, never read
+      **Cerrada 2026-10-19:** la tabla se fue. Los alias del dataset siguen existiendo porque son lo
+      que el seed usa para resolver un código del SIM a su materia canónica; lo que no había era
+      ningún consumidor en runtime. Migración `drizzle/0017_drop_subject_aliases.sql`, commit
+      `3fc41db`.
+- [x] **T13.6** — `Drawer.svelte` — barrel re-export, zero consumers
+      **Cerrada 2026-10-19:** `Drawer.svelte` y su export del barril eliminados. Commit `99c5f9a`.
+- [x] **T13.7** — `MAX_GRADE` / `MIN_GRADE` — test-only
+      **Cerrada 2026-10-19:** `MAX_GRADE` y `MIN_GRADE` eliminados; sólo un test los leía. La escala
+      0–10 sigue documentada en el propio módulo. Commit `99c5f9a`.
+- [x] **T13.8** — `horario/+page.server.ts:83` — unknown day letters dropped by a silent
       `continue`; add a log or throw instead
+      **Cerrada 2026-10-19:** el descarte se registra en el log con el valor que lo provocó, en vez de
+      desaparecer sin rastro. Commit del log; test en
+      `tests/unit/protected-loaders.test.ts`.
 
 ## Finding traceability
 
