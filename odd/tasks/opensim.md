@@ -3,13 +3,13 @@
 <!-- odd-tracker
 kind: spec
 status: active
-last-verified: 2026-10-19
+last-verified: 2026-10-08
 reconciled-against: feat/phase-9-verified-curriculum@8f40837 (main@ffcd595)
 sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
 -->
 
 **Proyecto:** OpenSIM (Open Source — Sistema Integral Modular)
-**Target Architecture:** SvelteKit `3.0.0` + Svelte `5.57.1` (Runes) + Cloudflare D1/Workers + Drizzle ORM `0.45.3` + Valibot `1.5.0` + `pdf-lib 1.17.1`
+**Target Architecture:** SvelteKit `3.1.0` + Svelte `5.57.2` (Runes) + Cloudflare D1/Workers + Drizzle ORM `0.45.4` + Valibot `1.5.0` + `pdf-lib 1.17.1`
 **Programa Académico:** Ingeniería en Sistemas Computacionales (Plan `ISIC-2010-224`, Instituto Tecnológico de Morelia)
 **Versión:** 2.2 (audit fixes: spec self-consistency, token hashing, route group, drizzle doc rewrite)
 **Fecha:** 2026-10-02
