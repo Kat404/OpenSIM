@@ -145,3 +145,30 @@ Criterio de aceptación: `e2e.config.ts` sólo cambia la credencial del alumno.
   defecto real, y se verificó con el código viejo, no con una opinión.
 - **2026-10-19 — La corrida completa:** 15 de 15 en 6 archivos, 20 llamadas al modelo, 81 mil
   tokens, 54 segundos. Sin reintentos, que era la condición de cierre del Tramo 2.
+
+- **2026-10-19 — Segundo defecto del corredor: el día de cada clase.** El modelo respondió
+  `ASSERTION_INCONCLUSIVE` y dijo por qué: el día vive en la **columna** de la rejilla, y una
+  posición no está en el árbol de accesibilidad. Un lector de pantalla oía los siete encabezados
+  de día y luego una lista plana de clases sin poder saber cuál era cuál. Es WCAG 1.3.1
+  (Información y relaciones) y el barrido axe-core no lo detecta, porque las reglas de axe no
+  miran la semántica de una rejilla propia. Ahora la columna es un grupo etiquetado, el bloque
+  dice su día, y el encabezado dice "Día Lunes" en vez de "Día L".
+- **2026-10-19 — La depuración de dependencias.** `lucide-svelte` estaba **deprecado** ("please
+  use @lucide/svelte instead"): 20 archivos migrados y seis iconos renombrados, con el path
+  SVG de cada uno comparado para comprobar que es **el mismo dibujo** y no otro glifo. El resto
+  del toolchain subió a la última versión (SvelteKit 3.1.0, Svelte 5.57.2, Vite 8.3.4, Vitest
+  5.0.5, Playwright 1.64.1, wrangler 4.151.1, el SDK de IA 7.0.143, y el tipo compartido de
+  iconos pasó de `typeof Icon` a `LucideIcon`, que es el tipo de un icono). **TypeScript 7.0.2
+  volvió atrás**: SvelteKit lee el tsconfig con `ts.readConfigFile(file, ts.sys.readFile)` y el
+  port nativo no tiene `ts.sys`, así que `svelte-kit sync` —y con él el build— moría con
+  "Cannot read properties of undefined". Un compilador mayor es una migración, no una
+  actualización de dependencia.
+- **2026-10-19 — El carril era intermitente, y ya no.** La reparación del shim sólo funciona
+  cuando la respuesta tiene **exactamente** tantas claves como pide el esquema, así que un
+  campo que el test no asserta es un campo que el modelo puede omitir y la corrida falla por un
+  motivo que no tiene que ver con la página. Se quitaron los campos que nadie assertaba, la
+  extracción del horario pasó a localizadores más un juicio, y el resultado son tres
+  corridas seguidas de 15 de 15.
+- **2026-10-19 — La base verificada**: `main` local, `origin/main` y `codeberg/main` están en
+  `48e20d6`, sin divergencia en ninguna dirección, y los trece SHA citados en los planes de
+  esta rama existen.
