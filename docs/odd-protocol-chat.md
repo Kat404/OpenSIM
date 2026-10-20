@@ -129,9 +129,3 @@ A closed task reports, in this order:
 - the **Risk line**: `Risk: item N (reason)` or `Risk: none`, numbered against the High Risk table. Before writing `Risk: none`, check whether the change modifies something existing behavior the request did not mention also relies on (shared options, parsers, helpers, schema); if it does, that is item 3.
 
 When proof is partial, blocked, unavailable, or exhausted, say so as one "needs your decision" result naming what is missing — never present it as success, and never generate more verification to paper over it.
-
-## References
-
-- `docs/odd-protocol.md` — the full-runtime skill; same classification, triggers, and non-negotiables, with the real mechanism column.
-- Installed `gentle-orchestrator` agent contract (managed by `gentle-ai`) — the authority both skills mirror.
-- `AGENTS.md` — project execution rules and `just` recipes, for sessions that do have a repository.
