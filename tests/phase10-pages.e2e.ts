@@ -56,10 +56,13 @@ describe("temario — explicit coverage", { tags: ["temario"] }, () => {
 		const coverage = await agent.extract(
 			"the coverage summary at the top of the page: how many subjects have a published syllabus, how many subjects the plan has in total, and the subtopic count if one is shown",
 			{
+				// Only the two numbers the test asserts. A field the test
+				// does not use is a field the model may leave out, and the
+				// repair only succeeds when the answer has exactly as many
+				// keys as the schema asks for.
 				schema: z.object({
 					withTemario: z.number().int(),
 					total: z.number().int(),
-					subtopics: z.number().int().nullable(),
 				}),
 			},
 		);
@@ -127,8 +130,8 @@ describe("tramites — the double credit gate", { tags: ["tramites"] }, () => {
 		const credits = await agent.extract(
 			"the credit counts shown on the page: the reticular approved credits and the complementary credits",
 			{
+				// Same rule: only what the test asserts.
 				schema: z.object({
-					reticular: z.number().int(),
 					complementary: z.number().int(),
 					complementaryRequired: z.number().int(),
 				}),

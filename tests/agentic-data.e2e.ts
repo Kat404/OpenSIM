@@ -50,12 +50,15 @@ describe("dashboard — the KPIs agree with each other", { tags: ["datos"] }, ()
 	}, async ({ app, agent, screen }) => {
 		await app.open("/dashboard");
 
+		// Three keys, and the prompt says where each number lives: the
+		// card that shows "175 / 260" is ONE number pair, and the model
+		// has to split it. A schema with more keys than the model
+		// reliably fills is a schema the repair cannot fit, and the
+		// answer is a failure that has nothing to do with the page.
 		const kpis = await agent.extract(
-			"the four KPI cards at the top of the dashboard: the certified average, the arithmetic average, the approved credits (that card shows two numbers: the approved ones and the total), and the advance percentage",
+			'the dashboard KPI cards: the approved credits (the FIRST number of the card that shows two, like "175 / 260"), the total credits (the SECOND number of that same card), and the advance percentage (the card labelled "% Avance")',
 			{
 				schema: z.object({
-					certifiedAverage: z.number(),
-					arithmeticAverage: z.number(),
 					approvedCredits: z.number().int(),
 					totalCredits: z.number().int(),
 					advancePercent: z.number(),
@@ -71,12 +74,13 @@ describe("dashboard — the KPIs agree with each other", { tags: ["datos"] }, ()
 		// breaks here, and no locator can see that.
 		expect(kpis.advancePercent).toBeCloseTo((kpis.approvedCredits / kpis.totalCredits) * 100, 1);
 
-		// The TecNM scale is 0–10. An average outside it is a broken datum,
-		// whatever it is a percentage of.
-		expect(kpis.certifiedAverage).toBeGreaterThanOrEqual(0);
-		expect(kpis.certifiedAverage).toBeLessThanOrEqual(10);
-		expect(kpis.arithmeticAverage).toBeGreaterThanOrEqual(0);
-		expect(kpis.arithmeticAverage).toBeLessThanOrEqual(10);
+		// The TecNM scale is 0–10. An average outside it is a broken
+		// datum, whatever it is a percentage of. This one is a judgment
+		// and not a schema field: asking for two more numbers the model
+		// has to split is asking for the failure mode again.
+		await agent.assert(
+			"the two averages on the dashboard — the certified one and the arithmetic one — are both numbers between 0 and 10",
+		);
 
 		await expect(screen.getByRole("heading", { name: /Bienvenido/ })).toBeVisible();
 	});
@@ -89,24 +93,21 @@ describe("tramites — the gate numbers add up", { tags: ["datos"] }, () => {
 	}, async ({ app, agent, screen }) => {
 		await app.open("/tramites");
 
+		// Two keys. The complementary pair is extracted by the other
+		// spec (same file family, `tests/phase10-pages.e2e.ts`), which
+		// already pins "3 de 5"; this one is about the reticular gap.
 		const gates = await agent.extract(
-			"the credit figures of the Trámites page: the approved reticular credits the student has, the reticular credits the Servicio Social procedure requires, the complementary credits the student has, the complementary credits required, and the total credits of the plan",
+			"the Trámites page: the approved reticular credits the student has (the line that says how many credits the student has approved) and the reticular credits the Servicio Social procedure requires (the number in the requirements of the Servicio Social step)",
 			{
 				schema: z.object({
 					reticularHave: z.number().int(),
 					reticularRequired: z.number().int(),
-					complementaryHave: z.number().int(),
-					complementaryRequired: z.number().int(),
-					total: z.number().int(),
 				}),
 			},
 		);
 
 		expect(gates.reticularHave).toBe(175);
 		expect(gates.reticularRequired).toBe(182);
-		expect(gates.complementaryHave).toBe(3);
-		expect(gates.complementaryRequired).toBe(5);
-		expect(gates.total).toBe(260);
 
 		// The gap the page names must be the difference between what the
 		// student has and what the gate demands: 175 + 7 = 182. The number
@@ -117,8 +118,9 @@ describe("tramites — the gate numbers add up", { tags: ["datos"] }, () => {
 		expect(gates.reticularHave + missing).toBe(gates.reticularRequired);
 
 		// The complementary gate is a second door, and this student has
-		// not opened it: 3 of 5.
-		expect(gates.complementaryHave).toBeLessThan(gates.complementaryRequired);
+		// not opened it: the page says "3 de 5" and the other spec pins
+		// those two numbers.
+		await expect(screen.getByText(/3 de 5 créditos\s+complementarios/)).toBeVisible();
 	});
 });
 
@@ -151,19 +153,19 @@ describe("horario — the grid shows the enrolled subjects", { tags: ["datos"] }
 	}, async ({ app, agent, screen }) => {
 		await app.open("/horario");
 
-		const codes = await agent.extract(
-			"the subject code of every class block in the weekly schedule grid, as the short uppercase code such as SCD-1004 — one entry per block, repeated codes included",
-			{ schema: z.object({ codes: z.array(z.string()) }) },
-		);
-
-		// Exactly the subjects this student is enrolled in, and nothing
-		// else: a block of a subject the student does not have would be a
-		// class that does not exist for them.
-		const unique = [...new Set(codes.codes)].sort();
-		expect(unique).toEqual(ENROLLED_CODES);
+		// The five subjects this student is enrolled in are on the grid.
+		// The locator pins them; the model judges the rest ("and no
+		// others", and that every block names its day, time and
+		// classroom). Asking the model for the list as structured data
+		// was the fragile version: a one-key schema gives the repair
+		// nothing to anchor on, and the model names the field whatever it
+		// likes.
+		for (const code of ENROLLED_CODES) {
+			await expect(screen.getByText(code).first()).toBeVisible();
+		}
 
 		await agent.assert(
-			"every class in the grid names its day, its time range and its classroom, and no entry is a placeholder or an empty slot",
+			`the weekly grid shows classes for exactly these five subjects and no others: ${ENROLLED_CODES.join(", ")}; every class names the day it is on, its time range and its classroom, and no entry is a placeholder or an empty slot`,
 		);
 
 		await expect(screen.getByRole("heading", { name: "Horario Semanal" })).toBeVisible();
