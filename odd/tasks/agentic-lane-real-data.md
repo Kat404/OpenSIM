@@ -169,6 +169,11 @@ Criterio de aceptación: `e2e.config.ts` sólo cambia la credencial del alumno.
   motivo que no tiene que ver con la página. Se quitaron los campos que nadie assertaba, la
   extracción del horario pasó a localizadores más un juicio, y el resultado son tres
   corridas seguidas de 15 de 15.
+- **2026-10-19 — Traspaso al cierre de la sesión.** El carril quedó verde y publicado, pero el
+  **Worker no se ha desplegado**: la D1 de producción ya está en `0017` y el código que la usa
+  sigue sin publicar, así que la base y el código están desalineados. Lo pendiente —deploy,
+  credencial del demo público, los cuatro atajos `ponytail:` y el merge de los PR #8 y #9— está
+  en `odd/tasks/delivery-handoff-2026-10-19.md`.
 - **2026-10-19 — La base verificada**: `main` local, `origin/main` y `codeberg/main` están en
   `48e20d6`, sin divergencia en ninguna dirección, y los trece SHA citados en los planes de
   esta rama existen.
