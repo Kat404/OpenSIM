@@ -23,6 +23,7 @@ import {
 	Network,
 	PencilLine,
 	ScrollText,
+	UserRound,
 } from "@lucide/svelte";
 import { page } from "$app/state";
 
@@ -44,6 +45,10 @@ const items: NavItem[] = [
 	{ label: "Reinscripción", href: "/reinscripcion", Icon: PencilLine },
 	{ label: "Trámites", href: "/tramites", Icon: FileText },
 	{ label: "Temario", href: "/temario", Icon: BookOpenText },
+	// S6: the student's own general data, in cards. The last entry of
+	// the nav because it is the one page nobody navigates TO for a
+	// task — it is where you go to look yourself up.
+	{ label: "Perfil", href: "/perfil", Icon: UserRound },
 ];
 
 interface Props {
