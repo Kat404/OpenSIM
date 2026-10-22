@@ -158,7 +158,7 @@ Decisiones cerradas aquí (para que ningún worker las reabra):
 | `pnpm exec playwright test tests/e2e/dashboard-layout.spec.ts` (RED, código base) | **3 rojos**: el botón cruzaba el borde de la tarjeta por 34px (expandido) y 28px (colapsado); el estado vacío no estaba en la columna de clases |
 | el mismo spec (GREEN, con el arreglo) | **3 verdes** × 3 proyectos de navegador |
 | `just qa-fast` | verde — `svelte-check` 0/0, biome 171 archivos con 6 avisos **preexistentes** en `tests/unit/e2e-structured-output-shim.test.ts`, vitest 387/387 |
-| `just test-e2e` | **192 verdes, 0 rojos**, 160 saltados (la suite de solapamiento de avatar, que por diseño corre sólo en su proyecto) |
+| `just test-e2e` | **198 verdes, 0 rojos**, 160 saltados (la suite de solapamiento de avatar, que por diseño corre sólo en su proyecto) |
 
 Tres correcciones de arnés que hicieron falta (no eran defectos del producto, sino pruebas que
 hablaban antes de que la página hidratara):
@@ -177,6 +177,32 @@ Un hallazgo lateral, **preexistente y no tocado**: el botón de colapsar la barr
 al fondo de una barra tan alta como el documento, así que en una página que scrollea hay que
 bajar hasta el final para llegar a él. Se verificó en el árbol base (sin estos cambios) que el
 botón sí funciona cuando se alcanza.
+
+## Revisión independiente
+
+`gentle-ai-verify` sobre `b5a69cc..29c2560` (diff de 22 archivos, +1300/−33), con copia
+aislada en `/tmp` y `git status` limpio antes y después. **Sin bloqueantes.** Veredicto por
+spec: S1 met, S2 met, S3 met, S4 met (por código; la animación en navegador quedó sin
+verificar en esa pasada), S5 met, S6 met, S7 met (documentos).
+
+Lo que la revisión encontró, y qué se hizo con cada cosa:
+
+| # | Hallazgo | Decisión |
+| --- | --- | --- |
+| F1, F2 | `max-width: 100%` en todo `Button` y `flex-wrap`/`min-width: 0` en todo pie de `Card` tocan componentes compartidos | **Revisado y aceptado**: el HTML SSR de `Button` y `Card` sale **byte a byte idéntico** al de la base (mismo nombre accesible), el prop `wrap` sólo añade la clase `btn--wrap` y no filtra ningún atributo al DOM, y los 21 call sites se enumeraron uno por uno |
+| F3 | Posible interbloqueo entre `onNavigate` y `startViewTransition` | **Descartado con prueba**: con el código desplegado contra un DOM simulado, la navegación queda bloqueada hasta que el callback resuelve, y el callback espera a `navigation.complete`. Sin interbloqueo |
+| F4 | En una navegación que descarga el documento, `navigation.complete` nunca resuelve: el callback queda colgado y el snapshot viejo se queda en pantalla | **Corregido**: `PageTransition.svelte` salta la transición cuando `navigation.willUnload` |
+| F5 | `view-transition-name` crea bloque contenedor para los descendientes `position: fixed` | **Aceptado**: el único `position: fixed` es el `Toast`, que sólo se usa en `/design-system`, fuera del layout protegido |
+| F6 | El `<div>` nuevo dentro de `<main>` | **Descartado**: ningún selector del repo depende de los hijos directos de `main` |
+| F7 | `tabIndex=0` en la rejilla de horario mete un nuevo punto de tabulación | **Aceptado**: es lo que pide WCAG 2.1.1 para una región con scroll propio |
+| F8 | El comando de setup del `justfile` documentaba la forma SCP de Codeberg, no la `ssh://` que está configurada (y que el mantenedor pidió) | **Corregido**: la receta documenta la forma `ssh://` |
+| F9 | La cifra "28 px" del desbordamiento colapsado | **La cifra del documento es correcta**: 28.19 px contra el borde de contenido; el cálculo de la revisión comparó las posiciones de los dos botones en vez de los bordes |
+| F10 | S4 no tenía prueba de navegador | **Corregido**: `tests/e2e/page-transition.spec.ts` espía `document.startViewTransition` antes de que corra el script de la app y comprueba que una navegación desde el menú lateral **sí** pide transición, y que con `prefers-reduced-motion: reduce` **no** la pide (y la navegación ocurre igual) |
+
+Las pruebas de regresión que propuso la revisión y que **no** se escribieron (no eran
+bloqueantes y las specs de e2e ya cubren el comportamiento observable): render SSR
+byte-a-byte de `Button`/`Card`, la prueba de orden con DOM simulado, la aserción de que la
+oferta sigue teniendo 50 filas, y la prueba de la frontera de PII del layout.
 
 ## Log
 

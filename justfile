@@ -21,7 +21,7 @@ install:
 # `origin` carries TWO push URLs (GitHub + Codeberg), so ONE push reaches
 # both remotes. Set them up once per clone with:
 #   git remote set-url --add --push origin git@github.com:Kat404/OpenSIM.git
-#   git remote set-url --add --push origin git@codeberg.org:Kat404/OpenSIM.git
+#   git remote set-url --add --push origin ssh://git@codeberg.org/Kat404/OpenSIM.git
 # Without them the push only reaches GitHub and Codeberg drifts behind.
 # Run after every PR merge or when you want Codeberg to catch up.
 push-mirror:

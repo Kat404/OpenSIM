@@ -23,6 +23,10 @@ let { children }: Props = $props();
 
 onNavigate((navigation) => {
 	if (resolveTransitionMode(readTransitionEnvironment()) === "skip") return;
+	// A navigation that unloads the document never resolves
+	// `navigation.complete`, so the transition callback would hang and
+	// the old snapshot would stay on screen until the page goes away.
+	if (navigation.willUnload) return;
 
 	return new Promise<void>((resolve) => {
 		document.startViewTransition(() => {
