@@ -166,7 +166,7 @@ function rowMeta(g: OfferGroup): string {
 		forbids nesting, and the browser would otherwise drop one of them.
 	-->
 	<div class="simulator">
-		<aside class="simulator__filter">
+		<aside class="simulator__filter" data-testid="filter-panel">
 			<!--
 				`areas` is empty by construction, not by accident:
 				`subjects.area` is NULL for all 68 subjects (H4), so the
@@ -210,7 +210,13 @@ function rowMeta(g: OfferGroup): string {
 				{#if groups.length === 0}
 					<p class="simulator__empty">No hay grupos que coincidan con los filtros.</p>
 				{:else}
-					<ul class="simulator__list">
+					<!--
+						S3: the page of ~50 groups no longer stretches the
+						document. The list is a scroll box of its own
+						(`.simulator__list`), so it is traversed inside
+						its column instead of pushing the page down.
+					-->
+					<ul class="simulator__list" data-testid="offer-list">
 						{#each groups as g (g.groupId)}
 							{@const conflicts = allConflictIds.has(g.groupId)}
 							<li class="simulator__row" class:simulator__row--conflict={conflicts}>
@@ -262,7 +268,7 @@ function rowMeta(g: OfferGroup): string {
 			</section>
 
 			<section class="simulator__preview" aria-label="Vista previa del horario">
-				<header class="simulator__preview-header">
+				<header class="simulator__preview-header" data-testid="selection-summary">
 					<h2 class="simulator__preview-title">Carga actual</h2>
 					<Badge variant="neutral" size="sm">
 						{selectionCount} {selectionCount === 1 ? "grupo" : "grupos"} ·
@@ -319,6 +325,13 @@ function rowMeta(g: OfferGroup): string {
 }
 
 .simulator__filter {
+	/* S3: the filter stays reachable while the page scrolls (the offer
+	   list scrolls inside its own column, the page still scrolls to the
+	   schedule). `align-self: start` keeps the item at its content height
+	   so `position: sticky` has room to travel. */
+	position: sticky;
+	top: var(--space-4);
+	align-self: start;
 	min-width: 0;
 }
 
@@ -389,9 +402,18 @@ function rowMeta(g: OfferGroup): string {
 	list-style: none;
 	margin: 0;
 	padding: 0;
+	/* S3: the offer of a full page (~50 groups) no longer pushes the
+	   document down — the list scrolls inside its own column. The cap is
+	   a fraction of the viewport so the page stays around two screens
+	   tall at 1440x900. */
+	max-height: min(55dvh, 680px);
+	overflow-y: auto;
 }
 
 .simulator__row {
+	/* The list is a scroll box: rows keep their natural height instead
+	   of being squeezed into the capped container. */
+	flex-shrink: 0;
 	background-color: var(--surface-1);
 	border: 1px solid var(--border-subtle);
 	border-radius: var(--radius-2);
