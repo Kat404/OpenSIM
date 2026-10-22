@@ -88,6 +88,15 @@ function fmtAverage(value: number): string {
 	<div class="dashboard__grid">
 		<div class="dashboard__today">
 			<TodayClasses classes={data.todayClasses} dayLabel={data.dayLabel} />
+
+			{#if !data.hasEnrollment}
+				<div class="dashboard__enroll-hint">
+					<EmptyState
+						title="Aún no tienes inscripción activa"
+						description="Cuando completes tu proceso de reinscripción, aquí verás tus clases del día en vivo."
+					/>
+				</div>
+			{/if}
 		</div>
 
 		<div class="dashboard__cta">
@@ -118,7 +127,7 @@ function fmtAverage(value: number): string {
 					</p>
 					{#snippet footer()}
 						<form method="POST" action="/api/export/carga">
-							<Button type="submit" variant="secondary" size="md">
+							<Button type="submit" variant="secondary" size="md" wrap>
 								{#snippet startIcon()}
 									<FileDown size={16} strokeWidth={1.75} aria-hidden="true" />
 								{/snippet}
@@ -139,7 +148,7 @@ function fmtAverage(value: number): string {
 				</p>
 				{#snippet footer()}
 					<form method="POST" action="/login/logout-all">
-						<Button type="submit" variant="secondary" size="md">
+						<Button type="submit" variant="secondary" size="md" wrap>
 							{#snippet startIcon()}
 								<ShieldOff size={16} strokeWidth={1.75} aria-hidden="true" />
 							{/snippet}
@@ -148,15 +157,6 @@ function fmtAverage(value: number): string {
 					</form>
 				{/snippet}
 			</Card>
-
-			{#if !data.hasEnrollment}
-				<div class="dashboard__enroll-hint">
-					<EmptyState
-						title="Aún no tienes inscripción activa"
-						description="Cuando completes tu proceso de reinscripción, aquí verás tus clases del día en vivo."
-					/>
-				</div>
-			{/if}
 		</div>
 	</div>
 </section>
@@ -229,11 +229,15 @@ function fmtAverage(value: number): string {
 .dashboard__grid {
 	display: grid;
 	grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+	align-items: start;
 	gap: var(--space-4);
 }
 
 .dashboard__today {
 	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
 }
 
 .dashboard__cta {
