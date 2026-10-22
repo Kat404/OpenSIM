@@ -83,9 +83,10 @@ de una corrida anterior no autoriza la siguiente, y "el plan lo pedía" tampoco.
 
 Además, dos recetas más son remotas aunque no destruyan nada: `just logs`
 (`wrangler tail`, los logs de producción del Worker desplegado) y `just push-mirror`
-(`git push origin main`, que publica en GitHub **y** en Codeberg). Piden autorización
-en los mismos términos. El resto de las recetas es local — pero la lista real es
-`just --list`, no esta frase.
+(`git push origin main`, que publica en GitHub **y** en Codeberg porque `origin` lleva
+dos push URLs — uno por remoto; sin ellos la publicación se queda en GitHub).
+Piden autorización en los mismos términos. El resto de las recetas es local — pero la lista
+real es `just --list`, no esta frase.
 
 El D1 que hay en producción es de pruebas/demo, para que alguien pueda ver OpenSIM
 funcionando sin instalarlo; no está diseñado para crecer. Esa es también la razón
