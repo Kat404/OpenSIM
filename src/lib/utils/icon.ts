@@ -14,7 +14,7 @@
  * `SvelteComponentTyped` with strict prop / event / slot generics, and
  * re-declaring a permissive `Component<Props, ...>` shape did not match
  * those generics (the audit, L2 Round 4, hit this in
- * `TodayClasses.svelte` and the horario empty state). Using the package's
+ * `WeekClasses.svelte` and the horario empty state). Using the package's
  * own type keeps every icon assignment passing without a cast.
  *
  * Consumers that need to pass any lucide icon use this type as the

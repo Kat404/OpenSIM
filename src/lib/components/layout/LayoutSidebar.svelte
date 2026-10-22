@@ -23,6 +23,7 @@ import {
 	Network,
 	PencilLine,
 	ScrollText,
+	UserRound,
 } from "@lucide/svelte";
 import { page } from "$app/state";
 
@@ -44,6 +45,10 @@ const items: NavItem[] = [
 	{ label: "Reinscripción", href: "/reinscripcion", Icon: PencilLine },
 	{ label: "Trámites", href: "/tramites", Icon: FileText },
 	{ label: "Temario", href: "/temario", Icon: BookOpenText },
+	// S6: the student's own general data, in cards. The last entry of
+	// the nav because it is the one page nobody navigates TO for a
+	// task — it is where you go to look yourself up.
+	{ label: "Perfil", href: "/perfil", Icon: UserRound },
 ];
 
 interface Props {
@@ -130,6 +135,15 @@ function isActive(href: string, pathname: string): boolean {
 	font-family: var(--font-sans);
 	transition: width var(--motion-duration-base) var(--motion-ease-standard);
 	flex-shrink: 0;
+	/* The column is as tall as the DOCUMENT, so its toggle — at the
+	   bottom of it — could only be reached by scrolling to the very
+	   end of the page. It sticks to the viewport instead and keeps its
+	   own height, so the toggle stays where the eye is. */
+	position: sticky;
+	top: 0;
+	align-self: flex-start;
+	height: 100dvh;
+	overflow-y: auto;
 }
 
 .sidebar--collapsed {

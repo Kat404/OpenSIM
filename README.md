@@ -159,6 +159,19 @@ controlNumber: 99999999
 password:      opensim-dev-2026
 ```
 
+**That password is the fallback, not the truth.** `src/lib/server/db/seed-password.ts`
+resolves it as *positional argument → `OPENSIM_TEST_PASSWORD` → the value in `.env` → this
+default*, and it loads `.env` **before** the check that refuses the default on the remote
+target. So when your `.env` sets `OPENSIM_TEST_PASSWORD`, that is the password the seeder
+writes — locally **and** in the deployed Worker, whose demo answers to it. The remote guard
+only fires when the environment carries no password at all.
+
+Check what the seeder actually wrote before trusting a login:
+
+```bash
+just db-set-password        # prints "Password: ******** (not echoed)"
+```
+
 Two control numbers exist and they are **not** interchangeable:
 
 | Number | What it is | Survives `db:seed`? |
@@ -181,7 +194,9 @@ OPENSIM_TEST_CONTROL_NUMBER=12345678 OPENSIM_TEST_PASSWORD=… just db-set-passw
 ```
 
 DO NOT use these credentials in any deployed environment. `db-set-password-remote` refuses
-the default password outright.
+the default password outright — but only when the environment does not already carry one,
+so a `.env` with `OPENSIM_TEST_PASSWORD` reaches the remote database without the guard
+ever firing.
 
 ## Demo data
 

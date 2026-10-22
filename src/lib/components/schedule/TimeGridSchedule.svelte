@@ -17,6 +17,7 @@
 <script lang="ts">
 import { getSubjectColor } from "#lib/utils/color";
 import { getTheme } from "#lib/utils/theme.svelte";
+import { DAY_NAME } from "#lib/utils/time";
 import ClassBlock, { type ScheduleBlock, type ScheduleSubject } from "./ClassBlock.svelte";
 
 // The loader tags each block with a day-letter so we can group
@@ -46,17 +47,9 @@ const DAY_LETTERS = ["L", "M", "X", "J", "V", "S", "D"] as const;
  * "Día L" tells a screen reader nothing about which day it is, and
  * the block's own label did not carry the day either — the day lived
  * only in the column's position, which is not in the accessibility
- * tree.
+ * tree. The names live in `#lib/utils/time` now, next to the
+ * `DayLetter` type they belong to.
  */
-const DAY_NAME: Record<string, string> = {
-	L: "Lunes",
-	M: "Martes",
-	X: "Miércoles",
-	J: "Jueves",
-	V: "Viernes",
-	S: "Sábado",
-	D: "Domingo",
-};
 const DAY_INDEX: Record<string, DayLetter> = {
 	L: "L",
 	M: "M",

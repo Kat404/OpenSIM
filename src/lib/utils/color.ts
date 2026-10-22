@@ -34,7 +34,7 @@
  * lightness fixes that — a mid-grey only clears AA against a near-white
  * or near-black background, never against S=60% at any L. The places it
  * is currently safe (hour labels, list headers, the swatch-less rows in
- * `TodayClasses.svelte`) sit on `--surface-1`, not on this color.
+ * `WeekClasses.svelte`) sit on `--surface-1`, not on this color.
  * `SubjectNode.svelte:118` is the exception: it fills `.node__meta` with
  * `--fg-tertiary` on top of this exact background, on `/reticula`. It is
  * not reported by the axe specs today, and it is not fixable from this

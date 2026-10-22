@@ -10,6 +10,13 @@ interface Props extends HTMLButtonAttributes {
 	size?: Size;
 	loading?: boolean;
 	fullWidth?: boolean;
+	/**
+	 * Let the label wrap on more than one line instead of pushing the
+	 * button out of its container. A card footer is a flex row, and a
+	 * flex row cannot shrink a `nowrap` label: the long labels ("Cerrar
+	 * sesión en todos los dispositivos") used to overflow their card.
+	 */
+	wrap?: boolean;
 	children?: Snippet;
 	startIcon?: Snippet;
 	endIcon?: Snippet;
@@ -20,6 +27,7 @@ let {
 	size = "md",
 	loading = false,
 	fullWidth = false,
+	wrap = false,
 	disabled,
 	type = "button",
 	children,
@@ -36,6 +44,7 @@ const isDisabled = $derived(loading || disabled);
 	{type}
 	class="btn btn--{variant} btn--{size}"
 	class:btn--full={fullWidth}
+	class:btn--wrap={wrap}
 	class:btn--loading={loading}
 	disabled={isDisabled}
 	aria-busy={loading ? "true" : undefined}
@@ -148,6 +157,37 @@ const isDisabled = $derived(loading || disabled);
 
 .btn--full {
 	width: 100%;
+}
+
+/* A long label must wrap instead of pushing the button out of its
+	 container: the flex row of a card footer cannot shrink a `nowrap`
+	 label, so the label wraps and the button grows taller instead. */
+.btn--wrap {
+	white-space: normal;
+	height: auto;
+	text-align: center;
+	/* The cap belongs to the wrapping button only: capping a `nowrap`
+	   one would leave its label spilling out of its own border. */
+	max-width: 100%;
+}
+
+.btn--wrap.btn--sm {
+	min-height: 28px;
+	padding-block: 0;
+}
+
+.btn--wrap.btn--md {
+	min-height: 36px;
+	padding-block: var(--space-1);
+}
+
+.btn--wrap.btn--lg {
+	min-height: 44px;
+	padding-block: var(--space-2);
+}
+
+.btn__label {
+	min-width: 0;
 }
 
 .btn--loading .btn__label {

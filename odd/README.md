@@ -3,19 +3,25 @@
 <!-- odd-tracker
 kind: index
 status: active
-last-verified: 2026-10-19
-reconciled-against: feat/agentic-lane-real-data@2e40013 (main@48e20d6) — delivery state; the phase rows below still describe the 2026-10-10 pass
+last-verified: 2026-10-22
+reconciled-against: feat/ui-ux-dashboard-perfil@4a4cf7c (main@b5a69cc) — delivery state; the phase rows below still describe the 2026-10-10 pass
 sha-warning: los SHA ffcd595, 8f40837, 6ca7c12 y b3fef41 citados en el cuerpo de este archivo predicen la reescritura de firmas GPG del 2026-10-08 y están MUERTOS; los SHA vivos verificados con `git cat-file -e` son 18de1a5, b6a1d8a, 159b2bc, 2ac464f, fee9d60, 13f4d7a, 4460f27, 17e013b, db258a8, a799d47, a3621f7, c22d05c, 639a663 y c49caea
 -->
 
 OpenSIM (Open Source — Sistema Integral Modular) reached **Phase 7 complete**. The build,
 the WCAG audit, the U1–U4 polish cycle and the hardening cycle are all closed and recorded
 with commit SHAs. **Phase 9 (curriculum data foundation) is the active phase: T9.1–T9.9 are
-closed and T9.10–T9.14 are open.** Production D1 was at migration `0009` when this index was
-last reconciled; it is now at **`0017`** (verified 2026-10-19), and the Phase 9+ commits are
-published in two branches with two open PRs. This file is the index; `tasks/opensim.md` is the
-canonical spec.
+closed and T9.10–T9.14 are open.** Production D1 is at migration **`0017`** (verified
+2026-10-19). This file is the index; `tasks/opensim.md` is the canonical spec.
 
+> **Reconciled 2026-10-22 — delivery.** PR **#8** and **#9** are **merged** (`main` = `b5a69cc`),
+> both remotes carry that commit, and the **Worker was deployed twice on 2026-10-22** (15:47 and
+> 15:50) with a build that already includes both PRs. The public demo credential and the four
+> `ponytail:` shortcuts are still open decisions. Read
+> **`tasks/delivery-handoff-2026-10-19.md`** for what is still pending — it wins over this index
+> wherever they disagree — and **`tasks/ui-ux-dashboard-perfil.md`** for the 2026-10-22 UI unit
+> (dashboard, `/perfil`, page transitions, reinscripción scroll, `push-mirror`).
+>
 > **Reconciled 2026-10-19 — delivery.** The 14 live findings of the ledger are **closed and
 > independently verified** (`tasks/findings-remediation.md`, 31 boxes checked, 0 open). The two
 > branches are published to GitHub **and** Codeberg with PR **#8** (`chore/findings-closure` →
@@ -41,12 +47,12 @@ canonical spec.
 | Question | Answer |
 | --- | --- |
 | **What is done?** | Phases 1, 2, 3, 4.0, 4, 5, 6, 6.1, 6.2, 6.5, 7, 8 (a11y dark-theme contrast), and in Phase 9: **T9.1–T9.9**. T9.5 shipped inside T9.7; T9.8 shipped inside T9.7 too, as a rebuild. |
-| **What is open?** | **Delivery, not development.** The 14 live findings are closed and verified; what is open is the **Worker deploy to production**, the public demo credential, the four `ponytail:` shortcuts (findings 16–19, awaiting a maintainer owner), and the merge of PR #8 → #9. Phase 9 T9.10–T9.14 remain open but unblocked. B4 (PII in GitHub refs) is still pending and it depends on GitHub Support, not on the plan. |
-| **What is next?** | **Deploy the Worker** — see `tasks/delivery-handoff-2026-10-19.md`. After that: the demo credential decision, then merge #8 and #9 in that order. (T9.12 — the temario detail — is the next *feature*, still blocked on an operator decision, not on data.) |
-| **Pushed?** | **Yes — the delivery branches, not `main`.** `main` is still `48e20d6`; nothing is merged. `chore/findings-closure` (`d8affb9`, 14 commits) and `feat/agentic-lane-real-data` (`2e40013`) are published to **GitHub and Codeberg**, with PR **#8** and **#9** open. `just push-mirror` does **not** mirror: `origin` has one push URL (GitHub) and `codeberg` is a separate remote that must be pushed to explicitly. |
+| **What is open?** | **Delivery, not development.** The 14 live findings are closed and verified; PR #8 and #9 are merged and the Worker is deployed. What is open is the **public demo credential** (the remote `99999999` has zero progress rows), the four `ponytail:` shortcuts (findings 16–19, awaiting a maintainer owner), and the merge of the 2026-10-22 UI branch (`feat/ui-ux-dashboard-perfil`). Phase 9 T9.10–T9.14 remain open but unblocked. B4 (PII in GitHub refs) is still pending and it depends on GitHub Support, not on the plan. |
+| **What is next?** | **Merge the UI unit** — `feat/ui-ux-dashboard-perfil` (5 work-unit commits: `de9257e`, `0f28d5a`, `4dac011`, `5add821`, `4a4cf7c`) after its review. Then: the demo credential decision, and the four `ponytail:` shortcuts. (T9.12 — the temario detail — is the next *feature*, still blocked on an operator decision, not on data.) |
+| **Pushed?** | **Yes — `main` is on both remotes.** `main` = `b5a69cc` (PR #8 and #9 merged) and `git ls-remote` confirms `origin` and `codeberg` point at the same commit. `just push-mirror` publishes to both **because `origin` carries two push URLs** (`git@github.com:Kat404/OpenSIM.git` and `ssh://git@codeberg.org/Kat404/OpenSIM.git`); a clone without them publishes only to GitHub, and the recipe says so. |
 | **Signed?** | **Yes — everything.** 126/126 `G` on `main`, 143/143 `G` on the local feature branch at the last measurement, GPG key `3335F4A0D9DBBA95`. Verified with `git log <ref> --format='%G?' \| sort \| uniq -c`. Treat the branch figure as a lower bound: the branch was still advancing while this file was written. Every SHA changed in the 2026-10-08 rewrite, so older SHAs cited anywhere in `odd/` are dead. |
-| **Production data?** | **Migration `0017` applied** (verified 2026-10-19, after the `0015`–`0017` run): 68 subjects, 32 `subject_units`, 475 course groups, 49 `student_progress` rows, 3 complementary activities (3 credits), and `subject_aliases` dropped by `0017` — no rows lost. The remote `student_credentials` holds **only `99999999`** (the placeholder, zero progress rows); `12345678` — the student that owns the 49 progress rows — has **no remote credential**. The Worker still serves the **old build**: the base is at `0017` and the code is not deployed. |
-| **Green?** | `pnpm vitest run` re-measured 2026-10-10: **305/305, 18 files, 1.44 s**. `pnpm check` **not re-run** in that pass — `NOT VERIFIED` there. Teacher names → **0** occurrences in any blob or reachable commit; the seed emits `DOC-001`…`DOC-007`. The Playwright suite was **not run** in that pass — `NOT VERIFIED`; commit `c49caea` reports `test-e2e` 274 and `test-e2e-avatar` 81 green. |
+| **Production data?** | **Migration `0017` applied** (verified 2026-10-19, after the `0015`–`0017` run): 68 subjects, 32 `subject_units`, 475 course groups, 49 `student_progress` rows, 3 complementary activities (3 credits), and `subject_aliases` dropped by `0017` — no rows lost. The remote `student_credentials` holds **only `99999999`** (the placeholder, zero progress rows); `12345678` — the student that owns the 49 progress rows — has **no remote credential**. The remote credential's password is `OPENSIM_TEST_PASSWORD` from the local `.env`, **not** the `opensim-dev-2026` the README documents (verified by recomputing PBKDF2 against the stored hash). The Worker was deployed on 2026-10-22 (15:47 and 15:50) with a build that includes PR #8 and #9; the 2026-10-22 UI branch is **not** deployed. |
+| **Green?** | `pnpm vitest run` re-measured 2026-10-22: **387/387, 26 files**. `just qa-fast` green the same day (svelte-check 0/0, biome 171 files with 6 pre-existing warnings in `tests/unit/e2e-structured-output-shim.test.ts`). `just test-e2e`: **192 passed, 0 failed**, 160 skipped (the avatar-overlap suite, which by design runs only in its own project). |
 
 ## Phase table
 
