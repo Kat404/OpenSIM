@@ -31,6 +31,14 @@ This runs the `drizzle-kit` codegen against the schema. The output is a single n
 
 `drizzle-kit generate` does **not** touch the database. It is pure codegen.
 
+**When the codegen cannot express the change, write the migration by hand — and say so in
+the file.** Two migrations already are: `0016_activity_credit_weight.sql` (a rebuild whose
+nullable column drizzle's SQLite convertor cannot produce, and whose `PRAGMA foreign_keys=OFF`
+D1 ignores) and `0017_drop_subject_aliases.sql` (a plain `DROP TABLE`, written by hand because
+the snapshot the codegen diffs against predated the hand-written 0015 and 0016, so it proposed
+re-doing 0016's rebuild as well). A hand-written file keeps the descriptive name the repo uses
+and carries its own comment saying why.
+
 ### 3. Apply the migration to local D1
 
 ```bash
@@ -47,7 +55,7 @@ The local D1 is Miniflare state at `.wrangler/state/v3/d1`; treat it as disposab
 just db-seed        # pnpm run db:seed → tsx src/lib/server/db/seed.ts && wrangler d1 execute --local --file=./src/lib/server/db/seed.sql
 ```
 
-The seed script reads the curriculum JSON and emits `src/lib/server/db/seed.sql` with `INSERT OR IGNORE` batches for `careers`, `specialties`, `subjects`, `subject_aliases`, and `subject_prerequisites`. The file is then applied through `wrangler d1 execute --file` — the only place in the project where `--file` is the right tool, because every line is an `INSERT`.
+The seed script reads the curriculum JSON and emits `src/lib/server/db/seed.sql` with `INSERT OR IGNORE` batches for `careers`, `specialties`, `subjects`, and `subject_prerequisites`. The file is then applied through `wrangler d1 execute --file` — the only place in the project where `--file` is the right tool, because every line is an `INSERT`.
 
 `seed.sql` does **not** touch `student_profiles`, `student_credentials`, or `auth_sessions`. Auth provisioning is a separate step (see below).
 
@@ -158,7 +166,7 @@ Do not rewrite a committed `drizzle/00xx_*.sql` file just to make it apply clean
 
 ### Mixing concerns in `seed.sql`
 
-`src/lib/server/db/seed.sql` contains only the academic catalog (42 subjects, prerequisites, aliases, careers, specialties). It must not contain auth rows: provisioning credentials and sessions is a separate, gated operation via `pnpm run db:set-password`.
+`src/lib/server/db/seed.sql` contains only the academic catalog (68 subjects, prerequisites, careers, specialties). It must not contain auth rows: provisioning credentials and sessions is a separate, gated operation via `pnpm run db:set-password`.
 
 ---
 

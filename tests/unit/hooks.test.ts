@@ -20,6 +20,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { handle } from "../../src/hooks.server";
 import {
+	clearSessionCookieOptions,
 	createSession,
 	SESSION_COOKIE_NAME,
 	SESSION_MAX_AGE_SECONDS,
@@ -155,7 +156,9 @@ describe("handle — stale cookie handling", () => {
 		expect(event.cookies.ops).toContainEqual({
 			type: "delete",
 			name: SESSION_COOKIE_NAME,
-			options: { path: "/" },
+			// The shared options, not a hand-rolled `{ path: "/" }`: the
+			// two places that clear this cookie must not drift apart.
+			options: clearSessionCookieOptions,
 		});
 		expect(event.cookies.entries()).not.toHaveProperty(SESSION_COOKIE_NAME);
 		// Best-effort prune actually reached D1.

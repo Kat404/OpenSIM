@@ -14,11 +14,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import {
-	annotateConflicts,
-	type ConflictBlock,
-	findConflicts,
-} from "../../src/lib/utils/schedule-conflict";
+import { type ConflictBlock, findConflicts } from "../../src/lib/utils/schedule-conflict";
 
 describe("findConflicts", () => {
 	it("returns an empty set when the candidate list is empty", () => {
@@ -142,36 +138,5 @@ describe("findConflicts", () => {
 			{ id: "e1", day: "L", startTime: "08:00", endTime: "10:00" },
 		];
 		expect(findConflicts(candidate, existing).has("c1")).toBe(true);
-	});
-});
-
-describe("annotateConflicts", () => {
-	it("attaches hasConflict: true only to the conflicting candidates", () => {
-		const candidate: ConflictBlock[] = [
-			{ id: "c1", day: "L", startTime: "09:00", endTime: "11:00" },
-			{ id: "c2", day: "M", startTime: "08:00", endTime: "10:00" },
-		];
-		const existing: ConflictBlock[] = [
-			{ id: "e1", day: "L", startTime: "08:00", endTime: "10:00" },
-		];
-		const annotated = annotateConflicts(candidate, existing);
-		expect(annotated[0]?.hasConflict).toBe(true);
-		expect(annotated[1]?.hasConflict).toBe(false);
-	});
-
-	it("preserves the input order in the output", () => {
-		const candidate: ConflictBlock[] = [
-			{ id: "c1", day: "L", startTime: "08:00", endTime: "10:00" },
-			{ id: "c2", day: "M", startTime: "08:00", endTime: "10:00" },
-			{ id: "c3", day: "X", startTime: "08:00", endTime: "10:00" },
-		];
-		const annotated = annotateConflicts(candidate, []);
-		expect(annotated.map((b) => b.id)).toEqual(["c1", "c2", "c3"]);
-	});
-
-	it("returns an empty array for an empty candidate list", () => {
-		expect(
-			annotateConflicts([], [{ id: "e1", day: "L", startTime: "08:00", endTime: "10:00" }]),
-		).toEqual([]);
 	});
 });

@@ -8,7 +8,7 @@
   data fetching.
 -->
 <script lang="ts">
-import { ArrowRight, FileDown } from "lucide-svelte";
+import { ArrowRight, FileDown, ShieldOff } from "lucide-svelte";
 import KpiCard from "#lib/components/dashboard/KpiCard.svelte";
 import TodayClasses from "#lib/components/dashboard/TodayClasses.svelte";
 import { Button, Card, EmptyState } from "#lib/components/ui";
@@ -128,6 +128,26 @@ function fmtAverage(value: number): string {
 					{/snippet}
 				</Card>
 			{/if}
+
+			<Card padding="lg">
+				{#snippet header()}
+					<h2 class="dashboard__cta-title">Seguridad</h2>
+				{/snippet}
+				<p class="dashboard__cta-text">
+					Si crees que tu cuenta se usó en otro dispositivo, cierra todas las sesiones abiertas.
+					Aquí también tendrás que entrar de nuevo.
+				</p>
+				{#snippet footer()}
+					<form method="POST" action="/login/logout-all">
+						<Button type="submit" variant="secondary" size="md">
+							{#snippet startIcon()}
+								<ShieldOff size={16} strokeWidth={1.75} aria-hidden="true" />
+							{/snippet}
+							Cerrar sesión en todos los dispositivos
+						</Button>
+					</form>
+				{/snippet}
+			</Card>
 
 			{#if !data.hasEnrollment}
 				<div class="dashboard__enroll-hint">

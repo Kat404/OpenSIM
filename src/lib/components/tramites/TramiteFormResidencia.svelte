@@ -2,8 +2,8 @@
   OpenSIM — Residencia Profesional form (Phase 4 Tarea 4.2).
 
   Static form surface. Requires >= 208 CR (80% of 260). Submission
-  is a Phase 5+ concern; for now the form posts to the page's
-  default action which returns a 'Trámite en desarrollo' notice.
+  is a Phase 5+ concern: the form renders disabled, because the
+  page's default action refuses what the flow would have to store.
 -->
 <script lang="ts">
 import { Badge, Button, Card, Input, Select } from "#lib/components/ui";
@@ -11,9 +11,14 @@ import { PROCEDURE_STATE_LABEL } from "#lib/utils/procedure-labels";
 
 interface Props {
 	unlocked: boolean;
+	/**
+	 * The whole form is disabled while the procedure flow does not store
+	 * anything. Set by `ProcedureStepper`, not by the credit thresholds.
+	 */
+	disabled?: boolean;
 }
 
-let { unlocked }: Props = $props();
+let { unlocked, disabled = false }: Props = $props();
 
 const modalityOptions = [
 	{ value: "interna", label: "Empresa privada" },
@@ -33,7 +38,7 @@ const modalityOptions = [
 		</div>
 	{/snippet}
 
-	<fieldset class="form" disabled={!unlocked}>
+	<fieldset class="form" disabled={!unlocked || disabled}>
 		<Input
 			label="Empresa o institución"
 			placeholder="Tecnológico Nacional de México — Morelia"
@@ -68,11 +73,11 @@ const modalityOptions = [
 				rows="5"
 				placeholder="Migrar 12 GB de datos..."
 				name="objective"
-				disabled={!unlocked}
+				disabled={!unlocked || disabled}
 			></textarea>
 		</label>
 
-		<Button type="submit" variant="primary" size="md" disabled={!unlocked}>
+		<Button type="submit" variant="primary" size="md" disabled={!unlocked || disabled}>
 			Enviar solicitud
 		</Button>
 	</fieldset>

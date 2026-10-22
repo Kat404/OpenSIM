@@ -17,7 +17,7 @@
 <script lang="ts">
 import { CheckCircle2, Lock } from "lucide-svelte";
 import { Badge, Card, ProgressBar, type Step, Stepper } from "#lib/components/ui";
-import { PROCEDURE_STATE_LABEL } from "#lib/utils/procedure-labels";
+import { PROCEDURE_STATE_LABEL, PROCEDURE_UNAVAILABLE_NOTICE } from "#lib/utils/procedure-labels";
 import TramiteFormResidencia from "./TramiteFormResidencia.svelte";
 import TramiteFormServicioSocial from "./TramiteFormServicioSocial.svelte";
 import TramiteFormTitulacion from "./TramiteFormTitulacion.svelte";
@@ -29,6 +29,16 @@ interface Props {
 }
 
 let { procedures, formNotice = null }: Props = $props();
+
+/**
+ * The three procedure forms collect ten fields each, and the action
+ * reads the FormData only to throw it away: OpenSIM stores no
+ * procedure request. Rather than let a student fill a form for
+ * nothing, the forms render disabled and the reason is on screen
+ * BEFORE the first field. This constant is the single flip point when
+ * the persistence lands.
+ */
+const PROCEDURES_AVAILABLE = false;
 
 const steps: Step[] = $derived(
 	procedures.map((p) => ({
@@ -46,7 +56,18 @@ const active = $derived(procedures[current] ?? null);
 <section class="proc" aria-label="Trámites académicos">
 	<Stepper {steps} {current} orientation="horizontal" />
 
-	{#if formNotice}
+	{#if !PROCEDURES_AVAILABLE}
+		<Card padding="sm">
+			<div class="proc__notice" role="status">
+				{PROCEDURE_UNAVAILABLE_NOTICE}
+			</div>
+		</Card>
+	{/if}
+
+	<!-- The action's own notice only appears once the flow exists. While
+	     it does not, the static notice above says the same thing and
+	     showing both would repeat it. -->
+	{#if formNotice && PROCEDURES_AVAILABLE}
 		<Card padding="sm">
 			<div class="proc__notice" role="status">
 				{formNotice}
@@ -91,11 +112,11 @@ const active = $derived(procedures[current] ?? null);
 		<form method="POST" class="proc__form">
 			<input type="hidden" name="procedure" value={active.id}>
 			{#if active.id === "servicio-social"}
-				<TramiteFormServicioSocial unlocked={active.unlocked} />
+				<TramiteFormServicioSocial unlocked={active.unlocked} disabled={!PROCEDURES_AVAILABLE} />
 			{:else if active.id === "residencia"}
-				<TramiteFormResidencia unlocked={active.unlocked} />
+				<TramiteFormResidencia unlocked={active.unlocked} disabled={!PROCEDURES_AVAILABLE} />
 			{:else if active.id === "titulacion"}
-				<TramiteFormTitulacion unlocked={active.unlocked} />
+				<TramiteFormTitulacion unlocked={active.unlocked} disabled={!PROCEDURES_AVAILABLE} />
 			{/if}
 		</form>
 	{/if}

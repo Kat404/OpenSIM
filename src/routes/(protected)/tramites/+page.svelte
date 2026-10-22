@@ -2,9 +2,10 @@
   OpenSIM — Trámites page (Phase 4 Tarea 4.2).
 
   Page-level header + the procedure stepper. The stepper owns the
-  step state and renders the matching form. Form submissions go to
-  the page's default action, which is a Phase 4 stub returning
-  'Trámite en desarrollo'.
+  step state and renders the matching form. The three forms are
+  disabled on screen, because OpenSIM stores no procedure request:
+  the default action refuses the submission with a 501 and the page
+  says why before the first field.
 -->
 <script lang="ts">
 import ProcedureStepper from "#lib/components/tramites/ProcedureStepper.svelte";

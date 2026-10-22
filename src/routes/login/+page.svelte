@@ -9,11 +9,18 @@ import { page } from "$app/state";
 // when the form action returns `fail(...)`.
 let { form }: { form: { error?: string } | null } = $props();
 
-// `?reason=logged-out` lands here after POST /login/logout; show
-// a confirmation toast-style line. Anything else is ignored.
-const notice = $derived(
-	page.url.searchParams.get("reason") === "logged-out" ? "Sesión cerrada correctamente." : null,
-);
+// `?reason=logged-out` lands here after POST /login/logout;
+// `?reason=sessions-revoked` after POST /login/logout-all. Show a
+// confirmation toast-style line. Anything else is ignored.
+//
+// A Map, not an object literal: a bare `obj[userInput]` also resolves
+// prototype members, so `?reason=constructor` used to render
+// "function Object() { [native code] }" in the banner.
+const REVOCATION_NOTICES = new Map([
+	["logged-out", "Sesión cerrada correctamente."],
+	["sessions-revoked", "Se cerraron todas las sesiones de tu cuenta."],
+]);
+const notice = $derived(REVOCATION_NOTICES.get(page.url.searchParams.get("reason") ?? "") ?? null);
 
 // Minimal theme toggle for the unauthenticated login surface
 // (audit M8, Round 4). The inline script in `app.html` already

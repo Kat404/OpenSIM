@@ -98,16 +98,3 @@ export function findConflicts<T extends ConflictBlock>(
 	}
 	return conflicts;
 }
-
-/**
- * Convenience helper that returns a copy of `candidate` with a
- * `hasConflict: boolean` flag attached. Useful for the simulator's
- * table row model.
- */
-export function annotateConflicts<T extends ConflictBlock>(
-	candidate: readonly T[],
-	existing: readonly ConflictBlock[],
-): Array<T & { hasConflict: boolean }> {
-	const conflicts = findConflicts(candidate, existing);
-	return candidate.map((c) => ({ ...c, hasConflict: conflicts.has(c.id) }));
-}

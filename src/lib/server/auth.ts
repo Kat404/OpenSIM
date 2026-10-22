@@ -26,7 +26,7 @@
  * See: odd/tasks/opensim.md §5.1 (schema), §9 (CF-3), §16.2 (A3 fix).
  */
 
-import { and, eq, gt, gte, lt, sql } from "drizzle-orm";
+import { and, eq, gt, gte, sql } from "drizzle-orm";
 import { type Database, getDb } from "./db";
 import {
 	authAttempts,
@@ -146,17 +146,6 @@ export async function clearRateLimit(db: Database, key: string): Promise<void> {
 	} catch {
 		/* intentionally ignored */
 	}
-}
-
-/**
- * Bulk prune of expired attempt counters. Called by the cron handler
- * (auth.ts `scheduled`); can also be called manually. Keeps the table
- * from growing unboundedly.
- */
-export async function pruneExpiredAttempts(db: Database): Promise<number> {
-	const cutoff = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
-	const result = await db.delete(authAttempts).where(lt(authAttempts.windowStart, cutoff));
-	return extractAffectedRows(result);
 }
 
 /**
@@ -411,20 +400,6 @@ export async function validateSessionToken(
 	};
 }
 
-/**
- * Bulk prune of expired sessions. The cron-driven worker handler
- * (wired by `scripts/inject-scheduled-handler.mjs`) issues the
- * DELETE inline as raw SQL, but this helper exists for unit tests
- * and ad-hoc invocation paths. Returned count is best-effort (D1
- * SQLite doesn't always surface `changes_affected`); callers should
- * log and move on.
- */
-export async function pruneExpiredSessions(db: Database): Promise<number> {
-	const now = new Date();
-	const result = await db.delete(authSessions).where(lt(authSessions.expiresAt, now));
-	return extractAffectedRows(result);
-}
-
 /** Deletes a session row by hashing the provided token (logout). */
 export async function invalidateSession(db: Database, token: string): Promise<void> {
 	const id = await hashToken(token);
@@ -439,8 +414,9 @@ export async function invalidateSession(db: Database, token: string): Promise<vo
  * valid for its full lifetime even after the owner logged out
  * elsewhere.
  *
- * Returns the number of rows removed (best-effort, same caveat as
- * `pruneExpiredSessions`).
+ * Returns the number of rows removed (best-effort: D1 SQLite does
+ * not always surface `changes_affected`); callers should log and move
+ * on.
  */
 export async function invalidateAllSessions(db: Database, controlNumber: string): Promise<number> {
 	const result = await db

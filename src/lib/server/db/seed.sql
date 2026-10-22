@@ -24,15 +24,9 @@ INSERT OR IGNORE INTO specialties (code, career_code, name) VALUES ('ISIE-TND-20
 -- subjects
 INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('acf-0901', 'ACF-0901', 'Cálculo Diferencial', 1, 3, 2, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subject_aliases (subject_canonical_id, alias_code) VALUES ('acf-0901', 'ACF-2301');
---> statement-breakpoint
 INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aed-1285', 'AED-1285', 'Fundamentos de Programación', 1, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
 --> statement-breakpoint
-INSERT OR IGNORE INTO subject_aliases (subject_canonical_id, alias_code) VALUES ('aed-1285', 'SCD-1008');
---> statement-breakpoint
 INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aca-0907', 'ACA-0907', 'Taller de Ética', 1, 0, 4, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL);
---> statement-breakpoint
-INSERT OR IGNORE INTO subject_aliases (subject_canonical_id, alias_code) VALUES ('aca-0907', 'ACH-2307');
 --> statement-breakpoint
 INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aef-1041', 'AEF-1041', 'Matemáticas Discretas', 1, 3, 2, 5, NULL, 'INDEPENDENT', 'GENERIC', NULL);
 --> statement-breakpoint
@@ -43,8 +37,6 @@ INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, cred
 INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('acf-0902', 'ACF-0902', 'Cálculo Integral', 2, 3, 2, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
 --> statement-breakpoint
 INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aed-1286', 'AED-1286', 'Programación Orientada a Objetos', 2, 2, 3, 5, NULL, 'SERIALIZED', 'GENERIC', NULL);
---> statement-breakpoint
-INSERT OR IGNORE INTO subject_aliases (subject_canonical_id, alias_code) VALUES ('aed-1286', 'SCD-1020');
 --> statement-breakpoint
 INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES ('aec-1008', 'AEC-1008', 'Contabilidad Financiera', 2, 2, 2, 4, NULL, 'INDEPENDENT', 'GENERIC', NULL);
 --> statement-breakpoint
@@ -1384,8 +1376,6 @@ SELECT COUNT(*) AS careers FROM careers;
 SELECT COUNT(*) AS specialties FROM specialties;
 --> statement-breakpoint
 SELECT COUNT(*) AS subjects FROM subjects;
---> statement-breakpoint
-SELECT COUNT(*) AS aliases FROM subject_aliases;
 --> statement-breakpoint
 SELECT COUNT(*) AS prerequisites FROM subject_prerequisites;
 --> statement-breakpoint

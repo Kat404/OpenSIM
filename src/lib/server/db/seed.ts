@@ -7,7 +7,7 @@
  * (`src/lib/server/db/seed.sql`) containing idempotent INSERT OR IGNORE
  * batches for:
  *   1. Academic catalog (careers, specialties, subjects,
- *      subject_aliases, subject_prerequisites) from
+ *      subject_prerequisites) from
  *      `data/curriculum-isic-2010-224.json`.
  *   2. Syllabus detail (subject_units, 32 units of the 7 subjects the
  *      SIM publishes) from `docs/data/sim-temarios.json`.
@@ -231,8 +231,8 @@ const SEED_SQL_PATH = resolve(here, "seed.sql");
 
 /**
  * Lab sessions are published under their own lab group code, not under a
- * subject code, so they resolve through neither `subjects.code` nor
- * `subject_aliases.alias_code`. This pairing is the one documented in
+ * subject code, so they resolve through neither `subjects.code` nor a
+ * dataset alias. This pairing is the one documented in
  * `docs/data/sim-laboratorios.md`, read straight off the SIM offering
  * rows: `hasLab` is true for all 64 of them and `credits` is null for all
  * 64, which is how they are told apart from the 404 curricular groups.
@@ -296,12 +296,6 @@ function insertSubjects(subjects: SubjectDataset[]): string {
 			`INSERT OR IGNORE INTO subjects (canonical_id, code, name, semester, ht, hp, credits, area, seriation_state, component, specialty_code) VALUES (${sqlStr(s.canonicalId)}, ${sqlStr(s.code)}, ${sqlStr(s.name)}, ${sqlNullableNum(s.semester)}, ${sqlNullableNum(s.ht)}, ${sqlNullableNum(s.hp)}, ${sqlNum(s.credits)}, ${sqlNullableStr(s.area)}, ${sqlStr(s.seriationState)}, ${sqlStr(s.component)}, ${sqlNullableStr(s.specialtyCode)});`,
 		);
 		lines.push("--> statement-breakpoint");
-		for (const alias of s.aliases ?? []) {
-			lines.push(
-				`INSERT OR IGNORE INTO subject_aliases (subject_canonical_id, alias_code) VALUES (${sqlStr(s.canonicalId)}, ${sqlStr(alias)});`,
-			);
-			lines.push("--> statement-breakpoint");
-		}
 	}
 	return lines.join("\n");
 }
@@ -440,8 +434,6 @@ function insertFooter(): string {
 		"SELECT COUNT(*) AS specialties FROM specialties;",
 		"--> statement-breakpoint",
 		"SELECT COUNT(*) AS subjects FROM subjects;",
-		"--> statement-breakpoint",
-		"SELECT COUNT(*) AS aliases FROM subject_aliases;",
 		"--> statement-breakpoint",
 		"SELECT COUNT(*) AS prerequisites FROM subject_prerequisites;",
 		"--> statement-breakpoint",
@@ -968,7 +960,7 @@ function main(): void {
 	const counts = [
 		`1 career`,
 		`${subjectCount} subjects`,
-		`${aliasCount} aliases`,
+		`${aliasCount} alias mappings`,
 		`${dataset.prerequisites.length} prerequisites`,
 		`${specialtyCount} specialties`,
 		`${units.length} units (${subtopicCount} subtopics)`,

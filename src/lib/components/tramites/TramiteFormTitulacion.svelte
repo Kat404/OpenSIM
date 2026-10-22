@@ -3,8 +3,8 @@
 
   Static form surface. Requires all credits + Servicio Social done.
   Submission is a Phase 5+ concern; for now the form posts to the
-  page's default action which returns a 'Trámite en desarrollo'
-  notice.
+  page's default action, which refuses the submission: OpenSIM
+  stores no procedure request yet.
 -->
 <script lang="ts">
 import { Badge, Button, Card, Input, Select } from "#lib/components/ui";
@@ -12,9 +12,14 @@ import { PROCEDURE_STATE_LABEL } from "#lib/utils/procedure-labels";
 
 interface Props {
 	unlocked: boolean;
+	/**
+	 * The whole form is disabled while the procedure flow does not store
+	 * anything. Set by `ProcedureStepper`, not by the credit thresholds.
+	 */
+	disabled?: boolean;
 }
 
-let { unlocked }: Props = $props();
+let { unlocked, disabled = false }: Props = $props();
 
 const modalityOptions = [
 	{ value: "tesis", label: "Tesis" },
@@ -35,7 +40,7 @@ const modalityOptions = [
 		</div>
 	{/snippet}
 
-	<fieldset class="form" disabled={!unlocked}>
+	<fieldset class="form" disabled={!unlocked || disabled}>
 		<Select
 			label="Modalidad de titulación"
 			options={modalityOptions}
@@ -70,7 +75,7 @@ const modalityOptions = [
 
 		<Input label="Sinodal vocal" placeholder="Nombre completo del sinodal vocal" name="reviewer3" />
 
-		<Button type="submit" variant="primary" size="md" disabled={!unlocked}>
+		<Button type="submit" variant="primary" size="md" disabled={!unlocked || disabled}>
 			Programar acto de titulación
 		</Button>
 	</fieldset>

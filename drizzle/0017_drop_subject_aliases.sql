@@ -1,0 +1,24 @@
+-- Migration 0017 — `subject_aliases` goes.
+--
+-- The table held the legacy SIM code of a subject (ACF-2301 and two
+-- more). It was written by the seed and read by nobody: the alias
+-- mappings the dataset declares are consumed at SEED time, when a SIM
+-- code is resolved to a canonical subject, and that resolution is not
+-- a runtime query. Its sibling `subject_prerequisites` IS read (the
+-- retícula draws the DAG from it), which is what made the pair look
+-- like a pattern until the read was checked.
+--
+-- Operator, 2026-10-19, textual: "Borrar la tabla".
+--
+-- Four rows of reference data go with it. Nothing queries them, and
+-- the seed no longer writes them, so the data is not recoverable from
+-- the database — but it IS recoverable from the dataset it came from
+-- (`data/curriculum-isic-2010-224.json` still declares the aliases,
+-- because that is what the seed needs to resolve SIM codes).
+--
+-- Hand-written on purpose, like 0015 and 0016: drizzle-kit would emit
+-- a second copy of 0016's rebuild of `complementary_credit_activities`
+-- (the snapshot it diffs against predates both), and a rebuild is not
+-- what this migration is about.
+
+DROP TABLE IF EXISTS `subject_aliases`;

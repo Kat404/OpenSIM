@@ -21,6 +21,8 @@
 import type { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { currentAcademicPeriod } from "../../src/lib/server/enrollment";
+import { PROCEDURE_UNAVAILABLE_NOTICE } from "../../src/lib/utils/procedure-labels";
+import { getTodayDayLetter } from "../../src/lib/utils/time";
 import { load as kardexLoad } from "../../src/routes/(protected)/academico/kardex/+page.server";
 import { load as dashboardLoad } from "../../src/routes/(protected)/dashboard/+page.server";
 import { load as horarioLoad } from "../../src/routes/(protected)/horario/+page.server";
@@ -456,7 +458,7 @@ describe("horario loader", () => {
 		expect(result.schedule.map((c) => c.block.day)).toEqual(["L", "X"]);
 	});
 
-	it("drops a block whose day letter is not on the TecNM grid", async () => {
+	it("drops a block whose day letter is not on the TecNM grid, and says so", async () => {
 		seedCurrentEnrollment();
 		raw
 			.prepare(
@@ -465,8 +467,17 @@ describe("horario loader", () => {
 			)
 			.run();
 
-		const result = await loadHorario(signedIn());
-		expect(result.schedule.map((c) => c.block.day)).toEqual(["L"]);
+		// A block that vanishes without a trace is a class the student
+		// does not see and cannot explain. The drop is logged, with the
+		// value that caused it.
+		const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+		try {
+			const result = await loadHorario(signedIn());
+			expect(result.schedule.map((c) => c.block.day)).toEqual(["L"]);
+			expect(warn).toHaveBeenCalledWith(expect.stringContaining('"Q"'));
+		} finally {
+			warn.mockRestore();
+		}
 	});
 
 	it("skips a block whose subject is missing from the catalog", async () => {
@@ -522,6 +533,21 @@ describe("horario loader", () => {
 });
 
 describe("dashboard loader", () => {
+	// The dashboard widget shows only the blocks of TODAY's weekday, and
+	// the loader asks the real clock which day that is. The fixture
+	// above pins its block to Monday, so without a frozen clock this
+	// suite failed every Monday. Wednesday 2026-10-14 12:00 in Morelia
+	// is a Wednesday, which is neither the fixture's Monday nor the
+	// letter the test builds its own blocks around.
+	beforeEach(() => {
+		vi.useFakeTimers({ toFake: ["Date"] });
+		vi.setSystemTime(new Date("2026-10-14T18:00:00Z"));
+	});
+
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
 	it("redirects an anonymous visitor to /login", async () => {
 		// The only loader of the five that refuses outright rather than
 		// rendering an empty shell.
@@ -568,7 +594,6 @@ describe("dashboard loader", () => {
 		seedCurrentEnrollment();
 		// A second block on a different day, plus one on today's letter in
 		// the afternoon: `getTodayDayLetter` decides which survive.
-		const { getTodayDayLetter } = await import("../../src/lib/utils/time");
 		const today = getTodayDayLetter();
 		seedSubject(raw, { canonicalId: "algebra-1", code: "SCC0901", name: "Álgebra" });
 		seedGroup(raw, "G-SCC0901-1", "algebra-1", "A", CONTROL);
@@ -939,7 +964,7 @@ describe("trámites form action", () => {
 		expect(result.data.procedure).toBe("inventado");
 	});
 
-	it("accepts the three known procedure ids and returns the 'in development' notice", async () => {
+	it("refuses the three known procedure ids: OpenSIM does not store trámites yet", async () => {
 		for (const procedure of ["servicio-social", "residencia", "titulacion"]) {
 			const event = makeEvent({
 				user: makeUser(),
@@ -950,9 +975,11 @@ describe("trámites form action", () => {
 				status: number;
 				data: { notice: string };
 			};
-			// Phase 12 T12.1 flags this stub as dishonest; pinned as-is.
-			expect(result.status).toBe(202);
-			expect(result.data.notice).toBe("Trámite en desarrollo");
+			// Phase 12 T12.1: the stub is no longer dressed as "accepted".
+			// 202 said "we took it"; nothing was taken, and the forms are
+			// disabled on screen, so the honest answer is 501.
+			expect(result.status).toBe(501);
+			expect(result.data.notice).toBe(PROCEDURE_UNAVAILABLE_NOTICE);
 		}
 	});
 });

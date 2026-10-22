@@ -39,7 +39,7 @@ import { Card } from "#lib/components/ui";
 				<li>
 					Acude con el <strong>Jefe del Departamento Académico</strong> para solicitar el
 					reestablecimiento de tu contraseña. Este paso es presencial y requiere identificación
-					official vigente.
+					oficial vigente.
 				</li>
 			</ol>
 

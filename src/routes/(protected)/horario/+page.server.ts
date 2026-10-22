@@ -107,7 +107,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 		const info = codeByCanonical.get(canonical);
 		if (!info) continue;
 		const day = b.day.toUpperCase();
-		if (!DAY_LETTERS.has(day as DayLetter)) continue;
+		if (!DAY_LETTERS.has(day as DayLetter)) {
+			// A day letter outside the TecNM grid is data nobody can
+			// show. It used to vanish without a trace, and a vanished
+			// block is a class the student does not see and cannot
+			// explain. Say it out loud instead.
+			console.warn(`[horario] dropping a block with an unknown day letter: "${b.day}"`);
+			continue;
+		}
 		schedule.push({
 			subject: { canonicalId: canonical, code: info.code, name: info.name },
 			block: {

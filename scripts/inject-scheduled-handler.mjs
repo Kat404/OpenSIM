@@ -42,9 +42,15 @@ if (src.includes(MARKER)) {
 	process.exit(0);
 }
 
-// Inline body: keep in sync with `pruneExpiredSessions` and
-// `pruneExpiredAttempts` in src/lib/server/auth.ts. Any schema change
-// to either table MUST be reflected here too.
+// Inline body: this is the ONLY implementation of the cron prune. It
+// used to be duplicated in `src/lib/server/auth.ts` (as
+// `pruneExpiredSessions` / `pruneExpiredAttempts`), with a comment
+// asking the two copies to be kept in sync; that copy was dead code
+// nobody called, and it is gone.
+//
+// `tests/unit/scheduled-prune.test.ts` executes these statements
+// against a real database — read it out of this file, not from a
+// copy — so a schema change to either table shows up there.
 const SCHEDULED_BODY = `	async scheduled(event, env, _ctx) {
 		if (!env.DB) return;
 		const now = Math.floor(Date.now() / 1000);

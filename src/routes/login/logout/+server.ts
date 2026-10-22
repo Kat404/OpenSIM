@@ -24,7 +24,11 @@
 // interface (see src/cloudflare-workers.d.ts).
 import { env as workerEnv } from "cloudflare:workers";
 import { type RequestHandler, redirect } from "@sveltejs/kit";
-import { invalidateSession, SESSION_COOKIE_NAME } from "#lib/server/auth";
+import {
+	clearSessionCookieOptions,
+	invalidateSession,
+	SESSION_COOKIE_NAME,
+} from "#lib/server/auth";
 import { getDb } from "#lib/server/db";
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 
@@ -38,6 +42,6 @@ export const POST: RequestHandler = async ({ cookies }) => {
 			/* swallow — invalidation is a tidy-up, not a critical path */
 		});
 	}
-	cookies.delete(SESSION_COOKIE_NAME, { path: "/" });
+	cookies.delete(SESSION_COOKIE_NAME, clearSessionCookieOptions);
 	throw redirect(303, "/login?reason=logged-out");
 };

@@ -35,6 +35,7 @@ import {
 	studentProgress,
 } from "#lib/server/db/schema";
 import { COMPLEMENTARY_CREDITS_REQUIRED, evaluateCreditThresholds } from "#lib/utils/dag";
+import { PROCEDURE_UNAVAILABLE_NOTICE } from "#lib/utils/procedure-labels";
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 import type { PageServerLoad } from "./$types";
 
@@ -255,12 +256,15 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
 	/**
-	 * Stub form action for Phase 4: a real submission flow is
-	 * scoped for Phase 5+. The action validates the procedure id
-	 * (one of the three in scope) and returns a `fail()` so the
-	 * page can render a "Trámite en desarrollo" notice. The
-	 * server-side check is intentional: the spec promises a
-	 * form-action surface so the forms are not just decoration.
+	 * Form action for Phase 4. The persistence is a Phase 5+ concern:
+	 * OpenSIM stores no procedure request, so this action refuses
+	 * instead of accepting data it would drop. The forms are disabled
+	 * on screen for the same reason — this is the server-side half of
+	 * that contract, for a request that arrives without the UI.
+	 *
+	 * The procedure id is still validated: an unrecognised one is a
+	 * bad request (400), a known one is a feature that does not exist
+	 * yet (501).
 	 */
 	default: async ({ request, locals }) => {
 		// Explicit guard (audit R8-7 / P0-3): SvelteKit 3's action
@@ -282,8 +286,8 @@ export const actions: Actions = {
 		) {
 			return fail(400, { error: "Trámite no reconocido.", procedure });
 		}
-		return fail(202, {
-			notice: "Trámite en desarrollo",
+		return fail(501, {
+			notice: PROCEDURE_UNAVAILABLE_NOTICE,
 			procedure,
 		});
 	},
