@@ -204,6 +204,40 @@ bloqueantes y las specs de e2e ya cubren el comportamiento observable): render S
 byte-a-byte de `Button`/`Card`, la prueba de orden con DOM simulado, la aserción de que la
 oferta sigue teniendo 50 filas, y la prueba de la frontera de PII del layout.
 
+## QA visual y de scroll (2026-10-22)
+
+Método: Playwright con el Chromium del sistema, 1440×900, sesión real (`12345678` y
+`99999999`), tema claro y oscuro. Por ruta se midió la altura del documento, el
+desbordamiento horizontal y las regiones con scroll propio, y se tomó una captura del
+principio y otra del final de cada página.
+
+| Ruta | Alto del documento | Pantallas | Desbordamiento horizontal | Scroll propio |
+| --- | --- | --- | --- | --- |
+| `/login` | 981px | 1.1 | 0 | — |
+| `/dashboard` | 981px | 1.1 | 0 | — |
+| `/horario` | 1228px | 1.4 | 0 | — |
+| `/reticula` | 1148px | 1.3 | 0 | — |
+| `/academico/kardex` | 2532px | 2.8 | 0 | — |
+| `/reinscripcion` | 1395px | 1.6 | 0 | lista de oferta (495→3754px), rejilla de horario (403→996px) |
+| `/tramites` | 1263px | 1.4 | 0 | — |
+| `/temario` | 3106px | 3.5 | 0 | — |
+| `/perfil` | 900px | 1.0 | 0 | — |
+
+**Cero desbordamiento horizontal en las nueve rutas**, y ningún elemento se sale de su
+contenedor: la fuga de S1/S2 está cerrada de verdad, no sólo en la aserción.
+
+Lo que dijo la QA de la página:
+
+| # | Hallazgo | Estado |
+| --- | --- | --- |
+| Q1 | El botón "Cerrar sesión en todos los dispositivos" queda dentro de su tarjeta con el menú expandido **y** colapsado, en claro y en oscuro | **cerrado** (S1/S2) |
+| Q2 | El demo sin inscripción (el caso de la captura del mantenedor) deja un vacío grande bajo la columna corta | **cerrado**: el estado vacío pasó a la columna de clases; las columnas miden 474px y 388px y el documento cabe en una pantalla (900px exactos) |
+| Q3 | Un alumno **con** inscripción sigue dejando ~360px de vacío bajo "Clases de hoy": la columna izquierda tiene un widget y la derecha tres tarjetas | **abierto, y no es CSS**: con 2 clases de hoy no hay más contenido que poner. Se probó estirar el panel del widget para que el hueco quedara *dentro* de la tarjeta, y se ve peor (una caja vacía de 300px), así que se revirtió. Las salidas reales son de contenido: mostrar la semana completa en vez de sólo hoy, o una tira de tarjetas de CTA a todo lo ancho |
+| Q4 | Las tarjetas de `/perfil` en una misma fila acababan en un borde desigual (la de Créditos cuelga 110px) | **cerrado** (`84aeac4`): la fila comparte altura |
+| Q5 | **Preexistente**: en la rejilla "Carga actual", cada bloque inscrito muestra "—" en vez del código y el nombre de la materia. El loader de `/reinscripcion` trae los bloques sin `subjectCode`/`subjectName` y el componente los busca en la página de oferta del periodo, que no los contiene (`blockToPreview`, `src/lib/components/simulador/EnrollmentSimulator.svelte:97`, igual en `b5a69cc`) | **reportado, no tocado**: es de otro periodo y no es parte de esta unidad |
+| Q6 | **Preexistente**: el botón que colapsa la barra vive al fondo de una barra tan alta como el documento, así que en toda página que scrollea hay que bajar al final para alcanzarlo. Se verificó en `b5a69cc` que el botón funciona cuando se llega a él | **reportado, no tocado** |
+| Q7 | `/temario` (3.5 pantallas) y `/academico/kardex` (2.8) son largos porque **listan** catálogos (68 materias, el historial completo) | **reportado**: es contenido, no layout. Plegar la lista de las 61 materias sin temario, o paginarla, es una decisión de producto |
+
 ## Log
 
 - **2026-10-22 — Creado con el reporte del mantenedor.** Llega con el fallout de dos hechos
@@ -231,4 +265,8 @@ oferta sigue teniendo 50 filas, y la prueba de la frontera de PII del layout.
   navegador sin la API navega igual.
 - **2026-10-22 — S3 cerrada.** La lista de oferta y la rejilla "Carga actual" tienen su propio
   scroll; el panel de filtros queda fijo. No se quitó ni se re-paginó nada.
+- **2026-10-22 — QA visual y de scroll.** Nueve rutas medidas con Playwright en 1440×900, claro
+  y oscuro, con capturas del principio y del final de cada una. Cero desbordamiento horizontal
+  en las nueve. Se cerraron Q2 (el vacío del demo) y Q4 (la altura de las tarjetas del perfil);
+  Q3 quedó abierto con su diagnóstico, y Q5–Q7 se reportan como preexistentes o de producto.
 
