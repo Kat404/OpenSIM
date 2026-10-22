@@ -55,8 +55,9 @@ export interface OfferBlock {
 	 * an ENROLLED block's group is not in the offer page the simulator
 	 * renders, so the component cannot look it up there — without these
 	 * two fields the "Carga actual" grid shows a dash instead of the
-	 * subject the student is taking.
+	 * subject the student is taking. `null` when the catalogue has no row
+	 * for the block's subject: the block still belongs in the grid.
 	 */
-	subjectCode?: string;
-	subjectName?: string;
+	subjectCode?: string | null;
+	subjectName?: string | null;
 }

@@ -351,8 +351,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 						subjectName: subjects.name,
 					})
 					.from(courseScheduleBlocks)
-					.innerJoin(courseGroups, eq(courseScheduleBlocks.groupId, courseGroups.id))
-					.innerJoin(subjects, eq(courseGroups.subjectCanonicalId, subjects.canonicalId))
+					.leftJoin(courseGroups, eq(courseScheduleBlocks.groupId, courseGroups.id))
+					.leftJoin(subjects, eq(courseGroups.subjectCanonicalId, subjects.canonicalId))
 					.where(inArray(courseScheduleBlocks.groupId, enrolledGroupIds));
 
 	// Every block that exists belongs to an already-enrolled group, so

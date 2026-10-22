@@ -79,7 +79,6 @@ const isDisabled = $derived(loading || disabled);
 		transform var(--motion-duration-fast) var(--motion-ease-standard);
 	white-space: nowrap;
 	user-select: none;
-	max-width: 100%;
 }
 
 .btn:disabled {
@@ -167,6 +166,9 @@ const isDisabled = $derived(loading || disabled);
 	white-space: normal;
 	height: auto;
 	text-align: center;
+	/* The cap belongs to the wrapping button only: capping a `nowrap`
+	   one would leave its label spilling out of its own border. */
+	max-width: 100%;
 }
 
 .btn--wrap.btn--sm {

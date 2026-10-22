@@ -93,9 +93,16 @@ Texto del mantenedor (verbatim):
 
 Criterio de aceptación: el grid principal de `/dashboard` no deja un vacío vertical grande
 bajo la columna corta. El estado vacío **"Aún no tienes inscripción activa"** (que hoy vive en
-la columna derecha, debajo de las tarjetas de CTA) se ubica junto al widget **"Clases de hoy"**,
-que es de lo que habla ("aquí verás tus clases del día en vivo"). El grid alinea sus columnas
-al inicio.
+la columna derecha, debajo de las tarjetas de CTA) se ubica junto al widget de clases, que es
+de lo que habla ("aquí verás tus clases del día en vivo"). El grid alinea sus columnas al
+inicio.
+
+**Decisión posterior del mantenedor (2026-10-22, tras la QA visual):** el widget pasa a
+mostrar **la semana completa** con el día de hoy resaltado, en vez de sólo hoy — porque un
+alumno con inscripción dejaba la columna izquierda 360px más corta que la derecha, y eso no
+se arregla con CSS sino con contenido. El widget se renombra **"Tu semana"** y su copy pasa a
+"…aquí verás tus clases de la semana". S5 se cumple con ese nombre, no con el de "Clases de
+hoy" que este documento citaba antes de la decisión.
 
 ### S6 — La página de perfil con los datos generales del estudiante
 
@@ -138,9 +145,16 @@ La receta se corrige para hacer lo que dice.
 | T3 | S4 | delegada (worker) | cerrado | `4dac011` |
 | T4 | S3 | delegada (worker) | cerrado | `5add821` |
 | T5 | S7 | inline (padre) | cerrado | `de9257e` |
+| T6 | S5 (segunda vuelta) | delegada (worker) + inline | cerrado | `c1a9e2a` |
+| T7 | S3 (defecto de la rejilla) | inline (padre) | cerrado | `bddd250` |
+| T8 | S1 (UX del sidebar) | inline (padre) | cerrado | `954a6aa` |
+| T9 | S4 (guarda `willUnload`) | inline (padre) | cerrado | `d27fefa` |
+| T10 | — (documentación) | inline (padre) | cerrado | `564bfa5` |
 
 Ruta de las unidades: `de9257e` (herramienta) → `0f28d5a` (perfil) → `4dac011` (transiciones) →
-`5add821` (reinscripción) → `4a4cf7c` (dashboard) → este documento.
+`5add821` (reinscripción) → `4a4cf7c` (dashboard) → `29c2560` (odd) → `d27fefa` (transición) →
+`c1a9e2a` (semana) → `bddd250` (materia en la rejilla) → `954a6aa` (sidebar) → `564bfa5`
+(README) → la revisión de la auditoría → este documento.
 
 Decisiones cerradas aquí (para que ningún worker las reabra):
 
@@ -204,6 +218,27 @@ bloqueantes y las specs de e2e ya cubren el comportamiento observable): render S
 byte-a-byte de `Button`/`Card`, la prueba de orden con DOM simulado, la aserción de que la
 oferta sigue teniendo 50 filas, y la prueba de la frontera de PII del layout.
 
+### Segunda revisión — la rama completa (`b5a69cc..HEAD`)
+
+`gentle-ai-verify` auditó la rama entera (33 archivos, +1997/−240) en una copia aislada, con
+`vitest` 387/387, `svelte-check` 0/0 y `biome` sin errores. **Sin bloqueantes.** Veredicto:
+S1, S2, S3, S4, S5, S6 y S7 cumplidos, con evidencia en línea y archivo (la geometría del
+botón reprobada en Chromium a 260–340px, el `weekClasses` de un alumno sin los bloques del
+otro, el payload del layout sin `curp` ni `birth_state`, el HTML SSR de `Button` y `Card`
+byte a byte idéntico al de la base).
+
+Siete asesorías, y qué se hizo con cada una:
+
+| # | Hallazgo | Decisión |
+| --- | --- | --- |
+| F1 | Las promesas de la `ViewTransition` nunca se leen: dos navegaciones encimadas dejan un `unhandledrejection` en la consola | **corregido**: `finished`, `ready` y `updateCallbackDone` se capturan |
+| F2 | `max-width: 100%` en **todo** botón acota la caja de un botón `nowrap` y deja su etiqueta desbordando de su propio borde | **corregido**: el tope se mueve a `.btn--wrap`; un botón sin `wrap` se comporta como en la base |
+| F3 | Este documento decía que el toggle del sidebar y el «—» de la rejilla seguían sin tocarse, y la tabla de tareas no incluía las unidades nuevas | **corregido**: este documento |
+| F4 | S5 citaba el widget como "Clases de hoy" y el branch lo renombró a "Tu semana" | **corregido**: S5 documenta la decisión del mantenedor |
+| F5 | La transición animate **toda** navegación del layout protegido, no sólo las que salen del menú lateral | **aceptado**: es un superconjunto del criterio, y acotarlo al clic del menú exigiría seguir el origen del clic |
+| F6 | El `innerJoin` con `subjects` podía hacer desaparecer un bloque cuyo sujeto no estuviera en el catálogo | **corregido**: `leftJoin`, así que ningún bloque se va |
+| F7 | Dos comentarios citaban el `TodayClasses.svelte` borrado | **corregido** |
+
 ## QA visual y de scroll (2026-10-22)
 
 Método: Playwright con el Chromium del sistema, 1440×900, sesión real (`12345678` y
@@ -232,10 +267,10 @@ Lo que dijo la QA de la página:
 | --- | --- | --- |
 | Q1 | El botón "Cerrar sesión en todos los dispositivos" queda dentro de su tarjeta con el menú expandido **y** colapsado, en claro y en oscuro | **cerrado** (S1/S2) |
 | Q2 | El demo sin inscripción (el caso de la captura del mantenedor) deja un vacío grande bajo la columna corta | **cerrado**: el estado vacío pasó a la columna de clases; las columnas miden 474px y 388px y el documento cabe en una pantalla (900px exactos) |
-| Q3 | Un alumno **con** inscripción sigue dejando ~360px de vacío bajo "Clases de hoy": la columna izquierda tiene un widget y la derecha tres tarjetas | **abierto, y no es CSS**: con 2 clases de hoy no hay más contenido que poner. Se probó estirar el panel del widget para que el hueco quedara *dentro* de la tarjeta, y se ve peor (una caja vacía de 300px), así que se revirtió. Las salidas reales son de contenido: mostrar la semana completa en vez de sólo hoy, o una tira de tarjetas de CTA a todo lo ancho |
+| Q3 | Un alumno **con** inscripción sigue dejando ~360px de vacío bajo "Clases de hoy": la columna izquierda tiene un widget y la derecha tres tarjetas | **cerrado en la segunda vuelta**: el mantenedor decidió que el widget mostrara **la semana completa** (`c1a9e2a`), y el vacío bajó a 168px (columnas de 767px y 599px) |
 | Q4 | Las tarjetas de `/perfil` en una misma fila acababan en un borde desigual (la de Créditos cuelga 110px) | **cerrado** (`84aeac4`): la fila comparte altura |
-| Q5 | **Preexistente**: en la rejilla "Carga actual", cada bloque inscrito muestra "—" en vez del código y el nombre de la materia. El loader de `/reinscripcion` trae los bloques sin `subjectCode`/`subjectName` y el componente los busca en la página de oferta del periodo, que no los contiene (`blockToPreview`, `src/lib/components/simulador/EnrollmentSimulator.svelte:97`, igual en `b5a69cc`) | **reportado, no tocado**: es de otro periodo y no es parte de esta unidad |
-| Q6 | **Preexistente**: el botón que colapsa la barra vive al fondo de una barra tan alta como el documento, así que en toda página que scrollea hay que bajar al final para alcanzarlo. Se verificó en `b5a69cc` que el botón funciona cuando se llega a él | **reportado, no tocado** |
+| Q5 | **Preexistente**: en la rejilla "Carga actual", cada bloque inscrito muestra "—" en vez del código y el nombre de la materia. El loader de `/reinscripcion` trae los bloques sin `subjectCode`/`subjectName` y el componente los busca en la página de oferta del periodo, que no los contiene (`blockToPreview`, `src/lib/components/simulador/EnrollmentSimulator.svelte:97`, igual en `b5a69cc`) | **cerrado** (`bddd250`): el bloque lleva su propia materia (join por el grupo) y una spec lo fija |
+| Q6 | **Preexistente**: el botón que colapsa la barra vive al fondo de una barra tan alta como el documento, así que en toda página que scrollea hay que bajar al final para alcanzarlo. Se verificó en `b5a69cc` que el botón funciona cuando se llega a él | **cerrado** (`954a6aa`): la columna se pega al viewport |
 | Q7 | `/temario` (3.5 pantallas) y `/academico/kardex` (2.8) son largos porque **listan** catálogos (68 materias, el historial completo) | **reportado**: es contenido, no layout. Plegar la lista de las 61 materias sin temario, o paginarla, es una decisión de producto |
 
 ## Log
@@ -269,4 +304,19 @@ Lo que dijo la QA de la página:
   y oscuro, con capturas del principio y del final de cada una. Cero desbordamiento horizontal
   en las nueve. Se cerraron Q2 (el vacío del demo) y Q4 (la altura de las tarjetas del perfil);
   Q3 quedó abierto con su diagnóstico, y Q5–Q7 se reportan como preexistentes o de producto.
+- **2026-10-22 — Segunda vuelta, con lo que decidió el mantenedor.** Q3: el widget del panel
+  pasa a mostrar **la semana completa** con el día de hoy resaltado (`c1a9e2a`); el dato sale
+  del mismo enrolment y de la misma consulta de materias que usa `/horario`. Q5: la rejilla
+  "Carga actual" nombra la materia de cada bloque (`bddd250`). Q6: la barra lateral se pega
+  al viewport y su botón de colapso queda siempre alcanzable (`954a6aa`). T10: el README dice
+  qué contraseña escribe el seeder de verdad (`564bfa5`).
+- **2026-10-22 — La D1 de producción tenía la identidad anterior a la corrección de
+  privacidad.** `student_profiles.12345678` seguía con "Ana Gabriela Hernández Ruiz" y el CURP
+  `HERA000615MMNRZNA3`, los valores que el commit `5e2e936` sustituyó por unos sintéticos en el
+  fixture — el seed es un upsert por `control_number`, así que la base remota nunca se enteró.
+  Con la credencial de `12345678` aprovisionada (decisión del mantenedor), esa fila era
+  alcanzable por login. Con su autorización explícita se sincronizó a la identidad sintética
+  (`full_name` → "Sofía Ramírez Aguirre", `curp` → `RAGA000615MMZNRX3`), los mismos valores que
+  la D1 local) y se comprobó que el nombre viejo no queda en ninguna columna de texto de la
+  base remota.
 

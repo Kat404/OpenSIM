@@ -29,13 +29,20 @@ onNavigate((navigation) => {
 	if (navigation.willUnload) return;
 
 	return new Promise<void>((resolve) => {
-		document.startViewTransition(() => {
+		const transition = document.startViewTransition(() => {
 			// Releasing SvelteKit first lets the navigation run; the
 			// transition then animates once the DOM is updated.
 			resolve();
 			// A failed navigation must not leave the transition hanging.
 			return navigation.complete.catch(() => {});
 		});
+		// A second navigation (a double click) aborts this one, and the
+		// browser rejects the transition's promises. Nothing reads them,
+		// so an unhandled rejection would surface in the console as an
+		// error the student never caused.
+		transition.finished.catch(() => {});
+		transition.ready.catch(() => {});
+		transition.updateCallbackDone.catch(() => {});
 	});
 });
 </script>
