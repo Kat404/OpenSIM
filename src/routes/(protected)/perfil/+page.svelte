@@ -171,7 +171,6 @@ function statusVariant(status: string): "success" | "neutral" {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 	gap: var(--space-4);
-	align-items: start;
 }
 
 .perfil__identity {
