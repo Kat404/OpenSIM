@@ -95,6 +95,9 @@ const selectedCredits = $derived(selectedGroups.reduce((acc, g) => acc + g.credi
 
 // ---------- Derived: schedule preview shapes ----------
 function blockToPreview(b: OfferBlock, kind: "enrolled" | "candidate"): PreviewBlock {
+	// The offer group wins when the simulator has it (a candidate the
+	// student just ticked); an ENROLLED block's group is not in the
+	// offer page, so the block carries its own subject.
 	const g = groups.find((x) => x.groupId === b.groupId);
 	return {
 		id: b.id,
@@ -103,8 +106,8 @@ function blockToPreview(b: OfferBlock, kind: "enrolled" | "candidate"): PreviewB
 		startTime: b.startTime,
 		endTime: b.endTime,
 		classroom: b.classroom,
-		subjectCode: g?.subjectCode ?? "—",
-		subjectName: g?.subjectName ?? "",
+		subjectCode: g?.subjectCode ?? b.subjectCode ?? "—",
+		subjectName: g?.subjectName ?? b.subjectName ?? "",
 		teacherName: g?.teacherName ?? "",
 		kind,
 	};

@@ -342,8 +342,17 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 						startTime: courseScheduleBlocks.startTime,
 						endTime: courseScheduleBlocks.endTime,
 						classroom: courseScheduleBlocks.classroom,
+						// The subject of the block, joined through its group.
+						// The simulator cannot look it up in the offer page it
+						// renders (an enrolled group is not in that page), so
+						// without these two fields the "Carga actual" grid
+						// shows a dash where the subject belongs.
+						subjectCode: subjects.code,
+						subjectName: subjects.name,
 					})
 					.from(courseScheduleBlocks)
+					.innerJoin(courseGroups, eq(courseScheduleBlocks.groupId, courseGroups.id))
+					.innerJoin(subjects, eq(courseGroups.subjectCanonicalId, subjects.canonicalId))
 					.where(inArray(courseScheduleBlocks.groupId, enrolledGroupIds));
 
 	// Every block that exists belongs to an already-enrolled group, so

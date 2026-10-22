@@ -50,4 +50,13 @@ export interface OfferBlock {
 	startTime: string;
 	endTime: string;
 	classroom: string;
+	/**
+	 * The subject the block belongs to. Carried on the row itself because
+	 * an ENROLLED block's group is not in the offer page the simulator
+	 * renders, so the component cannot look it up there — without these
+	 * two fields the "Carga actual" grid shows a dash instead of the
+	 * subject the student is taking.
+	 */
+	subjectCode?: string;
+	subjectName?: string;
 }
