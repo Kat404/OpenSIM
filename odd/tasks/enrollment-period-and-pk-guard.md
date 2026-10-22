@@ -1,7 +1,7 @@
 <!-- odd-tracker
 kind: phase-plan
-status: active
-last-verified: 2026-10-15
+status: closed
+last-verified: 2026-10-19
 branch: feat/phase-9-verified-curriculum
 delivery: work-unit commits en la rama de feature
 test-runner: vitest (just qa-fast) · runner agéntico (just e2e-dev) · Playwright (just test-e2e)
@@ -134,6 +134,10 @@ Presupuesto: bajo 400 líneas escritas. Si lo rebasa, se corta en el límite de 
 
 ## Log
 
+
+- **2026-10-19 — Cerrado.** T10.1 quedó cerrado en `015eb1e` (el arreglo), `19a5cc1` (el test
+  agéntico) y `eaf9712` (las tres correcciones de la auditoría). La casilla del ledger que
+  este plan reconcilia —T10.1— se marcó con esa evidencia.
 - **L1 — Petición del operador, textual:** *"Planea ODD para solucionar todos los bloqueos de
   manera correcta y agéntica (e2e)."* Y la acotación que vino con las respuestas: *"Sólo T10.1
   y su familia, primero"* y *"Siempre el término del calendario"*.

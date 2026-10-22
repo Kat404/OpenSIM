@@ -3,18 +3,29 @@
 <!-- odd-tracker
 kind: index
 status: active
-last-verified: 2026-10-10
-reconciled-against: feat/phase-9-verified-curriculum@c49caea (main@fee9d60)
+last-verified: 2026-10-19
+reconciled-against: feat/agentic-lane-real-data@2e40013 (main@48e20d6) — delivery state; the phase rows below still describe the 2026-10-10 pass
 sha-warning: los SHA ffcd595, 8f40837, 6ca7c12 y b3fef41 citados en el cuerpo de este archivo predicen la reescritura de firmas GPG del 2026-10-08 y están MUERTOS; los SHA vivos verificados con `git cat-file -e` son 18de1a5, b6a1d8a, 159b2bc, 2ac464f, fee9d60, 13f4d7a, 4460f27, 17e013b, db258a8, a799d47, a3621f7, c22d05c, 639a663 y c49caea
 -->
 
 OpenSIM (Open Source — Sistema Integral Modular) reached **Phase 7 complete**. The build,
 the WCAG audit, the U1–U4 polish cycle and the hardening cycle are all closed and recorded
 with commit SHAs. **Phase 9 (curriculum data foundation) is the active phase: T9.1–T9.9 are
-closed and T9.10–T9.14 are open.** Production D1 is still at migration `0009`; the five
-migrations that carry the rest of Phase 9 are written and committed but **not applied**. This
-file is the index; `tasks/opensim.md` is the canonical spec.
+closed and T9.10–T9.14 are open.** Production D1 was at migration `0009` when this index was
+last reconciled; it is now at **`0017`** (verified 2026-10-19), and the Phase 9+ commits are
+published in two branches with two open PRs. This file is the index; `tasks/opensim.md` is the
+canonical spec.
 
+> **Reconciled 2026-10-19 — delivery.** The 14 live findings of the ledger are **closed and
+> independently verified** (`tasks/findings-remediation.md`, 31 boxes checked, 0 open). The two
+> branches are published to GitHub **and** Codeberg with PR **#8** (`chore/findings-closure` →
+> `main`) and **#9** (`feat/agentic-lane-real-data` → `chore/findings-closure`) open, and
+> migrations `0015`–`0017` are **applied to production**. What is left: **the Worker has not
+> been deployed**, the public demo credential is undecided, the four `ponytail:` shortcuts
+> await a maintainer owner, and neither PR is merged. Read
+> **`tasks/delivery-handoff-2026-10-19.md`** first — it wins over this index wherever they
+> disagree.
+>
 > **Reconciled 2026-10-10.** Phase 9 moved a long way and the bookkeeping had not caught up.
 > T9.3, T9.4, T9.6 and T9.9 closed; seven defects found and fixed; five migrations waiting for
 > the operator's authorization; **the Phase 9 commits are not published to any remote**.
@@ -30,11 +41,11 @@ file is the index; `tasks/opensim.md` is the canonical spec.
 | Question | Answer |
 | --- | --- |
 | **What is done?** | Phases 1, 2, 3, 4.0, 4, 5, 6, 6.1, 6.2, 6.5, 7, 8 (a11y dark-theme contrast), and in Phase 9: **T9.1–T9.9**. T9.5 shipped inside T9.7; T9.8 shipped inside T9.7 too, as a rebuild. |
-| **What is open?** | **Phase 9, T9.10–T9.14.** No blocker gates them. B4 (PII in GitHub refs) is the only blocker still pending and it depends on GitHub Support, not on the plan. |
-| **What is next?** | **T9.12** — the temario detail, the first real consumer of `subject_units`, which has carried its 32 units since 2026-10-10. **T9.10 is blocked on an operator decision**, not on data: see "The one decision the owner owes" below. |
-| **Pushed?** | **No — not everything.** `main` (`fee9d60`, 126 commits) is on GitHub and Codeberg, along with `feat/phase-9-verified-curriculum` at `2ac464f` (132 commits). **Every Phase 9 commit after `2ac464f` is local only** — 11 commits unpushed at the last measurement, verified with `git for-each-ref refs/remotes/` and `git rev-list --count origin/…..`. Production therefore still serves the `/reinscripcion` 500. |
+| **What is open?** | **Delivery, not development.** The 14 live findings are closed and verified; what is open is the **Worker deploy to production**, the public demo credential, the four `ponytail:` shortcuts (findings 16–19, awaiting a maintainer owner), and the merge of PR #8 → #9. Phase 9 T9.10–T9.14 remain open but unblocked. B4 (PII in GitHub refs) is still pending and it depends on GitHub Support, not on the plan. |
+| **What is next?** | **Deploy the Worker** — see `tasks/delivery-handoff-2026-10-19.md`. After that: the demo credential decision, then merge #8 and #9 in that order. (T9.12 — the temario detail — is the next *feature*, still blocked on an operator decision, not on data.) |
+| **Pushed?** | **Yes — the delivery branches, not `main`.** `main` is still `48e20d6`; nothing is merged. `chore/findings-closure` (`d8affb9`, 14 commits) and `feat/agentic-lane-real-data` (`2e40013`) are published to **GitHub and Codeberg**, with PR **#8** and **#9** open. `just push-mirror` does **not** mirror: `origin` has one push URL (GitHub) and `codeberg` is a separate remote that must be pushed to explicitly. |
 | **Signed?** | **Yes — everything.** 126/126 `G` on `main`, 143/143 `G` on the local feature branch at the last measurement, GPG key `3335F4A0D9DBBA95`. Verified with `git log <ref> --format='%G?' \| sort \| uniq -c`. Treat the branch figure as a lower bound: the branch was still advancing while this file was written. Every SHA changed in the 2026-10-08 rewrite, so older SHAs cited anywhere in `odd/` are dead. |
-| **Production data?** | **Migration `0009` applied** with the seed: 68 subjects (all with `area` NULL, 16 with `semester`/`ht`/`hp` NULL), 14 prerequisite edges, 3 specialties, 1 career, 49 progress rows, 7 course groups, 14 schedule blocks, **0 subject units**. `0010`–`0014` are committed but **not applied** — applying them is a production mutation and needs the operator's explicit authorization. **`NOT VERIFIED` on 2026-10-10**: the remote was not queried in that pass. |
+| **Production data?** | **Migration `0017` applied** (verified 2026-10-19, after the `0015`–`0017` run): 68 subjects, 32 `subject_units`, 475 course groups, 49 `student_progress` rows, 3 complementary activities (3 credits), and `subject_aliases` dropped by `0017` — no rows lost. The remote `student_credentials` holds **only `99999999`** (the placeholder, zero progress rows); `12345678` — the student that owns the 49 progress rows — has **no remote credential**. The Worker still serves the **old build**: the base is at `0017` and the code is not deployed. |
 | **Green?** | `pnpm vitest run` re-measured 2026-10-10: **305/305, 18 files, 1.44 s**. `pnpm check` **not re-run** in that pass — `NOT VERIFIED` there. Teacher names → **0** occurrences in any blob or reachable commit; the seed emits `DOC-001`…`DOC-007`. The Playwright suite was **not run** in that pass — `NOT VERIFIED`; commit `c49caea` reports `test-e2e` 274 and `test-e2e-avatar` 81 green. |
 
 ## Phase table
@@ -223,6 +234,7 @@ catch the 8 Gemini R20 issues — cross-model review is what surfaced them.
 | `tasks/findings-remediation.md` | 27-findings remediation plan, Phases 1–10 | **Active.** Phase 8 shipped 2026-10-06 (114/114). Its header "Plan v1 — awaiting go-ahead" and its Progress "Not started" are stale. |
 | `tasks/phase-9-curriculum-data-foundation.md` | Phase 9 data-foundation plan (T9.1–T9.14) | **Active** — **T9.1–T9.9 closed**; T9.5 and T9.8 shipped inside T9.7, and T9.8 was a rebuild rather than a remap. T9.10–T9.14 open. Holds the blast radius of the four nullable `subjects` columns, the per-migration applied/not-applied table, and the open retícula decision. |
 | `tasks/phase-9-unblock.md` | Phase 9 unblock plan B1–B8 | **B1, B2, B3, B5, B6, B7, B8 closed; B4 open.** U1, U2, U6, U7, U8 done; U3 cancelled; U4 partial. Records what execution got wrong about the plan, including the `defer_foreign_keys` correction. |
+| `tasks/delivery-handoff-2026-10-19.md` | **Handoff of the open delivery state** | **Active.** One page for a fresh session: what is closed (14 findings, verification, both branches published, PR #8/#9 open, migrations `0015`–`0017` applied), what is pending (Worker deploy, demo credential, the four `ponytail:` shortcuts, the merge), the exact commands, and the two blockers that are not ours. Wins over this index where they disagree. |
 
 ## Canonical spec
 

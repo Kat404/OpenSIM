@@ -64,9 +64,21 @@ export default {
 	//
 	// The control number stays inline because a credential's `username` is a
 	// plain string by design. It is invented demo data (see AGENTS.md).
+	//
+	// `12345678` since 2026-10-19, and the reason is the whole point of the
+	// agentic lane: this student has 49 rows in `student_progress` (175
+	// approved credits, 3 complementary ones), so a judgment can be made
+	// about DATA. With the previous `99999999` — zero rows — every screen
+	// rendered an empty state and the tests could only assert things that
+	// could not fail; the enrolment-term test even passed against the code
+	// it was written to catch, because the bug it hunted was only reachable
+	// for a student who has history.
+	//
+	// The Playwright suite deliberately keeps `99999999`: the deterministic
+	// gate must see the empty state, because some of its specs assert it.
 	credentials: {
 		alumno: {
-			username: "99999999",
+			username: "12345678",
 		},
 	},
 

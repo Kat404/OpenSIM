@@ -27,9 +27,24 @@ interface Props {
 	colorHsl: string;
 	topPx: number;
 	heightPx: number;
+	/**
+	 * The day the block sits on, in full ("Lunes").
+	 *
+	 * The grid draws the day in its COLUMN, so the visual answer to
+	 * "which day is this class?" is a position and not a word. A
+	 * position is not in the accessibility tree: without this, a screen
+	 * reader reads the day headers and then a list of classes with no
+	 * way to know which is which. The day is the grid's business, so
+	 * the parent passes it in.
+	 */
+	dayName?: string;
 }
 
-let { subject, block, colorHsl, topPx, heightPx }: Props = $props();
+let { subject, block, colorHsl, topPx, heightPx, dayName }: Props = $props();
+
+const ariaLabel = $derived(
+	`${subject.code} ${subject.name}${dayName ? `, ${dayName}` : ""} de ${block.startTime} a ${block.endTime} en ${block.classroom}`,
+);
 
 const subtitle = $derived(
 	heightPx >= 60
@@ -44,7 +59,7 @@ const subtitle = $derived(
 	style:height="{heightPx}px"
 	style:background-color={colorHsl}
 	role="group"
-	aria-label="{subject.code} {subject.name} de {block.startTime} a {block.endTime} en {block.classroom}"
+	aria-label={ariaLabel}
 >
 	<div class="class-block__inner">
 		<span class="class-block__code">{subject.code}</span>

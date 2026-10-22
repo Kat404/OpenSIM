@@ -15,6 +15,11 @@
  *   pnpm run db:set-password                 # uses defaults (local D1)
  *   pnpm run db:set-password 12345678        # custom control number
  *   OPENSIM_TEST_PASSWORD=foo pnpm run db:set-password
+ *
+ * The password is resolved as: positional argument → OPENSIM_TEST_PASSWORD
+ * → the value in `.env` → the documented default. The `.env` step is what
+ * keeps the seeder and the Playwright setup (which reads `.env` too) from
+ * disagreeing about the password.
  *   just db-set-password-remote              # REMOTE D1 (⚠ production)
  *
  * Remote targeting is env-driven (`OPENSIM_D1_TARGET=remote`), not a
@@ -39,7 +44,7 @@
 
 import { execSync } from "node:child_process";
 import { pbkdf2Sync, randomBytes } from "node:crypto";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -137,6 +142,17 @@ function main(): void {
 	const args = process.argv.slice(2);
 	// Env-driven, not a positional flag — see the usage note in the header.
 	const REMOTE = process.env.OPENSIM_D1_TARGET === "remote";
+	// The `.env` file is the source of truth for the local test password,
+	// and the Playwright setup reads it the same way
+	// (`tests/e2e/setup/auth.setup.ts`). Without this line the two
+	// disagree: the seeder falls back to the default password while the
+	// suite signs in with the one in `.env`, and the login bounces back
+	// to `/login` — which reads like broken auth and is not. Guarded so an
+	// explicit env var still wins, and so a clone without `.env` does not
+	// throw.
+	if (process.env.OPENSIM_TEST_PASSWORD === undefined && existsSync(".env")) {
+		process.loadEnvFile(".env");
+	}
 	const controlNumber =
 		args[0] ?? process.env.OPENSIM_TEST_CONTROL_NUMBER ?? DEFAULT_CONTROL_NUMBER;
 	const password = args[1] ?? process.env.OPENSIM_TEST_PASSWORD ?? DEFAULT_PASSWORD;

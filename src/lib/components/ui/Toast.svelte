@@ -43,7 +43,7 @@ export const toasts = _store;
 </script>
 
 <script lang="ts">
-import { AlertCircle, AlertTriangle, CheckCircle2, Info, X } from "lucide-svelte";
+import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from "@lucide/svelte";
 import { onMount } from "svelte";
 
 let items = $state<ToastItem[]>([]);
@@ -53,9 +53,9 @@ $effect(() => {
 });
 
 const ICONS = {
-	success: CheckCircle2,
-	warning: AlertTriangle,
-	danger: AlertCircle,
+	success: CircleCheck,
+	warning: TriangleAlert,
+	danger: CircleAlert,
 	info: Info,
 } as const;
 

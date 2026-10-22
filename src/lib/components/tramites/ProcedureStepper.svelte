@@ -15,7 +15,7 @@
   (`evaluateCreditThresholds`).
 -->
 <script lang="ts">
-import { CheckCircle2, Lock } from "lucide-svelte";
+import { CircleCheck, Lock } from "@lucide/svelte";
 import { Badge, Card, ProgressBar, type Step, Stepper } from "#lib/components/ui";
 import { PROCEDURE_STATE_LABEL, PROCEDURE_UNAVAILABLE_NOTICE } from "#lib/utils/procedure-labels";
 import TramiteFormResidencia from "./TramiteFormResidencia.svelte";
@@ -85,7 +85,7 @@ const active = $derived(procedures[current] ?? null);
 					</div>
 					{#if active.unlocked}
 						<Badge variant="success" size="md" dot>
-							<CheckCircle2 size={12} strokeWidth={2} aria-hidden="true" />
+							<CircleCheck size={12} strokeWidth={2} aria-hidden="true" />
 							{PROCEDURE_STATE_LABEL.AVAILABLE}
 						</Badge>
 					{:else}

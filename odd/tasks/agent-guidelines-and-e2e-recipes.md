@@ -2,7 +2,8 @@
 
 <!-- odd-tracker
 kind: task
-status: active
+status: closed
+last-verified: 2026-10-19
 feature: agent-guidelines-and-e2e-recipes
 branch: feat/phase-9-verified-curriculum
 created: 2026-10-10
@@ -379,3 +380,11 @@ was not authorized. The Playwright suites (`test-e2e`, `test-e2e-fresh`) were no
 executed either — `test-e2e-fresh` deletes the local database and `test-e2e`
 spawns a browser against it; neither was needed to establish any acceptance
 criterion here.
+
+## Log
+
+- **2026-10-19 — Cerrado.** `AGENTS.md` y el `justfile` cuentan la misma verdad: las recetas
+  que existen son las que `just --list` muestra, y el umbral de auditoría y la prohibición de
+  lo remoto están escritos. Lo que este plan dejó sin ejecutar —`just e2e-dev`,
+  `just e2e-web` y los suites de Playwright— no era un criterio de aceptación de este
+  documento: era operación remota, y el Log de 2026-10-10 ya lo dice.

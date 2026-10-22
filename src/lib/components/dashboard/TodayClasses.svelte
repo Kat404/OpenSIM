@@ -8,7 +8,7 @@
   with the same pastel regardless of which page renders it.
 -->
 <script lang="ts">
-import { CalendarX } from "lucide-svelte";
+import { CalendarX } from "@lucide/svelte";
 import { EmptyState } from "#lib/components/ui";
 import { getSubjectColor } from "#lib/utils/color";
 import { getTheme } from "#lib/utils/theme.svelte";

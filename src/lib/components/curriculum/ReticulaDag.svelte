@@ -23,7 +23,7 @@
       works even before the $effect fires.
 -->
 <script lang="ts">
-import { BookOpen } from "lucide-svelte";
+import { BookOpen } from "@lucide/svelte";
 import { EmptyState } from "#lib/components/ui";
 import type { StudentProgressStatus } from "#lib/server/db/schema";
 import { getSubjectColor } from "#lib/utils/color";

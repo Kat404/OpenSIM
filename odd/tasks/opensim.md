@@ -9,7 +9,7 @@ sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign re
 -->
 
 **Proyecto:** OpenSIM (Open Source — Sistema Integral Modular)
-**Target Architecture:** SvelteKit `3.0.0` + Svelte `5.57.1` (Runes) + Cloudflare D1/Workers + Drizzle ORM `0.45.3` + Valibot `1.5.0` + `pdf-lib 1.17.1`
+**Target Architecture:** SvelteKit `3.1.0` + Svelte `5.57.2` (Runes) + Cloudflare D1/Workers + Drizzle ORM `0.45.4` + Valibot `1.5.0` + `pdf-lib 1.17.1`
 **Programa Académico:** Ingeniería en Sistemas Computacionales (Plan `ISIC-2010-224`, Instituto Tecnológico de Morelia)
 **Versión:** 2.2 (audit fixes: spec self-consistency, token hashing, route group, drizzle doc rewrite)
 **Fecha:** 2026-10-02
@@ -744,3 +744,14 @@ Segunda ronda de auditoría M3.1-Flash-Preview aplicada con cinco commits de uni
 - **Cascade completo (audit A5/A6)**: `student_credentials.controlNumber` ahora también `ON DELETE CASCADE` (migración 0003). Limpieza de cadena completa en egreso o corrección de número de control: `student_profiles → student_credentials`, `auth_sessions`. Las migraciones 0002 (auth_sessions cascade + índices) y 0003 (student_credentials cascade) cierran la dependencia.
 - **D1 local alineado**: `just db-reset` ejecutado antes del commit 1; las migraciones 0000/0001/0002/0003 están aplicadas; `auth_sessions` y `student_credentials` tienen CASCADE + los índices `idx_auth_sessions_expires_at` y `idx_auth_sessions_student` en el D1 local.
 - **Spec accuracy**: `src/lib/server/db/schema.ts` corrige el header de "10 normalized tables" a "12"; §8 Task 1.1 corrige "10 tablas" a "12 tablas". El contador de §16.3 ("10 entidades" en v2.1) se preserva verbatim porque documenta el bug histórico resuelto en v2.2.
+
+## Log
+
+- **2026-10-19 — CF-1 cambió: la tabla `subjectAliases` ya no existe.** La decisión de
+  arquitectura (v2.2) era «canonicalId como PK + tabla `subjectAliases` para los códigos
+  legacy». El 2026-10-19 el mantenedor decidió borrarla: sus tres filas de códigos legacy no
+  las leía nadie (los alias del dataset se consumen al generar el seed, no en runtime), y su
+  hermana `subject_prerequisites` sí la lee la retícula, que es lo que hizo parecer un
+  patrón de lo que era un caso suelto. Migración `drizzle/0017_drop_subject_aliases.sql`.
+  El §5 de este documento sigue mostrando la tabla porque es una especificación con
+  fecha: quien lea el código, no este archivo, encuentra la verdad.

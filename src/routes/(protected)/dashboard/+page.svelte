@@ -8,7 +8,7 @@
   data fetching.
 -->
 <script lang="ts">
-import { ArrowRight, FileDown, ShieldOff } from "lucide-svelte";
+import { ArrowRight, FileDown, ShieldOff } from "@lucide/svelte";
 import KpiCard from "#lib/components/dashboard/KpiCard.svelte";
 import TodayClasses from "#lib/components/dashboard/TodayClasses.svelte";
 import { Button, Card, EmptyState } from "#lib/components/ui";
@@ -96,7 +96,7 @@ function fmtAverage(value: number): string {
 					<h2 class="dashboard__cta-title">Continuar con la retícula</h2>
 				{/snippet}
 				<p class="dashboard__cta-text">
-					Explora las 42 asignaturas del plan ISIC-2010-224, revisa los prerrequisitos en forma de
+					Explora las asignaturas del plan ISIC-2010-224, revisa los prerrequisitos en forma de
 					grafo y conoce el camino que te falta por recorrer para titularte.
 				</p>
 				{#snippet footer()}

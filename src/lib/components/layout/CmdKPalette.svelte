@@ -28,7 +28,7 @@
     - Clicking outside closes.
 -->
 <script lang="ts">
-import { Search } from "lucide-svelte";
+import { Search } from "@lucide/svelte";
 import { tick } from "svelte";
 import { Modal } from "#lib/components/ui";
 import { matchesText } from "#lib/utils/text-match";

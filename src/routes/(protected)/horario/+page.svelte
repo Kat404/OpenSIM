@@ -14,7 +14,7 @@
   classes", which is a different and false statement.
 -->
 <script lang="ts">
-import { CalendarX, Clock } from "lucide-svelte";
+import { CalendarX, Clock } from "@lucide/svelte";
 import TimeGridSchedule from "#lib/components/schedule/TimeGridSchedule.svelte";
 import { Badge, Card, EmptyState } from "#lib/components/ui";
 import type { PageData } from "./$types";

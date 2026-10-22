@@ -23,7 +23,7 @@ the gap.
 **v1 covers one career: ISIC-2010-224 (Ingeniería en Sistemas Computacionales).** The other
 programmes are out of scope until their data is obtainable.
 
-- **Stack:** SvelteKit `3.0.0` + Svelte `5.57.1` (Runes) + Cloudflare D1 + Drizzle ORM `0.45.3`
+- **Stack:** SvelteKit `3.1.0` + Svelte `5.57.2` (Runes) + Cloudflare D1 + Drizzle ORM `0.45.4` + TypeScript `6.0.3`
 - **UI language:** Spanish (es-MX)
 - **Code language:** English
 - **A11y target:** WCAG 2.1 AA

@@ -3,7 +3,7 @@
 <!-- odd-tracker
 kind: phase-plan
 status: active
-last-verified: 2026-10-10
+last-verified: 2026-10-19
 reconciled-against: feat/phase-9-verified-curriculum@c49caea (main@fee9d60)
 sha-warning: los SHA 697c1c9, 0cafef1, 6ca7c12, 8f40837, ffcd595 y b3fef41 citados en el cuerpo de este archivo predicen la reescritura de firmas GPG del 2026-10-08 y están MUERTOS; los vivos verificados con `git cat-file -e` son 18de1a5 (T9.1), b6a1d8a (T9.2), 159b2bc (T9.7), 4460f27 (T9.3+T9.4+T9.6), 13f4d7a, 17e013b, db258a8, a799d47, a3621f7, c22d05c, 639a663 y c49caea
 -->
@@ -676,3 +676,12 @@ tenía 38 filas. Sobrevivió como número heredado al pasar al plan de 68.
 | Docentes | **0** nombres reales; el seed emite `DOC-001`…`DOC-007` |
 
 </details>
+
+## Log
+
+- **2026-10-19 — Sigue `active`, y sólo por B4.** B1, B2, B3, B5, B6, B7 y B8 están
+  cerradas; U1, U2, U6, U7 y U8 están HECHAS; U3 cancelada. **B4 no la puede cerrar el
+  repo**: son 29 blobs con PII en los refs de un pull request que ya no existe, y purgarlos
+  requiere un ticket a GitHub Support con la cuenta del mantenedor. La mitigación real ya
+  está hecha (la PII se sanificó en la fase 10, T4), así que el riesgo ya no crece — pero el
+  objeto inalcanzable sigue ahí, y eso lo sabe un humano con acceso a la cuenta.

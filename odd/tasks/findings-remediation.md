@@ -2,7 +2,7 @@
 
 <!-- odd-tracker
 kind: phase-plan
-status: active
+status: closed
 last-verified: 2026-10-19
 reconciled-against: chore/findings-closure@e5e8c96
 sha-warning: every SHA cited in this file predates the 2026-10-08 GPG re-sign rewrite and is dead; re-derive the current SHAs with `git log --oneline --grep='<subject>'`
@@ -437,3 +437,10 @@ currently-red check, and it establishes the all-green baseline the rest of the p
 
 > **Actualizado 2026-10-08:** Phase 8 ya se ejecutó; el único check rojo ya no está rojo. Lo que
 > sigue abierto es la decisión bloqueante de la línea 54 antes de arrancar Phase 10.
+
+## Log
+
+- **2026-10-19 — Cerrado.** 31 casillas con veredicto y evidencia, ninguna abierta. Los
+  hallazgos 16–19 de la tabla de trazabilidad (`T12.4`) siguen **a propósito**: son atajos
+  documentados con su techo nombrado, y cerrarlos es una decisión del mantenedor, no
+  remediación. La página se cierra con el ledger diciendo la verdad, que es lo que pedía.

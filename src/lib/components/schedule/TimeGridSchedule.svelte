@@ -39,6 +39,24 @@ interface Props {
 let { schedule, startHour = 7, endHour = 22 }: Props = $props();
 
 const DAY_LETTERS = ["L", "M", "X", "J", "V", "S", "D"] as const;
+
+/**
+ * The letter is what the grid draws; the name is what a reader hears.
+ *
+ * "Día L" tells a screen reader nothing about which day it is, and
+ * the block's own label did not carry the day either — the day lived
+ * only in the column's position, which is not in the accessibility
+ * tree.
+ */
+const DAY_NAME: Record<string, string> = {
+	L: "Lunes",
+	M: "Martes",
+	X: "Miércoles",
+	J: "Jueves",
+	V: "Viernes",
+	S: "Sábado",
+	D: "Domingo",
+};
 const DAY_INDEX: Record<string, DayLetter> = {
 	L: "L",
 	M: "M",
@@ -100,7 +118,7 @@ const positioned = $derived.by(() => {
 	<div class="grid__header-spacer" aria-hidden="true"></div>
 	{#each DAY_LETTERS as letter (letter)}
 		<div class="grid__day-header">
-			<span class="col-msg" aria-label="Día {letter}">{letter}</span>
+			<span class="col-msg" aria-label="Día {DAY_NAME[letter]}">{letter}</span>
 		</div>
 	{/each}
 
@@ -113,7 +131,7 @@ const positioned = $derived.by(() => {
 	</div>
 
 	{#each DAY_LETTERS as letter (letter)}
-		<div class="grid__day">
+		<div class="grid__day" role="group" aria-label="Día {DAY_NAME[letter]}">
 			{#each HOURS as hour (hour)}
 				<div class="grid__row-line" class:grid__row-line--hourly={true} aria-hidden="true"></div>
 			{/each}
@@ -124,6 +142,7 @@ const positioned = $derived.by(() => {
 					colorHsl={item.colorHsl}
 					topPx={item.topPx}
 					heightPx={item.heightPx}
+					dayName={DAY_NAME[letter]}
 				/>
 			{/each}
 		</div>

@@ -28,14 +28,14 @@
  * removed earlier: they multiply cost without moving the rate, which was
  * measured, not assumed.
  *
- * Session note: the `alumno` credential belongs to `99999999`, the placeholder
- * student, not to the 175-credit fixture (`12345678`). The pages still render
- * the fixture's catalogue, temario and credit rules because those are global
- * catalog data; only the per-student rows belong to `12345678`. The credit
- * tests below therefore assert the SHAPE of the rule, never that this student
- * passes it — the placeholder has zero complementary credits, and a test that
- * quietly depended on the other student would pass or fail for the wrong
- * reason.
+ * Session note: since 2026-10-19 the `alumno` credential is `12345678`, the
+ * student with a history (175 approved credits, 3 complementary ones, 49 rows
+ * in `student_progress`). Before that it was `99999999`, who has none, and
+ * every assertion about per-student data had to be written as a shape rather
+ * than a value — a test that quietly depended on the empty student would pass
+ * or fail for the wrong reason. The data assertions now live in
+ * `tests/agentic-data.e2e.ts`; the ones here are about MEANING (what the page
+ * claims), and those about VALUES (what the numbers are) are there.
  */
 import { describe, test } from "@e2e-dev/web";
 import { expect } from "e2e";
@@ -56,10 +56,13 @@ describe("temario — explicit coverage", { tags: ["temario"] }, () => {
 		const coverage = await agent.extract(
 			"the coverage summary at the top of the page: how many subjects have a published syllabus, how many subjects the plan has in total, and the subtopic count if one is shown",
 			{
+				// Only the two numbers the test asserts. A field the test
+				// does not use is a field the model may leave out, and the
+				// repair only succeeds when the answer has exactly as many
+				// keys as the schema asks for.
 				schema: z.object({
 					withTemario: z.number().int(),
 					total: z.number().int(),
-					subtopics: z.number().int().nullable(),
 				}),
 			},
 		);
@@ -104,8 +107,9 @@ describe("horario — real schedule vs pending groups", { tags: ["horario"] }, (
 		// Whichever state this student is in, the page must not leave a reader
 		// guessing: an empty grid with no explanation reads as "you have no
 		// classes", which is a different and false statement.
+		// This student has classes, so the grid is not optional any more.
 		await agent.assert(
-			"the schedule page either shows a weekly grid of classes with day, time and classroom, or states why there are none",
+			"the schedule page shows a weekly grid of classes with day, time and classroom",
 		);
 
 		await expect(screen.getByRole("heading", { name: "Horario Semanal" })).toBeVisible();
@@ -126,19 +130,21 @@ describe("tramites — the double credit gate", { tags: ["tramites"] }, () => {
 		const credits = await agent.extract(
 			"the credit counts shown on the page: the reticular approved credits and the complementary credits",
 			{
+				// Same rule: only what the test asserts.
 				schema: z.object({
-					reticular: z.number().int(),
 					complementary: z.number().int(),
 					complementaryRequired: z.number().int(),
 				}),
 			},
 		);
 
-		// The placeholder student has no history, so 0/0. What matters is that
-		// the page reports a complementary count at all: before Phase 10 the
-		// loader counted activity ROWS, and a page reporting "3 de 5" from
-		// three rows was indistinguishable from one reporting the real sum.
-		expect(credits.complementary).toBeGreaterThanOrEqual(0);
+		// This student has three complementary activities worth one credit
+		// each, so the page must report 3 of 5. Before Phase 10 the loader
+		// counted activity ROWS, and a page reporting "3 de 5" from three
+		// rows was indistinguishable from one reporting the real sum — with
+		// this fixture both are 3, which is why the sum is pinned in
+		// `tests/unit/migration-0016.test.ts` and not here.
+		expect(credits.complementary).toBe(3);
 		expect(credits.complementaryRequired).toBe(5);
 
 		await expect(screen.getByText(/de \d+ créditos\s+complementarios/)).toBeVisible();
@@ -178,16 +184,15 @@ describe("kardex — academic record", { tags: ["kardex"] }, () => {
 	}, async ({ app, agent, screen }) => {
 		await app.open("/academico/kardex");
 
-		await agent.assert(
-			"the Kardex page shows either a table of graded subjects or an empty state saying there is no academic record",
-		);
+		await agent.assert("the Kardex page shows a table of graded subjects, not an empty state");
 
-		// Both branches are covered by the judgment above; the locators accept
-		// either because the session student has no academic record at all.
-		// The header of this file says why: `alumno` is `99999999`, and every
-		// `student_progress` row belongs to `12345678`. Demanding the table here
-		// made this test fail for a reason that had nothing to do with the page.
+		// The empty state is no longer possible for this student: every
+		// `student_progress` row is his. Demanding the table used to fail for
+		// a reason that had nothing to do with the page — the session student
+		// was `99999999` — so the test accepted both. The record is what the
+		// page owes now.
 		await expect(screen.getByRole("heading", { name: "Kardex Académico" })).toBeVisible();
-		await expect(screen.getByText(/Clave|Aún no tienes/)).toBeVisible();
+		await expect(screen.getByText(/Clave/)).toBeVisible();
+		await expect(screen.getByText(/Aún no tienes/)).toHaveCount(0);
 	});
 });

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Save, Search, Trash2 } from "lucide-svelte";
+import { Save, Search, Trash } from "@lucide/svelte";
 import {
 	Avatar,
 	Badge,
@@ -158,7 +158,7 @@ function notify() {
 			<Tooltip content="Eliminar elemento" placement="right">
 				<Button variant="danger">
 					{#snippet startIcon()}
-						<Trash2 size={16} strokeWidth={1.75} />
+						<Trash size={16} strokeWidth={1.75} />
 					{/snippet}
 					{#snippet children()}
 						Eliminar

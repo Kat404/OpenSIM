@@ -17,10 +17,15 @@
  * asked to delete.
  */
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { clearWorkerEnv, seedCareer, seedProfile, withTestDb } from "./_helpers/harness";
 
-const SCRIPT_PATH = "scripts/inject-scheduled-handler.mjs";
+// Relative to this file, not to the process cwd: the runner may not
+// start in the repository root.
+const SCRIPT_PATH = fileURLToPath(
+	new URL("../../scripts/inject-scheduled-handler.mjs", import.meta.url),
+);
 const script = readFileSync(SCRIPT_PATH, "utf8");
 
 /** The DELETE statements exactly as the injected handler runs them. */
