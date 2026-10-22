@@ -1,7 +1,7 @@
 /**
  * OpenSIM — Dashboard data loader (Phase 3 Tarea 3.2; Phase 4 N6).
  *
- * Loads the four headline KPIs plus the today's-classes widget data
+ * Loads the four headline KPIs plus the week widget's data
  * in two batched round trips to D1. Per audit NEW-1, every query
  * uses an explicit column allow-list — we never hydrate the full
  * `StudentProfile` row client-side (CURP / birthState stay
@@ -17,6 +17,12 @@
  * Phase 4 N6: the helper now returns the resolved period so the
  * page can render "Periodo actual: {period}" without re-querying.
  *
+ * S5 (2026-10-22): the widget shows the student's WHOLE week, not
+ * only today's blocks — the dashboard's short column left ~360px of
+ * empty page under a widget that had nothing else to show. The week
+ * comes from the same enrolment and the same subject query `/horario`
+ * uses; today's slice is still published for the loader's contract.
+ *
  * See: odd/tasks/opensim.md (Phase 3 dashboard + horario; Phase 4.1 N6);
  * audit H2 + M1 (Round 4).
  */
@@ -27,11 +33,26 @@ import { eq, inArray } from "drizzle-orm";
 import { getDb } from "#lib/server/db";
 import { studentProfiles, subjects } from "#lib/server/db/schema";
 import { getCurrentEnrollment, getCurrentPeriod } from "#lib/server/enrollment";
-import { getTodayDayLetter } from "#lib/utils/time";
+import { type DayLetter, getTodayDayLetter } from "#lib/utils/time";
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 import type { PageServerLoad } from "./$types";
 
 const env = workerEnv as OpenSimWorkerEnv;
+
+/** The day letters the TecNM grid uses, in the order the week runs. */
+const DAY_LETTERS: ReadonlySet<DayLetter> = new Set(["L", "M", "X", "J", "V", "S", "D"]);
+const DAY_ORDER: Record<DayLetter, number> = { L: 0, M: 1, X: 2, J: 3, V: 4, S: 5, D: 6 };
+
+/** One class block of the student's current enrolment. */
+export interface WeekClass {
+	code: string;
+	name: string;
+	subjectCanonicalId: string;
+	day: DayLetter;
+	startTime: string;
+	endTime: string;
+	classroom: string;
+}
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const u = locals.user;
@@ -52,16 +73,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 				totalCredits: u.approvedCredits + u.remainingCredits,
 				advancePercentage: u.advancePercentage,
 			},
-			todayClasses: [] as {
-				code: string;
-				name: string;
-				subjectCanonicalId: string;
-				startTime: string;
-				endTime: string;
-				classroom: string;
-			}[],
+			weekClasses: [] as WeekClass[],
+			todayClasses: [] as WeekClass[],
+			today: todayLetter,
 			hasEnrollment: false,
-			dayLabel: "hoy",
 			period: null,
 		};
 	}
@@ -103,16 +118,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 		advancePercentage: u.advancePercentage,
 	};
 
-	// Today's classes: filter the enrollment's schedule blocks to the
-	// letter of the current weekday in Morelia (see `time.ts`).
-	const todayClasses: {
-		code: string;
-		name: string;
-		subjectCanonicalId: string;
-		startTime: string;
-		endTime: string;
-		classroom: string;
-	}[] = [];
+	// The student's WHOLE week: every block of the current enrolment,
+	// joined with the catalogue for the subject's code and name — the
+	// same query shape /horario uses, because it is the same question.
+	// The day letter comes from the block itself; a letter outside the
+	// TecNM grid is dropped with a warning, so a class nobody can see
+	// does not vanish without a trace.
+	const weekClasses: WeekClass[] = [];
 
 	if (enrollment.schedule.length > 0) {
 		const groupToCanonical = new Map<string, string>();
@@ -126,22 +138,38 @@ export const load: PageServerLoad = async ({ locals }) => {
 		for (const s of subjectRows) codeByCanonical.set(s.canonicalId, { code: s.code, name: s.name });
 
 		for (const b of enrollment.schedule) {
-			if (b.day.toUpperCase() !== todayLetter) continue;
 			const canonical = groupToCanonical.get(b.groupId);
 			if (!canonical) continue;
 			const info = codeByCanonical.get(canonical);
 			if (!info) continue;
-			todayClasses.push({
+			const day = b.day.toUpperCase();
+			if (!DAY_LETTERS.has(day as DayLetter)) {
+				console.warn(`[dashboard] dropping a block with an unknown day letter: "${b.day}"`);
+				continue;
+			}
+			weekClasses.push({
 				code: info.code,
 				name: info.name,
 				subjectCanonicalId: canonical,
+				day: day as DayLetter,
 				startTime: b.startTime,
 				endTime: b.endTime,
 				classroom: b.classroom,
 			});
 		}
-		todayClasses.sort((a, b) => a.startTime.localeCompare(b.startTime));
+		// Stable order so SSR and CSR agree on the DOM tree.
+		weekClasses.sort((a, b) => {
+			const ad = DAY_ORDER[a.day];
+			const bd = DAY_ORDER[b.day];
+			if (ad !== bd) return ad - bd;
+			return a.startTime.localeCompare(b.startTime);
+		});
 	}
+
+	// Today's slice of the same week. The widget renders the whole week,
+	// but the loader still publishes today's slice: it is part of this
+	// loader's published contract (tests/unit/protected-loaders.test.ts).
+	const todayClasses = weekClasses.filter((c) => c.day === todayLetter);
 
 	return {
 		firstName: u.fullName.split(/\s+/)[0] ?? u.fullName,
@@ -152,12 +180,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 			totalCredits: profile.approvedCredits + profile.remainingCredits,
 			advancePercentage: profile.advancePercentage,
 		},
+		weekClasses,
 		todayClasses,
+		// The day the student is in right now, in Morelia (see `time.ts`).
+		today: todayLetter,
 		// `hasEnrollment` reflects active enrollment only (status =
 		// 'ENROLLED'); see `getCurrentEnrollment` for the single
 		// source of truth.
 		hasEnrollment: enrollment.groups.length > 0,
-		dayLabel: "hoy",
 		period: enrollment.period,
 	};
 };

@@ -11,7 +11,7 @@
  *
  * The same spec pins the third rule the dashboard now follows: the
  * "Aún no tienes inscripción activa" empty state belongs in the same
- * column as the "Clases de hoy" widget (it talks about the student's
+ * column as the "Tu semana" widget (it talks about the student's
  * classes), instead of hanging under the CTA cards on the right.
  *
  * The spec signs in with the shared setup's student (the placeholder
@@ -132,7 +132,7 @@ test.describe("dashboard — the cards hold their own content", () => {
 		const emptyState = page.getByText("Aún no tienes inscripción activa");
 		await expect(emptyState).toBeVisible();
 
-		// Both the empty state and the "Clases de hoy" widget live in the
+		// Both the empty state and the "Tu semana" widget live in the
 		// same column: the empty state talks about the student's classes.
 		const sameColumn = await page.evaluate(() => {
 			const empty = [...document.querySelectorAll("*")].find(
@@ -140,11 +140,11 @@ test.describe("dashboard — the cards hold their own content", () => {
 					el.textContent?.trim().startsWith("Aún no tienes inscripción activa") &&
 					el.children.length === 0,
 			);
-			const today = [...document.querySelectorAll("*")].find(
-				(el) => el.textContent?.trim() === "Clases de hoy" && el.children.length === 0,
+			const week = [...document.querySelectorAll("*")].find(
+				(el) => el.textContent?.trim() === "Tu semana" && el.children.length === 0,
 			);
-			if (!empty || !today) return false;
-			return empty.closest(".dashboard__today") === today.closest(".dashboard__today");
+			if (!empty || !week) return false;
+			return empty.closest(".dashboard__week") === week.closest(".dashboard__week");
 		});
 		expect(sameColumn, "the empty state must live in the classes column").toBe(true);
 	});
