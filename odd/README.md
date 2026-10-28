@@ -4,7 +4,7 @@
 kind: index
 status: active
 last-verified: 2026-10-28
-reconciled-against: main@8a050de (PR #11 fusionada) — delivery state; the phase rows below still describe the 2026-10-10 pass
+reconciled-against: main@4a21a52 (PR #12 fusionada) — delivery state; the phase rows below still describe the 2026-10-10 pass
 sha-warning: los SHA ffcd595, 8f40837, 6ca7c12 y b3fef41 citados en el cuerpo de este archivo predicen la reescritura de firmas GPG del 2026-10-08 y están MUERTOS; los SHA vivos verificados con `git cat-file -e` son 18de1a5, b6a1d8a, 159b2bc, 2ac464f, fee9d60, 13f4d7a, 4460f27, 17e013b, db258a8, a799d47, a3621f7, c22d05c, 639a663 y c49caea
 -->
 
@@ -14,6 +14,14 @@ with commit SHAs. **Phase 9 (curriculum data foundation) is the active phase: T9
 closed and T9.10–T9.14 are open.** Production D1 is at migration **`0017`** (verified
 2026-10-19). This file is the index; `tasks/opensim.md` is the canonical spec.
 
+> **Reconciled 2026-10-28 — toolchain.** PR **#12** está **fusionada** (`main` = `4a21a52`) y
+> desplegada (22:13:02Z, 53 s después del merge). La toolchain es una sola: **Vite+ `vp` 1.4.0**
+> sustituye a vite, vitest, biome y tsx; `biome.json` son ahora los bloques `fmt` y `lint` de
+> `vite.config.ts`; la receta `biome-check` se llama `vp-check`; y hay un **hook de pre-push
+> versionado** que corre la puerta local antes de que algo salga de la máquina. La precio de la
+> unificación: **oxlint no lintea `.svelte`** (Biome sí lo hacía). Lee
+> **`tasks/vite-plus-migration.md`**.
+>
 > **Reconciled 2026-10-28 — entrega.** PR **#8**, **#9** y **#11** están **fusionadas**
 > (`main` = `8a050de`, en GitHub **y** en Codeberg) y el Worker se desplegó solo 41 segundos
 > después del merge (18:53:47Z), con la build de Cloudflare en **success**. Ya viven en
@@ -58,10 +66,10 @@ closed and T9.10–T9.14 are open.** Production D1 is at migration **`0017`** (v
 | **What is done?** | Phases 1, 2, 3, 4.0, 4, 5, 6, 6.1, 6.2, 6.5, 7, 8 (a11y dark-theme contrast), and in Phase 9: **T9.1–T9.9**. T9.5 shipped inside T9.7; T9.8 shipped inside T9.7 too, as a rebuild. |
 | **What is open?** | **Delivery, not development.** The 14 live findings are closed and verified; PR #8, #9 and #11 are merged and the Worker is deployed with all of them. What is open is the four `ponytail:` shortcuts (findings 16–19, awaiting a maintainer owner) and B4 (PII in the refs of a dead PR, which depends on GitHub Support, not on the plan). Phase 9 T9.10–T9.14 remain open but unblocked. |
 | **What is next?** | **The four `ponytail:` shortcuts** — they need an owner and a horizon, not a fix (see `tasks/delivery-handoff-2026-10-19.md` §Pendiente 3). Then T9.12 — the temario detail — the next *feature*, still blocked on an operator decision, not on data. |
-| **Pushed?** | **Yes — `main` is on both remotes.** `main` = `8a050de` (PR #8, #9 and #11 merged) and `git ls-remote` confirms `origin` and `codeberg` point at the same commit. `just push-mirror` publishes to both **because `origin` carries two push URLs** (`git@github.com:Kat404/OpenSIM.git` and `ssh://git@codeberg.org/Kat404/OpenSIM.git`); a clone without them publishes only to GitHub, and the recipe says so. |
+| **Pushed?** | **Yes — `main` is on both remotes.** `main` = `4a21a52` (PR #8, #9, #11 and #12 merged) and `git ls-remote` confirms `origin` and `codeberg` point at the same commit. `just push-mirror` publishes to both **because `origin` carries two push URLs** (`git@github.com:Kat404/OpenSIM.git` and `ssh://git@codeberg.org/Kat404/OpenSIM.git`); a clone without them publishes only to GitHub, and the recipe says so. |
 | **Signed?** | **Yes — everything.** 126/126 `G` on `main`, 143/143 `G` on the local feature branch at the last measurement, GPG key `3335F4A0D9DBBA95`. Verified with `git log <ref> --format='%G?' \| sort \| uniq -c`. Treat the branch figure as a lower bound: the branch was still advancing while this file was written. Every SHA changed in the 2026-10-08 rewrite, so older SHAs cited anywhere in `odd/` are dead. |
 | **Production data?** | **Migration `0017` applied** (verified 2026-10-19, after the `0015`–`0017` run): 68 subjects, 32 `subject_units`, 475 course groups, 49 `student_progress` rows, 3 complementary activities (3 credits), and `subject_aliases` dropped by `0017` — no rows lost. The remote `student_credentials` holds **only `99999999`** (the placeholder, zero progress rows); `12345678` — the student that owns the 49 progress rows — has **no remote credential**. The remote credential's password is `OPENSIM_TEST_PASSWORD` from the local `.env`, **not** the `opensim-dev-2026` the README documents (verified by recomputing PBKDF2 against the stored hash). The Worker was deployed on 2026-10-28 (18:53:47Z, 41 s after the merge) with a build that includes PR #8, #9 and **#11** (`/perfil`, the week widget, the page transition and the subject names in the schedule grid are live). The demo's credential is now `12345678`, whose identity in the remote D1 is the synthetic one since `5e2e936`. |
-| **Green?** | Re-measured 2026-10-28 after the Vite+ migration: **387/387** unit tests in 26 files (`vp test`), `just vp-check` **0 errors** / 6 warnings in 166 files, `just check` (svelte-check) 0/0, `just build` ✓ (the `scheduled` patch still applies), `just test-e2e` **213 passed, 0 failed**, 160 skipped (the avatar-overlap suite, which by design runs only in its own project). |
+| **Green?** | Re-measured 2026-10-28 after the Vite+ migration: **387/387** unit tests in 26 files (`vp test`), `just vp-check` **0 errors** / 6 warnings in 166 files, `just check` (svelte-check) 0/0, `just build` ✓ (the `scheduled` patch still applies), `just test-e2e` **213 passed, 0 failed**, 160 skipped (the avatar-overlap suite, which by design runs only in its own project). The same numbers now run on every `git push`: the repo ships a versioned pre-push hook (`.vite-hooks/pre-push`) that runs `just qa-fast`. |
 
 ## Phase table
 
