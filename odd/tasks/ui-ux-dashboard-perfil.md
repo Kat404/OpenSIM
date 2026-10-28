@@ -1,8 +1,8 @@
 <!-- odd-tracker
 kind: phase-plan
-status: active
-last-verified: 2026-10-22
-branch: feat/ui-ux-dashboard-perfil
+status: closed
+last-verified: 2026-10-28
+branch: feat/ui-ux-dashboard-perfil (fusionada: PR #11 → main@8a050de)
 delivery: work-unit commits en la rama de feature
 test-runner: just qa-fast · just test-e2e
 continues: odd/tasks/delivery-handoff-2026-10-19.md (Pendiente 2 y 3 siguen abiertos)
@@ -319,4 +319,14 @@ Lo que dijo la QA de la página:
   (`full_name` → "Sofía Ramírez Aguirre", `curp` → `RAGA000615MMZNRX3`), los mismos valores que
   la D1 local) y se comprobó que el nombre viejo no queda en ninguna columna de texto de la
   base remota.
+- **2026-10-28 — Fusionada y desplegada.** PR #11 fusionada a `main` (merge commit `8a050de`,
+  18:53:06Z). La integración de Cloudflare construyó y desplegó **41 segundos después**
+  (18:53:47Z) y su check salió **success** — a diferencia de las ramas, donde el paso de
+  despliegue (`wrangler preview`) moría por el bloque `previews` ausente (ya añadido en
+  `566424d`). Verificado contra el Worker público: `/dashboard` sirve "Tu semana", `/perfil`
+  responde 200 con sus tarjetas, y la rejilla "Carga actual" nombra las materias.
+  `main` quedó en `8a050de` en GitHub **y** en Codeberg.
+- **2026-10-28 — Queda abierto, y no lo tapa esta unidad:** los cuatro atajos `ponytail:`
+  (hace falta un dueño y un horizonte) y B4 (los 29 blobs con PII en las referencias de un PR
+  muerto, que sólo GitHub Support puede purgar).
 
