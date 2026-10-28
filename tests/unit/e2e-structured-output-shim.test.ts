@@ -7,7 +7,8 @@
  * returns valid JSON with the right values and paraphrases the requested key
  * names, or answers the inner question without the runner's envelope.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
+
 import { repairStructuredOutput } from "../../e2e-structured-output-shim";
 
 const extractSchema = {

@@ -17,7 +17,8 @@
  * and assert both what it received and what `handle` returned.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import { handle } from "../../src/hooks.server";
 import {
 	clearSessionCookieOptions,

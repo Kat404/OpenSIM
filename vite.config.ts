@@ -1,9 +1,69 @@
 import adapter from "@sveltejs/adapter-cloudflare";
 import { sveltekit } from "@sveltejs/kit/vite";
-import { defineConfig } from "vitest/config";
+import { defineConfig, lazyPlugins } from "vite-plus";
 
 export default defineConfig({
-	plugins: [
+	fmt: {
+		// The repo's house style, carried over from biome.json verbatim:
+		// tabs, two-space tab stops, 100 columns, double quotes, semicolons
+		// and trailing commas everywhere.
+		useTabs: true,
+		tabWidth: 2,
+		printWidth: 100,
+		singleQuote: false,
+		semi: true,
+		trailingComma: "all",
+		// Biome's `assist.source.organizeImports` had one job: keep the
+		// imports in order. Oxfmt does the same thing with its own
+		// algorithm, so the discipline survives the migration.
+		sortImports: true,
+		// biome never sorted the manifest; keep the key order the
+		// maintainer chose.
+		sortPackageJson: false,
+		// What the formatter must NOT touch:
+		//  - markdown: the prose and the tables are hand-written (biome
+		//    never formatted markdown, and oxfmt's table re-padding would
+		//    fight every manual edit)
+		//  - drizzle/meta/**: drizzle-kit generates the snapshots
+		//  - docs/data/**: the captured SIM data, vendored as it arrived
+		//  - src/lib/server/db/data/**: the seed's INPUT; its bytes feed
+		//    the generated seed.sql, so reformatting it would move the
+		//    generated file away from its generator
+		//  - skills-lock.json, ruff.toml: generated / owned by other tools
+		ignorePatterns: [
+			"**/*.md",
+			"drizzle/meta/**",
+			"docs/data/**",
+			"src/lib/server/db/data/**",
+			"skills-lock.json",
+			"ruff.toml",
+		],
+	},
+	lint: {
+		jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
+		rules: { "vite-plus/prefer-vite-plus-imports": "error" },
+		// The same files the formatter leaves alone: the vendored data,
+		// the generated drizzle snapshots and the test reports. Biome
+		// excluded them from the linter too.
+		ignorePatterns: [
+			"drizzle/meta/**",
+			"docs/data/**",
+			"src/lib/server/db/data/**",
+			"playwright-report/**",
+			"tests/e2e/reports/**",
+			"test-results/**",
+		],
+		options: {
+			// Type-aware RULES: yes. Reporting type ERRORS: no — that is
+			// `svelte-check`'s job (it is in the `check` recipe), and
+			// oxlint's TypeScript program does not understand Svelte's
+			// type exports, so it would report "Module '*.svelte' has no
+			// exported member" for code that compiles.
+			typeAware: true,
+			typeCheck: false,
+		},
+	},
+	plugins: lazyPlugins(async () => [
 		// Exclude the dev-only avatar overlap fixture from production
 		// bundles. `src/routes/.dev/avatars/` exists for the AC6-AC11
 		// Playwright suite (just test-e2e-avatar) but should not ship
@@ -21,7 +81,7 @@ export default defineConfig({
 		{
 			name: "exclude-dev-fixtures",
 			enforce: "pre",
-			transform(code, id) {
+			transform(code: string, id: string) {
 				// Build path is .svelte-kit/generated/build/; dev is
 				// .svelte-kit/generated/dev/. The transform only fires
 				// on build files, leaving the dev server alone.
@@ -88,7 +148,7 @@ export default defineConfig({
 				},
 			},
 		}),
-	],
+	]),
 	test: {
 		expect: { requireAssertions: true },
 		projects: [

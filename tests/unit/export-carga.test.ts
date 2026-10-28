@@ -14,7 +14,8 @@
  * `no-store` with an attachment filename scoped to the student.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import { POST } from "../../src/routes/api/export/carga/+server";
 import {
 	clearWorkerEnv,

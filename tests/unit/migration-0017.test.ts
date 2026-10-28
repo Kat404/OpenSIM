@@ -9,7 +9,8 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
+
+import { describe, expect, it } from "vite-plus/test";
 
 const DIR = fileURLToPath(new URL("../../drizzle/", import.meta.url));
 const SEED = fileURLToPath(new URL("../../src/lib/server/db/seed.sql", import.meta.url));

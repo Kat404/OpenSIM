@@ -27,9 +27,10 @@
  * R8-7 / R9 (round 9 task 11).
  */
 
-import { env as workerEnv } from "cloudflare:workers";
 import type { RequestHandler } from "@sveltejs/kit";
+import { env as workerEnv } from "cloudflare:workers";
 import { and, eq, inArray } from "drizzle-orm";
+
 import { getDb } from "#lib/server/db";
 import {
 	courseGroups,
@@ -39,6 +40,7 @@ import {
 	subjects,
 } from "#lib/server/db/schema";
 import { getCurrentPeriod } from "#lib/server/enrollment";
+
 import type { OpenSimWorkerEnv } from "../../../../cloudflare-workers";
 
 const env = workerEnv as OpenSimWorkerEnv;

@@ -26,7 +26,9 @@
 import { readFileSync } from "node:fs";
 import type { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import type { OfferBlock, OfferGroup, OfferPage } from "../../src/lib/components/simulador/types";
 import { currentAcademicPeriod } from "../../src/lib/server/enrollment";
 import {

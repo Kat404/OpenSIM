@@ -18,14 +18,16 @@
  * rendered by `LayoutHeader`.
  */
 
-import { env as workerEnv } from "cloudflare:workers";
 import { type RequestHandler, redirect } from "@sveltejs/kit";
+import { env as workerEnv } from "cloudflare:workers";
+
 import {
 	clearSessionCookieOptions,
 	invalidateAllSessions,
 	SESSION_COOKIE_NAME,
 } from "#lib/server/auth";
 import { getDb } from "#lib/server/db";
+
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 
 const env = workerEnv as OpenSimWorkerEnv;

@@ -7,6 +7,7 @@
  * T9.14 removed from /reinscripcion.
  */
 import { expect, test } from "@playwright/test";
+
 import { scanForA11y } from "./_helpers";
 
 test.use({ storageState: "playwright/.auth/storage.json" });

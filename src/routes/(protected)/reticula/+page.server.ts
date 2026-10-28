@@ -25,6 +25,7 @@
 
 import { env as workerEnv } from "cloudflare:workers";
 import { asc, eq } from "drizzle-orm";
+
 import { getDb } from "#lib/server/db";
 import {
 	courseGroups,
@@ -36,6 +37,7 @@ import {
 	subjectPrerequisites,
 	subjects,
 } from "#lib/server/db/schema";
+
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 import type { PageServerLoad } from "./$types";
 

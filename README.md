@@ -23,7 +23,7 @@ the gap.
 **v1 covers one career: ISIC-2010-224 (Ingeniería en Sistemas Computacionales).** The other
 programmes are out of scope until their data is obtainable.
 
-- **Stack:** SvelteKit `3.1.0` + Svelte `5.57.2` (Runes) + Cloudflare D1 + Drizzle ORM `0.45.4` + TypeScript `6.0.3`
+- **Stack:** SvelteKit `3.1.0` + Svelte `5.57.2` (Runes) + Cloudflare D1 + Drizzle ORM `0.45.4` + TypeScript `6.0.3` + Vite+ `1.4.0` (`vp`: format, lint, test, build)
 - **UI language:** Spanish (es-MX)
 - **Code language:** English
 - **A11y target:** WCAG 2.1 AA
@@ -55,11 +55,11 @@ Visit `http://localhost:5173`, log in with the test credentials below, and `/das
 
 | Script                 | What it does                                                                             |
 | ---------------------- | ---------------------------------------------------------------------------------------- |
-| `just dev`             | Vite dev server                                                                          |
-| `just build`           | Wrangler types check + Vite production build for Cloudflare                              |
+| `just dev`             | Vite+ dev server (`vp dev`)                                                              |
+| `just build`           | Wrangler types check + Vite+ production build for Cloudflare                             |
 | `just preview`         | Wrangler dev against the built Worker                                                    |
 | `just check`           | svelte-kit sync + svelte-check + wrangler types                                          |
-| `just test`            | Vitest unit tests (single run)                                                           |
+| `just test`            | Unit tests (single run) through `vp test`                                                |
 | `just db-generate`     | Drizzle Kit — generate SQL migrations from schema diff (codegen only)                    |
 | `just db-seed`         | Generate + apply `seed.sql` in one step (Drizzle codegen + `wrangler d1 execute --file`) |
 | `just db-set-password` | Provision test student credential (dev only)                                             |
@@ -197,6 +197,24 @@ DO NOT use these credentials in any deployed environment. `db-set-password-remot
 the default password outright — but only when the environment does not already carry one,
 so a `.env` with `OPENSIM_TEST_PASSWORD` reaches the remote database without the guard
 ever firing.
+
+## The local gate (git hook)
+
+Cloudflare's Workers Builds integration **builds and deploys** on every merge to `main`: the
+PR #11 merge was live 41 seconds after the merge commit. `main` has no branch protection and
+no rulesets, so the last place a human can stop a regression is this machine, before the
+push.
+
+The repo ships a versioned pre-push hook that runs the gate. Enable it once per clone:
+
+```bash
+vp hooks enable      # installs the dispatcher, sets core.hooksPath
+vp hooks status      # what is active in this clone
+```
+
+`VP_GIT_HOOKS=0 git push …` skips it on purpose. The hook runs `just qa-fast` (types + lint +
+unit tests); the e2e suite stays a manual step (`just test-e2e`) because it needs the local D1
+and a dev server.
 
 ## Demo data
 

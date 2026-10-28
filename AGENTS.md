@@ -29,7 +29,7 @@ Cuando una fuente calla, la UI lo dice en pantalla en vez de rellenarlo. No inve
 valor para que una pantalla se vea completa.
 
 **Stack:** SvelteKit 3 + Svelte 5 · Cloudflare Workers · D1 (SQLite) vía Drizzle ·
-pnpm · Biome (formato + lint) · vitest · Playwright + axe-core · runner e2e agéntico
+pnpm · Vite+ `vp` (formato + lint + tests + build) · Playwright + axe-core · runner e2e agéntico
 (MiniMax-M3 al navegador real, configurado en `e2e.config.ts`) · Codegraph.
 
 ## Patrones y Guía de Ejecución
@@ -53,9 +53,9 @@ aparece ahí no existe y no la debes inventar en un reporte.
 
 | Receta | Qué hace |
 | --- | --- |
-| `just qa-fast` | `check` + `biome-check` + `test`. El gate de pre-commit; **no** incluye e2e. |
+| `just qa-fast` | `check` + `vp-check` + `test`. El gate de pre-commit; **no** incluye e2e. |
 | `just qa` | Lo anterior más `build`. El gate de pre-push. |
-| `just test` | Sólo vitest. |
+| `just test` | Los tests unitarios (`vp test`). |
 | `just test-e2e` | Playwright + axe-core contra la D1 local existente. **No destructiva**: migra y aprovisiona la credencial, no borra nada. |
 | `just test-e2e-fresh` | Lo mismo desde una base limpia. **Destructiva**: borra `.wrangler/state/v3/d1`, re-migra y re-siembra. Sólo cuando la base local está realmente mal. |
 | `just test-e2e-ui` | Playwright en modo interactivo (`--ui`). |
@@ -92,6 +92,27 @@ El D1 que hay en producción es de pruebas/demo, para que alguien pueda ver Open
 funcionando sin instalarlo; no está diseñado para crecer. Esa es también la razón
 de la prohibición: un `db-seed-remote` equivocado no se nota hasta que el demo
 público ya no arranca.
+
+### La puerta local: hook de pre-push
+
+La integración de Cloudflare **construye y despliega** en cada merge a `main` (el merge del
+PR #11 estuvo en producción 41 segundos después del commit de merge). `main` no tiene
+protección de rama ni rulesets, y el único check automático de un PR es ese build — que
+dice "compiló", no "funciona". El último punto donde una persona puede detener una regresión
+es **esta máquina, antes del push**.
+
+Por eso el repo trae un hook de pre-push versionado (`.vite-hooks/pre-push`) que corre
+`just qa-fast`. Para activarlo en un clon nuevo:
+
+```bash
+vp hooks enable      # instala el dispatcher y pone core.hooksPath
+vp hooks status      # qué está activo en este clon
+```
+
+`VP_GIT_HOOKS=0 git push …` (o `git push --no-verify`) lo salta a propósito. El hook **no**
+corre los e2e: ésos necesitan la D1 local y un servidor de desarrollo, tardan ~2 minutos, y
+la definición de la puerta del repo los deja fuera de `qa-fast` a propósito. Antes de un
+merge que toque la UI, corre `just test-e2e` a mano.
 
 ### Actualización & Seguimiento
 

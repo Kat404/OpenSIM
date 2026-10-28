@@ -17,7 +17,9 @@
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
+
+import { describe, expect, it } from "vite-plus/test";
+
 import { type AvatarStatus, composeAltText, initials, STATUS_LABEL_ES } from "./Avatar.svelte";
 
 const ALL_STATUSES: AvatarStatus[] = ["online", "offline", "busy", "away"];

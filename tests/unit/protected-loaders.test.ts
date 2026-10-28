@@ -19,7 +19,9 @@
  */
 
 import type { DatabaseSync } from "node:sqlite";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import { currentAcademicPeriod } from "../../src/lib/server/enrollment";
 import { PROCEDURE_UNAVAILABLE_NOTICE } from "../../src/lib/utils/procedure-labels";
 import { getTodayDayLetter } from "../../src/lib/utils/time";

@@ -7,6 +7,7 @@
  * pass on accessibility; the third on data scoping.
  */
 import { expect, test } from "@playwright/test";
+
 import { scanForA11y } from "./_helpers";
 
 test.use({ storageState: "playwright/.auth/storage.json" });

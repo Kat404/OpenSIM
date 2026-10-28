@@ -5,6 +5,7 @@
  * its own sweep file, because the gate is per route, not per app.
  */
 import { test } from "@playwright/test";
+
 import { scanForA11y } from "./_helpers";
 
 test.use({ storageState: "playwright/.auth/storage.json" });

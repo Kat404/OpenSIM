@@ -36,17 +36,22 @@
  * Playwright.
  */
 import { test } from "@e2e-dev/web";
+
 import { currentAcademicPeriod } from "../src/lib/server/enrollment";
 
-test("the enrolment period on screen is the term the calendar says", {
-	session: "alumno",
-	timeout: 300_000,
-}, async ({ app, agent }) => {
-	await app.open("/reinscripcion");
+test(
+	"the enrolment period on screen is the term the calendar says",
+	{
+		session: "alumno",
+		timeout: 300_000,
+	},
+	async ({ app, agent }) => {
+		await app.open("/reinscripcion");
 
-	const expected = currentAcademicPeriod();
+		const expected = currentAcademicPeriod();
 
-	await agent.assert(
-		`the page states that the period being enrolled is "${expected}" — read the "Periodo:" line at the top of the offer and say the exact term it names, and say whether it matches "${expected}". If the page instead says there is no active period, that is the answer and it is wrong.`,
-	);
-});
+		await agent.assert(
+			`the page states that the period being enrolled is "${expected}" — read the "Periodo:" line at the top of the offer and say the exact term it names, and say whether it matches "${expected}". If the page instead says there is no active period, that is the answer and it is wrong.`,
+		);
+	},
+);

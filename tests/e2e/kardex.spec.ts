@@ -18,6 +18,7 @@
  * (`db-set-password-alumno`).
  */
 import { existsSync } from "node:fs";
+
 import { expect, test } from "@playwright/test";
 
 if (process.env.OPENSIM_TEST_PASSWORD === undefined && existsSync(".env")) {

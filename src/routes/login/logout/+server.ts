@@ -18,18 +18,20 @@
  * See: odd/tasks/opensim.md §16 (audit A1).
  */
 
+import { type RequestHandler, redirect } from "@sveltejs/kit";
 // `cloudflare:workers` is a URI-style specifier that the adapter's
 // Vite plugin resolves at runtime. tsc can't resolve it as a regular
 // module, so we cast through the locally-declared `OpenSimWorkerEnv`
 // interface (see src/cloudflare-workers.d.ts).
 import { env as workerEnv } from "cloudflare:workers";
-import { type RequestHandler, redirect } from "@sveltejs/kit";
+
 import {
 	clearSessionCookieOptions,
 	invalidateSession,
 	SESSION_COOKIE_NAME,
 } from "#lib/server/auth";
 import { getDb } from "#lib/server/db";
+
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 
 const env = workerEnv as OpenSimWorkerEnv;

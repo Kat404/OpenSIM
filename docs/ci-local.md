@@ -44,7 +44,7 @@ just ci
 The recipe:
 
 1. Builds the image (skipped if up-to-date).
-2. Runs `podman run --rm --userns=keep-id -v "$(pwd)":/repo -w /repo -e HOME=/tmp opensim-ci:latest` (no command override → the container's `CMD ["just", "precommit"]` runs the in-image QA gate: `check + biome-check + test`).
+2. Runs `podman run --rm --userns=keep-id -v "$(pwd)":/repo -w /repo -e HOME=/tmp opensim-ci:latest` (no command override → the container's `CMD ["just", "precommit"]` runs the in-image QA gate: `check + vp-check + test`).
 
 The `--userns=keep-id` flag preserves the host UID for bind-mounted artifacts (`playwright-report/`, `test-results/`, `.svelte-kit/`, `.wrangler/`). The `-e HOME=/tmp` is required because the kept host UID may not exist in `/etc/passwd` inside the container, and `pnpm`/`npm` need a writable `HOME`.
 

@@ -10,7 +10,8 @@
  * See: odd/tasks/opensim.md §16 (audit NEW-2).
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
+
 import { safeInternalRedirect } from "#lib/utils/redirect";
 
 describe("safeInternalRedirect", () => {

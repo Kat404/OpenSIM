@@ -22,6 +22,7 @@
  */
 
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+
 import type { CourseGroup, CourseScheduleBlock } from "../db/schema";
 
 export interface CargaPdfInput {

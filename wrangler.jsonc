@@ -6,7 +6,7 @@
 	"main": ".svelte-kit/cloudflare/_worker.js",
 	"assets": {
 		"binding": "ASSETS",
-		"directory": ".svelte-kit/cloudflare"
+		"directory": ".svelte-kit/cloudflare",
 	},
 	"workers_dev": true,
 	// preview_urls disabled: each `wrangler deploy` previously published
@@ -27,15 +27,15 @@
 	// see package.json `build` script). Local dev: `wrangler dev`
 	// does NOT auto-fire crons — see the helper's JSDoc.
 	"triggers": {
-		"crons": ["0 */6 * * *"]
+		"crons": ["0 */6 * * *"],
 	},
 	"d1_databases": [
 		{
 			"binding": "DB",
 			"database_name": "opensim",
 			"database_id": "390df78e-c4c2-4ace-94f4-6baebf1eb88f",
-			"migrations_dir": "drizzle"
-		}
+			"migrations_dir": "drizzle",
+		},
 	],
 	// Preview bindings: what `wrangler preview` (and `wrangler dev
 	// --remote`) uses. The Cloudflare Workers Builds integration deploys
@@ -51,8 +51,8 @@
 		"d1_databases": [
 			{
 				"binding": "DB",
-				"database_id": "390df78e-c4c2-4ace-94f4-6baebef1eb88f"
-			}
-		]
-	}
+				"database_id": "390df78e-c4c2-4ace-94f4-6baebef1eb88f",
+			},
+		],
+	},
 }

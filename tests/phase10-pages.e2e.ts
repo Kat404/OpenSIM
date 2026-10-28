@@ -42,157 +42,181 @@ import { expect } from "e2e";
 import { z } from "zod";
 
 describe("temario — explicit coverage", { tags: ["temario"] }, () => {
-	test("the coverage numbers on screen are internally consistent", {
-		session: "alumno",
-		timeout: 300_000,
-	}, async ({ app, agent, screen, browser }) => {
-		await app.open("/temario");
+	test(
+		"the coverage numbers on screen are internally consistent",
+		{
+			session: "alumno",
+			timeout: 300_000,
+		},
+		async ({ app, agent, screen, browser }) => {
+			await app.open("/temario");
 
-		// The point of Phase 10 S6 is that the ratio is stated, not hidden. An
-		// extraction is the right tool: it forces the model to read the number
-		// as a number, so a page that rendered "7 de 68" while listing a
-		// different count of subjects fails here instead of passing on a
-		// substring match.
-		const coverage = await agent.extract(
-			"the coverage summary at the top of the page: how many subjects have a published syllabus, how many subjects the plan has in total, and the subtopic count if one is shown",
-			{
-				// Only the two numbers the test asserts. A field the test
-				// does not use is a field the model may leave out, and the
-				// repair only succeeds when the answer has exactly as many
-				// keys as the schema asks for.
-				schema: z.object({
-					withTemario: z.number().int(),
-					total: z.number().int(),
-				}),
-			},
-		);
+			// The point of Phase 10 S6 is that the ratio is stated, not hidden. An
+			// extraction is the right tool: it forces the model to read the number
+			// as a number, so a page that rendered "7 de 68" while listing a
+			// different count of subjects fails here instead of passing on a
+			// substring match.
+			const coverage = await agent.extract(
+				"the coverage summary at the top of the page: how many subjects have a published syllabus, how many subjects the plan has in total, and the subtopic count if one is shown",
+				{
+					// Only the two numbers the test asserts. A field the test
+					// does not use is a field the model may leave out, and the
+					// repair only succeeds when the answer has exactly as many
+					// keys as the schema asks for.
+					schema: z.object({
+						withTemario: z.number().int(),
+						total: z.number().int(),
+					}),
+				},
+			);
 
-		expect(coverage.withTemario).toBeGreaterThan(0);
-		expect(coverage.withTemario).toBeLessThanOrEqual(coverage.total);
-		expect(coverage.total).toBeGreaterThan(coverage.withTemario);
+			expect(coverage.withTemario).toBeGreaterThan(0);
+			expect(coverage.withTemario).toBeLessThanOrEqual(coverage.total);
+			expect(coverage.total).toBeGreaterThan(coverage.withTemario);
 
-		await expect(screen.getByRole("heading", { name: "Temario por materia" })).toBeVisible();
-		await expect(screen.getByText(/de \d+ materias tienen temario publicado/)).toBeVisible();
-		await expect(browser).toHaveURL("/temario");
-	});
+			await expect(screen.getByRole("heading", { name: "Temario por materia" })).toBeVisible();
+			await expect(screen.getByText(/de \d+ materias tienen temario publicado/)).toBeVisible();
+			await expect(browser).toHaveURL("/temario");
+		},
+	);
 
-	test("a missing syllabus reads as a portal gap, not an institutional one", {
-		session: "alumno",
-		timeout: 300_000,
-	}, async ({ app, agent, screen }) => {
-		await app.open("/temario");
+	test(
+		"a missing syllabus reads as a portal gap, not an institutional one",
+		{
+			session: "alumno",
+			timeout: 300_000,
+		},
+		async ({ app, agent, screen }) => {
+			await app.open("/temario");
 
-		await agent.assert(
-			"the page explains why most subjects have no syllabus, and that the cause is the portal not publishing them rather than the institution not having them",
-		);
+			await agent.assert(
+				"the page explains why most subjects have no syllabus, and that the cause is the portal not publishing them rather than the institution not having them",
+			);
 
-		// Both groups must exist. A subject the portal never published is a
-		// different fact from a subject with an empty syllabus, and collapsing
-		// them would blame the institution for a limitation of the source.
-		await expect(screen.getByRole("heading", { name: /Con temario publicado/ })).toBeVisible();
-		await expect(screen.getByRole("heading", { name: /Sin temario publicado/ })).toBeVisible();
-		await expect(
-			screen.getByText("El portal no publica el temario de esta materia").first(),
-		).toBeVisible();
-	});
+			// Both groups must exist. A subject the portal never published is a
+			// different fact from a subject with an empty syllabus, and collapsing
+			// them would blame the institution for a limitation of the source.
+			await expect(screen.getByRole("heading", { name: /Con temario publicado/ })).toBeVisible();
+			await expect(screen.getByRole("heading", { name: /Sin temario publicado/ })).toBeVisible();
+			await expect(
+				screen.getByText("El portal no publica el temario de esta materia").first(),
+			).toBeVisible();
+		},
+	);
 });
 
 describe("horario — real schedule vs pending groups", { tags: ["horario"] }, () => {
-	test("shows a grid, an explicit empty state, or a pending list that says why", {
-		session: "alumno",
-		timeout: 300_000,
-	}, async ({ app, agent, screen }) => {
-		await app.open("/horario");
+	test(
+		"shows a grid, an explicit empty state, or a pending list that says why",
+		{
+			session: "alumno",
+			timeout: 300_000,
+		},
+		async ({ app, agent, screen }) => {
+			await app.open("/horario");
 
-		// Whichever state this student is in, the page must not leave a reader
-		// guessing: an empty grid with no explanation reads as "you have no
-		// classes", which is a different and false statement.
-		// This student has classes, so the grid is not optional any more.
-		await agent.assert(
-			"the schedule page shows a weekly grid of classes with day, time and classroom",
-		);
+			// Whichever state this student is in, the page must not leave a reader
+			// guessing: an empty grid with no explanation reads as "you have no
+			// classes", which is a different and false statement.
+			// This student has classes, so the grid is not optional any more.
+			await agent.assert(
+				"the schedule page shows a weekly grid of classes with day, time and classroom",
+			);
 
-		await expect(screen.getByRole("heading", { name: "Horario Semanal" })).toBeVisible();
-	});
+			await expect(screen.getByRole("heading", { name: "Horario Semanal" })).toBeVisible();
+		},
+	);
 });
 
 describe("tramites — the double credit gate", { tags: ["tramites"] }, () => {
-	test("names both gates and never implies they substitute each other", {
-		session: "alumno",
-		timeout: 300_000,
-	}, async ({ app, agent, screen }) => {
-		await app.open("/tramites");
+	test(
+		"names both gates and never implies they substitute each other",
+		{
+			session: "alumno",
+			timeout: 300_000,
+		},
+		async ({ app, agent, screen }) => {
+			await app.open("/tramites");
 
-		await agent.assert(
-			"the page states how many complementary credits the student has, out of how many are required, and explains that Servicio Social needs the reticular credits AND the complementary credits together",
-		);
-
-		const credits = await agent.extract(
-			"the credit counts shown on the page: the reticular approved credits and the complementary credits",
-			{
-				// Same rule: only what the test asserts.
-				schema: z.object({
-					complementary: z.number().int(),
-					complementaryRequired: z.number().int(),
-				}),
-			},
-		);
-
-		// This student has three complementary activities worth one credit
-		// each, so the page must report 3 of 5. Before Phase 10 the loader
-		// counted activity ROWS, and a page reporting "3 de 5" from three
-		// rows was indistinguishable from one reporting the real sum — with
-		// this fixture both are 3, which is why the sum is pinned in
-		// `tests/unit/migration-0016.test.ts` and not here.
-		expect(credits.complementary).toBe(3);
-		expect(credits.complementaryRequired).toBe(5);
-
-		await expect(screen.getByText(/de \d+ créditos\s+complementarios/)).toBeVisible();
-		await expect(
-			screen.getByText(/no aportan créditos reticulares y no los sustituyen/),
-		).toBeVisible();
-	});
-
-	test("every locked procedure states which gate is unmet", {
-		session: "alumno",
-		timeout: 300_000,
-	}, async ({ app, agent, screen }) => {
-		await app.open("/tramites");
-
-		// `/tramites` is a stepper: only the selected procedure shows its lock
-		// state and its reason, the other two are navigation buttons. So "every
-		// locked procedure says why" is not one question, it is three — asking
-		// it once makes the model answer `ASSERTION_INCONCLUSIVE` for the right
-		// reason, which is the runner working, not the runner failing.
-		for (const procedure of ["Servicio Social", "Residencia Profesional", "Titulación"]) {
-			await screen.getByRole("button", { name: new RegExp(procedure) }).tap();
 			await agent.assert(
-				`the ${procedure} panel shows whether it is blocked, and if it is blocked it states the reason, naming a credit gap`,
+				"the page states how many complementary credits the student has, out of how many are required, and explains that Servicio Social needs the reticular credits AND the complementary credits together",
 			);
-		}
 
-		// And the concrete gap this student is actually missing, which is the
-		// number the page owes them.
-		await expect(screen.getByText(/Necesitas \d+ créditos/).first()).toBeVisible();
-	});
+			const credits = await agent.extract(
+				"the credit counts shown on the page: the reticular approved credits and the complementary credits",
+				{
+					// Same rule: only what the test asserts.
+					schema: z.object({
+						complementary: z.number().int(),
+						complementaryRequired: z.number().int(),
+					}),
+				},
+			);
+
+			// This student has three complementary activities worth one credit
+			// each, so the page must report 3 of 5. Before Phase 10 the loader
+			// counted activity ROWS, and a page reporting "3 de 5" from three
+			// rows was indistinguishable from one reporting the real sum — with
+			// this fixture both are 3, which is why the sum is pinned in
+			// `tests/unit/migration-0016.test.ts` and not here.
+			expect(credits.complementary).toBe(3);
+			expect(credits.complementaryRequired).toBe(5);
+
+			await expect(screen.getByText(/de \d+ créditos\s+complementarios/)).toBeVisible();
+			await expect(
+				screen.getByText(/no aportan créditos reticulares y no los sustituyen/),
+			).toBeVisible();
+		},
+	);
+
+	test(
+		"every locked procedure states which gate is unmet",
+		{
+			session: "alumno",
+			timeout: 300_000,
+		},
+		async ({ app, agent, screen }) => {
+			await app.open("/tramites");
+
+			// `/tramites` is a stepper: only the selected procedure shows its lock
+			// state and its reason, the other two are navigation buttons. So "every
+			// locked procedure says why" is not one question, it is three — asking
+			// it once makes the model answer `ASSERTION_INCONCLUSIVE` for the right
+			// reason, which is the runner working, not the runner failing.
+			for (const procedure of ["Servicio Social", "Residencia Profesional", "Titulación"]) {
+				await screen.getByRole("button", { name: new RegExp(procedure) }).tap();
+				await agent.assert(
+					`the ${procedure} panel shows whether it is blocked, and if it is blocked it states the reason, naming a credit gap`,
+				);
+			}
+
+			// And the concrete gap this student is actually missing, which is the
+			// number the page owes them.
+			await expect(screen.getByText(/Necesitas \d+ créditos/).first()).toBeVisible();
+		},
+	);
 });
 
 describe("kardex — academic record", { tags: ["kardex"] }, () => {
-	test("renders the record or an explicit empty state", {
-		session: "alumno",
-		timeout: 300_000,
-	}, async ({ app, agent, screen }) => {
-		await app.open("/academico/kardex");
+	test(
+		"renders the record or an explicit empty state",
+		{
+			session: "alumno",
+			timeout: 300_000,
+		},
+		async ({ app, agent, screen }) => {
+			await app.open("/academico/kardex");
 
-		await agent.assert("the Kardex page shows a table of graded subjects, not an empty state");
+			await agent.assert("the Kardex page shows a table of graded subjects, not an empty state");
 
-		// The empty state is no longer possible for this student: every
-		// `student_progress` row is his. Demanding the table used to fail for
-		// a reason that had nothing to do with the page — the session student
-		// was `99999999` — so the test accepted both. The record is what the
-		// page owes now.
-		await expect(screen.getByRole("heading", { name: "Kardex Académico" })).toBeVisible();
-		await expect(screen.getByText(/Clave/)).toBeVisible();
-		await expect(screen.getByText(/Aún no tienes/)).toHaveCount(0);
-	});
+			// The empty state is no longer possible for this student: every
+			// `student_progress` row is his. Demanding the table used to fail for
+			// a reason that had nothing to do with the page — the session student
+			// was `99999999` — so the test accepted both. The record is what the
+			// page owes now.
+			await expect(screen.getByRole("heading", { name: "Kardex Académico" })).toBeVisible();
+			await expect(screen.getByText(/Clave/)).toBeVisible();
+			await expect(screen.getByText(/Aún no tienes/)).toHaveCount(0);
+		},
+	);
 });

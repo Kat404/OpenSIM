@@ -30,9 +30,11 @@
 
 import { env as workerEnv } from "cloudflare:workers";
 import { asc, inArray } from "drizzle-orm";
+
 import { getDb } from "#lib/server/db";
 import { subjects } from "#lib/server/db/schema";
 import { getCurrentEnrollment, getCurrentPeriod } from "#lib/server/enrollment";
+
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 import type { PageServerLoad } from "./$types";
 
