@@ -70,6 +70,20 @@ const conflictIds = $derived.by(() => {
 
 const conflictCount = $derived(conflictIds.size);
 
+/**
+ * Makes a scrollable region focusable so it can be scrolled with the
+ * keyboard (WCAG 2.1.1). The grid holds no focusable child of its own,
+ * so the region itself has to be the tab stop.
+ *
+ * Done in an action rather than a static `tabindex` attribute: both the
+ * Svelte compiler and Biome reject `tabindex` on a non-interactive
+ * element, and Biome's suppression comment does not attach inside a
+ * Svelte template.
+ */
+function focusableScroll(node: HTMLElement): void {
+	node.tabIndex = 0;
+}
+
 function parseHHMM(s: string): number {
 	const [h, m] = s.split(":").map((x) => parseInt(x, 10));
 	return (h || 0) + (m || 0) / 60;
@@ -119,7 +133,18 @@ const positioned = $derived.by(() => {
 		</div>
 	{/if}
 
-	<div class="preview__grid">
+	<!--
+		S3: the 07:00-22:00 grid is 900px tall on its own. It is kept
+		whole (no hour is dropped) but bounded: the grid scrolls inside
+		its own box instead of stretching the document.
+	-->
+	<div
+		class="preview__grid"
+		data-testid="schedule-grid"
+		role="group"
+		aria-label="Rejilla de horario de 07:00 a 22:00"
+		use:focusableScroll
+	>
 		<div class="preview__header-spacer" aria-hidden="true"></div>
 		{#each DAY_LETTERS as letter (letter)}
 			<div class="preview__day-header">
@@ -206,7 +231,10 @@ const positioned = $derived.by(() => {
 	background-color: var(--surface-1);
 	border: 1px solid var(--border-subtle);
 	border-radius: var(--radius-3);
-	overflow: hidden;
+	/* S3: bounded height, the whole grid scrolls inside its own box. */
+	max-height: min(45dvh, 560px);
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 
 .preview__header-spacer {

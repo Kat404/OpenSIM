@@ -300,6 +300,68 @@
 	}
 }
 
+/* ───────────────────── Page transition (S4) ───────────────────── */
+
+/* The page content animates as its own view-transition group; the chrome
+   (sidebar + header) stays in the root group. The `view-transition-name`
+   itself is declared on the element (PageTransition.svelte) — these rules
+   are document-level because the ::view-transition-* pseudo-elements live
+   on the root element and cannot be scoped to a component. */
+
+@keyframes opensim-content-out {
+	from {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	to {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
+}
+
+@keyframes opensim-content-in {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* The chrome swaps outright: only the content carries motion, so the
+   sidebar never moves and its active item does not cross-fade. */
+::view-transition-image-pair(root) {
+	isolation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation: none;
+	mix-blend-mode: normal;
+	display: block;
+}
+
+/* Content: a short fade with a 4px rise. The durations come from the
+   motion tokens, so `prefers-reduced-motion: reduce` (which zeroes every
+   duration) removes the animation on its own. */
+::view-transition-old(page-content) {
+	animation: opensim-content-out var(--motion-duration-base) var(--motion-ease-standard) both;
+}
+
+::view-transition-new(page-content) {
+	animation: opensim-content-in var(--motion-duration-base) var(--motion-ease-emphasized) both;
+}
+
+/* Keep the group resize in sync with the fade, so the content box does not
+   morph at a different speed than it fades. */
+::view-transition-group(page-content) {
+	animation-duration: var(--motion-duration-base);
+}
+
 /* ───────────────────── Reset & globals ───────────────────── */
 
 *,

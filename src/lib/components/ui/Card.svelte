@@ -130,8 +130,18 @@ let {
 .card__footer {
 	display: flex;
 	align-items: center;
+	flex-wrap: wrap;
 	gap: var(--space-2);
 	padding-top: var(--space-2);
 	border-top: 1px solid var(--border-subtle);
+	min-width: 0;
+}
+
+/* The footer's children are flex items with `min-width: auto` by
+	 default, so a form holding a wide button refuses to shrink and
+	 pushes the footer past the card's edge. */
+.card__footer > * {
+	min-width: 0;
+	max-width: 100%;
 }
 </style>

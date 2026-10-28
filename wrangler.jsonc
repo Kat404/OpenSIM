@@ -36,5 +36,23 @@
 			"database_id": "390df78e-c4c2-4ace-94f4-6baebf1eb88f",
 			"migrations_dir": "drizzle"
 		}
-	]
+	],
+	// Preview bindings: what `wrangler preview` (and `wrangler dev
+	// --remote`) uses. The Cloudflare Workers Builds integration deploys
+	// every BRANCH as a preview, and without this block its deploy step
+	// dies with "Your Wrangler configuration is missing a `previews`
+	// block" - the check was red on every branch since 2026-10-19.
+	//
+	// It points at the SAME database as production, so a preview serves
+	// the real data (and can write to it). `preview_urls: false` above
+	// still applies to `wrangler deploy`; point this at a separate D1 if
+	// a preview must not touch production.
+	"previews": {
+		"d1_databases": [
+			{
+				"binding": "DB",
+				"database_id": "390df78e-c4c2-4ace-94f4-6baebef1eb88f"
+			}
+		]
+	}
 }

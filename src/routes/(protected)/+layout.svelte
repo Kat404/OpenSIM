@@ -25,6 +25,7 @@ const paletteRoutes: PaletteRoute[] = [
 	{ label: "Retícula", href: "/reticula", group: "Navegación" },
 	{ label: "Temario", href: "/temario", group: "Navegación" },
 	{ label: "Kardex", href: "/academico/kardex", group: "Navegación" },
+	{ label: "Perfil", href: "/perfil", group: "Navegación" },
 ];
 </script>
 

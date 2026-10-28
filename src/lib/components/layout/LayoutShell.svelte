@@ -15,6 +15,7 @@ import type { Snippet } from "svelte";
 import CmdKPalette, { type PaletteRoute, type PaletteSubject } from "./CmdKPalette.svelte";
 import LayoutHeader from "./LayoutHeader.svelte";
 import LayoutSidebar from "./LayoutSidebar.svelte";
+import PageTransition from "./PageTransition.svelte";
 
 interface UserSummary {
 	controlNumber: string;
@@ -63,7 +64,7 @@ function toggleSidebar() {
 	<div class="shell__body">
 		<LayoutHeader {user} onOpenPalette={() => (paletteOpen = true)} />
 		<main class="shell__main" id="main">
-			{@render children()}
+			<PageTransition> {@render children()} </PageTransition>
 		</main>
 	</div>
 

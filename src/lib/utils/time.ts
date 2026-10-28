@@ -30,6 +30,24 @@ const WEEKDAY_TO_LETTER: Record<string, DayLetter> = {
 	Sat: "S",
 };
 
+/**
+ * The full name of every day letter.
+ *
+ * The letter is what a grid draws; the name is what a reader hears. A
+ * day that lives only in a position — a column header, a chip — is not
+ * in the accessibility tree, so every surface that shows a letter
+ * carries the name next to it.
+ */
+export const DAY_NAME: Record<DayLetter, string> = {
+	L: "Lunes",
+	M: "Martes",
+	X: "Miércoles",
+	J: "Jueves",
+	V: "Viernes",
+	S: "Sábado",
+	D: "Domingo",
+};
+
 const DEFAULT_TIMEZONE = "America/Mexico_City";
 
 /**

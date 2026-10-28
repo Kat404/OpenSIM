@@ -1,7 +1,7 @@
 <!--
   OpenSIM — Student dashboard (Phase 3 Tarea 3.2).
 
-  Replaces the Phase 2 placeholder with four KPI cards, a today's
+  Replaces the Phase 2 placeholder with four KPI cards, a weekly
   classes widget, and a CTA card that links to the retícula. The
   page consumes typed `data` from `+page.server.ts` and keeps all
   presentation logic local — no per-keystroke work, no client-side
@@ -10,7 +10,7 @@
 <script lang="ts">
 import { ArrowRight, FileDown, ShieldOff } from "@lucide/svelte";
 import KpiCard from "#lib/components/dashboard/KpiCard.svelte";
-import TodayClasses from "#lib/components/dashboard/TodayClasses.svelte";
+import WeekClasses from "#lib/components/dashboard/WeekClasses.svelte";
 import { Button, Card, EmptyState } from "#lib/components/ui";
 import { page } from "$app/state";
 import type { PageData } from "./$types";
@@ -86,8 +86,17 @@ function fmtAverage(value: number): string {
 	</div>
 
 	<div class="dashboard__grid">
-		<div class="dashboard__today">
-			<TodayClasses classes={data.todayClasses} dayLabel={data.dayLabel} />
+		<div class="dashboard__week">
+			<WeekClasses classes={data.weekClasses} today={data.today} period={data.period} />
+
+			{#if !data.hasEnrollment}
+				<div class="dashboard__enroll-hint">
+					<EmptyState
+						title="Aún no tienes inscripción activa"
+						description="Cuando completes tu proceso de reinscripción, aquí verás tus clases de la semana."
+					/>
+				</div>
+			{/if}
 		</div>
 
 		<div class="dashboard__cta">
@@ -118,7 +127,7 @@ function fmtAverage(value: number): string {
 					</p>
 					{#snippet footer()}
 						<form method="POST" action="/api/export/carga">
-							<Button type="submit" variant="secondary" size="md">
+							<Button type="submit" variant="secondary" size="md" wrap>
 								{#snippet startIcon()}
 									<FileDown size={16} strokeWidth={1.75} aria-hidden="true" />
 								{/snippet}
@@ -139,7 +148,7 @@ function fmtAverage(value: number): string {
 				</p>
 				{#snippet footer()}
 					<form method="POST" action="/login/logout-all">
-						<Button type="submit" variant="secondary" size="md">
+						<Button type="submit" variant="secondary" size="md" wrap>
 							{#snippet startIcon()}
 								<ShieldOff size={16} strokeWidth={1.75} aria-hidden="true" />
 							{/snippet}
@@ -148,15 +157,6 @@ function fmtAverage(value: number): string {
 					</form>
 				{/snippet}
 			</Card>
-
-			{#if !data.hasEnrollment}
-				<div class="dashboard__enroll-hint">
-					<EmptyState
-						title="Aún no tienes inscripción activa"
-						description="Cuando completes tu proceso de reinscripción, aquí verás tus clases del día en vivo."
-					/>
-				</div>
-			{/if}
 		</div>
 	</div>
 </section>
@@ -229,11 +229,15 @@ function fmtAverage(value: number): string {
 .dashboard__grid {
 	display: grid;
 	grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+	align-items: start;
 	gap: var(--space-4);
 }
 
-.dashboard__today {
+.dashboard__week {
 	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
 }
 
 .dashboard__cta {
