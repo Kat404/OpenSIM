@@ -29,7 +29,7 @@ Cuando una fuente calla, la UI lo dice en pantalla en vez de rellenarlo. No inve
 valor para que una pantalla se vea completa.
 
 **Stack:** SvelteKit 3 + Svelte 5 · Cloudflare Workers · D1 (SQLite) vía Drizzle ·
-pnpm · Biome (formato + lint) · vitest · Playwright + axe-core · runner e2e agéntico
+pnpm · Vite+ `vp` (formato + lint + tests + build) · Playwright + axe-core · runner e2e agéntico
 (MiniMax-M3 al navegador real, configurado en `e2e.config.ts`) · Codegraph.
 
 ## Patrones y Guía de Ejecución
@@ -53,9 +53,9 @@ aparece ahí no existe y no la debes inventar en un reporte.
 
 | Receta | Qué hace |
 | --- | --- |
-| `just qa-fast` | `check` + `biome-check` + `test`. El gate de pre-commit; **no** incluye e2e. |
+| `just qa-fast` | `check` + `vp-check` + `test`. El gate de pre-commit; **no** incluye e2e. |
 | `just qa` | Lo anterior más `build`. El gate de pre-push. |
-| `just test` | Sólo vitest. |
+| `just test` | Los tests unitarios (`vp test`). |
 | `just test-e2e` | Playwright + axe-core contra la D1 local existente. **No destructiva**: migra y aprovisiona la credencial, no borra nada. |
 | `just test-e2e-fresh` | Lo mismo desde una base limpia. **Destructiva**: borra `.wrangler/state/v3/d1`, re-migra y re-siembra. Sólo cuando la base local está realmente mal. |
 | `just test-e2e-ui` | Playwright en modo interactivo (`--ui`). |

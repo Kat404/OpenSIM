@@ -23,7 +23,7 @@ the gap.
 **v1 covers one career: ISIC-2010-224 (Ingeniería en Sistemas Computacionales).** The other
 programmes are out of scope until their data is obtainable.
 
-- **Stack:** SvelteKit `3.1.0` + Svelte `5.57.2` (Runes) + Cloudflare D1 + Drizzle ORM `0.45.4` + TypeScript `6.0.3`
+- **Stack:** SvelteKit `3.1.0` + Svelte `5.57.2` (Runes) + Cloudflare D1 + Drizzle ORM `0.45.4` + TypeScript `6.0.3` + Vite+ `1.4.0` (`vp`: format, lint, test, build)
 - **UI language:** Spanish (es-MX)
 - **Code language:** English
 - **A11y target:** WCAG 2.1 AA
@@ -55,11 +55,11 @@ Visit `http://localhost:5173`, log in with the test credentials below, and `/das
 
 | Script                 | What it does                                                                             |
 | ---------------------- | ---------------------------------------------------------------------------------------- |
-| `just dev`             | Vite dev server                                                                          |
-| `just build`           | Wrangler types check + Vite production build for Cloudflare                              |
+| `just dev`             | Vite+ dev server (`vp dev`)                                                              |
+| `just build`           | Wrangler types check + Vite+ production build for Cloudflare                             |
 | `just preview`         | Wrangler dev against the built Worker                                                    |
 | `just check`           | svelte-kit sync + svelte-check + wrangler types                                          |
-| `just test`            | Vitest unit tests (single run)                                                           |
+| `just test`            | Unit tests (single run) through `vp test`                                                |
 | `just db-generate`     | Drizzle Kit — generate SQL migrations from schema diff (codegen only)                    |
 | `just db-seed`         | Generate + apply `seed.sql` in one step (Drizzle codegen + `wrangler d1 execute --file`) |
 | `just db-set-password` | Provision test student credential (dev only)                                             |
