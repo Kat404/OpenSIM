@@ -125,7 +125,7 @@ oxfmt (`useTabs`, `tabWidth`, `printWidth`, `singleQuote`, `semi`, `trailingComm
 
 | Comprobación                                                                     | Resultado                                                                                                       |
 | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `just vp-check` (formato + lint)                                                 | **0 errores**, 12 avisos en 165 archivos                                                                       |
+| `just vp-check` (formato + lint)                                                 | **0 errores**, 6 avisos en 166 archivos                                                                       |
 | `just test` (`vp test --run`)                                                     | **387/387** en 26 archivos                                                                                        |
 | `just check` (svelte-check)                                                      | **0 errores, 0 avisos**                                                                                          |
 | `just build`                                                                     | ✓ `vp build` + **el parche del `scheduled` sigue aplicando** ("patched .svelte-kit/cloudflare/_worker.js")         |

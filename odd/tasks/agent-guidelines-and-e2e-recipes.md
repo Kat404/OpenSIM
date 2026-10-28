@@ -129,7 +129,7 @@ odd/tasks/agent-guidelines-and-e2e-recipes.md
 | Check | Command | Purpose |
 | --- | --- | --- |
 | Recipes parse | `just --list` | justfile syntax + inventory |
-| Unit + lint + types | `just qa-fast` | `check biome-check test` |
+| Unit + lint + types | `just qa-fast` | `check vp-check test` |
 | Upsert is real | `rg -n 'ON CONFLICT' src/lib/server/db/seed.sql` | generated SQL, not the source builder |
 | Cascade regression | `just db-migrate && pnpm run db:set-password 12345678 && just db-seed` then count `student_credentials` | the scenario `scripts/README.md` documents as broken |
 | Seed is stable | `pnpm run db:seed:gen` twice, diff | determinism of the generated file |

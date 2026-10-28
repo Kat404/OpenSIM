@@ -52,7 +52,7 @@ The local D1 is Miniflare state at `.wrangler/state/v3/d1`; treat it as disposab
 ### 4. Apply the seed (data only)
 
 ```bash
-just db-seed        # pnpm run db:seed → tsx src/lib/server/db/seed.ts && wrangler d1 execute --local --file=./src/lib/server/db/seed.sql
+just db-seed        # pnpm run db:seed → vpx src/lib/server/db/seed.ts && wrangler d1 execute --local --file=./src/lib/server/db/seed.sql
 ```
 
 The seed script reads the curriculum JSON and emits `src/lib/server/db/seed.sql` with `INSERT OR IGNORE` batches for `careers`, `specialties`, `subjects`, and `subject_prerequisites`. The file is then applied through `wrangler d1 execute --file` — the only place in the project where `--file` is the right tool, because every line is an `INSERT`.

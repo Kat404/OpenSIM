@@ -47,7 +47,7 @@ preview:
 
 # ===== Build & Check =====
 
-# Build for Cloudflare Workers (wrangler types + vite build)
+# Build for Cloudflare Workers (wrangler types + Vite+ build)
 build:
     pnpm run build
 
@@ -75,13 +75,8 @@ format:
 format-check:
     pnpm exec vp fmt --check
 
-# The unified gate: format + lint (through `vp check`)
-#
-# The type check is NOT here: `svelte-check` owns it and lives in the
-# `check` recipe. `vp lint` is configured with `typeCheck: false` for
-# the same reason — oxlint's TypeScript program does not understand
-# Svelte's type exports, so it would report errors on code that
-# compiles.
+# The unified gate: format + lint (through `vp check`). The type check
+# lives in the `check` recipe (svelte-check owns it).
 [group('check')]
 vp-check:
     pnpm exec vp check
@@ -93,11 +88,11 @@ lint:
 
 # ===== Tests =====
 
-# Unit tests (vitest, single run)
+# Unit tests (single run, through `vp test`)
 test:
     pnpm test
 
-# Unit tests in watch mode
+# Unit tests in watch mode (`vp test`)
 test-watch:
     pnpm run test:unit
 

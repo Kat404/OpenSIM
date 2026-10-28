@@ -1,13 +1,10 @@
 {
 	"name": "opensim",
-	"version": "0.1.0",
 	"private": true,
-	"description": "OpenSIM — Sistema Integral Modular for TecNM Morelia. FOSS rewrite in SvelteKit 3 + Svelte 5 + Cloudflare D1.",
+	"version": "0.1.0",
 	"type": "module",
-	"imports": {
-		"#lib": "./src/lib/index.ts",
-		"#lib/*": "./src/lib/*"
-	},
+	"packageManager": "pnpm@12.13.0",
+	"description": "OpenSIM — Sistema Integral Modular for TecNM Morelia. FOSS rewrite in SvelteKit 3 + Svelte 5 + Cloudflare D1.",
 	"scripts": {
 		"dev": "vp dev",
 		"build": "wrangler types && vp build && node scripts/inject-scheduled-handler.mjs",
@@ -56,5 +53,8 @@
 		"wrangler": "4.151.1",
 		"zod": "^4.6.7"
 	},
-	"packageManager": "pnpm@12.13.0"
+	"imports": {
+		"#lib": "./src/lib/index.ts",
+		"#lib/*": "./src/lib/*"
+	}
 }

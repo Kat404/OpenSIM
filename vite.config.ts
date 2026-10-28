@@ -42,6 +42,17 @@ export default defineConfig({
 	lint: {
 		jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
 		rules: { "vite-plus/prefer-vite-plus-imports": "error" },
+		// The same files the formatter leaves alone: the vendored data,
+		// the generated drizzle snapshots and the test reports. Biome
+		// excluded them from the linter too.
+		ignorePatterns: [
+			"drizzle/meta/**",
+			"docs/data/**",
+			"src/lib/server/db/data/**",
+			"playwright-report/**",
+			"tests/e2e/reports/**",
+			"test-results/**",
+		],
 		options: {
 			// Type-aware RULES: yes. Reporting type ERRORS: no — that is
 			// `svelte-check`'s job (it is in the `check` recipe), and

@@ -147,11 +147,13 @@ test.describe("light", () => {
 	// plan only works in newer Playwright typings.
 	// Playwright v1.63 requires the object-destructuring form for the
 	// first arg of test.beforeEach (no parameter is read here; we only
-	// need testInfo). biome's noEmptyPattern rule is suppressed via an
-	// inline ignore on the `{}` destructure.
+	// need testInfo). oxlint's noEmptyPattern rule is suppressed via an
+	// inline directive on the `{}` destructure.
 	test.beforeEach(
 		(
-			// biome-ignore lint/correctness/noEmptyPattern: required by Playwright beforeEach signature
+			// An empty pattern is what Playwright's beforeEach signature takes; oxlint
+			// reads eslint-style directives, so the suppression is written that way.
+			// eslint-disable-next-line no-empty-pattern
 			{},
 			testInfo,
 		) => {
@@ -181,7 +183,9 @@ test.describe("dark", () => {
 	// destructure is required and how it's suppressed.
 	test.beforeEach(
 		(
-			// biome-ignore lint/correctness/noEmptyPattern: required by Playwright beforeEach signature
+			// An empty pattern is what Playwright's beforeEach signature takes; oxlint
+			// reads eslint-style directives, so the suppression is written that way.
+			// eslint-disable-next-line no-empty-pattern
 			{},
 			testInfo,
 		) => {
