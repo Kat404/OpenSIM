@@ -39,8 +39,8 @@
  * See: odd/tasks/opensim.md Tarea 4.1.
  */
 
-import { env as workerEnv } from "cloudflare:workers";
 import { type Actions, fail, redirect } from "@sveltejs/kit";
+import { env as workerEnv } from "cloudflare:workers";
 import {
 	and,
 	count,
@@ -53,6 +53,7 @@ import {
 	sql,
 } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
+
 import type { OfferBlock, OfferGroup, OfferPage } from "#lib/components/simulador/types";
 import { getDb } from "#lib/server/db";
 import {
@@ -63,8 +64,10 @@ import {
 	subjects,
 } from "#lib/server/db/schema";
 import { currentAcademicPeriod } from "#lib/server/enrollment";
+import { formStrings } from "#lib/utils/form";
 import { findConflicts } from "#lib/utils/schedule-conflict";
 import { foldText } from "#lib/utils/text-match";
+
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 import type { PageServerLoad } from "./$types";
 
@@ -401,7 +404,7 @@ export const actions: Actions = {
 			return fail(503, { error: "Servicio no disponible" });
 		}
 		const form = await request.formData();
-		const raw = form.getAll("groupId").map((v) => String(v));
+		const raw = formStrings(form, "groupId");
 		// Dedupe the submitted groups AND the subjects they resolve to
 		// (T10.2). Two distinct groups can share one subject — a theory
 		// block and its lab — and the multi-value INSERT below is keyed

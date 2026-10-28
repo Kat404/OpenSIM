@@ -24,9 +24,10 @@
  * T9.13.
  */
 
-import { env as workerEnv } from "cloudflare:workers";
 import { type Actions, fail } from "@sveltejs/kit";
+import { env as workerEnv } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
+
 import type { ProcedureStatus } from "#lib/components/tramites/types";
 import { getDb } from "#lib/server/db";
 import {
@@ -35,7 +36,9 @@ import {
 	studentProgress,
 } from "#lib/server/db/schema";
 import { COMPLEMENTARY_CREDITS_REQUIRED, evaluateCreditThresholds } from "#lib/utils/dag";
+import { formString } from "#lib/utils/form";
 import { PROCEDURE_UNAVAILABLE_NOTICE } from "#lib/utils/procedure-labels";
+
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 import type { PageServerLoad } from "./$types";
 
@@ -278,7 +281,7 @@ export const actions: Actions = {
 			return fail(401, { error: "No autenticado. Inicia sesión." });
 		}
 		const form = await request.formData();
-		const procedure = String(form.get("procedure") ?? "");
+		const procedure = formString(form, "procedure");
 		if (
 			procedure !== "servicio-social" &&
 			procedure !== "residencia" &&
