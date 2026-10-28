@@ -63,33 +63,33 @@ check-watch:
 gen-types:
     pnpm run gen
 
-# ===== Format =====
+# ===== Format & lint (Vite+) =====
 
-# Format all files with Biome
+# Format all files with oxfmt (through `vp fmt`)
 [group('check')]
 format:
-    pnpm exec biome format --write .
+    pnpm exec vp fmt
 
-# Verify formatting (CI mode, no writes)
-#
-# Biome 2.x removed `biome format --check`; the flag only ever worked
-# under Prettier, and the 2026-10-04 Biome 2.5.15 migration carried the
-# Prettier spelling over verbatim. Nothing ran this recipe, so it sat
-# broken for five days. `biome ci` with the linter and the import assist
-# disabled is the format-only equivalent and exits non-zero on a diff.
+# Verify formatting (no writes) — exits non-zero on a diff
 [group('check')]
 format-check:
-    pnpm exec biome ci --formatter-enabled=true --linter-enabled=false --assist-enabled=false
+    pnpm exec vp fmt --check
 
-# Run Biome ci (format + lint + organizeImports, no writes) — CI gate
+# The unified gate: format + lint (through `vp check`)
+#
+# The type check is NOT here: `svelte-check` owns it and lives in the
+# `check` recipe. `vp lint` is configured with `typeCheck: false` for
+# the same reason — oxlint's TypeScript program does not understand
+# Svelte's type exports, so it would report errors on code that
+# compiles.
 [group('check')]
-biome-check:
-    pnpm exec biome ci
+vp-check:
+    pnpm exec vp check
 
-# Run Biome linter only (no format check, no writes)
+# Run the linter only (no format check, no writes)
 [group('check')]
 lint:
-    pnpm exec biome lint .
+    pnpm exec vp lint
 
 # ===== Tests =====
 
@@ -306,13 +306,13 @@ clean-e2e:
 
 # ===== Pipelines =====
 
-# Full pre-push QA gate: check + biome-check + test + build
-qa: check biome-check test build
+# Full pre-push QA gate: check + vp-check + test + build
+qa: check vp-check test build
     @echo ""
     @echo "✓ all green — ready to push"
 
-# Fast pre-commit QA gate: check + biome-check + test (no build)
-qa-fast: check biome-check test
+# Fast pre-commit QA gate: check + vp-check + test (no build)
+qa-fast: check vp-check test
     @echo ""
     @echo "✓ pre-commit checks passed"
 
@@ -331,11 +331,11 @@ ci-build:
 # -e HOME=/tmp because npm/pnpm need HOME and the kept host UID
 # may not exist in /etc/passwd inside the container. The container's
 # default CMD (`just qa-fast`) runs the in-image fast QA gate.
-# NOTE: the in-image gate is `just qa-fast` (check + biome-check + test).
+# NOTE: the in-image gate is `just qa-fast` (check + vp-check + test).
 # It does NOT run the axe-core e2e suite — for that, run `just test-e2e`
 # on the host (it needs system Chromium and local D1 state).
 [group('ci')]
-[doc('Run `just qa-fast` (check + biome-check + test) inside opensim-ci container. For axe-core e2e suite, run `just test-e2e` separately.')]
+[doc('Run `just qa-fast` (check + vp-check + test) inside opensim-ci container. For axe-core e2e suite, run `just test-e2e` separately.')]
 ci: ci-build
     podman run --rm \
         --userns=keep-id \

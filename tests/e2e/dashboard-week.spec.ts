@@ -18,7 +18,9 @@
  * the calendar rule.
  */
 import { existsSync } from "node:fs";
+
 import { expect, type Locator, type Page, test } from "@playwright/test";
+
 import { getTodayDayLetter } from "../../src/lib/utils/time";
 
 if (process.env.OPENSIM_TEST_PASSWORD === undefined && existsSync(".env")) {

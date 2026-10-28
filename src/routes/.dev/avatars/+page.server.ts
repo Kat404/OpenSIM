@@ -12,8 +12,8 @@
  * fix from mcode R18 audit (blocker A6).
  */
 
-import { error } from "@sveltejs/kit";
 import { dev } from "$app/env";
+import { error } from "@sveltejs/kit";
 
 export const load = () => {
 	if (!dev) error(404, "Not found");

@@ -35,6 +35,7 @@
  */
 
 import { and, desc, eq, inArray } from "drizzle-orm";
+
 import type { Database } from "./db";
 import type { CourseGroup, CourseScheduleBlock } from "./db/schema";
 import { courseGroups, courseScheduleBlocks, studentProgress } from "./db/schema";

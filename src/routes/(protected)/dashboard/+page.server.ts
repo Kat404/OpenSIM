@@ -27,13 +27,15 @@
  * audit H2 + M1 (Round 4).
  */
 
-import { env as workerEnv } from "cloudflare:workers";
 import { redirect } from "@sveltejs/kit";
+import { env as workerEnv } from "cloudflare:workers";
 import { eq, inArray } from "drizzle-orm";
+
 import { getDb } from "#lib/server/db";
 import { studentProfiles, subjects } from "#lib/server/db/schema";
 import { getCurrentEnrollment, getCurrentPeriod } from "#lib/server/enrollment";
 import { type DayLetter, getTodayDayLetter } from "#lib/utils/time";
+
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 import type { PageServerLoad } from "./$types";
 

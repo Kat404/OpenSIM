@@ -12,6 +12,7 @@
  * Both routes are public; the 404 spec doesn't need auth.
  */
 import { expect, test } from "@playwright/test";
+
 import { scanForA11y } from "./_helpers";
 
 test("landing at / has no serious/critical WCAG 2.1 AA violations", async ({ page }, testInfo) => {

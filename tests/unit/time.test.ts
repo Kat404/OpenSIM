@@ -13,7 +13,8 @@
  * must return 'V' (Friday) for the same instant.
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
+
 import { getTodayDate, getTodayDayLetter } from "../../src/lib/utils/time";
 
 const MORELIA = "America/Mexico_City";

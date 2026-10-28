@@ -21,7 +21,8 @@
  */
 
 import { render } from "svelte/server";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import ReticulaDag from "../../src/lib/components/curriculum/ReticulaDag.svelte";
 import type { SubjectViewModel } from "../../src/lib/components/curriculum/SubjectNode.svelte";
 import SpecialtyTray from "../../src/lib/components/reticula/SpecialtyTray.svelte";

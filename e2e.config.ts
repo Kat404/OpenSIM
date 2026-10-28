@@ -23,9 +23,11 @@
  * 404 here — that is what the scaffolded `gpt-6-luna` would have done.
  */
 import { existsSync } from "node:fs";
+
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { web } from "@e2e-dev/web";
 import type { E2EConfig } from "e2e";
+
 import { withTolerantStructuredOutput } from "./e2e-structured-output-shim";
 
 // e2e deliberately loads no `.env` of its own (reference/config.mdx

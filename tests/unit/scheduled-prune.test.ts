@@ -18,7 +18,9 @@
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
+import { afterEach, beforeEach, describe, expect, it } from "vite-plus/test";
+
 import { clearWorkerEnv, seedCareer, seedProfile, withTestDb } from "./_helpers/harness";
 
 // Relative to this file, not to the process cwd: the runner may not

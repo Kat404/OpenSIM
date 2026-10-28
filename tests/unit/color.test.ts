@@ -7,7 +7,8 @@
  * over all 360 hues (Phase 8 T8.1) at lightness 88% light / 20% dark.
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
+
 import {
 	contrastRatio,
 	getSubjectColor,

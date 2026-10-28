@@ -16,7 +16,8 @@
  *     two consecutive calls do not produce byte-identical output).
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
+
 import { generateCargaPdf } from "../../src/lib/server/pdf/carga";
 
 const fixture = {

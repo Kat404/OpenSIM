@@ -13,7 +13,8 @@
  *   (one ends exactly when the other starts) do NOT conflict.
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
+
 import { type ConflictBlock, findConflicts } from "../../src/lib/utils/schedule-conflict";
 
 describe("findConflicts", () => {

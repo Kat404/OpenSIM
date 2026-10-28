@@ -6,7 +6,8 @@
  * silently regress the passing threshold.
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
+
 import { isPassing, MIN_PASSING_GRADE } from "../../src/lib/utils/academic";
 
 describe("academic scale constants", () => {

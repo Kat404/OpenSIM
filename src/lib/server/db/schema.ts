@@ -383,7 +383,9 @@ export const authSessions = sqliteTable(
 			.notNull()
 			.references(() => studentProfiles.controlNumber, { onDelete: "cascade" }),
 		expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-		createdAt: integer("created_at", { mode: "timestamp" }).notNull().default(sql`(unixepoch())`),
+		createdAt: integer("created_at", { mode: "timestamp" })
+			.notNull()
+			.default(sql`(unixepoch())`),
 		userAgent: text("user_agent"),
 		ipHash: text("ip_hash"),
 	},

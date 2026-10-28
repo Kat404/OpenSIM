@@ -18,11 +18,13 @@
  * See: odd/tasks/ui-ux-dashboard-perfil.md (S6).
  */
 
-import { env as workerEnv } from "cloudflare:workers";
 import { redirect } from "@sveltejs/kit";
+import { env as workerEnv } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
+
 import { getDb } from "#lib/server/db";
 import { careers, studentProfiles } from "#lib/server/db/schema";
+
 import type { OpenSimWorkerEnv } from "../../../cloudflare-workers";
 import type { PageServerLoad } from "./$types";
 

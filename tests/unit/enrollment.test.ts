@@ -19,7 +19,8 @@
  *   project without extra dependencies.
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
+
 import type { Database } from "../../src/lib/server/db";
 import { getCurrentEnrollment, getCurrentPeriod } from "../../src/lib/server/enrollment";
 

@@ -6,7 +6,8 @@
  * src/lib/utils/dag.ts and odd/tasks/opensim.md §7.1.
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
+
 import type { Edge } from "../../src/lib/utils/dag";
 import {
 	buildAdjacency,

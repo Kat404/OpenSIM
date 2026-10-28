@@ -16,7 +16,8 @@
  * magically available here, so each test builds one from the harness.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import { hashPassword, recordFailedAttempt, SESSION_COOKIE_NAME } from "../../src/lib/server/auth";
 import { actions, load } from "../../src/routes/login/+page.server";
 import {

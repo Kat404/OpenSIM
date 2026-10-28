@@ -16,7 +16,8 @@
  * integration test suite planned for Phase 5 alongside axe-core.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import {
 	clearRateLimit,
 	hashIp,
@@ -171,7 +172,9 @@ describe("hashToken", () => {
 // schema.ts: `recordFailedAttempt` upserts against it.
 
 import { DatabaseSync } from "node:sqlite";
+
 import { drizzle } from "drizzle-orm/sqlite-proxy";
+
 import * as schema from "../../src/lib/server/db/schema";
 
 function makeSqliteDb(): {

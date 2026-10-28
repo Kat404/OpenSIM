@@ -8,7 +8,8 @@
  * disappears either way) and still be the second implementation the
  * finding asked to delete.
  */
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import {
 	clearSessionCookieOptions,
 	createSession,
