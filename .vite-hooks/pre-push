@@ -1,0 +1,40 @@
+#!/bin/sh
+#
+# OpenSIM — the local gate before anything leaves this machine.
+#
+# Why this exists: the Cloudflare Workers Builds integration builds AND
+# deploys on every merge to `main` (the PR #11 merge was live 41
+# seconds after the merge commit). So the last moment where a human can
+# stop a regression is here, on this machine, before the push.
+#
+# `main` carries no branch protection and no rulesets, and the only
+# automatic check on a pull request is that build — which proves the
+# code COMPILES, not that it WORKS. These 387 unit tests, the type
+# check and the lint are the whole insurance policy, so they run here.
+#
+# It does NOT run the e2e suite: that one needs the local D1 and a
+# dev server, it takes ~2 minutes, and the repo's own gate definition
+# keeps it out of `qa-fast` on purpose. Run `just test-e2e` by hand
+# before a merge that touches the UI.
+#
+# Bypass, on purpose and for a reason:
+#   VP_GIT_HOOKS=0 git push ...      (or `git push --no-verify`)
+
+set -eu
+
+# `VP_GIT_HOOKS=0` disables the hooks on purpose (vp's own convention:
+# the generated dispatcher honours the same variable). Unset means ON.
+if [ "${VP_GIT_HOOKS:-1}" = "0" ]; then
+	exit 0
+fi
+
+echo "[pre-push] just qa-fast (check + lint + tests) — the same gate the repo documents."
+
+if ! just qa-fast; then
+	echo ""
+	echo "[pre-push] The gate FAILED: nothing was pushed."
+	echo "[pre-push] Fix it, or bypass deliberately with VP_GIT_HOOKS=0 git push …"
+	exit 1
+fi
+
+echo "[pre-push] green. Pushing."

@@ -198,6 +198,24 @@ the default password outright — but only when the environment does not already
 so a `.env` with `OPENSIM_TEST_PASSWORD` reaches the remote database without the guard
 ever firing.
 
+## The local gate (git hook)
+
+Cloudflare's Workers Builds integration **builds and deploys** on every merge to `main`: the
+PR #11 merge was live 41 seconds after the merge commit. `main` has no branch protection and
+no rulesets, so the last place a human can stop a regression is this machine, before the
+push.
+
+The repo ships a versioned pre-push hook that runs the gate. Enable it once per clone:
+
+```bash
+vp hooks enable      # installs the dispatcher, sets core.hooksPath
+vp hooks status      # what is active in this clone
+```
+
+`VP_GIT_HOOKS=0 git push …` skips it on purpose. The hook runs `just qa-fast` (types + lint +
+unit tests); the e2e suite stays a manual step (`just test-e2e`) because it needs the local D1
+and a dev server.
+
 ## Demo data
 
 The demo student in `src/lib/server/db/data/enrollment-fixture.json` carries an invented

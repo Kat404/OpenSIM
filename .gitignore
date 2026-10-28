@@ -68,3 +68,7 @@ vite.config.ts.timestamp-*
 /.e2e/summary.md
 /.e2e/logs/
 /.e2e/videos/
+
+# The hook dispatcher that `vp hooks enable` generates (not versioned:
+# `vp hooks enable` recreates it in every clone).
+.vite-hooks/_/

@@ -93,6 +93,27 @@ funcionando sin instalarlo; no está diseñado para crecer. Esa es también la r
 de la prohibición: un `db-seed-remote` equivocado no se nota hasta que el demo
 público ya no arranca.
 
+### La puerta local: hook de pre-push
+
+La integración de Cloudflare **construye y despliega** en cada merge a `main` (el merge del
+PR #11 estuvo en producción 41 segundos después del commit de merge). `main` no tiene
+protección de rama ni rulesets, y el único check automático de un PR es ese build — que
+dice "compiló", no "funciona". El último punto donde una persona puede detener una regresión
+es **esta máquina, antes del push**.
+
+Por eso el repo trae un hook de pre-push versionado (`.vite-hooks/pre-push`) que corre
+`just qa-fast`. Para activarlo en un clon nuevo:
+
+```bash
+vp hooks enable      # instala el dispatcher y pone core.hooksPath
+vp hooks status      # qué está activo en este clon
+```
+
+`VP_GIT_HOOKS=0 git push …` (o `git push --no-verify`) lo salta a propósito. El hook **no**
+corre los e2e: ésos necesitan la D1 local y un servidor de desarrollo, tardan ~2 minutos, y
+la definición de la puerta del repo los deja fuera de `qa-fast` a propósito. Antes de un
+merge que toque la UI, corre `just test-e2e` a mano.
+
 ### Actualización & Seguimiento
 
 - Siempre que hagas cualquier cambio de código (no `docs/`) pasa por los comandos de arriba: `just qa-fast` como mínimo, más los e2e que toquen lo que cambiaste.
