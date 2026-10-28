@@ -47,22 +47,20 @@ trámites que responden `501` **no existen todavía en producción**.
 en cada corrida (AGENTS.md, "Prohibido lo remoto"). La del 2026-10-19 cubrió las migraciones,
 **no** el deploy. Pedirla otra vez.
 
-**El comando, con la trampa del `account_id`:**
+**El comando (la trampa del `account_id` ya no existe):**
 
 ```bash
-# wrangler.jsonc no tiene account_id, así que wrangler responde
-# "The given account is not valid or is not authorized" (7403)
-CLOUDFLARE_ACCOUNT_ID=81556e2f476ba0a74c12b6a8e5394d0b just deploy-worker
+just deploy-worker
 ```
 
-Eso ejecuta `pnpm build` (que incluye `wrangler types && vite build && node
-scripts/inject-scheduled-handler.mjs`) y después `wrangler deploy`.
+`account_id` está en `wrangler.jsonc` desde el 2026-10-28, así que las cuatro recetas
+remotas (`db-migrate-remote`, `db-seed-remote`, `db-set-password-remote`, `deploy-worker`)
+funcionan **tal como están escritas**, sin `CLOUDFLARE_ACCOUNT_ID` en el entorno. Un
+identificador de cuenta no es un secreto: está en la URL del panel y en cada ruta de la API;
+la credencial sigue siendo la con la que `wrangler` autentica (`wrangler whoami`).
 
-**Decisión pendiente, misma raíz:** ¿se añade `account_id` a `wrangler.jsonc` para que
-`just db-migrate-remote`, `just db-seed-remote`, `just db-set-password-remote` y
-`just deploy-worker` funcionen **tal como están escritos**? Hoy las cuatro recetas remotas
-fallan sin la variable en el entorno. Es una línea de configuración y quita una trampa
-recurrente; es del mantenedor porque toca credenciales en un archivo versionado.
+Eso ejecuta `pnpm build` (que hoy es `wrangler types && vp build && node
+scripts/inject-scheduled-handler.mjs`) y después `wrangler deploy`.
 
 **Humo sobre la URL desplegada** (`https://opensim.jose-luis-rs.workers.dev`):
 
@@ -143,7 +141,7 @@ y se fusiona por separado.
 | Bloqueo | Qué es | Quién lo resuelve |
 | --- | --- | --- |
 | **B4** de `odd/tasks/phase-9-unblock.md` | 29 blobs con PII quedan en las referencias de un PR muerto; GitHub no los purga con `filter-repo` | GitHub Support, con la cuenta del mantenedor |
-| **Credenciales de Cloudflare** | `wrangler` pide `CLOUDFLARE_ACCOUNT_ID` en cada invocación remota | La variable de entorno, o una línea en `wrangler.jsonc` (decisión del mantenedor) |
+| **Credenciales de Cloudflare** | ~~`wrangler` pide `CLOUDFLARE_ACCOUNT_ID` en cada invocación remota~~ | **Resuelto el 2026-10-28**: `account_id` está en `wrangler.jsonc`; las recetas remotas funcionan sin la variable |
 
 ## Cómo retomar
 

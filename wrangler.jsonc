@@ -1,6 +1,12 @@
 {
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"name": "opensim",
+	// The account is named here so every remote recipe works without
+	// CLOUDFLARE_ACCOUNT_ID in the environment. An account id is an
+	// identifier, not a secret: it is in the dashboard URL and in every
+	// API path. The credential is still the one wrangler authenticates
+	// with (`wrangler whoami`).
+	"account_id": "81556e2f476ba0a74c12b6a8e5394d0b",
 	"compatibility_date": "2026-10-01",
 	"compatibility_flags": ["nodejs_compat"],
 	"main": ".svelte-kit/cloudflare/_worker.js",
